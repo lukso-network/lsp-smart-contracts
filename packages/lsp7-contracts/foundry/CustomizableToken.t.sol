@@ -5,7 +5,12 @@ pragma solidity ^0.8.22;
 import "forge-std/Test.sol";
 
 // modules
-import {CustomizableToken} from "../contracts/CustomizableToken.sol";
+import {
+    CustomizableToken,
+    MintableParams,
+    NonTransferableParams,
+    CappedParams
+} from "../contracts/CustomizableToken.sol";
 
 // errors
 import {
@@ -49,19 +54,32 @@ contract CustomizableTokenTest is Test {
     CustomizableToken token;
 
     function setUp() public {
+        MintableParams memory mintableParams = MintableParams(
+            mintable,
+            initialMintAmount
+        );
+
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferable,
+                transferLockStart,
+                transferLockEnd
+            );
+
+        CappedParams memory cappedParams = CappedParams(
+            tokenBalanceCap,
+            tokenSupplyCap
+        );
+
         token = new CustomizableToken(
             name,
             symbol,
             owner,
             tokenType,
             isNonDivisible,
-            mintable,
-            initialMintAmount,
-            transferable,
-            transferLockStart,
-            transferLockEnd,
-            tokenBalanceCap,
-            tokenSupplyCap
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
     }
 
@@ -107,6 +125,23 @@ contract CustomizableTokenTest is Test {
     }
 
     function test_ConstructorRevertsIfInitialMintExceedsSupplyCap() public {
+        MintableParams memory mintableParams = MintableParams(
+            mintable,
+            tokenSupplyCap + 1
+        );
+
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferable,
+                transferLockStart,
+                transferLockEnd
+            );
+
+        CappedParams memory cappedParams = CappedParams(
+            tokenBalanceCap,
+            tokenSupplyCap
+        );
+
         vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
         new CustomizableToken(
             name,
@@ -114,30 +149,36 @@ contract CustomizableTokenTest is Test {
             owner,
             tokenType,
             isNonDivisible,
-            mintable,
-            tokenSupplyCap + 1,
-            transferable,
-            transferLockStart,
-            transferLockEnd,
-            tokenBalanceCap,
-            tokenSupplyCap
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
     }
 
     function test_ConstructorSucceedsWithZeroInitialMint() public {
+        MintableParams memory mintableParams = MintableParams(mintable, 0);
+
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferable,
+                transferLockStart,
+                transferLockEnd
+            );
+
+        CappedParams memory cappedParams = CappedParams(
+            tokenBalanceCap,
+            tokenSupplyCap
+        );
+
         CustomizableToken zeroMintToken = new CustomizableToken(
             name,
             symbol,
             owner,
             tokenType,
             isNonDivisible,
-            mintable,
-            0,
-            transferable,
-            transferLockStart,
-            transferLockEnd,
-            tokenBalanceCap,
-            tokenSupplyCap
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
         assertEq(
             zeroMintToken.balanceOf(owner),
@@ -148,6 +189,23 @@ contract CustomizableTokenTest is Test {
     }
 
     function test_ConstructorRevertsWithInvalidLockPeriod() public {
+        MintableParams memory mintableParams = MintableParams(
+            mintable,
+            initialMintAmount
+        );
+
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferable,
+                200,
+                100
+            );
+
+        CappedParams memory cappedParams = CappedParams(
+            tokenBalanceCap,
+            tokenSupplyCap
+        );
+
         vm.expectRevert(LSP7InvalidTransferLockPeriod.selector);
         new CustomizableToken(
             name,
@@ -155,13 +213,9 @@ contract CustomizableTokenTest is Test {
             owner,
             tokenType,
             isNonDivisible,
-            mintable,
-            initialMintAmount,
-            transferable,
-            200,
-            100,
-            tokenBalanceCap,
-            tokenSupplyCap
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
     }
 
@@ -203,19 +257,29 @@ contract CustomizableTokenTest is Test {
     }
 
     function test_MintWithMaxSupplyCapAllowsUnlimitedMinting() public {
+        MintableParams memory mintableParams = MintableParams(
+            mintable,
+            initialMintAmount
+        );
+
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferable,
+                transferLockStart,
+                transferLockEnd
+            );
+
+        CappedParams memory cappedParams = CappedParams(tokenBalanceCap, 0);
+
         CustomizableToken unlimitedToken = new CustomizableToken(
             name,
             symbol,
             owner,
             tokenType,
             isNonDivisible,
-            mintable,
-            initialMintAmount,
-            transferable,
-            transferLockStart,
-            transferLockEnd,
-            tokenBalanceCap,
-            0
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
         unlimitedToken.mint(owner, type(uint256).max / 2, true, "");
         assertEq(
@@ -227,19 +291,29 @@ contract CustomizableTokenTest is Test {
 
     // Balance Cap Tests
     function test_BalanceCapEnforcedCorrectly() public {
+        MintableParams memory mintableParams = MintableParams(mintable, 2000);
+
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferable,
+                transferLockStart,
+                transferLockEnd
+            );
+
+        CappedParams memory cappedParams = CappedParams(
+            1500, // tokenBalanceCap
+            0 // tokenSupplyCap = 0 (disabled)
+        );
+
         CustomizableToken tokenWithBalanceCap = new CustomizableToken(
             name,
             symbol,
             owner,
             tokenType,
             isNonDivisible,
-            mintable,
-            2000,
-            transferable,
-            transferLockStart,
-            transferLockEnd,
-            1500, // tokenBalanceCap
-            0 // tokenSupplyCap = 0 (disabled)
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
 
         // Should be able to transfer up to the balance cap
@@ -260,19 +334,32 @@ contract CustomizableTokenTest is Test {
     }
 
     function test_BalanceCapDisabledWhenZero() public {
+        MintableParams memory mintableParams = MintableParams(
+            mintable,
+            1000000
+        );
+
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferable,
+                transferLockStart,
+                transferLockEnd
+            );
+
+        CappedParams memory cappedParams = CappedParams(
+            0, // tokenBalanceCap = 0 (disabled)
+            0 // tokenSupplyCap = 0 (disabled)
+        );
+
         CustomizableToken tokenWithoutBalanceCap = new CustomizableToken(
             name,
             symbol,
             owner,
             tokenType,
             isNonDivisible,
-            mintable,
-            1000000,
-            transferable,
-            transferLockStart,
-            transferLockEnd,
-            0, // tokenBalanceCap = 0 (disabled)
-            0 // tokenSupplyCap = 0 (disabled)
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
 
         // Should be able to transfer any amount when balance cap is disabled

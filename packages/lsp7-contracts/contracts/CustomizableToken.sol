@@ -25,6 +25,32 @@ import {
     LSP7MintDisabled
 } from "./extensions/LSP7Mintable/LSP7MintableErrors.sol";
 
+/// @dev Deployment configuration for minting feature.
+/// @param mintable True to enable minting after deployment, false to disable it forever.
+/// @param initialMintAmount The amount of tokens to mint to `newOwner_` on deployment in wei.
+struct MintableParams {
+    bool mintable;
+    uint256 initialMintAmount;
+}
+
+/// @dev Deployment configuration for non-transferable feature.
+/// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `nonTransferableFrom_` and `nonTransferableUntil_`.
+/// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
+struct NonTransferableParams {
+    bool transferable;
+    uint256 transferLockStart;
+    uint256 transferLockEnd;
+}
+
+/// @dev Deployment configuration for capped balance and capped supply features.
+/// @param tokenBalanceCap The maximum balance per address in wei, 0 to disable.
+/// @param tokenSupplyCap The maximum total supply in wei, 0 to disable.
+struct CappedParams {
+    uint256 tokenBalanceCap;
+    uint256 tokenSupplyCap;
+}
+
 /// @title CustomizableToken
 /// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and allowlist exemptions.
 /// Implements {LSP7Mintable} to allow minting.
@@ -47,26 +73,17 @@ contract CustomizableToken is
     /// @param newOwner_ The initial owner of the token, added to the allowlist.
     /// @param lsp4TokenType_ The LSP4 token type (e.g., 0 for token).
     /// @param isNonDivisible_ True if the token is non-divisible (e.g., for NDTs).
-    /// @param mintable_ True to enable minting after deployment, false to disable it forever.
-    /// @param initialMintAmount_ The amount of tokens to mint to `newOwner_` on deployment in wei.
-    /// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `nonTransferableFrom_` and `nonTransferableUntil_`.
-    /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
-    /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
-    /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
-    /// @param tokenSupplyCap_ The maximum total supply in wei, 0 to disable.
+    /// @param mintableParams Deployment configuration for minting feature (see above).
+    /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        bool mintable_,
-        uint256 initialMintAmount_,
-        bool transferable_,
-        uint256 transferLockStart_,
-        uint256 transferLockEnd_,
-        uint256 tokenBalanceCap_,
-        uint256 tokenSupplyCap_
+        MintableParams memory mintableParams,
+        NonTransferableParams memory nonTransferableParams,
+        CappedParams memory cappedParams
     )
         LSP7DigitalAsset(
             name_,
@@ -76,17 +93,17 @@ contract CustomizableToken is
             isNonDivisible_
         )
         LSP7AllowlistAbstract(newOwner_)
-        LSP7MintableAbstract(mintable_)
+        LSP7MintableAbstract(mintableParams.mintable)
         LSP7NonTransferableAbstract(
-            transferable_,
-            transferLockStart_,
-            transferLockEnd_
+            nonTransferableParams.transferable,
+            nonTransferableParams.transferLockStart,
+            nonTransferableParams.transferLockEnd
         )
-        LSP7CappedBalanceAbstract(tokenBalanceCap_)
-        LSP7CappedSupplyAbstract(tokenSupplyCap_)
+        LSP7CappedBalanceAbstract(cappedParams.tokenBalanceCap)
+        LSP7CappedSupplyAbstract(cappedParams.tokenSupplyCap)
     {
-        if (initialMintAmount_ > 0) {
-            _mint(newOwner_, initialMintAmount_, true, "");
+        if (mintableParams.initialMintAmount > 0) {
+            _mint(newOwner_, mintableParams.initialMintAmount, true, "");
         }
     }
 
