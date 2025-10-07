@@ -40,6 +40,7 @@
     "test": "turbo test",
     "test:foundry": "turbo test:foundry --filter='!@lukso/lsp16-contracts'",
     "test:coverage": "turbo test:coverage",
+    "test:benchmark": "turbo test:benchmark",
     "test:mocks": "hardhat test --no-compile packages/lsp-smart-contracts/tests/Mocks/*.test.ts",
     "test:up": "hardhat test --no-compile packages/lsp-smart-contracts/tests/UniversalProfile.test.ts",
     "test:upinit": "hardhat test --no-compile packages/lsp-smart-contracts/tests/UniversalProfileInit.test.ts",

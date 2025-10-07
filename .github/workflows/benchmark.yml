@@ -1,15 +1,15 @@
-# This workflow benchmark the gas usage of Universal Profile for common interactions
+# This workflow benchmark the gas usage of Universal Profile and LSP7/8 for common interactions
 # It compare the gas cost of the changes made between:
 # - a feature branch (where a PR is opened)
-# - a target branch (where the PR will be merged)
-name: 🆙 📊 Universal Profile Benchmark
+# - a target branch (where the PR will be merged to)
+name: ⛽️ Gas Benchmark 📊
 
 on:
   # enable to run workflow manually
   workflow_dispatch:
 
   pull_request:
-    types: [opened]
+    # types: [opened]
 
     # compare gas diff only when editing Solidity smart contract code
     paths:
@@ -22,9 +22,6 @@ on:
 jobs:
   benchmark:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./packages/lsp-smart-contracts
 
     steps:
       - name: Checkout base branch
@@ -43,14 +40,21 @@ jobs:
         run: npm ci
 
       - name: 🏗️ Build contract artifacts
-        run: npm run build
+        run: |
+          npm run build
+          npm run build:types
+          npm run build:js
 
-      - name: 🧪 Run Benchmark tests
-        working-directory: ./packages/lsp-smart-contracts
+      - name: 🧪⛽️ Run Gas Benchmark tests
         # Rename the file to be able to generate benchmark JSON report
         run: |
-          npm run test:benchmark
-          mv gas_benchmark_result.json gas_benchmark_before.json
+          if npm run test:benchmark; then
+            echo "Benchmark tests ran successfully"
+          else
+            echo "Benchmark tests failed, creating empty gas_benchmark_result.json file"
+            cp packages/lsp-smart-contracts/scripts/ci/gas_benchmark_template.json packages/lsp-smart-contracts/gas_benchmark_result.json
+          fi
+          mv packages/lsp-smart-contracts/gas_benchmark_result.json packages/lsp-smart-contracts/gas_benchmark_before.json
 
       - name: Checkout current branch
         uses: actions/checkout@v4
@@ -68,13 +72,15 @@ jobs:
         run: npm ci
 
       - name: 🏗️ Build contract artifacts
-        run: npm run build
+        run: |
+          npm run build
+          npm run build:types
+          npm run build:js
 
-      - name: 🧪 Run Benchmark tests
-        working-directory: ./packages/lsp-smart-contracts
+      - name: 🧪⛽️ Run Gas Benchmark tests
         run: |
           npm run test:benchmark
-          mv gas_benchmark_result.json gas_benchmark_after.json
+          mv packages/lsp-smart-contracts/gas_benchmark_result.json packages/lsp-smart-contracts/gas_benchmark_after.json
 
       - name: 📊 Generate Benchmark Report
         working-directory: ./packages/lsp-smart-contracts

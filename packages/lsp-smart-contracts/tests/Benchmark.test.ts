@@ -28,6 +28,7 @@ import {
   combinePermissions,
   encodeCompactBytesArray,
 } from './utils/helpers';
+import { Signer } from 'ethers';
 
 export type UniversalProfileContext = {
   accounts: SignerWithAddress[];
@@ -44,13 +45,12 @@ const buildLSP6TestContext = async (initialFunding?: bigint): Promise<LSP6TestCo
   const accounts = await ethers.getSigners();
   const mainController = accounts[0];
 
-  const universalProfile = await new UniversalProfile__factory(mainController).deploy(
-    mainController.address,
-    {
-      value: initialFunding,
-    },
-  );
-  const keyManager = await new LSP6KeyManager__factory(mainController).deploy(
+  const universalProfile = await new UniversalProfile__factory(
+    mainController as unknown as Signer,
+  ).deploy(mainController.address, {
+    value: initialFunding,
+  });
+  const keyManager = await new LSP6KeyManager__factory(mainController as unknown as Signer).deploy(
     universalProfile.target,
   );
 
@@ -63,12 +63,11 @@ const buildUniversalProfileContext = async (
   const accounts = await ethers.getSigners();
   const mainController = accounts[0];
 
-  const universalProfile = await new UniversalProfile__factory(mainController).deploy(
-    mainController.address,
-    {
-      value: initialFunding,
-    },
-  );
+  const universalProfile = await new UniversalProfile__factory(
+    mainController as unknown as Signer,
+  ).deploy(mainController.address, {
+    value: initialFunding,
+  });
 
   return { accounts, mainController, universalProfile };
 };
@@ -89,9 +88,9 @@ describe('⛽📊 Gas Benchmark', () => {
       const accounts = await ethers.getSigners();
 
       // Universal Profile
-      const universalProfile = await new UniversalProfile__factory(accounts[0]).deploy(
-        accounts[0].address,
-      );
+      const universalProfile = await new UniversalProfile__factory(
+        accounts[0] as unknown as Signer,
+      ).deploy(accounts[0].address);
 
       const universalProfileDeployTransaction = universalProfile.deploymentTransaction();
       const universalProfileDeploymentReceipt = await universalProfileDeployTransaction.wait();
@@ -101,7 +100,7 @@ describe('⛽📊 Gas Benchmark', () => {
       );
 
       // Key Manager
-      const keyManager = await new LSP6KeyManager__factory(accounts[0]).deploy(
+      const keyManager = await new LSP6KeyManager__factory(accounts[0] as unknown as Signer).deploy(
         universalProfile.target,
       );
 
@@ -113,7 +112,9 @@ describe('⛽📊 Gas Benchmark', () => {
       );
 
       // LSP1 Delegate
-      const lsp1Delegate = await new LSP1UniversalReceiverDelegateUP__factory(accounts[0]).deploy();
+      const lsp1Delegate = await new LSP1UniversalReceiverDelegateUP__factory(
+        accounts[0] as unknown as Signer,
+      ).deploy();
 
       const lsp1DelegateDeployTransaction = lsp1Delegate.deploymentTransaction();
       const lsp1DelegateDeploymentReceipt = await lsp1DelegateDeployTransaction.wait();
@@ -123,7 +124,7 @@ describe('⛽📊 Gas Benchmark', () => {
       );
 
       // LSP7 Token (Mintable preset)
-      const lsp7Mintable = await new LSP7Mintable__factory(accounts[0]).deploy(
+      const lsp7Mintable = await new LSP7Mintable__factory(accounts[0] as unknown as Signer).deploy(
         'Token',
         'MTKN',
         accounts[0].address,
@@ -140,7 +141,7 @@ describe('⛽📊 Gas Benchmark', () => {
       );
 
       // LSP8 NFT (Mintable preset)
-      const lsp8Mintable = await new LSP8Mintable__factory(accounts[0]).deploy(
+      const lsp8Mintable = await new LSP8Mintable__factory(accounts[0] as unknown as Signer).deploy(
         'My NFT',
         'MNFT',
         accounts[0].address,
@@ -237,17 +238,17 @@ describe('⛽📊 Gas Benchmark', () => {
         before(async () => {
           context = await buildUniversalProfileContext(ethers.parseEther('50'));
 
-          universalProfile1 = await new UniversalProfile__factory(context.mainController).deploy(
-            context.accounts[2].address,
-          );
+          universalProfile1 = await new UniversalProfile__factory(
+            context.mainController as unknown as Signer,
+          ).deploy(context.accounts[2].address);
 
-          universalProfile2 = await new UniversalProfile__factory(context.mainController).deploy(
-            context.accounts[3].address,
-          );
+          universalProfile2 = await new UniversalProfile__factory(
+            context.mainController as unknown as Signer,
+          ).deploy(context.accounts[3].address);
 
-          universalProfile3 = await new UniversalProfile__factory(context.mainController).deploy(
-            context.accounts[4].address,
-          );
+          universalProfile3 = await new UniversalProfile__factory(
+            context.mainController as unknown as Signer,
+          ).deploy(context.accounts[4].address);
         });
 
         it('Transfer 0.1 LYX to 3x EOA without data', async () => {
@@ -534,7 +535,9 @@ describe('⛽📊 Gas Benchmark', () => {
       before(async () => {
         context = await buildUniversalProfileContext(ethers.parseEther('50'));
         // deploy a LSP7 token
-        lsp7Token = await new LSP7Mintable__factory(context.mainController).deploy(
+        lsp7Token = await new LSP7Mintable__factory(
+          context.mainController as unknown as Signer,
+        ).deploy(
           'Token',
           'MTKN',
           context.mainController.address,
@@ -544,7 +547,9 @@ describe('⛽📊 Gas Benchmark', () => {
         );
 
         // deploy a LSP8 token
-        lsp8Token = await new LSP8Mintable__factory(context.mainController).deploy(
+        lsp8Token = await new LSP8Mintable__factory(
+          context.mainController as unknown as Signer,
+        ).deploy(
           'My NFT',
           'MNFT',
           context.mainController.address,
@@ -552,9 +557,11 @@ describe('⛽📊 Gas Benchmark', () => {
           LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
         );
 
-        universalProfile1 = await new UniversalProfile__factory(context.mainController).deploy(
-          context.accounts[2].address,
-        );
+        universalProfile1 = await new UniversalProfile__factory(
+          context.mainController as unknown as Signer,
+        ).deploy(context.accounts[2].address);
+
+        await universalProfile1.waitForDeployment();
       });
 
       describe('LSP7DigitalAsset', () => {
@@ -582,9 +589,15 @@ describe('⛽📊 Gas Benchmark', () => {
         });
 
         it('when transferring LSP7Token from a UP to a UP without data', async () => {
+          console.log(
+            'await context.universalProfile.getAddress(): ',
+            await context.universalProfile.getAddress(),
+          );
+          console.log('universalProfile1.address: ', universalProfile1.address);
+
           const lsp7TransferPayload = lsp7Token.interface.encodeFunctionData('transfer', [
             await context.universalProfile.getAddress(),
-            universalProfile1.address,
+            await universalProfile1.getAddress(),
             5,
             false,
             '0x',
@@ -635,7 +648,7 @@ describe('⛽📊 Gas Benchmark', () => {
         it('when transferring LSP8Token from a UP to a UP without data', async () => {
           const lsp8TransferPayload = lsp8Token.interface.encodeFunctionData('transfer', [
             await context.universalProfile.getAddress(),
-            universalProfile1.address,
+            await universalProfile1.getAddress(),
             metaNFTList[0],
             false,
             '0x',
@@ -681,7 +694,9 @@ describe('⛽📊 Gas Benchmark', () => {
           aliceUP = deployedContracts[0] as UniversalProfile;
 
           const lsp1Delegate: LSP1UniversalReceiverDelegateUP =
-            await new LSP1UniversalReceiverDelegateUP__factory(context.accounts[0]).deploy();
+            await new LSP1UniversalReceiverDelegateUP__factory(
+              context.accounts[0] as unknown as Signer,
+            ).deploy();
 
           // the function `setupKeyManager` gives ALL PERMISSIONS to the owner as the first data key
           // We also setup the following:
@@ -694,7 +709,9 @@ describe('⛽📊 Gas Benchmark', () => {
           );
 
           // deploy a LSP7 token
-          lsp7MetaCoin = await new LSP7Mintable__factory(context.mainController).deploy(
+          lsp7MetaCoin = await new LSP7Mintable__factory(
+            context.mainController as unknown as Signer,
+          ).deploy(
             'MetaCoin',
             'MTC',
             context.mainController.address,
@@ -704,7 +721,9 @@ describe('⛽📊 Gas Benchmark', () => {
           );
 
           // deploy a LSP8 NFT
-          lsp8MetaNFT = await new LSP8Mintable__factory(context.mainController).deploy(
+          lsp8MetaNFT = await new LSP8Mintable__factory(
+            context.mainController as unknown as Signer,
+          ).deploy(
             'MetaNFT',
             'MNF',
             context.mainController.address,
@@ -884,7 +903,9 @@ describe('⛽📊 Gas Benchmark', () => {
           // LSP7 token transfer scenarios
           canTransferTwoTokens = context.accounts[3];
 
-          lsp7MetaCoin = await new LSP7Mintable__factory(context.mainController).deploy(
+          lsp7MetaCoin = await new LSP7Mintable__factory(
+            context.mainController as unknown as Signer,
+          ).deploy(
             'MetaCoin',
             'MTC',
             context.mainController.address,
@@ -893,7 +914,9 @@ describe('⛽📊 Gas Benchmark', () => {
             true,
           );
 
-          lsp7LyxDai = await new LSP7Mintable__factory(context.mainController).deploy(
+          lsp7LyxDai = await new LSP7Mintable__factory(
+            context.mainController as unknown as Signer,
+          ).deploy(
             'LyxDai',
             'LDAI',
             context.mainController.address,
@@ -909,7 +932,9 @@ describe('⛽📊 Gas Benchmark', () => {
           // LSP8 NFT transfer scenarios
           canTransferTwoNFTs = context.accounts[4];
 
-          lsp8MetaNFT = await new LSP8Mintable__factory(context.mainController).deploy(
+          lsp8MetaNFT = await new LSP8Mintable__factory(
+            context.mainController as unknown as Signer,
+          ).deploy(
             'MetaNFT',
             'MNF',
             context.mainController.address,
@@ -917,7 +942,9 @@ describe('⛽📊 Gas Benchmark', () => {
             LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
           );
 
-          lsp8LyxPunks = await new LSP8Mintable__factory(context.mainController).deploy(
+          lsp8LyxPunks = await new LSP8Mintable__factory(
+            context.mainController as unknown as Signer,
+          ).deploy(
             'LyxPunks',
             'LPK',
             context.mainController.address,
@@ -936,7 +963,7 @@ describe('⛽📊 Gas Benchmark', () => {
           });
 
           const lsp1Delegate = await new LSP1UniversalReceiverDelegateUP__factory(
-            context.accounts[0],
+            context.accounts[0] as unknown as Signer,
           ).deploy();
 
           // prettier-ignore
@@ -1185,9 +1212,9 @@ describe('⛽📊 Gas Benchmark', () => {
             newController.address,
             combinePermissions(PERMISSIONS.SETDATA),
             encodeCompactBytesArray([
-                ERC725YDataKeys.LSP3.LSP3Profile,
-                ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index,
-                ERC725YDataKeys.LSP12['LSP12IssuedAssetsMap'],
+              ERC725YDataKeys.LSP3.LSP3Profile,
+              ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index,
+              ERC725YDataKeys.LSP12['LSP12IssuedAssetsMap'],
             ])
           ];
 
@@ -1456,18 +1483,18 @@ describe('⛽📊 Gas Benchmark', () => {
 
           // prettier-ignore
           const permissionKeys = [
-                ERC725YDataKeys.LSP3.LSP3Profile,
-                ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-                ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000000",
-                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllercanSetTwoDataKeys.address.substring(2),
-                ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + controllercanSetTwoDataKeys.address.substring(2),
-                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllerCanAddControllers.address.substring(2),
-                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllerCanEditPermissions.address.substring(2),
-                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllerCanSetTenDataKeys.address.substring(2),
-                ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + controllerCanSetTenDataKeys.address.substring(2),
-                ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllerCanSetDataAndAddControllers.address.substring(2),
-                ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + controllerCanSetDataAndAddControllers.address.substring(2),
-            ];
+            ERC725YDataKeys.LSP3.LSP3Profile,
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].index + "00000000000000000000000000000000",
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllercanSetTwoDataKeys.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + controllercanSetTwoDataKeys.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllerCanAddControllers.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllerCanEditPermissions.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllerCanSetTenDataKeys.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + controllerCanSetTenDataKeys.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + controllerCanSetDataAndAddControllers.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + controllerCanSetDataAndAddControllers.address.substring(2),
+          ];
 
           const permissionValues = [
             // Set some JSONURL for LSP3Profile metadata to test gas cost of updating your profile details
@@ -1525,23 +1552,23 @@ describe('⛽📊 Gas Benchmark', () => {
 
           // prettier-ignore
           const dataKeys = [
-              ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.stripZerosLeft(AddressPermissionsArrayLength), 16).substring(2),
-              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
-              ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
-            ];
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.stripZerosLeft(AddressPermissionsArrayLength), 16).substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
+          ];
 
           // prettier-ignore
           const dataValues = [
-              ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(AddressPermissionsArrayLength) + BigInt(1)), 16),
-              newController.address,
-              combinePermissions(PERMISSIONS.SETDATA),
-              encodeCompactBytesArray([
-                  ERC725YDataKeys.LSP3.LSP3Profile,
-                  ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index,
-                  ERC725YDataKeys.LSP12['LSP12IssuedAssetsMap'],
-              ])
-            ];
+            ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(AddressPermissionsArrayLength) + BigInt(1)), 16),
+            newController.address,
+            combinePermissions(PERMISSIONS.SETDATA),
+            encodeCompactBytesArray([
+              ERC725YDataKeys.LSP3.LSP3Profile,
+              ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index,
+              ERC725YDataKeys.LSP12['LSP12IssuedAssetsMap'],
+            ])
+          ];
 
           const tx = await context.universalProfile
             .connect(controllerCanAddControllers)
@@ -1592,19 +1619,19 @@ describe('⛽📊 Gas Benchmark', () => {
 
           // prettier-ignore
           const dataKeys = [
-              ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
-              ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(AddressPermissionsArrayLength) - BigInt(1)), 16).substring(2),
-              ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
-              ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
-            ];
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].length,
+            ERC725YDataKeys.LSP6["AddressPermissions[]"].index + ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(AddressPermissionsArrayLength) - BigInt(1)), 16).substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:Permissions"] + newController.address.substring(2),
+            ERC725YDataKeys.LSP6["AddressPermissions:AllowedERC725YDataKeys"] + newController.address.substring(2),
+          ];
 
           // prettier-ignore
           const dataValues = [
-              ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(AddressPermissionsArrayLength) - BigInt(1)), 16),
-              "0x",
-              "0x",
-              "0x",
-            ];
+            ethers.zeroPadValue(ethers.toBeHex(ethers.toBigInt(AddressPermissionsArrayLength) - BigInt(1)), 16),
+            "0x",
+            "0x",
+            "0x",
+          ];
 
           const tx = await context.universalProfile
             .connect(controllerCanEditPermissions)
@@ -1620,13 +1647,13 @@ describe('⛽📊 Gas Benchmark', () => {
         it('Write 5x new LSP12 Issued Assets', async () => {
           // prettier-ignore
           const issuedAssetsDataKeys = [
-              ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length,
-              ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000000",
-              ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000001",
-              ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000002",
-              ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000003",
-              ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000004",
-            ];
+            ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length,
+            ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000000",
+            ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000001",
+            ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000002",
+            ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000003",
+            ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index + "00000000000000000000000000000004",
+          ];
 
           // these are just random placeholder values
           // they should be replaced with actual token contract address
