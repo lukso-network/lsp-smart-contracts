@@ -78,3 +78,38 @@ jobs:
           END
           )
           node ./publish.mjs outputs.json
+
+  deploy-verify:
+    needs: release-please
+    if: ${{ steps.release.outputs.releases_created }}
+    strategy:
+      matrix:
+        network: ["luksoTestnet", "luksoMainnet"]
+    runs-on: ubuntu-latest
+    env:
+      # 0x983aBC616f2442bAB7a917E6bb8660Df8b01F3bF
+      CONTRACT_VERIFICATION_TESTNET_PK: ${{ secrets.CONTRACT_VERIFICATION_TESTNET_PK }}
+      # 0xF0efeD8d49c0FA6CFC861Bf0311b6B3a4414e4b7
+      CONTRACT_VERIFICATION_MAINNET_PK: ${{ secrets.CONTRACT_VERIFICATION_MAINNET_PK }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js v22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build contract artifacts
+        run: npm run build
+
+      - name: Deploy & verify contracts on ${{ matrix.network }}
+        run: |
+          (cat <<END > outputs.json
+          ${{toJSON(steps.release.outputs)}}
+          END
+          )
+          node ./deploy-verify.mjs outputs.json ${{ matrix.network }}

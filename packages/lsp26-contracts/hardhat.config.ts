@@ -23,6 +23,8 @@ import { hexlify, randomBytes } from 'ethers';
 
 // custom built hardhat plugins and scripts
 // can be imported here (e.g: docs generation, gas benchmark, etc...)
+import '../lsp-smart-contracts/scripts/ci/check-deployer-balance';
+import '../lsp-smart-contracts/scripts/ci/verify-all-contracts';
 
 dotenvConfig({ path: resolve(__dirname, './.env') });
 
@@ -31,10 +33,33 @@ function getTestnetChainConfig(): NetworkUserConfig {
     live: true,
     url: 'https://rpc.testnet.lukso.network',
     chainId: 4201,
+    saveDeployments: true,
+    tags: ['standard', 'base'],
   };
 
   if (process.env.CONTRACT_VERIFICATION_TESTNET_PK !== undefined) {
     config['accounts'] = [process.env.CONTRACT_VERIFICATION_TESTNET_PK];
+  }
+
+  return config;
+}
+
+function getMainnetChainConfig(): NetworkUserConfig {
+  const config: NetworkUserConfig = {
+    live: true,
+    url: 'https://rpc.mainnet.lukso.network',
+    chainId: 42,
+    saveDeployments: true,
+    // We do not deploy the standard contracts on mainnet for the following reasons:
+    // 1) standard contracts are expensive to deploy on mainnet
+    // 2) user's universal profiles use the minimal proxy pattern,
+    //
+    // therefore we only need the base contracts to be deployed on mainnet.
+    tags: ['base'],
+  };
+
+  if (process.env.CONTRACT_VERIFICATION_MAINNET_PK !== undefined) {
+    config['accounts'] = [process.env.CONTRACT_VERIFICATION_MAINNET_PK];
   }
 
   return config;
@@ -53,22 +78,21 @@ const config: HardhatUserConfig = {
       })),
     },
     luksoTestnet: getTestnetChainConfig(),
+    luksoMainnet: getMainnetChainConfig(),
   },
   namedAccounts: {
     owner: 0,
   },
-  // uncomment if the contracts from this LSP package must be deployed at deterministic
-  // // addresses across multiple chains
-  // deterministicDeployment: {
-  //   luksoTestnet: {
-  //     // Nick Factory. See https://github.com/Arachnid/deterministic-deployment-proxy
-  //     factory: '0x4e59b44847b379578588920ca78fbf26c0b4956c',
-  //     deployer: '0x3fab184622dc19b6109349b94811493bf2a45362',
-  //     funding: '0x0000000000000000000000000000000000000000000000000000000000000000',
-  //     signedTx:
-  //       '0xf8a58085174876e800830186a08080b853604580600e600039806000f350fe7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf31ba02222222222222222222222222222222222222222222222222222222222222222a02222222222222222222222222222222222222222222222222222222222222222',
-  //   },
-  // },
+  deterministicDeployment: {
+    luksoTestnet: {
+      // Nick Factory. See https://github.com/Arachnid/deterministic-deployment-proxy
+      factory: '0x4e59b44847b379578588920ca78fbf26c0b4956c',
+      deployer: '0x3fab184622dc19b6109349b94811493bf2a45362',
+      funding: '0x0000000000000000000000000000000000000000000000000000000000000000',
+      signedTx:
+        '0xf8a58085174876e800830186a08080b853604580600e600039806000f350fe7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf31ba02222222222222222222222222222222222222222222222222222222222222222a02222222222222222222222222222222222222222222222222222222222222222',
+    },
+  },
   etherscan: {
     apiKey: 'no-api-key-needed',
     customChains: [
@@ -78,6 +102,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: 'https://api.explorer.execution.testnet.lukso.network/api',
           browserURL: 'https://explorer.execution.testnet.lukso.network/',
+        },
+      },
+      {
+        network: 'luksoMainnet',
+        chainId: 42,
+        urls: {
+          apiURL: 'https://api.explorer.execution.mainnet.lukso.network/api',
+          browserURL: 'https://explorer.execution.mainnet.lukso.network/',
         },
       },
     ],
