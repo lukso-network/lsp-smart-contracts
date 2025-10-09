@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   release-please:
+    outputs:
+      release_outputs: ${{ steps.release.outputs }}
     runs-on: ubuntu-latest
     environment: publish
     env:
@@ -81,7 +83,7 @@ jobs:
 
   deploy-verify:
     needs: release-please
-    if: ${{ steps.release.outputs.releases_created }}
+    if: ${{ needs.release-please.outputs.release_outputs.releases_created }}
     strategy:
       matrix:
         network: ["luksoTestnet", "luksoMainnet"]
@@ -109,7 +111,7 @@ jobs:
       - name: Deploy & verify contracts on ${{ matrix.network }}
         run: |
           (cat <<END > outputs.json
-          ${{toJSON(steps.release.outputs)}}
+          ${{toJSON(needs.release-please.outputs.release_outputs)}}
           END
           )
           node ./deploy-verify.mjs outputs.json ${{ matrix.network }}
