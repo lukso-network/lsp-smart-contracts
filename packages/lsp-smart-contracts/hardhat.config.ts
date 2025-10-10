@@ -20,10 +20,12 @@ import 'hardhat-contract-sizer';
 import 'hardhat-deploy';
 
 // custom built hardhat plugins for CI
-import './scripts/ci/docs-generate';
 import './scripts/ci/gas_benchmark';
 import './scripts/ci/check-deployer-balance';
 import './scripts/ci/verify-all-contracts';
+
+// Workflow temporarily disabled
+// import './scripts/ci/docs-generate';
 
 /**
  * @dev uncomment to generate contract docs in Markdown
@@ -56,6 +58,28 @@ const DEFAULT_COMPILER_SETTINGS = {
 
 const VIA_IR_SETTINGS = {
   version: '0.8.24',
+  settings: {
+    viaIR: true,
+    optimizer: {
+      enabled: true,
+      /**
+       * Optimize for how many times you intend to run the code.
+       * Lower values will optimize more for initial deployment cost, higher
+       * values will optimize more for high-frequency usage.
+       * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
+       */
+      runs: 1000,
+    },
+    outputSelection: {
+      '*': {
+        '*': ['storageLayout'],
+      },
+    },
+  },
+};
+
+const LSP7_VIA_IR_SETTINGS = {
+  version: '0.8.17',
   settings: {
     viaIR: true,
     optimizer: {
@@ -171,6 +195,7 @@ const config: HardhatUserConfig = {
     overrides: {
       '@lukso/lsp4-contracts/contracts/LSP4Utils.sol': VIA_IR_SETTINGS,
       'contracts/LSP4DigitalAssetMetadata/LSP4Utils.sol': VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
     },
   },
   mocha: {

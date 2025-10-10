@@ -9,15 +9,9 @@ on:
   workflow_dispatch:
 
   pull_request:
-    # types: [opened]
-
     # compare gas diff only when editing Solidity smart contract code
     paths:
       - "packages/**/contracts/**/*.sol"
-
-    # do not run on releases (merging to main)
-    branches-ignore:
-      - "main"
 
 jobs:
   benchmark:
@@ -45,8 +39,8 @@ jobs:
           npm run build:types
           npm run build:js
 
-      - name: 🧪⛽️ Run Gas Benchmark tests
-        # Rename the file to be able to generate benchmark JSON report
+      - name: 🧪⛽️ Run gas benchmark tests
+        # Rename the file to `gas_benchmark_before.json` be able to compare later
         run: |
           if npm run test:benchmark; then
             echo "Benchmark tests ran successfully"
@@ -62,10 +56,10 @@ jobs:
         with:
           clean: false
 
-      - name: Use Node.js '20.x'
+      - name: Use Node.js '22.x'
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: "22.x"
           cache: "npm"
 
       - name: 📦 Install dependencies
@@ -77,18 +71,27 @@ jobs:
           npm run build:types
           npm run build:js
 
-      - name: 🧪⛽️ Run Gas Benchmark tests
+      - name: 🧪⛽️ Run gas benchmark tests
         run: |
           npm run test:benchmark
           mv packages/lsp-smart-contracts/gas_benchmark_result.json packages/lsp-smart-contracts/gas_benchmark_after.json
 
-      - name: 📊 Generate Benchmark Report
+      - name: 📊 Generate benchmark report
         working-directory: ./packages/lsp-smart-contracts
         run: npx hardhat gas-benchmark --compare gas_benchmark_after.json --against gas_benchmark_before.json
 
-      - name: 💬 Add Gas Report as comment in PR
-        uses: peter-evans/create-or-update-comment@v2
+      - name: 🔎 Find comment with gas benchmark report
+        uses: peter-evans/find-comment@v3
+        id: find_comment
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
-          body-file: "./packages/lsp-smart-contracts/gas_benchmark.md"
+          comment-author: "github-actions[bot]"
+          body-includes: ⛽📊 Gas Benchmark Report
+
+      - name: 💬 Create or update comment
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          comment-id: ${{ steps.find_comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: "./packages/lsp-smart-contracts/gas_benchmark.md"
+          edit-mode: replace
