@@ -73,8 +73,11 @@ const buildUniversalProfileContext = async (
   return { accounts, mainController, universalProfile };
 };
 
+const value: number = 'hello';
+
 describe('⛽📊 Gas Benchmark', () => {
   let gasBenchmark;
+  let variable = 'test';
 
   before('setup benchmark file', async () => {
     gasBenchmark = JSON.parse(fs.readFileSync('./scripts/ci/gas_benchmark_template.json', 'utf8'));
