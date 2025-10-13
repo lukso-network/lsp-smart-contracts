@@ -8,14 +8,11 @@
   "private": true,
   "dependencies": {
     "eslint": "^9.37.0",
-    "@typescript-eslint/eslint-plugin": "^8.46.0",
-    "@typescript-eslint/parser": "^8.46.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-config-turbo": "latest",
     "eslint-plugin-turbo": "latest",
-    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-prettier": "latest",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.40.0",
-    "eslint-plugin-only-warn": "^1.1.0"
+    "typescript-eslint": "^8.40.0"
   }
 }

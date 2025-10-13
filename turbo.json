@@ -35,12 +35,6 @@
         "CONTRACT_VERIFICATION_MAINNET_PK"
       ]
     },
-    "lint:report": {
-      "env": [
-        "CONTRACT_VERIFICATION_TESTNET_PK",
-        "CONTRACT_VERIFICATION_MAINNET_PK"
-      ]
-    },
     "lint:solidity": {},
     "test": {
       "dependsOn": ["build:js", "^test"],

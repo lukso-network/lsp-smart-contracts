@@ -35,7 +35,6 @@
     "clean": "turbo clean && rm -Rf .turbo/ cache/",
     "format": "prettier --write .",
     "lint": "turbo lint",
-    "lint:report": "turbo lint:report",
     "lint:solidity": "turbo lint:solidity",
     "test": "turbo test",
     "test:foundry": "turbo test:foundry --filter='!@lukso/lsp16-contracts'",

@@ -51,7 +51,6 @@
     "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
-    "lint:report": "eslint . --ext .ts,.js --format json --output-file eslint_report.json ; exit 0",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test": "hardhat test --no-compile tests/*.test.ts",
     "test:coverage": "hardhat coverage",

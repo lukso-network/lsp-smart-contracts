@@ -189,11 +189,6 @@ describe('Comprehensive Governor and NFT Tests', () => {
         [voter1.address, voter1.address, 1],
       );
 
-      const expectedDelegatorData = ethers.AbiCoder.defaultAbiCoder().encode(
-        ['address', 'address', 'uint256'],
-        [voter1.address, voter1.address, 1],
-      );
-
       await expect(nft.connect(voter1).delegate(await mockUniversalReceiver.getAddress()))
         .to.emit(mockUniversalReceiver, 'UniversalReceiverCalled')
         .withArgs(
