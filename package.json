@@ -78,6 +78,8 @@
     "all-contributors-cli": "^6.26.1",
     "dotenv": "^16.5.0",
     "esbuild": "^0.17.15",
+    "eslint": "^9.37.0",
+    "eslint-config-custom": "*",
     "eth-create2-calculator": "^1.1.5",
     "ethers": "^6.11.0",
     "hardhat": "^2.24.0",
