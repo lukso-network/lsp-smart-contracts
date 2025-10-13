@@ -176,9 +176,9 @@ task('gas-benchmark', 'Benchmark gas usage of the smart contracts based on prede
     });
 
     const markdownContent = `
-👋 Hello
-⛽ I am the Gas Bot Reporter. I keep track of the gas costs of common interactions using Universal Profiles 🆙 !
-📊 Here is a summary of the gas cost with the code introduced by this PR.
+👋 Hello I am the Gas Bot Reporter
+⛽ I keep track of the gas costs for common interactions with Universal Profiles 🆙, LSP7 🪙, and LSP8 🖼️ !
+📊 Below is a summary of the gas cost changes introduced by this PR.
 
 ## ⛽📊 Gas Benchmark Report
 

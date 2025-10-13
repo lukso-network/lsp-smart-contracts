@@ -40,27 +40,7 @@
     "test": "turbo test",
     "test:foundry": "turbo test:foundry --filter='!@lukso/lsp16-contracts'",
     "test:coverage": "turbo test:coverage",
-    "test:mocks": "hardhat test --no-compile packages/lsp-smart-contracts/tests/Mocks/*.test.ts",
-    "test:up": "hardhat test --no-compile packages/lsp-smart-contracts/tests/UniversalProfile.test.ts",
-    "test:upinit": "hardhat test --no-compile packages/lsp-smart-contracts/tests/UniversalProfileInit.test.ts",
-    "test:lsp1": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP1UniversalReceiver/*.test.ts",
-    "test:lsp6": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP6KeyManager/LSP6KeyManager.test.ts",
-    "test:lsp6init": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP6KeyManager/LSP6KeyManagerInit.test.ts",
-    "test:lsp7": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP7DigitalAsset/standard/*.test.ts",
-    "test:lsp7init": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP7DigitalAsset/proxy/*.test.ts",
-    "test:lsp8": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP8IdentifiableDigitalAsset/standard/*.test.ts",
-    "test:lsp8init": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP8IdentifiableDigitalAsset/proxy/*.test.ts",
-    "test:lsp9": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP9Vault/LSP9Vault.test.ts",
-    "test:lsp9init": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP9Vault/LSP9VaultInit.test.ts",
-    "test:lsp11": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP11BasicSocialRecovery/LSP11BasicSocialRecovery.test.ts",
-    "test:lsp11init": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP11BasicSocialRecovery/LSP11BasicSocialRecoveryInit.test.ts",
-    "test:lsp17": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP17ContractExtension/LSP17Extendable.test.ts",
-    "test:lsp17extensions": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP17Extensions/**/*.test.ts",
-    "test:lsp20": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP20CallVerification/LSP6/LSP20WithLSP6.test.ts",
-    "test:lsp20init": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP20CallVerification/LSP6/LSP20WithLSP6Init.test.ts",
-    "test:lsp23": "hardhat test --no-compile packages/lsp-smart-contracts/tests/LSP23LinkedContractsDeployment/LSP23LinkedContractsDeployment.test.ts",
-    "test:reentrancy": "hardhat test --no-compile packages/lsp-smart-contracts/tests/Reentrancy/Reentrancy.test.ts",
-    "test:reentrancyinit": "hardhat test --no-compile packages/lsp-smart-contracts/tests/Reentrancy/ReentrancyInit.test.ts"
+    "test:benchmark": "turbo test:benchmark"
   },
   "dependencies": {
     "@erc725/smart-contracts-v8": "npm:@erc725/smart-contracts@8.0.0"

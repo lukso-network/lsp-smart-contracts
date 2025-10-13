@@ -2,7 +2,9 @@
  * Set of constants values as defined in each LUKSO Standards Proposals (LSPs).
  * @see https://github.com/lukso-network/LIPs/tree/main/LSPs
  */
-export * from './contracts';
+
+// TODO: disabled for now as dodoc generation make compilation via IR in this package fails
+// export * from './contracts';
 
 // Typescript types from each LSP package
 export type { Verification, LSP2ArrayKey } from '@lukso/lsp2-contracts';

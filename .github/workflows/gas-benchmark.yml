@@ -1,0 +1,97 @@
+# This workflow benchmark the gas usage of Universal Profile and LSP7/8 for common interactions
+# It compare the gas cost of the changes made between:
+# - a feature branch (where a PR is opened)
+# - a target branch (where the PR will be merged to)
+name: ⛽️ Gas Benchmark 📊
+
+on:
+  # enable to run workflow manually
+  workflow_dispatch:
+
+  pull_request:
+    # compare gas diff only when editing Solidity smart contract code
+    paths:
+      - "packages/**/contracts/**/*.sol"
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+
+      - name: Use Node.js v22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build contract artifacts
+        run: |
+          npm run build
+          npm run build:types
+          npm run build:js
+
+      - name: 🧪⛽️ Run gas benchmark tests
+        # Rename the file to `gas_benchmark_before.json` be able to compare later
+        run: |
+          if npm run test:benchmark; then
+            echo "Benchmark tests ran successfully"
+          else
+            echo "Benchmark tests failed, creating empty gas_benchmark_result.json file"
+            cp packages/lsp-smart-contracts/scripts/ci/gas_benchmark_template.json packages/lsp-smart-contracts/gas_benchmark_result.json
+          fi
+          mv packages/lsp-smart-contracts/gas_benchmark_result.json packages/lsp-smart-contracts/gas_benchmark_before.json
+
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+        # Do not run `git clean -ffdx && git reset --hard HEAD` to prevent removing `gas_benchmark_before.json`
+        with:
+          clean: false
+
+      - name: Use Node.js '22.x'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build contract artifacts
+        run: |
+          npm run build
+          npm run build:types
+          npm run build:js
+
+      - name: 🧪⛽️ Run gas benchmark tests
+        run: |
+          npm run test:benchmark
+          mv packages/lsp-smart-contracts/gas_benchmark_result.json packages/lsp-smart-contracts/gas_benchmark_after.json
+
+      - name: 📊 Generate benchmark report
+        working-directory: ./packages/lsp-smart-contracts
+        run: npx hardhat gas-benchmark --compare gas_benchmark_after.json --against gas_benchmark_before.json
+
+      - name: 🔎 Find comment with gas benchmark report
+        uses: peter-evans/find-comment@v3
+        id: find_comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: ⛽📊 Gas Benchmark Report
+
+      - name: 💬 Create or update comment
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          comment-id: ${{ steps.find_comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: "./packages/lsp-smart-contracts/gas_benchmark.md"
+          edit-mode: replace

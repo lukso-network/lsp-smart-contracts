@@ -54,6 +54,9 @@
     "test:foundry": {
       "dependsOn": ["build", "^build:foundry"],
       "cache": true
+    },
+    "test:benchmark": {
+      "cache": false
     }
   }
 }
