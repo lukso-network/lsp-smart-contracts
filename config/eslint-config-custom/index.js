@@ -1,5 +1,13 @@
 module.exports = {
-  ignorePatterns: ['artifacts/', 'cache/', 'dist/', 'types/', 'contracts.ts'],
+  ignorePatterns: [
+    'artifacts/',
+    'cache/',
+    'dist/',
+    'types/',
+    'typechain/',
+    'contracts.ts',
+    'abi.ts',
+  ],
   extends: ['turbo', 'prettier'],
   plugins: ['@typescript-eslint', 'prettier'],
   rules: {
