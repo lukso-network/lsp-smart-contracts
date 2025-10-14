@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line  @typescript-eslint/no-require-imports
 const fs = require('fs');
 
 let file = './flat_contracts/UniversalProfile_flat.sol';
@@ -31,6 +31,7 @@ fs.readFile(file, 'utf8', (err, data) => {
   console.log(data);
 
   fs.writeFile(file, data, (err) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     err | console.log('Duplicate pragma and SPDX statements removed successfully !');
   });
 });

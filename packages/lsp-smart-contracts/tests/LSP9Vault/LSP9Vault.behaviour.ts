@@ -712,9 +712,7 @@ export const shouldBehaveLikeLSP9 = (
         ]);
         await context.lsp6KeyManager
           .connect(context.accounts.friend)
-          .execute(
-            callPayload(context.universalProfile, await context.lsp9Vault.getAddress(), payload),
-          );
+          .execute(callPayload(await context.lsp9Vault.getAddress(), payload));
 
         const res = await context.lsp9Vault.getData(dataKey);
         expect(res).to.equal(dataValue);
@@ -734,13 +732,7 @@ export const shouldBehaveLikeLSP9 = (
         await expect(
           context.lsp6KeyManager
             .connect(context.accounts.friend)
-            .execute(
-              callPayload(
-                context.universalProfile,
-                await context.universalProfile.getAddress(),
-                payload,
-              ),
-            ),
+            .execute(callPayload(await context.universalProfile.getAddress(), payload)),
         )
           .to.be.revertedWithCustomError(context.lsp6KeyManager, 'NotAllowedCall')
           .withArgs(

@@ -44,6 +44,7 @@ task('gas-benchmark', 'Benchmark gas usage of the smart contracts based on prede
 
     // Deployment costs
     for (const [key, value] of Object.entries(currentBenchmark['deployment_costs'])) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const gasCost: any = value;
       const gasDiff = gasCost - baseBenchmark['deployment_costs'][key];
 

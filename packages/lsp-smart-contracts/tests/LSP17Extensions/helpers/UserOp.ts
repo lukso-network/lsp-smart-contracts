@@ -144,6 +144,7 @@ export function fillUserOpDefaults(
   op: Partial<UserOperation>,
   defaults = DefaultsForUserOp,
 ): UserOperation {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const partial: any = { ...op };
 
   for (const key in partial) {

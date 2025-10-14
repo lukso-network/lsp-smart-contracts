@@ -19,7 +19,8 @@ export const eslintconfig = [
     ignores: ['artifacts/', 'cache/', 'dist/', 'types/', 'typechain/', 'contracts.ts', 'abi.ts'],
   },
   {
-    files: ['tests/**/*.test.ts'],
+    // Override rules for chai assertions `expect(...).to.be.true;`
+    files: ['tests/**/*.ts'],
     rules: {
       '@typescript-eslint/no-unused-expressions': 'off',
     },

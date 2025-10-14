@@ -287,7 +287,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenA.getAddress(), abi),
+              callPayload(await lsp7TokenA.getAddress(), abi),
             );
         });
         it('should register lsp5keys: arrayLength 1, index 0, tokenA address in Vault1', async () => {
@@ -315,7 +315,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenB.getAddress(), abi),
+              callPayload(await lsp7TokenB.getAddress(), abi),
             );
         });
         it('should register lsp5keys: arrayLength 2, index 1, tokenB address in Vault1', async () => {
@@ -343,7 +343,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenB.getAddress(), abi),
+              callPayload(await lsp7TokenB.getAddress(), abi),
             );
         });
 
@@ -373,7 +373,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenC.getAddress(), abi),
+              callPayload(await lsp7TokenC.getAddress(), abi),
             );
         });
         it('should register lsp5keys: arrayLength 3, index 2, tokenC address in Vault1', async () => {
@@ -402,7 +402,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenC.getAddress(), abi),
+              callPayload(await lsp7TokenC.getAddress(), abi),
             );
         });
         it('should update lsp5keys: arrayLength 2, no map, no tokenC address in Vault1', async () => {
@@ -433,7 +433,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenA.getAddress(), abi),
+              callPayload(await lsp7TokenA.getAddress(), abi),
             );
         });
 
@@ -474,7 +474,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenB.getAddress(), abi),
+              callPayload(await lsp7TokenB.getAddress(), abi),
             );
         });
         it('should keep the same lsp5keys: arrayLength 1, index 0, tokenB address in Vault1', async () => {
@@ -501,7 +501,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenB.getAddress(), abi),
+              callPayload(await lsp7TokenB.getAddress(), abi),
             );
         });
         it('should update lsp5keys: arrayLength 0, no map, no tokenB address in Vault1', async () => {
@@ -572,7 +572,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenA.getAddress(), abi),
+              callPayload(await lsp7TokenA.getAddress(), abi),
             );
         });
 
@@ -624,7 +624,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenB.getAddress(), abi),
+              callPayload(await lsp7TokenB.getAddress(), abi),
             );
         });
 
@@ -663,7 +663,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenB.getAddress(), abi),
+              callPayload(await lsp7TokenB.getAddress(), abi),
             );
         });
 
@@ -702,7 +702,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenB.getAddress(), abi),
+              callPayload(await lsp7TokenB.getAddress(), abi),
             );
         });
 
@@ -745,7 +745,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp7TokenC.getAddress(), abi),
+              callPayload(await lsp7TokenC.getAddress(), abi),
             );
         });
 
@@ -788,7 +788,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault2.getAddress(),
               0,
-              callPayload(context.lsp9Vault2, await lsp7TokenB.getAddress(), abi),
+              callPayload(await lsp7TokenB.getAddress(), abi),
             );
         });
 
@@ -817,7 +817,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
             OPERATION_TYPES.CALL,
             await context.lsp9Vault1.getAddress(),
             0,
-            callPayload(context.lsp9Vault1, await lsp7TokenB.getAddress(), abi1),
+            callPayload(await lsp7TokenB.getAddress(), abi1),
           );
 
         const abi2 = lsp7TokenB.interface.encodeFunctionData('burn', [
@@ -832,7 +832,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
             OPERATION_TYPES.CALL,
             await context.lsp9Vault2.getAddress(),
             0,
-            callPayload(context.lsp9Vault2, await lsp7TokenB.getAddress(), abi2),
+            callPayload(await lsp7TokenB.getAddress(), abi2),
           );
 
         const abi3 = lsp7TokenA.interface.encodeFunctionData('burn', [
@@ -847,7 +847,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
             OPERATION_TYPES.CALL,
             await context.lsp9Vault2.getAddress(),
             0,
-            callPayload(context.lsp9Vault2, await lsp7TokenA.getAddress(), abi3),
+            callPayload(await lsp7TokenA.getAddress(), abi3),
           );
 
         const abi4 = lsp7TokenC.interface.encodeFunctionData('burn', [
@@ -862,7 +862,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
             OPERATION_TYPES.CALL,
             await context.lsp9Vault2.getAddress(),
             0,
-            callPayload(context.lsp9Vault2, await lsp7TokenC.getAddress(), abi4),
+            callPayload(await lsp7TokenC.getAddress(), abi4),
           );
       });
       it('should remove all lsp5 keys on both UP', async () => {
@@ -1252,7 +1252,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenA.getAddress(), abi),
+              callPayload(await lsp8TokenA.getAddress(), abi),
             );
         });
         it('should register lsp5keys: arrayLength 1, index 0, tokenA address in Vault1', async () => {
@@ -1280,7 +1280,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenB.getAddress(), abi),
+              callPayload(await lsp8TokenB.getAddress(), abi),
             );
         });
         it('should register lsp5keys: arrayLength 2, index 1, tokenB address in Vault1', async () => {
@@ -1308,7 +1308,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenB.getAddress(), abi),
+              callPayload(await lsp8TokenB.getAddress(), abi),
             );
         });
         it('should keep the same lsp5keys: arrayLength 2, index 1, tokenB address in Vault1', async () => {
@@ -1336,7 +1336,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenC.getAddress(), abi),
+              callPayload(await lsp8TokenC.getAddress(), abi),
             );
         });
         it('should register lsp5keys: arrayLength 3, index 2, tokenC address in Vault1', async () => {
@@ -1361,7 +1361,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenC.getAddress(), abi),
+              callPayload(await lsp8TokenC.getAddress(), abi),
             );
         });
         it('should update lsp5keys: arrayLength 2, no map, no tokenC address in Vault1', async () => {
@@ -1388,7 +1388,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenA.getAddress(), abi),
+              callPayload(await lsp8TokenA.getAddress(), abi),
             );
         });
 
@@ -1425,7 +1425,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenB.getAddress(), abi),
+              callPayload(await lsp8TokenB.getAddress(), abi),
             );
         });
         it('should keep the same lsp5keys: arrayLength 1, index 0, tokenB address in Vault1', async () => {
@@ -1448,7 +1448,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenB.getAddress(), abi),
+              callPayload(await lsp8TokenB.getAddress(), abi),
             );
         });
         it('should update lsp5keys: arrayLength 0, no map, no tokenB address in Vault1', async () => {
@@ -1528,7 +1528,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenA.getAddress(), abi),
+              callPayload(await lsp8TokenA.getAddress(), abi),
             );
         });
 
@@ -1580,7 +1580,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenB.getAddress(), abi),
+              callPayload(await lsp8TokenB.getAddress(), abi),
             );
         });
 
@@ -1619,7 +1619,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenB.getAddress(), abi),
+              callPayload(await lsp8TokenB.getAddress(), abi),
             );
         });
 
@@ -1658,7 +1658,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenB.getAddress(), abi),
+              callPayload(await lsp8TokenB.getAddress(), abi),
             );
         });
 
@@ -1701,7 +1701,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault1.getAddress(),
               0,
-              callPayload(context.lsp9Vault1, await lsp8TokenC.getAddress(), abi),
+              callPayload(await lsp8TokenC.getAddress(), abi),
             );
         });
 
@@ -1744,7 +1744,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               OPERATION_TYPES.CALL,
               await context.lsp9Vault2.getAddress(),
               0,
-              callPayload(context.lsp9Vault2, await lsp8TokenB.getAddress(), abi),
+              callPayload(await lsp8TokenB.getAddress(), abi),
             );
         });
 

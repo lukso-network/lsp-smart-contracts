@@ -1,5 +1,5 @@
 import { HardhatUserConfig } from 'hardhat/config';
-import { NetworkUserConfig, SolidityConfig, SolidityUserConfig } from 'hardhat/types';
+import { NetworkUserConfig, SolidityUserConfig } from 'hardhat/types';
 import { config as dotenvConfig } from 'dotenv';
 import { resolve } from 'path';
 

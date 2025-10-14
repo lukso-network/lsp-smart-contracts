@@ -12,6 +12,7 @@ export function callDataCost(data: string): number {
 }
 
 export async function deployEntryPoint(provider = ethers.provider): Promise<EntryPoint> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const create2factory = new Create2Factory(provider as any);
   const addr = await create2factory.deploy(
     EntryPoint__factory.bytecode,
