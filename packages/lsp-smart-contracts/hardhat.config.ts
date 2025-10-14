@@ -79,9 +79,10 @@ const VIA_IR_SETTINGS = {
 };
 
 const LSP7_VIA_IR_SETTINGS = {
-  version: '0.8.17',
+  version: '0.8.28',
   settings: {
     viaIR: true,
+    evmVersion: 'prague',
     optimizer: {
       enabled: true,
       /**
@@ -90,7 +91,7 @@ const LSP7_VIA_IR_SETTINGS = {
        * values will optimize more for high-frequency usage.
        * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
        */
-      runs: 1000,
+      runs: 25000,
     },
     outputSelection: {
       '*': {
