@@ -4,6 +4,9 @@
   "private": true,
   "packageManager": "^npm@10.1.0",
   "npmClient": "npm",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
