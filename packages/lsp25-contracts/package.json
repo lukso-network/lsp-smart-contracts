@@ -43,7 +43,8 @@
     },
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./contracts/*": "./contracts/*"
   },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
