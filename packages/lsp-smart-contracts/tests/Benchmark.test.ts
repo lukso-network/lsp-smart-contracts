@@ -4,15 +4,16 @@ import { expect } from 'chai';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 import {
-  LSP7Mintable,
-  LSP7Mintable__factory,
   LSP1UniversalReceiverDelegateUP,
   LSP1UniversalReceiverDelegateUP__factory,
-  UniversalProfile,
-  UniversalProfile__factory,
-  LSP6KeyManager__factory,
-  LSP8Mintable__factory,
-  LSP8Mintable,
+  UniversalProfileInit,
+  UniversalProfileInit__factory,
+  LSP6KeyManagerInit,
+  LSP6KeyManagerInit__factory,
+  LSP7MintableInit,
+  LSP7MintableInit__factory,
+  LSP8MintableInit,
+  LSP8MintableInit__factory,
 } from '../typechain';
 
 import { ERC725YDataKeys, INTERFACE_IDS } from '../constants';
@@ -21,7 +22,7 @@ import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 import { LSP6TestContext } from './utils/context';
-import { setupKeyManager, setupProfileWithKeyManagerWithURD } from './utils/fixtures';
+import { deployProxy, setupKeyManager, setupProfileWithKeyManagerWithURD } from './utils/fixtures';
 import {
   abiCoder,
   combineAllowedCalls,
@@ -33,7 +34,7 @@ import { Signer } from 'ethers';
 export type UniversalProfileContext = {
   accounts: SignerWithAddress[];
   mainController: SignerWithAddress;
-  universalProfile: UniversalProfile;
+  universalProfile: UniversalProfileInit;
   initialFunding?: bigint;
 };
 
@@ -41,31 +42,126 @@ function generateRandomData(length) {
   return ethers.hexlify(ethers.randomBytes(length));
 }
 
-const buildLSP6TestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
+async function deployImplementations() {
   const accounts = await ethers.getSigners();
   const mainController = accounts[0];
 
-  const universalProfile = await new UniversalProfile__factory(
+  const universalProfileInit = await new UniversalProfileInit__factory(
     mainController as unknown as Signer,
-  ).deploy(mainController.address, {
+  ).deploy();
+  const keyManagerInit = await new LSP6KeyManagerInit__factory(
+    mainController as unknown as Signer,
+  ).deploy();
+  const lsp7MintableInit = await new LSP7MintableInit__factory(
+    mainController as unknown as Signer,
+  ).deploy();
+  const lsp8MintableInit = await new LSP8MintableInit__factory(
+    mainController as unknown as Signer,
+  ).deploy();
+
+  return {
+    universalProfileInit,
+    keyManagerInit,
+    lsp7MintableInit,
+    lsp8MintableInit,
+  };
+}
+
+async function deployUniversalProfileProxy(
+  universalProfileInit: UniversalProfileInit,
+  mainController: SignerWithAddress,
+  initialFunding?: bigint,
+) {
+  const universalProfileAddress = await deployProxy(
+    await universalProfileInit.getAddress(),
+    mainController,
+  );
+  const universalProfile = UniversalProfileInit__factory.connect(
+    universalProfileAddress,
+    mainController,
+  );
+  await universalProfile.initialize(mainController.address, {
     value: initialFunding,
   });
-  const keyManager = await new LSP6KeyManager__factory(mainController as unknown as Signer).deploy(
-    universalProfile.target,
+
+  return universalProfile;
+}
+
+async function deployLsp7MintableProxy(
+  lsp7MintableInit: LSP7MintableInit,
+  tokenName: string,
+  tokenSymbol: string,
+  owner: SignerWithAddress,
+  tokenType: number,
+  isNonDivisible: boolean,
+  isMintable: boolean,
+) {
+  const lsp7MintableAddress = await deployProxy(await lsp7MintableInit.getAddress(), owner);
+  const lsp7Mintable = LSP7MintableInit__factory.connect(lsp7MintableAddress, owner);
+  await lsp7Mintable.initialize(
+    tokenName,
+    tokenSymbol,
+    owner.address,
+    tokenType,
+    isNonDivisible,
+    isMintable,
   );
+
+  return lsp7Mintable;
+}
+
+async function deployLsp8MintableProxy(
+  lsp8MintableInit: LSP8MintableInit,
+  tokenName: string,
+  tokenSymbol: string,
+  owner: SignerWithAddress,
+  tokenType: number,
+  tokenIdFormat: number,
+) {
+  const lsp8MintableAddress = await deployProxy(await lsp8MintableInit.getAddress(), owner);
+  const lsp8Mintable = LSP8MintableInit__factory.connect(lsp8MintableAddress, owner);
+  await lsp8Mintable.initialize(tokenName, tokenSymbol, owner.address, tokenType, tokenIdFormat);
+
+  return lsp8Mintable;
+}
+
+const buildLSP6TestContext = async (
+  universalProfileInit: UniversalProfileInit,
+  keyManagerInit: LSP6KeyManagerInit,
+  initialFunding?: bigint,
+): Promise<LSP6TestContext> => {
+  const accounts = await ethers.getSigners();
+  const mainController = accounts[0];
+
+  const universalProfile = await deployUniversalProfileProxy(
+    universalProfileInit,
+    mainController,
+    initialFunding,
+  );
+
+  const keyManagerAddress = await deployProxy(await keyManagerInit.getAddress(), mainController);
+  const keyManager = LSP6KeyManagerInit__factory.connect(keyManagerAddress, mainController);
+  await keyManager.initialize(universalProfile.target);
 
   return { accounts, mainController, universalProfile, keyManager };
 };
 
 const buildUniversalProfileContext = async (
+  universalProfileInit: UniversalProfileInit,
   initialFunding?: bigint,
 ): Promise<UniversalProfileContext> => {
   const accounts = await ethers.getSigners();
   const mainController = accounts[0];
 
-  const universalProfile = await new UniversalProfile__factory(
-    mainController as unknown as Signer,
-  ).deploy(mainController.address, {
+  const universalProfileAddress = await deployProxy(
+    await universalProfileInit.getAddress(),
+    mainController,
+  );
+  const universalProfile = UniversalProfileInit__factory.connect(
+    universalProfileAddress,
+    mainController,
+  );
+  await universalProfile.initialize(mainController.address, {
     value: initialFunding,
   });
 
@@ -74,9 +170,12 @@ const buildUniversalProfileContext = async (
 
 describe('⛽📊 Gas Benchmark', () => {
   let gasBenchmark;
+  type PromiseResolvedType<T> = T extends Promise<infer R> ? R : never;
+  let implementations: PromiseResolvedType<ReturnType<typeof deployImplementations>>;
 
   before('setup benchmark file', async () => {
     gasBenchmark = JSON.parse(fs.readFileSync('./scripts/ci/gas_benchmark_template.json', 'utf8'));
+    implementations = await deployImplementations();
   });
 
   after(async () => {
@@ -88,27 +187,28 @@ describe('⛽📊 Gas Benchmark', () => {
       const accounts = await ethers.getSigners();
 
       // Universal Profile
-      const universalProfile = await new UniversalProfile__factory(
+      const universalProfileInit = await new UniversalProfileInit__factory(
         accounts[0] as unknown as Signer,
-      ).deploy(accounts[0].address);
+      ).deploy();
 
-      const universalProfileDeployTransaction = universalProfile.deploymentTransaction();
-      const universalProfileDeploymentReceipt = await universalProfileDeployTransaction.wait();
+      const universalProfileInitDeployTransaction = universalProfileInit.deploymentTransaction();
+      const universalProfileInitDeploymentReceipt =
+        await universalProfileInitDeployTransaction.wait();
 
-      gasBenchmark['deployment_costs']['UniversalProfile'] = ethers.toNumber(
-        universalProfileDeploymentReceipt.gasUsed,
+      gasBenchmark['deployment_costs']['UniversalProfileInit'] = ethers.toNumber(
+        universalProfileInitDeploymentReceipt.gasUsed,
       );
 
       // Key Manager
-      const keyManager = await new LSP6KeyManager__factory(accounts[0] as unknown as Signer).deploy(
-        universalProfile.target,
-      );
+      const keyManagerInit = await new LSP6KeyManagerInit__factory(
+        accounts[0] as unknown as Signer,
+      ).deploy();
 
-      const keyManagerDeployTransaction = keyManager.deploymentTransaction();
-      const keyManagerDeploymentReceipt = await keyManagerDeployTransaction?.wait();
+      const keyManagerInitDeployTransaction = keyManagerInit.deploymentTransaction();
+      const keyManagerInitDeploymentReceipt = await keyManagerInitDeployTransaction?.wait();
 
-      gasBenchmark['deployment_costs']['KeyManager'] = ethers.toNumber(
-        keyManagerDeploymentReceipt?.gasUsed,
+      gasBenchmark['deployment_costs']['LSP6KeyManagerInit'] = ethers.toNumber(
+        keyManagerInitDeploymentReceipt?.gasUsed,
       );
 
       // LSP1 Delegate
@@ -124,47 +224,41 @@ describe('⛽📊 Gas Benchmark', () => {
       );
 
       // LSP7 Token (Mintable preset)
-      const lsp7Mintable = await new LSP7Mintable__factory(accounts[0] as unknown as Signer).deploy(
-        'Token',
-        'MTKN',
-        accounts[0].address,
-        LSP4_TOKEN_TYPES.TOKEN,
-        false,
-        true,
-      );
+      const lsp7MintableInit = await new LSP7MintableInit__factory(
+        accounts[0] as unknown as Signer,
+      ).deploy();
 
-      const lsp7DeployTransaction = lsp7Mintable.deploymentTransaction();
-      const lsp7DeploymentReceipt = await lsp7DeployTransaction.wait();
+      const lsp7MintableInitDeployTransaction = lsp7MintableInit.deploymentTransaction();
+      const lsp7MintableInitDeploymentReceipt = await lsp7MintableInitDeployTransaction.wait();
 
-      gasBenchmark['deployment_costs']['LSP7Mintable'] = ethers.toNumber(
-        lsp7DeploymentReceipt.gasUsed,
+      gasBenchmark['deployment_costs']['LSP7MintableInit'] = ethers.toNumber(
+        lsp7MintableInitDeploymentReceipt.gasUsed,
       );
 
       // LSP8 NFT (Mintable preset)
-      const lsp8Mintable = await new LSP8Mintable__factory(accounts[0] as unknown as Signer).deploy(
-        'My NFT',
-        'MNFT',
-        accounts[0].address,
-        LSP4_TOKEN_TYPES.NFT,
-        LSP8_TOKEN_ID_FORMAT.NUMBER,
-      );
+      const lsp8MintableInit = await new LSP8MintableInit__factory(
+        accounts[0] as unknown as Signer,
+      ).deploy();
 
-      const lsp8DeployTransaction = lsp8Mintable.deploymentTransaction();
-      const lsp8DeploymentReceipt = await lsp8DeployTransaction.wait();
+      const lsp8MintableInitDeployTransaction = lsp8MintableInit.deploymentTransaction();
+      const lsp8MintableInitDeploymentReceipt = await lsp8MintableInitDeployTransaction.wait();
 
-      gasBenchmark['deployment_costs']['LSP8Mintable'] = ethers.toNumber(
-        lsp8DeploymentReceipt.gasUsed,
+      gasBenchmark['deployment_costs']['LSP8MintableInit'] = ethers.toNumber(
+        lsp8MintableInitDeploymentReceipt.gasUsed,
       );
     });
   });
 
-  describe('UniversalProfile', () => {
+  describe('UniversalProfileInit', () => {
     let context: UniversalProfileContext;
 
     describe('execute', () => {
       describe('execute Single', () => {
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.parseEther('50'));
+          context = await buildUniversalProfileContext(
+            implementations.universalProfileInit,
+            ethers.parseEther('50'),
+          );
         });
 
         it('Transfer 1 LYX to an EOA without data', async () => {
@@ -233,22 +327,26 @@ describe('⛽📊 Gas Benchmark', () => {
       });
 
       describe('execute Array', () => {
-        let universalProfile1: UniversalProfile, universalProfile2, universalProfile3;
+        let universalProfile1: UniversalProfileInit, universalProfile2, universalProfile3;
 
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.parseEther('50'));
+          context = await buildUniversalProfileContext(
+            implementations.universalProfileInit,
+            ethers.parseEther('50'),
+          );
 
-          universalProfile1 = await new UniversalProfile__factory(
-            context.mainController as unknown as Signer,
-          ).deploy(context.accounts[2].address);
-
-          universalProfile2 = await new UniversalProfile__factory(
-            context.mainController as unknown as Signer,
-          ).deploy(context.accounts[3].address);
-
-          universalProfile3 = await new UniversalProfile__factory(
-            context.mainController as unknown as Signer,
-          ).deploy(context.accounts[4].address);
+          universalProfile1 = await deployUniversalProfileProxy(
+            implementations.universalProfileInit,
+            context.accounts[2],
+          );
+          universalProfile2 = await deployUniversalProfileProxy(
+            implementations.universalProfileInit,
+            context.accounts[3],
+          );
+          universalProfile3 = await deployUniversalProfileProxy(
+            implementations.universalProfileInit,
+            context.accounts[4],
+          );
         });
 
         it('Transfer 0.1 LYX to 3x EOA without data', async () => {
@@ -330,7 +428,10 @@ describe('⛽📊 Gas Benchmark', () => {
     describe('setData', () => {
       describe('setData Single', () => {
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.parseEther('50'));
+          context = await buildUniversalProfileContext(
+            implementations.universalProfileInit,
+            ethers.parseEther('50'),
+          );
         });
 
         it('Set a 20 bytes long value', async () => {
@@ -425,7 +526,10 @@ describe('⛽📊 Gas Benchmark', () => {
 
       describe('setData Array', () => {
         before(async () => {
-          context = await buildUniversalProfileContext(ethers.parseEther('50'));
+          context = await buildUniversalProfileContext(
+            implementations.universalProfileInit,
+            ethers.parseEther('50'),
+          );
         });
 
         it('Set 2 data keys of 20 bytes long value', async () => {
@@ -528,38 +632,40 @@ describe('⛽📊 Gas Benchmark', () => {
     });
 
     describe('Tokens', () => {
-      let lsp7Token: LSP7Mintable;
-      let lsp8Token: LSP8Mintable;
+      let lsp7Token: LSP7MintableInit;
+      let lsp8Token: LSP8MintableInit;
       let universalProfile1;
 
       before(async () => {
-        context = await buildUniversalProfileContext(ethers.parseEther('50'));
+        context = await buildUniversalProfileContext(
+          implementations.universalProfileInit,
+          ethers.parseEther('50'),
+        );
         // deploy a LSP7 token
-        lsp7Token = await new LSP7Mintable__factory(
-          context.mainController as unknown as Signer,
-        ).deploy(
+        lsp7Token = await deployLsp7MintableProxy(
+          implementations.lsp7MintableInit,
           'Token',
           'MTKN',
-          context.mainController.address,
+          context.mainController,
           LSP4_TOKEN_TYPES.TOKEN,
           false,
           true,
         );
 
         // deploy a LSP8 token
-        lsp8Token = await new LSP8Mintable__factory(
-          context.mainController as unknown as Signer,
-        ).deploy(
+        lsp8Token = await deployLsp8MintableProxy(
+          implementations.lsp8MintableInit,
           'My NFT',
           'MNFT',
-          context.mainController.address,
+          context.mainController,
           LSP4_TOKEN_TYPES.NFT,
           LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
         );
 
-        universalProfile1 = await new UniversalProfile__factory(
-          context.mainController as unknown as Signer,
-        ).deploy(context.accounts[2].address);
+        universalProfile1 = await deployUniversalProfileProxy(
+          implementations.universalProfileInit,
+          context.accounts[2],
+        );
 
         await universalProfile1.waitForDeployment();
       });
@@ -674,10 +780,10 @@ describe('⛽📊 Gas Benchmark', () => {
 
         let recipientEOA: SignerWithAddress;
         // setup Alice's Universal Profile as a recipient of LYX and tokens transactions
-        let aliceUP: UniversalProfile;
+        let aliceUP: UniversalProfileInit;
 
-        let lsp7MetaCoin: LSP7Mintable;
-        let lsp8MetaNFT: LSP8Mintable;
+        let lsp7MetaCoin: LSP7MintableInit;
+        let lsp8MetaNFT: LSP8MintableInit;
 
         const nftList: string[] = [
           '0x0000000000000000000000000000000000000000000000000000000000000001',
@@ -687,11 +793,15 @@ describe('⛽📊 Gas Benchmark', () => {
         ];
 
         before(async () => {
-          context = await buildLSP6TestContext(ethers.parseEther('50'));
+          context = await buildLSP6TestContext(
+            implementations.universalProfileInit,
+            implementations.keyManagerInit,
+            ethers.parseEther('50'),
+          );
 
           recipientEOA = context.accounts[1];
           const deployedContracts = await setupProfileWithKeyManagerWithURD(context.accounts[2]);
-          aliceUP = deployedContracts[0] as UniversalProfile;
+          aliceUP = deployedContracts[0] as UniversalProfileInit;
 
           const lsp1Delegate: LSP1UniversalReceiverDelegateUP =
             await new LSP1UniversalReceiverDelegateUP__factory(
@@ -709,24 +819,22 @@ describe('⛽📊 Gas Benchmark', () => {
           );
 
           // deploy a LSP7 token
-          lsp7MetaCoin = await new LSP7Mintable__factory(
-            context.mainController as unknown as Signer,
-          ).deploy(
+          lsp7MetaCoin = await deployLsp7MintableProxy(
+            implementations.lsp7MintableInit,
             'MetaCoin',
             'MTC',
-            context.mainController.address,
+            context.mainController,
             LSP4_TOKEN_TYPES.TOKEN,
             false,
             true,
           );
 
           // deploy a LSP8 NFT
-          lsp8MetaNFT = await new LSP8Mintable__factory(
-            context.mainController as unknown as Signer,
-          ).deploy(
+          lsp8MetaNFT = await deployLsp8MintableProxy(
+            implementations.lsp8MintableInit,
             'MetaNFT',
             'MNF',
-            context.mainController.address,
+            context.mainController,
             LSP4_TOKEN_TYPES.NFT,
             LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
           );
@@ -862,7 +970,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
         let recipientEOA: SignerWithAddress;
         // setup Alice's Universal Profile as a recipient of LYX and tokens transactions
-        let aliceUP: UniversalProfile;
+        let aliceUP: UniversalProfileInit;
 
         let canTransferValueToOneAddress: SignerWithAddress,
           canTransferTwoTokens: SignerWithAddress,
@@ -870,8 +978,8 @@ describe('⛽📊 Gas Benchmark', () => {
 
         let allowedAddressToTransferValue: string;
 
-        let lsp7MetaCoin: LSP7Mintable, lsp7LyxDai: LSP7Mintable;
-        let lsp8MetaNFT: LSP8Mintable, lsp8LyxPunks: LSP8Mintable;
+        let lsp7MetaCoin: LSP7MintableInit, lsp7LyxDai: LSP7MintableInit;
+        let lsp8MetaNFT: LSP8MintableInit, lsp8LyxPunks: LSP8MintableInit;
 
         const metaNFTList: string[] = [
           '0x0000000000000000000000000000000000000000000000000000000000000001',
@@ -888,13 +996,17 @@ describe('⛽📊 Gas Benchmark', () => {
         ];
 
         before(async () => {
-          context = await buildLSP6TestContext(ethers.parseEther('50'));
+          context = await buildLSP6TestContext(
+            implementations.universalProfileInit,
+            implementations.keyManagerInit,
+            ethers.parseEther('50'),
+          );
 
           recipientEOA = context.accounts[1];
 
           // UP receiving LYX, Tokens and NFT transfers
           const deployedContracts = await setupProfileWithKeyManagerWithURD(context.accounts[2]);
-          aliceUP = deployedContracts[0] as UniversalProfile;
+          aliceUP = deployedContracts[0] as UniversalProfileInit;
 
           // LYX transfer scenarios
           canTransferValueToOneAddress = context.accounts[1];
@@ -903,23 +1015,21 @@ describe('⛽📊 Gas Benchmark', () => {
           // LSP7 token transfer scenarios
           canTransferTwoTokens = context.accounts[3];
 
-          lsp7MetaCoin = await new LSP7Mintable__factory(
-            context.mainController as unknown as Signer,
-          ).deploy(
+          lsp7MetaCoin = await deployLsp7MintableProxy(
+            implementations.lsp7MintableInit,
             'MetaCoin',
             'MTC',
-            context.mainController.address,
+            context.mainController,
             LSP4_TOKEN_TYPES.TOKEN,
             false,
             true,
           );
 
-          lsp7LyxDai = await new LSP7Mintable__factory(
-            context.mainController as unknown as Signer,
-          ).deploy(
+          lsp7LyxDai = await deployLsp7MintableProxy(
+            implementations.lsp7MintableInit,
             'LyxDai',
             'LDAI',
-            context.mainController.address,
+            context.mainController,
             LSP4_TOKEN_TYPES.TOKEN,
             false,
             true,
@@ -932,22 +1042,20 @@ describe('⛽📊 Gas Benchmark', () => {
           // LSP8 NFT transfer scenarios
           canTransferTwoNFTs = context.accounts[4];
 
-          lsp8MetaNFT = await new LSP8Mintable__factory(
-            context.mainController as unknown as Signer,
-          ).deploy(
+          lsp8MetaNFT = await deployLsp8MintableProxy(
+            implementations.lsp8MintableInit,
             'MetaNFT',
             'MNF',
-            context.mainController.address,
+            context.mainController,
             LSP4_TOKEN_TYPES.NFT,
             LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
           );
 
-          lsp8LyxPunks = await new LSP8Mintable__factory(
-            context.mainController as unknown as Signer,
-          ).deploy(
+          lsp8LyxPunks = await deployLsp8MintableProxy(
+            implementations.lsp8MintableInit,
             'LyxPunks',
             'LPK',
-            context.mainController.address,
+            context.mainController,
             LSP4_TOKEN_TYPES.NFT,
             LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
           );
@@ -1147,7 +1255,10 @@ describe('⛽📊 Gas Benchmark', () => {
       ];
 
       before(async () => {
-        context = await buildLSP6TestContext();
+        context = await buildLSP6TestContext(
+          implementations.universalProfileInit,
+          implementations.keyManagerInit,
+        );
 
         controllerToAddEditAndRemove = context.accounts[1];
 
@@ -1471,7 +1582,10 @@ describe('⛽📊 Gas Benchmark', () => {
           controllerCanSetDataAndAddControllers: SignerWithAddress;
 
         before(async () => {
-          context = await buildLSP6TestContext();
+          context = await buildLSP6TestContext(
+            implementations.universalProfileInit,
+            implementations.keyManagerInit,
+          );
 
           controllercanSetTwoDataKeys = context.accounts[1];
           controllerCanAddControllers = context.accounts[2];
