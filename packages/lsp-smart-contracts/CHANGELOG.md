@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.17.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.16.7...lsp-smart-contracts-v0.17.0) (2025-10-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade solc compiler + EVM version in LSP7 package to optimize runtime cost
+
+### Code Refactoring
+
+* upgrade solc compiler + EVM version in LSP7 package to optimize runtime cost ([b0a4c7f](https://github.com/lukso-network/lsp-smart-contracts/commit/b0a4c7fb487f228d9d2b2f5c56a7113d0fe99f24))
+
 ## [0.16.7](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.16.6...lsp-smart-contracts-v0.16.7) (2025-06-19)
 
 
