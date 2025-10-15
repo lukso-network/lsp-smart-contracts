@@ -4,25 +4,7 @@
   "description": "Package for the LSP10 Received Vaults standard",
   "license": "Apache-2.0",
   "author": "",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "typings": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs"
-    },
-    "./artifacts/*": "./artifacts/*",
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "contracts/**/*.sol",
-    "!contracts/Mocks/**/*.sol",
-    "artifacts/*.json",
-    "dist",
-    "./README.md"
-  ],
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -33,6 +15,26 @@
     "EVM",
     "Solidity"
   ],
+  "files": [
+    "contracts/**/*.sol",
+    "!contracts/Mocks/**/*.sol",
+    "artifacts/*.json",
+    "dist",
+    "./README.md"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    },
+    "./artifacts/*": "./artifacts/*",
+    "./package.json": "./package.json",
+    "./contracts/*": "./contracts/*"
+  },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
@@ -44,5 +46,9 @@
   "dependencies": {
     "@erc725/smart-contracts": "^6.0.0",
     "@lukso/lsp2-contracts": "~0.15.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }
