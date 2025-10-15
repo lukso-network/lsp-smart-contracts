@@ -1,0 +1,27 @@
+module.exports = {
+  rules: {
+    "avoid-sha3": "error",
+    "avoid-suicide": "error",
+    "avoid-throw": "error",
+    "avoid-tx-origin": "error",
+    "check-send-result": "error",
+    "compiler-version": ["error", "^0.8.0"],
+    "func-visibility": ["error", { "ignoreConstructors": true }],
+    "not-rely-on-block-hash": "error",
+    "not-rely-on-time": "error",
+    "reentrancy": "error",
+    "constructor-syntax": "error",
+    "private-vars-leading-underscore": ["error", { "strict": false }],
+    "imports-on-top": "error",
+    "visibility-modifier-order": "error",
+    "no-unused-import": "error",
+    "no-global-import": "error",
+    "reason-string": ["warn", { "maxLength": 120 }],
+    "avoid-low-level-calls": "off",
+    "no-empty-blocks": "error",
+    "quotes": "off",
+    // disabled temporarily
+    "gas-custom-errors": "off",
+    "use-natspec": "off"
+  }
+}

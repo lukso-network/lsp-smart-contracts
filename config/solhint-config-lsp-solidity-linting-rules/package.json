@@ -1,0 +1,12 @@
+{
+  "name": "solhint-config-lsp-solidity-linting-rules",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./index.js"
+  },
+  "dependencies": {
+    "solhint": "^6.0.1",
+    "prettier-plugin-solidity": "^2.1.0"
+  }
+}
