@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp8-contracts-v0.16.7...lsp8-contracts-v0.17.0) (2025-10-15)
+
+
+### Features
+
+* create customizeable token contract ([82d8a33](https://github.com/lukso-network/lsp-smart-contracts/commit/82d8a339defd873990bf2202638c2afd429f3c1f))
+
 ## [0.16.7](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp8-contracts-v0.16.6...lsp8-contracts-v0.16.7) (2025-06-19)
 
 

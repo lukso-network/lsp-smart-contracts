@@ -1,5 +1,5 @@
 {
-  "packages/lsp-smart-contracts": "0.16.7",
+  "packages/lsp-smart-contracts": "0.17.0",
   "packages/lsp0-contracts": "0.15.5",
   "packages/lsp1-contracts": "0.15.5",
   "packages/lsp1delegate-contracts": "0.15.5",
@@ -8,8 +8,8 @@
   "packages/lsp4-contracts": "0.16.7",
   "packages/lsp5-contracts": "0.15.4",
   "packages/lsp6-contracts": "0.15.5",
-  "packages/lsp7-contracts": "0.16.8",
-  "packages/lsp8-contracts": "0.16.7",
+  "packages/lsp7-contracts": "0.17.0",
+  "packages/lsp8-contracts": "0.17.0",
   "packages/lsp9-contracts": "0.15.5",
   "packages/lsp10-contracts": "0.15.4",
   "packages/lsp11-contracts": "0.1.7",
