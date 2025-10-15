@@ -1,10 +1,10 @@
 {
   "deployment_costs": {
-    "UniversalProfile": "",
-    "KeyManager": "",
+    "UniversalProfileInit": "",
     "LSP1DelegateUP": "",
-    "LSP7Mintable": "",
-    "LSP8Mintable": ""
+    "LSP6KeyManagerInit": "",
+    "LSP7MintableInit": "",
+    "LSP8MintableInit": ""
   },
   "runtime_costs": {
     "EOA_owner": {
