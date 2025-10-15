@@ -27,6 +27,8 @@ task(TASK_COMPILE)
     }
   });
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // derive external signatures from internal types
 function getSigType({ type, components = [] }: { type: string; components?: any[] }): string {
   return type.replace('tuple', `(${components.map(getSigType).join(',')})`);
@@ -256,6 +258,8 @@ task('ts-gen', 'Generate NatSpec documentation automatically on compilation')
         }
         entry[hash] = { sig, ...member };
       }
+
+      /* eslint-enable @typescript-eslint/no-explicit-any */
 
       const { events = {}, methods = {}, errors = {}, stateVariables } = membersByType;
       const {

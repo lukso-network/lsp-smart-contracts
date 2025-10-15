@@ -29,6 +29,9 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
+      - name: 🎨 Run ESLint on JS/TS files
+        run: npm run lint
+
       - name: 🔍 Run Solidity Linter
         id: solhint
         run: |
@@ -46,21 +49,6 @@ jobs:
             // Run the script
             const { githubScript: parseSolhintOutput } = require("./.github/scripts/parseSolhintOutput.mjs");
             await parseSolhintOutput({github, context});
-
-      - name: 💾 Save Code Linting Report JSON
-        run: npm run lint:report
-        continue-on-error: true
-
-      - name: 💬 Annotate Code Linting Results
-        uses: ataylorme/eslint-annotate-action@v3
-        with:
-          report-json: "packages/*/eslint_report.json"
-          only-pr-files: false
-          fail-on-warning: true
-          markdown-report-on-step-summary: true
-
-      # - name: 🎨 Run ESLint on JS/TS files
-      #   run: npm run lint
 
       # This will also generate the Typechain types and the files with the constants used by the Chai tests
       # The turbo configs in `turbo.json` is setup to run `npm run build` command first before `npm run build:js`.

@@ -134,10 +134,9 @@ export const dodocConfig = {
   ],
 };
 
-const linkBase = 'https://github.com/lukso-network/';
-const SPECS_BASE_URL = 'https://github.com/lukso-network/LIPs/blob/main/LSPs';
-const CONTRACTS_BASE_URL =
-  'https://github.com/lukso-network/lsp-smart-contracts/tree/develop/packages';
+const linkBase = 'https://github.com/lukso-network';
+const SPECS_BASE_URL = `${linkBase}/LIPs/blob/main/LSPs`;
+const CONTRACTS_BASE_URL = `${linkBase}/lsp-smart-contracts/tree/develop/packages`;
 
 const specs = {
   ERC725: {

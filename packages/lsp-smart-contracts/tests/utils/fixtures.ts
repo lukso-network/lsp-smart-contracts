@@ -6,6 +6,7 @@ import {
   LSP1UniversalReceiverDelegateUP__factory,
   LSP6KeyManager__factory,
   UniversalProfile__factory,
+  ERC725XCore__factory,
 } from '../../typechain';
 
 import { ERC725YDataKeys } from '../../constants';
@@ -14,6 +15,8 @@ import { PERMISSIONS, ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 // helpers
 import { combinePermissions } from './helpers';
 import { LSP6TestContext, LSP6InternalsTestContext } from './context';
+
+const ERC725XInterface = ERC725XCore__factory.createInterface();
 
 /**
  * Deploy a proxy contract, referencing to baseContractAddress via delegateCall
@@ -189,8 +192,8 @@ export async function grantLSP11PermissionViaKeyManager(
 /**
  * Returns the payload of Call operation with 0 value
  */
-export function callPayload(from: any, to: string, abi: string) {
-  const payload = from.interface.encodeFunctionData('execute', [0, to, 0, abi]);
+export function callPayload(to: string, abi: string) {
+  const payload = ERC725XInterface.encodeFunctionData('execute', [0, to, 0, abi]);
   return payload;
 }
 

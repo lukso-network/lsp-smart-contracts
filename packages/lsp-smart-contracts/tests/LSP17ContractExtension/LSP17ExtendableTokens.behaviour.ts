@@ -32,8 +32,9 @@ import { ERC725YDataKeys } from '../../constants';
 
 export type LSP17TestContext = {
   accounts: SignerWithAddress[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   contract: LSP0ERC725Account | LSP9Vault | any;
-  deployParams: any;
+  deployParams: { owner: string };
 };
 
 export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestContext>) => {

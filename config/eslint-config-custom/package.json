@@ -1,13 +1,18 @@
 {
   "name": "eslint-config-custom",
   "version": "0.0.0",
-  "main": "index.cjs",
+  "type": "module",
+  "exports": {
+    ".": "./index.js"
+  },
   "private": true,
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.2.1",
-    "@typescript-eslint/parser": "^6.2.1",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-config-turbo": "^2.0.12",
-    "eslint-plugin-prettier": "^4.2.1"
+    "eslint": "^9.37.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-config-turbo": "latest",
+    "eslint-plugin-turbo": "latest",
+    "eslint-plugin-prettier": "latest",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.40.0"
   }
 }

@@ -22,7 +22,6 @@ import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } fro
 
 import { abiCoder } from '../utils/helpers';
 import { AddressZero } from '../LSP17Extensions/helpers/utils';
-import { build } from 'unbuild';
 
 export type LSP7TestAccounts = {
   owner: SignerWithAddress;
