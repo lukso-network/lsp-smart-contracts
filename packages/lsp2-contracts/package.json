@@ -4,6 +4,7 @@
   "description": "Package for the LSP2 ERC725Y JSON Schema standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "typings": "./dist/index.d.ts",
@@ -14,7 +15,8 @@
       "import": "./dist/index.mjs"
     },
     "./artifacts/*": "./artifacts/*",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./contracts/*": "./contracts/*"
   },
   "files": [
     "contracts/**/*.sol",
@@ -43,10 +45,14 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test": "hardhat test --no-compile tests/*.test.ts",
     "test:foundry": "FOUNDRY_PROFILE=lsp2 forge test -vvvv",
-    "test:coverage": "hardhat coverage"
+    "test:coverage": "hardhat test tests/*.test.ts --coverage"
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }
