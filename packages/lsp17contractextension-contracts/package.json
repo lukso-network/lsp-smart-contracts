@@ -4,6 +4,7 @@
   "description": "Package for the LSP17 Contract Extension standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -42,7 +43,8 @@
     },
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./contracts/*": "./contracts/*"
   },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
@@ -56,5 +58,9 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.6"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }
