@@ -1,9 +1,13 @@
 import hre from 'hardhat';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { expect } from 'chai';
-import { LSP25_VERSION } from '../constants';
+import { LSP25_VERSION } from '../constants.js';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import { LSP25MultiChannelNonceTester, LSP25MultiChannelNonceTester__factory } from '../typechain';
+import {
+  LSP25MultiChannelNonceTester,
+  LSP25MultiChannelNonceTester__factory,
+} from '../types/ethers-contracts/index.js';
 
 /**
  * Private keys for the accounts used in the tests.
@@ -27,7 +31,7 @@ const LOCAL_PRIVATE_KEYS = {
 describe('LSP25MultiChannelNonce', () => {
   let ethers: HardhatEthers;
   let contract: LSP25MultiChannelNonceTester;
-  let account;
+  let account: HardhatEthersSigner;
 
   const HARDHAT_CHAINID = 31337;
 

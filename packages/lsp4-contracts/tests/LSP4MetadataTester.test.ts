@@ -1,4 +1,4 @@
-import { ethers } from 'hardhat';
+import { network } from 'hardhat';
 import { expect } from 'chai';
 import { concat, hexlify, keccak256, randomBytes, toBeHex, toUtf8Bytes } from 'ethers';
 
@@ -7,10 +7,13 @@ import {
   LSP4MetadataTester__factory,
 } from '../types/ethers-contracts/index.js';
 
+let ethers;
+
 describe('testing LSP4MetadataTester', () => {
   let lspMetadataTester: LSP4MetadataTester;
 
   before(async () => {
+    ({ ethers } = await network.connect());
     const signers = await ethers.getSigners();
     lspMetadataTester = await new LSP4MetadataTester__factory(signers[0]).deploy();
   });
@@ -389,7 +392,7 @@ describe('testing LSP4MetadataTester', () => {
     // Sample Verification Data
     const verificationExample = {
       method: 'keccak256(bytes)',
-      data: ethers.hexlify(ethers.randomBytes(32)),
+      data: hexlify(randomBytes(32)),
     };
 
     // Sample Icons
@@ -407,11 +410,11 @@ describe('testing LSP4MetadataTester', () => {
         verification: verificationExample,
       },
     ];
-    const lsp7icons = [{ contractAddress: ethers.hexlify(ethers.randomBytes(20)) }];
+    const lsp7icons = [{ contractAddress: hexlify(randomBytes(20)) }];
     const lsp8icons = [
       {
-        contractAddress: ethers.hexlify(ethers.randomBytes(20)),
-        tokenId: ethers.hexlify(ethers.randomBytes(32)),
+        contractAddress: hexlify(randomBytes(20)),
+        tokenId: hexlify(randomBytes(32)),
       },
     ];
 
@@ -433,12 +436,12 @@ describe('testing LSP4MetadataTester', () => {
     // Sample Verification Data
     const verificationExample1 = {
       method: 'keccak256(bytes)',
-      data: ethers.hexlify(ethers.randomBytes(32)),
+      data: hexlify(randomBytes(32)),
     };
 
     const verificationExample2 = {
       method: 'keccak256(bytes)',
-      data: ethers.hexlify(ethers.randomBytes(32)),
+      data: hexlify(randomBytes(32)),
     };
 
     // Expanded GroupImageField array with multiple entries
@@ -459,11 +462,11 @@ describe('testing LSP4MetadataTester', () => {
             verification: verificationExample1,
           },
         ],
-        lsp7images: [{ contractAddress: ethers.hexlify(ethers.randomBytes(20)) }],
+        lsp7images: [{ contractAddress: hexlify(randomBytes(20)) }],
         lsp8images: [
           {
-            contractAddress: ethers.hexlify(ethers.randomBytes(20)),
-            tokenId: ethers.hexlify(ethers.randomBytes(32)),
+            contractAddress: hexlify(randomBytes(20)),
+            tokenId: hexlify(randomBytes(32)),
           },
         ],
       },
@@ -483,11 +486,11 @@ describe('testing LSP4MetadataTester', () => {
             verification: verificationExample2,
           },
         ],
-        lsp7images: [{ contractAddress: ethers.hexlify(ethers.randomBytes(20)) }],
+        lsp7images: [{ contractAddress: hexlify(randomBytes(20)) }],
         lsp8images: [
           {
-            contractAddress: ethers.hexlify(ethers.randomBytes(20)),
-            tokenId: ethers.hexlify(ethers.randomBytes(32)),
+            contractAddress: hexlify(randomBytes(20)),
+            tokenId: hexlify(randomBytes(32)),
           },
         ],
       },
@@ -574,7 +577,7 @@ describe('testing LSP4MetadataTester', () => {
     // Sample Verification Data
     const verificationExample = {
       method: 'keccak256(bytes)',
-      data: ethers.hexlify(ethers.randomBytes(32)),
+      data: hexlify(randomBytes(32)),
     };
 
     // Sample Links
@@ -605,11 +608,11 @@ describe('testing LSP4MetadataTester', () => {
           verification: verificationExample,
         },
       ],
-      lsp7icons: [{ contractAddress: ethers.hexlify(ethers.randomBytes(20)) }],
+      lsp7icons: [{ contractAddress: hexlify(randomBytes(20)) }],
       lsp8icons: [
         {
-          contractAddress: ethers.hexlify(ethers.randomBytes(20)),
-          tokenId: ethers.hexlify(ethers.randomBytes(32)),
+          contractAddress: hexlify(randomBytes(20)),
+          tokenId: hexlify(randomBytes(32)),
         },
       ],
     };
@@ -618,12 +621,12 @@ describe('testing LSP4MetadataTester', () => {
     // Sample Verification Data
     const verificationExample1 = {
       method: 'keccak256(bytes)',
-      data: ethers.hexlify(ethers.randomBytes(32)),
+      data: hexlify(randomBytes(32)),
     };
 
     const verificationExample2 = {
       method: 'keccak256(bytes)',
-      data: ethers.hexlify(ethers.randomBytes(32)),
+      data: hexlify(randomBytes(32)),
     };
 
     // Expanded GroupImageField array with multiple entries
@@ -644,11 +647,11 @@ describe('testing LSP4MetadataTester', () => {
             verification: verificationExample1,
           },
         ],
-        lsp7images: [{ contractAddress: ethers.hexlify(ethers.randomBytes(20)) }],
+        lsp7images: [{ contractAddress: hexlify(randomBytes(20)) }],
         lsp8images: [
           {
-            contractAddress: ethers.hexlify(ethers.randomBytes(20)),
-            tokenId: ethers.hexlify(ethers.randomBytes(32)),
+            contractAddress: hexlify(randomBytes(20)),
+            tokenId: hexlify(randomBytes(32)),
           },
         ],
       },
@@ -668,11 +671,11 @@ describe('testing LSP4MetadataTester', () => {
             verification: verificationExample2,
           },
         ],
-        lsp7images: [{ contractAddress: ethers.hexlify(ethers.randomBytes(20)) }],
+        lsp7images: [{ contractAddress: hexlify(randomBytes(20)) }],
         lsp8images: [
           {
-            contractAddress: ethers.hexlify(ethers.randomBytes(20)),
-            tokenId: ethers.hexlify(ethers.randomBytes(32)),
+            contractAddress: hexlify(randomBytes(20)),
+            tokenId: hexlify(randomBytes(32)),
           },
         ],
       },
@@ -698,11 +701,11 @@ describe('testing LSP4MetadataTester', () => {
           verification: verificationExample,
         },
       ],
-      lsp7assets: [{ contractAddress: ethers.hexlify(ethers.randomBytes(20)) }],
+      lsp7assets: [{ contractAddress: hexlify(randomBytes(20)) }],
       lsp8assets: [
         {
-          contractAddress: ethers.hexlify(ethers.randomBytes(20)),
-          tokenId: ethers.hexlify(ethers.randomBytes(32)),
+          contractAddress: hexlify(randomBytes(20)),
+          tokenId: hexlify(randomBytes(32)),
         },
       ],
     };
