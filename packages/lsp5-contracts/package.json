@@ -4,6 +4,7 @@
   "description": "Package for the LSP5 Received Assets standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -24,7 +25,8 @@
       "import": "./dist/index.mjs"
     },
     "./artifacts/*": "./artifacts/*",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./contracts/*": "./contracts/*"
   },
   "files": [
     "contracts/**/*.sol",
@@ -45,5 +47,9 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@lukso/lsp2-contracts": "~0.15.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }
