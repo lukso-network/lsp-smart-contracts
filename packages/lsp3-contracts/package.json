@@ -4,6 +4,7 @@
   "description": "Package for the LSP3 Profile Metadata standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "typings": "./dist/index.d.ts",
@@ -14,7 +15,8 @@
       "import": "./dist/index.mjs"
     },
     "./artifacts/*": "./artifacts/*",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./contracts/*": "./contracts/*"
   },
   "files": [
     "contracts/**/*.sol",
@@ -43,5 +45,9 @@
   },
   "dependencies": {
     "@lukso/lsp2-contracts": "~0.15.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }
