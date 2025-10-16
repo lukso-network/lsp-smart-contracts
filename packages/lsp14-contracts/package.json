@@ -4,6 +4,7 @@
   "description": "Package for the LSP14 Ownable 2 Step standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -40,6 +41,7 @@
       "require": "./dist/abi.cjs",
       "import": "./dist/abi.mjs"
     },
+    "./contracts/*": "./contracts/*",
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
@@ -57,5 +59,9 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@lukso/lsp1-contracts": "~0.15.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }
