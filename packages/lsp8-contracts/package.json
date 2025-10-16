@@ -4,6 +4,7 @@
   "description": "Package for the LSP8 Identifiable Digital Asset standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -43,7 +44,8 @@
     },
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./contracts/*": "./contracts/*"
   },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
@@ -64,5 +66,9 @@
     "@lukso/lsp2-contracts": "~0.15.0",
     "@lukso/lsp4-contracts": "~0.16.0",
     "@lukso/lsp17contractextension-contracts": "~0.16.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }
