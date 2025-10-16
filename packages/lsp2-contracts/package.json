@@ -14,9 +14,9 @@
       "require": "./dist/index.cjs",
       "import": "./dist/index.mjs"
     },
+    "./contracts/*": "./contracts/*",
     "./artifacts/*": "./artifacts/*",
-    "./package.json": "./package.json",
-    "./contracts/*": "./contracts/*"
+    "./package.json": "./package.json"
   },
   "files": [
     "contracts/**/*.sol",
