@@ -1,19 +1,31 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { MyVotingNFT, MyVotingNFT__factory, MyGovernor, MyGovernor__factory } from '../typechain';
-import { time, mine } from '@nomicfoundation/hardhat-network-helpers';
-import { LSP8_TYPE_IDS } from '../constants';
+import { id } from 'ethers';
+import { network } from 'hardhat';
+import { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import {
+  MyVotingNFT,
+  MyVotingNFT__factory,
+  MyGovernor,
+  MyGovernor__factory,
+  MockUniversalReceiver,
+  MockUniversalReceiver__factory,
+} from '../types/ethers-contracts/index.js';
+import { LSP8_TYPE_IDS } from '../constants.js';
+
+let ethers: HardhatEthers;
+
+const { networkHelpers } = await network.connect();
+const { time, mine } = networkHelpers;
 
 describe('Comprehensive Governor and NFT Tests', () => {
   let nft: MyVotingNFT;
   let governor: MyGovernor;
-  let owner: SignerWithAddress;
-  let proposer: SignerWithAddress;
-  let voter1: SignerWithAddress;
-  let voter2: SignerWithAddress;
-  let voter3: SignerWithAddress;
-  let randomEOA: SignerWithAddress;
+  let owner: HardhatEthersSigner;
+  let proposer: HardhatEthersSigner;
+  let voter1: HardhatEthersSigner;
+  let voter2: HardhatEthersSigner;
+  let voter3: HardhatEthersSigner;
+  let randomEOA: HardhatEthersSigner;
 
   const VOTING_DELAY = 7200; // 1 day in blocks
   const VOTING_PERIOD = 7200; // 1 day in blocks
@@ -21,20 +33,21 @@ describe('Comprehensive Governor and NFT Tests', () => {
   const QUORUM_FRACTION = 1; // 1%
 
   beforeEach(async () => {
+    ({ ethers } = await network.connect());
     [owner, proposer, voter1, voter2, voter3, randomEOA] = await ethers.getSigners();
 
     nft = await new MyVotingNFT__factory(owner).deploy();
     governor = await new MyGovernor__factory(owner).deploy(nft.target);
 
     // Mint initial NFTs
-    await nft.mint(proposer.address, ethers.id('1'));
-    await nft.mint(proposer.address, ethers.id('2'));
-    await nft.mint(voter1.address, ethers.id('3'));
-    await nft.mint(voter2.address, ethers.id('4'));
-    await nft.mint(voter2.address, ethers.id('5'));
-    await nft.mint(voter3.address, ethers.id('6'));
-    await nft.mint(voter3.address, ethers.id('7'));
-    await nft.mint(voter3.address, ethers.id('8'));
+    await nft.mint(proposer.address, id('1'));
+    await nft.mint(proposer.address, id('2'));
+    await nft.mint(voter1.address, id('3'));
+    await nft.mint(voter2.address, id('4'));
+    await nft.mint(voter2.address, id('5'));
+    await nft.mint(voter3.address, id('6'));
+    await nft.mint(voter3.address, id('7'));
+    await nft.mint(voter3.address, id('8'));
   });
 
   describe('NFT and Governor Setup', () => {
@@ -90,9 +103,7 @@ describe('Comprehensive Governor and NFT Tests', () => {
 
     it('should correctly transfer voting power when transferring NFTs', async () => {
       await nft.connect(voter1).delegate(voter1.address);
-      await nft
-        .connect(voter1)
-        .transfer(voter1.address, voter2.address, ethers.id('3'), true, '0x');
+      await nft.connect(voter1).transfer(voter1.address, voter2.address, id('3'), true, '0x');
 
       expect(await nft.getVotes(voter1.address)).to.equal(0);
       expect(await nft.balanceOf(voter2.address)).to.equal(3);
@@ -154,7 +165,7 @@ describe('Comprehensive Governor and NFT Tests', () => {
       const blockNumber1 = await ethers.provider.getBlockNumber();
       expect(await nft.getPastVotes(voter1.address, blockNumber1 - 1)).to.equal(1);
 
-      await nft.mint(voter1.address, ethers.id('9'));
+      await nft.mint(voter1.address, id('9'));
       await mine(); // Mine a block to record the mint
 
       const blockNumber2 = await ethers.provider.getBlockNumber();
@@ -165,7 +176,7 @@ describe('Comprehensive Governor and NFT Tests', () => {
       const initialSupply = await nft.totalSupply();
       const blockNumber1 = await ethers.provider.getBlockNumber();
 
-      await nft.mint(voter1.address, ethers.id('10'));
+      await nft.mint(voter1.address, id('10'));
       await mine(); // Mine a block to record the mint
 
       const blockNumber2 = await ethers.provider.getBlockNumber();
@@ -176,11 +187,10 @@ describe('Comprehensive Governor and NFT Tests', () => {
   });
 
   describe('Delegation Notifications', () => {
-    let mockUniversalReceiver;
+    let mockUniversalReceiver: MockUniversalReceiver;
 
     beforeEach(async () => {
-      const MockUniversalReceiver = await ethers.getContractFactory('MockUniversalReceiver');
-      mockUniversalReceiver = await MockUniversalReceiver.deploy();
+      mockUniversalReceiver = await new MockUniversalReceiver__factory(owner).deploy();
     });
 
     it('should notify delegatee with correct data format', async () => {
