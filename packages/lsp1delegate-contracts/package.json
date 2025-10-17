@@ -4,6 +4,7 @@
   "description": "Package for the LSP1 Universal Receiver Delegate standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -40,6 +41,7 @@
       "require": "./dist/abi.cjs",
       "import": "./dist/abi.mjs"
     },
+    "./contracts/*": "./contracts/*",
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
@@ -57,11 +59,15 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp1-contracts": "~0.15.0",
-    "@lukso/lsp5-contracts": "~0.15.0",
-    "@lukso/lsp7-contracts": "~0.15.0",
-    "@lukso/lsp8-contracts": "~0.15.0",
-    "@lukso/lsp9-contracts": "~0.15.0",
-    "@lukso/lsp10-contracts": "~0.15.0"
+    "@lukso/lsp1-contracts": "~0.15.5",
+    "@lukso/lsp5-contracts": "~0.15.4",
+    "@lukso/lsp7-contracts": "~0.16.8",
+    "@lukso/lsp8-contracts": "~0.16.7",
+    "@lukso/lsp9-contracts": "~0.15.5",
+    "@lukso/lsp10-contracts": "~0.15.4"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }

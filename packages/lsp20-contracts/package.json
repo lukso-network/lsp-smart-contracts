@@ -41,6 +41,7 @@
       "require": "./dist/abi.cjs",
       "import": "./dist/abi.mjs"
     },
+    "./contracts/*": "./contracts/*",
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
