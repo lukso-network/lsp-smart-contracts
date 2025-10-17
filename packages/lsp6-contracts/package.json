@@ -73,6 +73,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
-    "hardhat": "^3.0.7"
+    "hardhat": "^3.0.7",
+    "@nomicfoundation/hardhat-mocha": "latest"
   }
 }
