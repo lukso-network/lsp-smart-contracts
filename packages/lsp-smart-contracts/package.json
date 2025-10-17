@@ -4,6 +4,7 @@
   "description": "The reference smart contract implementation for the LUKSO LSP standards",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -50,7 +51,8 @@
     },
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./contracts/*": "./contracts/*"
   },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
@@ -113,5 +115,9 @@
     "@lukso/lsp8-contracts": "~0.16.7",
     "@lukso/lsp9-contracts": "~0.15.5",
     "@lukso/universalprofile-contracts": "~0.15.5"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }
