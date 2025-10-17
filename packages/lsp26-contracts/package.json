@@ -4,6 +4,7 @@
   "description": "Package for the LSP26 Follower System standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "files": [
     "contracts/**/*.sol",
     "!contracts/Mocks/**/*.sol",
@@ -40,6 +41,7 @@
       "require": "./dist/abi.cjs",
       "import": "./dist/abi.mjs"
     },
+    "./contracts/*": "./contracts/*",
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
@@ -61,7 +63,11 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.6",
-    "@lukso/lsp0-contracts": "~0.15.0",
-    "@lukso/lsp1-contracts": "~0.15.0"
+    "@lukso/lsp1-contracts": "~0.15.5"
+  },
+  "devDependencies": {
+    "@lukso/lsp0-contracts": "~0.15.5",
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }

@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "@erc725/smart-contracts-v8": "npm:@erc725/smart-contracts@8.0.0",
-    "@lukso/lsp2-contracts": "~0.15.0"
+    "@lukso/lsp2-contracts": "~0.15.4"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
