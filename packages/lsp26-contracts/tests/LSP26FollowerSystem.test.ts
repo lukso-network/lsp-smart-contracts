@@ -1,27 +1,32 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { network } from 'hardhat';
 import { ContractTransactionResponse, getAddress, hexlify, randomBytes } from 'ethers';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { writeFileSync } from 'fs';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
-// constants
-import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+// constants TODO
+// import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+const OPERATION_TYPES = {
+  CALL: 0,
+} as const;
 
 // types
-import {
+import type {
   LSP26FollowerSystem,
-  LSP26FollowerSystem__factory,
-  LSP0ERC725Account,
-  LSP0ERC725Account__factory,
-  RevertOnFollow__factory,
+  MockLSP0ERC725Account,
   RevertOnFollow,
-  ReturnBomb__factory,
   ReturnBomb,
-  SelfDestructOnInterfaceCheck__factory,
   SelfDestructOnInterfaceCheck,
   InfiniteLoopURD,
+} from '../types/ethers-contracts/index.js';
+import {
+  LSP26FollowerSystem__factory,
+  MockLSP0ERC725Account__factory,
+  RevertOnFollow__factory,
+  ReturnBomb__factory,
+  SelfDestructOnInterfaceCheck__factory,
   InfiniteLoopURD__factory,
-} from '../typechain';
+} from '../types/ethers-contracts/index.js';
 
 describe('testing `LSP26FollowerSystem`', () => {
   let context: {
@@ -29,20 +34,21 @@ describe('testing `LSP26FollowerSystem`', () => {
     followerSystemAddress: string;
     revertOnFollow: RevertOnFollow;
     revertOnFollowAddress: string;
-    universalProfile: LSP0ERC725Account;
-    owner: SignerWithAddress;
-    singleFollowSigner: SignerWithAddress;
-    executeBatchFollowSigners: SignerWithAddress[];
-    batchFollowSigners: SignerWithAddress[];
-    multiFollowSigners: SignerWithAddress[];
+    universalProfile: MockLSP0ERC725Account;
+    owner: HardhatEthersSigner;
+    singleFollowSigner: HardhatEthersSigner;
+    executeBatchFollowSigners: HardhatEthersSigner[];
+    batchFollowSigners: HardhatEthersSigner[];
+    multiFollowSigners: HardhatEthersSigner[];
   };
 
   before(async () => {
+    const { ethers } = await network.connect();
     const signers = await ethers.getSigners();
     const [owner, singleFollowSigner] = signers;
     const followerSystem = await new LSP26FollowerSystem__factory(owner).deploy();
     const followerSystemAddress = await followerSystem.getAddress();
-    const universalProfile = await new LSP0ERC725Account__factory(owner).deploy(owner.address);
+    const universalProfile = await new MockLSP0ERC725Account__factory(owner).deploy(owner.address);
 
     const revertOnFollow = await new RevertOnFollow__factory(owner).deploy();
     const revertOnFollowAddress = await revertOnFollow.getAddress();
@@ -230,7 +236,7 @@ describe('testing `LSP26FollowerSystem`', () => {
         .follow(context.singleFollowSigner.address);
       const txReceipt = await txResponse.wait();
 
-      gasCostResult.followCost = Number(txReceipt.gasUsed);
+      gasCostResult.followCost = Number(txReceipt?.gasUsed);
     });
 
     it('gas: testing unfollow', async () => {
@@ -239,7 +245,7 @@ describe('testing `LSP26FollowerSystem`', () => {
         .unfollow(context.singleFollowSigner.address);
       const txReceipt = await txResponse.wait();
 
-      gasCostResult.unfollowCost = Number(txReceipt.gasUsed);
+      gasCostResult.unfollowCost = Number(txReceipt?.gasUsed);
     });
 
     it('gas: testing `followBatch`', async () => {
@@ -257,7 +263,7 @@ describe('testing `LSP26FollowerSystem`', () => {
         )) as ContractTransactionResponse;
       const txReceipt = await txResponse.wait();
 
-      gasCostResult.batchFollowCost = Number(txReceipt.gasUsed);
+      gasCostResult.batchFollowCost = Number(txReceipt?.gasUsed);
     });
 
     it('gas: testing `executeBatchFollow`', async () => {
@@ -273,7 +279,7 @@ describe('testing `LSP26FollowerSystem`', () => {
       )) as ContractTransactionResponse;
       const txReceipt = await txResponse.wait();
 
-      gasCostResult.executeBatchFollowCost = Number(txReceipt.gasUsed);
+      gasCostResult.executeBatchFollowCost = Number(txReceipt?.gasUsed);
     });
 
     describe('gas: testing following a single account 10_000 times', () => {
@@ -296,7 +302,7 @@ describe('testing `LSP26FollowerSystem`', () => {
             .follow(context.owner.address);
           const txReceipt = await txResponse.wait();
 
-          followingGasCost.push(Number(txReceipt.gasUsed));
+          followingGasCost.push(Number(txReceipt?.gasUsed));
           count++;
         }
       });

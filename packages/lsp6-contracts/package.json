@@ -4,6 +4,7 @@
   "description": "Package for the LSP6 Key Manager standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -40,6 +41,7 @@
       "require": "./dist/abi.cjs",
       "import": "./dist/abi.mjs"
     },
+    "./contracts/*": "./contracts/*",
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
@@ -62,11 +64,15 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp1-contracts": "~0.15.0",
-    "@lukso/lsp2-contracts": "~0.15.0",
-    "@lukso/lsp14-contracts": "~0.15.0",
-    "@lukso/lsp17contractextension-contracts": "~0.15.0",
-    "@lukso/lsp20-contracts": "~0.15.0",
-    "@lukso/lsp25-contracts": "~0.15.0"
+    "@lukso/lsp1-contracts": "~0.15.5",
+    "@lukso/lsp2-contracts": "~0.15.4",
+    "@lukso/lsp14-contracts": "~0.15.5",
+    "@lukso/lsp17contractextension-contracts": "~0.16.7",
+    "@lukso/lsp20-contracts": "~0.15.5",
+    "@lukso/lsp25-contracts": "~0.15.5"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }

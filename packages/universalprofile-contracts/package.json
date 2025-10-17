@@ -4,6 +4,7 @@
   "description": "Package for Universal Profile, an implementation of LSP0 ERC725 Account & LSP3 Profile Metadata standards combined together.",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -41,6 +42,7 @@
       "require": "./dist/abi.cjs",
       "import": "./dist/abi.mjs"
     },
+    "./contracts/*": "./contracts/*",
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
@@ -61,7 +63,11 @@
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp0-contracts": "~0.15.0",
-    "@lukso/lsp3-contracts": "~0.15.0"
+    "@lukso/lsp0-contracts": "~0.15.5",
+    "@lukso/lsp3-contracts": "~0.16.6"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }

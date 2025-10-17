@@ -1,26 +1,28 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { LSP2UtilsLibraryTester, LSP2UtilsLibraryTester__factory } from '../typechain';
-import { BytesLike } from 'ethers';
+import { network } from 'hardhat';
+import type { BytesLike } from 'ethers';
+import { toBeHex, zeroPadValue } from 'ethers';
+import type { LSP2UtilsLibraryTester } from '../types/ethers-contracts/index.js';
+import { LSP2UtilsLibraryTester__factory } from '../types/ethers-contracts/index.js';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 function encodeCompactBytesArray(inputKeys: BytesLike[]) {
   let compactBytesArray = '0x';
   for (let i = 0; i < inputKeys.length; i++) {
     compactBytesArray +=
-      ethers
-        .zeroPadValue(ethers.toBeHex(inputKeys[i].toString().substring(2).length / 2), 2)
-        .substring(2) + inputKeys[i].toString().substring(2);
+      zeroPadValue(toBeHex(inputKeys[i].toString().substring(2).length / 2), 2).substring(2) +
+      inputKeys[i].toString().substring(2);
   }
 
   return compactBytesArray;
 }
 
 describe('LSP2Utils', () => {
-  let accounts: SignerWithAddress[];
+  let accounts: HardhatEthersSigner[];
   let lsp2Utils: LSP2UtilsLibraryTester;
 
   before(async () => {
+    const { ethers } = await network.connect();
     accounts = await ethers.getSigners();
     lsp2Utils = await new LSP2UtilsLibraryTester__factory(accounts[0]).deploy();
   });

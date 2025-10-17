@@ -4,6 +4,7 @@
   "description": "Package for the LSP16 Universal Factory standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -49,8 +50,12 @@
     "build:package": "hardhat prepare-package"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.2",
     "@erc725/smart-contracts": "^7.0.0",
+    "@openzeppelin/contracts": "^4.9.2",
     "@openzeppelin/contracts-upgradeable": "^4.9.2"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }

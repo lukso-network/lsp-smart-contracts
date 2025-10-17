@@ -16,3 +16,4 @@ docs/
 packages/*/types/
 packages/*/artifacts/
 packages/*/CHANGELOG.md
+package-lock.json

@@ -4,6 +4,7 @@
   "description": "Package for the LSP11 Social Recovery standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -58,7 +59,11 @@
     "build:package": "hardhat prepare-package"
   },
   "dependencies": {
-    "@lukso/lsp25-contracts": "~0.15.0",
+    "@lukso/lsp25-contracts": "~0.15.5",
     "@openzeppelin/contracts": "^4.9.3"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.0.7"
   }
 }

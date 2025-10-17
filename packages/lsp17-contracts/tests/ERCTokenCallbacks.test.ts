@@ -1,16 +1,18 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { ERCTokenCallbacks, ERCTokenCallbacks__factory } from '../typechain';
-import { INTERFACE_ID_LSP17Extension } from '../constants';
+import { network } from 'hardhat';
+import { INTERFACE_ID_LSP17Extension } from '../constants.js';
+import type { ERCTokenCallbacks } from '../types/ethers-contracts/index.js';
+import { ERCTokenCallbacks__factory } from '../types/ethers-contracts/index.js';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 describe('testing `ERCTokenCallbacks`', () => {
   let context: {
     tokenCallbacks: ERCTokenCallbacks;
-    owner: SignerWithAddress;
+    owner: HardhatEthersSigner;
   };
 
   before(async () => {
+    const { ethers } = await network.connect();
     const [owner] = await ethers.getSigners();
     const tokenCallbacks = await new ERCTokenCallbacks__factory(owner).deploy();
 
