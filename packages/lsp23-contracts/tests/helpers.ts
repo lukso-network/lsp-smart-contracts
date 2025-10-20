@@ -1,27 +1,29 @@
-import { ethers } from 'hardhat';
-import { BytesLike } from 'ethers';
-import { PromiseOrValue } from '../../types/common';
+import { network } from 'hardhat';
+import type { HardhatEthers } from '@nomicfoundation/hardhat-ethers/types';
+import { BytesLike, keccak256, AbiCoder, toBeHex, zeroPadValue, getCreate2Address } from 'ethers';
+
 import {
-  UniversalProfileInit__factory,
-  LSP6KeyManagerInit__factory,
   LSP23LinkedContractsFactory__factory,
   UniversalProfileInitPostDeploymentModule__factory,
   UniversalProfilePostDeploymentModule__factory,
-} from '../../typechain';
+} from '../types/ethers-contracts/index.js';
+
+import { UniversalProfileInit__factory } from '../../universalprofile-contracts/types/ethers-contracts/index.js';
+import { LSP6KeyManagerInit__factory } from '../../lsp6-contracts/types/ethers-contracts/index.js';
 
 export async function calculateProxiesAddresses(
-  salt: PromiseOrValue<BytesLike>,
-  primaryImplementationContractAddress: PromiseOrValue<string>,
-  secondaryImplementationContractAddress: PromiseOrValue<string>,
-  secondaryContractInitializationCalldata: PromiseOrValue<BytesLike>,
-  secondaryContractAddControlledContractAddress: PromiseOrValue<boolean>,
-  secondaryContractExtraInitializationParams: PromiseOrValue<BytesLike>,
+  salt: BytesLike,
+  primaryImplementationContractAddress: string,
+  secondaryImplementationContractAddress: string,
+  secondaryContractInitializationCalldata: BytesLike,
+  secondaryContractAddControlledContractAddress: boolean,
+  secondaryContractExtraInitializationParams: BytesLike,
   upPostDeploymentModuleAddress: string,
   postDeploymentCalldata: BytesLike,
   linkedContractsFactoryAddress: string,
 ): Promise<[string, string]> {
-  const generatedSalt = ethers.keccak256(
-    ethers.AbiCoder.defaultAbiCoder().encode(
+  const generatedSalt = keccak256(
+    AbiCoder.defaultAbiCoder().encode(
       ['bytes32', 'address', 'bytes', 'bool', 'bytes', 'address', 'bytes'],
       [
         salt,
@@ -35,20 +37,20 @@ export async function calculateProxiesAddresses(
     ),
   );
 
-  const expectedPrimaryContractAddress = ethers.getCreate2Address(
+  const expectedPrimaryContractAddress = getCreate2Address(
     linkedContractsFactoryAddress,
     generatedSalt,
-    ethers.keccak256(
+    keccak256(
       '0x3d602d80600a3d3981f3363d3d373d3d3d363d73' +
         (primaryImplementationContractAddress as string).slice(2) +
         '5af43d82803e903d91602b57fd5bf3',
     ),
   );
 
-  const expectedSecondaryContractAddress = ethers.getCreate2Address(
+  const expectedSecondaryContractAddress = getCreate2Address(
     linkedContractsFactoryAddress,
-    ethers.keccak256(expectedPrimaryContractAddress),
-    ethers.keccak256(
+    keccak256(expectedPrimaryContractAddress),
+    keccak256(
       '0x3d602d80600a3d3981f3363d3d373d3d3d363d73' +
         (secondaryImplementationContractAddress as string).slice(2) +
         '5af43d82803e903d91602b57fd5bf3',
@@ -63,10 +65,13 @@ export function createDataKey(prefix, address) {
 }
 
 export const create16BytesUint = (value: number) => {
-  return ethers.zeroPadValue(ethers.toBeHex(value), 16).slice(2);
+  return zeroPadValue(toBeHex(value), 16).slice(2);
 };
 
 export async function deployImplementationContracts() {
+  let ethers: HardhatEthers;
+  ({ ethers } = await network.connect());
+
   const [deployer] = await ethers.getSigners();
 
   const KeyManagerInitFactory = new LSP6KeyManagerInit__factory(deployer);
