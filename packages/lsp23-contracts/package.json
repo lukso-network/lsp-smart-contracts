@@ -38,7 +38,6 @@
   },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
-    "build:js": "unbuild",
     "build:types": "wagmi generate",
     "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
