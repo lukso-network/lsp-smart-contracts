@@ -1,22 +1,26 @@
-import hre from 'hardhat';
-const { ethers } = hre;
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
+import { LSP1UniversalReceiverDelegateUP__factory } from '../../../lsp1delegate-contracts/types/ethers-contracts/index.js';
 import {
-  LSP1UniversalReceiverDelegateUP__factory,
+  LSP6KeyManager,
   LSP6KeyManager__factory,
+} from '../../../lsp6-contracts/types/ethers-contracts/index.js';
+import {
+  UniversalProfile,
   UniversalProfile__factory,
-  ERC725XCore__factory,
-} from '../../typechain';
+} from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
-import { ERC725YDataKeys } from '../../constants';
-import { PERMISSIONS, ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
+import { ERC725YDataKeys, PERMISSIONS, ALL_PERMISSIONS } from '../../constants.js';
 
 // helpers
-import { combinePermissions } from './helpers';
-import { LSP6TestContext, LSP6InternalsTestContext } from './context';
+import { combinePermissions } from './helpers.js';
+import { LSP6TestContext, LSP6InternalsTestContext } from './context.js';
+import { AddressLike } from 'ethers';
 
-const ERC725XInterface = ERC725XCore__factory.createInterface();
+const { ethers } = await network.connect();
+
+const ERC725XInterface = UniversalProfile__factory.createInterface();
 
 /**
  * Deploy a proxy contract, referencing to baseContractAddress via delegateCall
@@ -27,7 +31,7 @@ const ERC725XInterface = ERC725XCore__factory.createInterface();
  */
 export async function deployProxy(
   baseContractAddress: string,
-  deployer: SignerWithAddress,
+  deployer: HardhatEthersSigner,
 ): Promise<string> {
   /**
    * @see https://blog.openzeppelin.com/deep-dive-into-the-minimal-proxy-contract/
@@ -45,6 +49,14 @@ export async function deployProxy(
     data: proxyBytecode,
   });
   const receipt = await tx.wait();
+
+  if (receipt == null) {
+    throw new Error("Couldn't deploy proxy");
+  }
+
+  if (receipt.contractAddress == null) {
+    throw new Error("Couldn't retrieve deployed proxy address");
+  }
 
   return receipt.contractAddress;
 }
@@ -105,7 +117,7 @@ export async function setupKeyManagerHelper(
 /**
  * Deploy 1 Profile + 1 KeyManager + 1 URD and set all needed permissions
  */
-export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) {
+export async function setupProfileWithKeyManagerWithURD(EOA: HardhatEthersSigner) {
   const universalProfile = await new UniversalProfile__factory(EOA).deploy(EOA.address, {
     value: ethers.parseEther('10'),
   });
@@ -156,10 +168,10 @@ export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) 
  * on a `universalProfile` via `lsp6KeyManager`
  */
 export async function grantLSP11PermissionViaKeyManager(
-  EOA: SignerWithAddress,
-  universalProfile,
-  lsp6KeyManager,
-  addressToGrant,
+  EOA: HardhatEthersSigner,
+  universalProfile: UniversalProfile,
+  lsp6KeyManager: LSP6KeyManager,
+  addressToGrant: string,
 ) {
   const rawPermissionArrayLength = await universalProfile.getData(
     ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
