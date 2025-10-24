@@ -10,7 +10,8 @@ import {
   UniversalProfile__factory,
 } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
-import { ERC725YDataKeys, PERMISSIONS, ALL_PERMISSIONS } from '../../constants.js';
+import { ERC725YDataKeys } from '../../constants.js';
+import { PERMISSIONS, ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // helpers
 import { combinePermissions } from './helpers.js';
@@ -26,10 +27,7 @@ const ERC725XInterface = UniversalProfile__factory.createInterface();
  * @param deployer
  * @returns
  */
-export async function deployProxy(
-  baseContractAddress: string,
-  deployer: HardhatEthersSigner,
-): Promise<string> {
+export async function deployProxy(baseContractAddress: string, deployer: HardhatEthersSigner) {
   /**
    * @see https://blog.openzeppelin.com/deep-dive-into-the-minimal-proxy-contract/
    * The first 10 x hex opcodes copy the runtime code into memory and return it.
@@ -47,15 +45,7 @@ export async function deployProxy(
   });
   const receipt = await tx.wait();
 
-  if (receipt == null) {
-    throw new Error("Couldn't deploy proxy");
-  }
-
-  if (receipt.contractAddress == null) {
-    throw new Error("Couldn't retrieve deployed proxy address");
-  }
-
-  return receipt.contractAddress;
+  return receipt?.contractAddress;
 }
 
 export async function setupKeyManager(

@@ -1,5 +1,5 @@
-import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
-import { KeyManagerInternalTester } from '../../types/ethers-contracts/index.js';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { KeyManagerInternalTester } from '../../types/ethers-contracts/index.js';
 import type { LSP6KeyManager } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
 import type { UniversalProfile } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
 

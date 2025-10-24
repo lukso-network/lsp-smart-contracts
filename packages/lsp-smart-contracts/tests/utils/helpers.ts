@@ -9,8 +9,7 @@ import {
   concat,
   solidityPacked,
 } from 'ethers';
-
-import { LSP6KeyManager } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
+import type { LSP6KeyManager } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
 
 // constants
 import { LSP25_VERSION } from '../../constants.js';
