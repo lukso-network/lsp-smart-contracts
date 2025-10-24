@@ -1,47 +1,55 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
-import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
+import { ERC725YDataKeys, ALL_PERMISSIONS, PERMISSIONS } from '../../../constants.js';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 // helpers
 import {
   combinePermissions,
   encodeCompactBytesArray,
   getRandomAddresses,
-} from '../../utils/helpers';
+} from '../../utils/helpers.js';
+import type { BytesLike, AddressLike } from 'ethers';
 
 export const shouldBehaveLikePermissionChangeOrAddExtensions = (
   buildContext: () => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
+  let ethers: HardhatEthers;
+
+  before(async () => {
+    ({ ethers } = await network.connect());
+  });
 
   describe('setting Extension Handler keys (CHANGE vs ADD)', () => {
-    let canAddAndChangeExtensions: SignerWithAddress,
-      canOnlyAddExtensions: SignerWithAddress,
-      canOnlyChangeExtensions: SignerWithAddress,
-      canOnlySuperSetData: SignerWithAddress,
-      canOnlySetData: SignerWithAddress,
-      canOnlyCall;
+    let canAddAndChangeExtensions: HardhatEthersSigner,
+      canOnlyAddExtensions: HardhatEthersSigner,
+      canOnlyChangeExtensions: HardhatEthersSigner,
+      canOnlySuperSetData: HardhatEthersSigner,
+      canOnlySetData: HardhatEthersSigner,
+      canOnlyCall: HardhatEthersSigner;
 
     let permissionArrayKeys: string[] = [];
     let permissionArrayValues: string[] = [];
 
     // Generate few bytes32 Extension Handler dataKeys
-    let extensionHandlerKey1,
-      extensionHandlerKey2,
-      extensionHandlerKey3,
-      extensionHandlerKey4,
-      extensionHandlerKey5;
+    let extensionHandlerKey1: BytesLike,
+      extensionHandlerKey2: BytesLike,
+      extensionHandlerKey3: BytesLike,
+      extensionHandlerKey4: BytesLike,
+      extensionHandlerKey5: BytesLike;
 
     // Generate few addresses to be used as dataValue for Extension Handler dataKeys
-    let extensionA, extensionB, extensionC, extensionD;
+    let extensionA: AddressLike,
+      extensionB: AddressLike,
+      extensionC: AddressLike,
+      extensionD: AddressLike;
 
     before(async () => {
       context = await buildContext();

@@ -1,24 +1,27 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { LSP6TestContext } from '../utils/context';
-import { LSP6KeyManagerInit__factory, UniversalProfileInit__factory } from '../../typechain';
-import { deployProxy } from '../utils/fixtures';
-import { shouldBehaveLikeLSP6, shouldInitializeLikeLSP6 } from './LSP6KeyManager.behaviour';
+import { network } from 'hardhat';
+import { LSP6TestContext } from '../utils/context.js';
+
+import { UniversalProfileInit__factory } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import { LSP6KeyManagerInit__factory } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
+import { deployProxy } from '../utils/fixtures.js';
+import { shouldBehaveLikeLSP6, shouldInitializeLikeLSP6 } from './LSP6KeyManager.behaviour.js';
 
 describe('LSP6KeyManager with proxy', () => {
   let context: LSP6TestContext;
 
   const buildProxyTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
+    const { ethers } = await network.connect();
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
     const baseUP = await new UniversalProfileInit__factory(mainController).deploy();
     const upProxy = await deployProxy(baseUP.target as string, mainController);
-    const universalProfile = baseUP.attach(upProxy) as UniversalProfileInit;
+    const universalProfile = baseUP.attach(upProxy);
 
     const baseKM = await new LSP6KeyManagerInit__factory(mainController).deploy();
     const kmProxy = await deployProxy(await baseKM.getAddress(), mainController);
-    const keyManager = baseKM.attach(kmProxy) as unknown as LSP6KeyManagerInit;
+    const keyManager = baseKM.attach(kmProxy);
 
     return { accounts, mainController, universalProfile, keyManager, initialFunding };
   };
@@ -35,6 +38,7 @@ describe('LSP6KeyManager with proxy', () => {
 
   describe('when deploying the base LSP6KeyManagerInit implementation', () => {
     it('`target()` of the base Key Manager contract MUST be `address(0)`', async () => {
+      const { ethers } = await network.connect();
       const accounts = await ethers.getSigners();
       const keyManagerBaseContract = await new LSP6KeyManagerInit__factory(accounts[0]).deploy();
 

@@ -1,25 +1,25 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { encodeData, ERC725JSONSchema } from '@erc725/erc725.js';
+import { network } from 'hardhat';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { encodeData, type ERC725JSONSchema } from '@erc725/erc725.js';
 
-import { Executor, Executor__factory } from '../../../typechain';
+import { type Executor, Executor__factory } from '../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import type { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 // helpers
 import {
   getRandomAddresses,
   combinePermissions,
   encodeCompactBytesArray,
-} from '../../utils/helpers';
+} from '../../utils/helpers.js';
 
 const BasicUPSetup_Schema: ERC725JSONSchema[] = [
   {
@@ -46,14 +46,16 @@ const BasicUPSetup_Schema: ERC725JSONSchema[] = [
 ];
 
 export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LSP6TestContext>) => {
+  let ethers: HardhatEthers;
   let context: LSP6TestContext;
 
   describe('when caller is an EOA', () => {
-    let canSetDataWithAllowedERC725YDataKeys: SignerWithAddress,
-      canSetDataWithoutAllowedERC725YDataKeys: SignerWithAddress,
-      cannotSetData: SignerWithAddress;
+    let canSetDataWithAllowedERC725YDataKeys: HardhatEthersSigner,
+      canSetDataWithoutAllowedERC725YDataKeys: HardhatEthersSigner,
+      cannotSetData: HardhatEthersSigner;
 
     before(async () => {
+      ({ ethers } = await network.connect());
       context = await buildContext();
 
       canSetDataWithAllowedERC725YDataKeys = context.accounts[1];
@@ -174,7 +176,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
             context.keyManager
               .connect(canSetDataWithAllowedERC725YDataKeys)
               .execute(payload, { value: 12 }),
-          ).to.changeEtherBalances([await context.universalProfile.getAddress()], [12]);
+          ).to.changeEtherBalances(ethers, [await context.universalProfile.getAddress()], [12]);
 
           expect(await context.universalProfile.getData(key)).to.equal(value);
         });
@@ -541,7 +543,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
           await expect(
             context.keyManager.connect(context.mainController).execute(payload, { value: 12 }),
-          ).to.changeEtherBalances([await context.universalProfile.getAddress()], [12]);
+          ).to.changeEtherBalances(ethers, [await context.universalProfile.getAddress()], [12]);
 
           expect(await context.universalProfile.getDataBatch(keys)).to.deep.equal(values);
         });
@@ -699,11 +701,11 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
   describe('when caller is another UniversalProfile (with a KeyManager attached as owner)', () => {
     // UP making the call
-    let alice: SignerWithAddress;
+    let alice: HardhatEthersSigner;
     let aliceContext: LSP6TestContext;
 
     // UP being called
-    let bob: SignerWithAddress;
+    let bob: HardhatEthersSigner;
     let bobContext: LSP6TestContext;
 
     before(async () => {
@@ -818,7 +820,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
   });
 
   describe('when caller has SUPER_SETDATA + some allowed ERC725YDataKeys', () => {
-    let caller: SignerWithAddress;
+    let caller: HardhatEthersSigner;
 
     const AllowedERC725YDataKeys = [
       ethers.keccak256(ethers.toUtf8Bytes('My 1st allowed key')),

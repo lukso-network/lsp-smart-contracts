@@ -1,13 +1,13 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
 
 // setup
-import { LSP6InternalsTestContext } from '../../utils/context';
-import { setupKeyManagerHelper } from '../../utils/fixtures';
-import { ERC725YDataKeys } from '../../../constants';
+import { LSP6InternalsTestContext } from '../../utils/context.js';
+import { setupKeyManagerHelper } from '../../utils/fixtures.js';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
-import { abiCoder } from '../../utils/helpers';
+import { abiCoder } from '../../utils/helpers.js';
+import { parseEther } from 'ethers';
 
 export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTestContext>) => {
   let context: LSP6InternalsTestContext;
@@ -30,7 +30,7 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
       const executeParameters = {
         operationType: OPERATION_TYPES.CALL,
         to: context.accounts[3].address,
-        value: ethers.parseEther('5'),
+        value: parseEther('5'),
         data: '0xcafecafecafecafe',
       };
 
@@ -53,7 +53,7 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
       const executeParameters = {
         operationType: OPERATION_TYPES.CALL,
         to: context.accounts[3].address,
-        value: ethers.parseEther('5'),
+        value: parseEther('5'),
         data: '0xcafecafecafecafe',
       };
 

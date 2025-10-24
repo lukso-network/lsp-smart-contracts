@@ -1,58 +1,72 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type {
+  HardhatEthers,
+  HardhatEthersSigner,
+  HardhatEthersProvider,
+} from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
-  Executor,
-  Executor__factory,
   TargetContract__factory,
-  TargetPayableContract,
+  type Executor,
+  Executor__factory,
+  type TargetPayableContract,
   TargetPayableContract__factory,
+  type GraffitiEventExtension,
   GraffitiEventExtension__factory,
-  GraffitiEventExtension,
-  UniversalProfile__factory,
-  UniversalProfile,
-  LSP7Mintable,
-  LSP7Mintable__factory,
-  FallbackContract,
+  type FallbackContract,
   FallbackContract__factory,
-} from '../../../typechain';
+} from '../../../types/ethers-contracts/index.js';
+import {
+  type LSP7Mintable,
+  LSP7Mintable__factory,
+} from '../../../../lsp7-contracts/types/ethers-contracts/index.js';
+import {
+  UniversalProfile__factory,
+  type UniversalProfile,
+} from '../../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 // helpers
 import {
-  provider,
   combinePermissions,
   combineAllowedCalls,
   LOCAL_PRIVATE_KEYS,
   combineCallTypes,
-} from '../../utils/helpers';
+} from '../../utils/helpers.js';
 
 const universalProfileInterface = UniversalProfile__factory.createInterface();
 
 export const shouldBehaveLikePermissionTransferValue = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
+  let ethers: HardhatEthers;
+  let provider: HardhatEthersProvider;
   let context: LSP6TestContext;
 
-  describe('when caller = EOA', () => {
-    let canTransferValue: SignerWithAddress,
-      canTransferValueAndCall: SignerWithAddress,
-      canCallOnly: SignerWithAddress,
-      canNeitherCallNorTransferValue: SignerWithAddress;
+  before(async () => {
+    ({ ethers } = await network.connect());
+    provider = ethers.provider;
+  });
 
-    let recipient;
+  describe('when caller = EOA', () => {
+    let canTransferValue: HardhatEthersSigner,
+      canTransferValueAndCall: HardhatEthersSigner,
+      canCallOnly: HardhatEthersSigner,
+      canNeitherCallNorTransferValue: HardhatEthersSigner;
+
+    let recipient: HardhatEthersSigner;
     let recipientUP: UniversalProfile;
 
     // used to test when sending data as graffiti
@@ -113,7 +127,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         PERMISSIONS.TRANSFERVALUE,
         combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE],
-          [recipient.address, recipientUP.target],
+          [recipient.address, recipientUP.target as string],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -124,7 +138,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           ],
-          [recipient.address, recipientUP.target],
+          [recipient.address, recipientUP.target as string],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -132,7 +146,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         PERMISSIONS.CALL,
         combineAllowedCalls(
           [CALLTYPE.CALL, CALLTYPE.CALL],
-          [recipient.address, recipientUP.target],
+          [recipient.address, recipientUP.target as string],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -144,7 +158,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
             combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           ],
-          [recipient.address, recipientUP.target],
+          [recipient.address, recipientUP.target as string],
           ['0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff'],
         ),
@@ -175,6 +189,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             await expect(
               context.keyManager.connect(context.mainController).execute(transferPayload),
             ).to.changeEtherBalances(
+              ethers,
               [await context.universalProfile.getAddress(), recipient.address],
               [`-${amount}`, amount],
             );
@@ -193,6 +208,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             await expect(
               context.keyManager.connect(canTransferValue).execute(transferPayload),
             ).to.changeEtherBalances(
+              ethers,
               [await context.universalProfile.getAddress(), recipient.address],
               [`-${amount}`, amount],
             );
@@ -211,6 +227,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             await expect(() =>
               context.keyManager.connect(canTransferValueAndCall).execute(transferPayload),
             ).to.changeEtherBalances(
+              ethers,
               [await context.universalProfile.getAddress(), recipient.address],
               [`-${amount}`, amount],
             );
@@ -314,7 +331,8 @@ export const shouldBehaveLikePermissionTransferValue = (
             await expect(() =>
               context.keyManager.connect(canTransferValueAndCall).execute(transferPayload),
             ).to.changeEtherBalances(
-              [await context.universalProfile.getAddress(), recipient.address],
+              ethers,
+              [(await context.universalProfile.getAddress(), recipient.address)],
               [`-${amount}`, amount],
             );
           });
@@ -508,6 +526,7 @@ export const shouldBehaveLikePermissionTransferValue = (
                 .connect(canTransferValueAndCall)
                 ['execute(bytes)'](transferPayload),
             ).to.changeEtherBalances(
+              ethers,
               [await context.universalProfile.getAddress(), recipient.address],
               [`-${amount}`, amount],
             );
@@ -599,6 +618,7 @@ export const shouldBehaveLikePermissionTransferValue = (
                 value: valueToSend,
               }),
           ).to.changeEtherBalances(
+            ethers,
             [await context.universalProfile.getAddress(), recipient.address],
             [`-${amount}`, amount],
           );
@@ -681,6 +701,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             ['execute(bytes)'](transferPayload);
 
           expect(tx).to.changeEtherBalances(
+            ethers,
             [await context.universalProfile.getAddress(), recipientUP.target],
             [`-${amount}`, amount],
           );
@@ -747,6 +768,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             gasLimit: GAS_PROVIDED,
           }),
         ).to.changeEtherBalances(
+          ethers,
           [await context.universalProfile.getAddress(), hardcodedRecipient],
           [
             `-${amount}`, // UP balance should have gone down
@@ -763,6 +785,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             gasLimit: GAS_PROVIDED,
           }),
         ).to.changeEtherBalances(
+          ethers,
           [await context.universalProfile.getAddress(), recipient],
           [`-${amount}`, amount],
         );
@@ -778,6 +801,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             gasLimit: GAS_PROVIDED,
           }),
         ).to.changeEtherBalances(
+          ethers,
           [await context.universalProfile.getAddress(), hardcodedRecipient],
           [`-${amount}`, amount],
         );
@@ -791,6 +815,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             gasLimit: GAS_PROVIDED,
           }),
         ).to.changeEtherBalances(
+          ethers,
           [await context.universalProfile.getAddress(), recipient],
           [`-${amount}`, amount],
         );
@@ -800,11 +825,11 @@ export const shouldBehaveLikePermissionTransferValue = (
 
   describe('when caller is another UP (with a KeyManager as owner)', () => {
     // UP making the call
-    let alice: SignerWithAddress;
+    let alice: HardhatEthersSigner;
     let aliceContext: LSP6TestContext;
 
     // UP being called
-    let bob: SignerWithAddress;
+    let bob: HardhatEthersSigner;
     let bobContext: LSP6TestContext;
 
     before(async () => {
@@ -890,6 +915,7 @@ export const shouldBehaveLikePermissionTransferValue = (
       await expect(() =>
         aliceContext.keyManager.connect(alice).execute(aliceUniversalProfilePayload),
       ).to.changeEtherBalances(
+        ethers,
         [
           await bobContext.universalProfile.getAddress(),
           await aliceContext.universalProfile.getAddress(),
@@ -900,7 +926,7 @@ export const shouldBehaveLikePermissionTransferValue = (
   });
 
   describe('when caller has SUPER_TRANSFERVALUE + CALL', () => {
-    let caller: SignerWithAddress;
+    let caller: HardhatEthersSigner;
     let lsp7Token: LSP7Mintable;
     let targetContract: TargetPayableContract;
 
@@ -995,6 +1021,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           await expect(() =>
             context.keyManager.connect(caller).execute(transferPayload),
           ).to.changeEtherBalances(
+            ethers,
             [await context.universalProfile.getAddress(), recipient],
             [`-${amount}`, amount],
           );
@@ -1015,6 +1042,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           await expect(() =>
             context.keyManager.connect(caller).execute(transferPayload),
           ).to.changeEtherBalances(
+            ethers,
             [await context.universalProfile.getAddress(), recipientUP],
             [`-${amount}`, amount],
           );
@@ -1073,6 +1101,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         await expect(
           context.keyManager.connect(caller).execute(transferLyxPayload),
         ).to.changeEtherBalances(
+          ethers,
           [await context.universalProfile.getAddress(), lyxRecipientEOA],
           [`-${amount}`, amount],
         );
@@ -1092,6 +1121,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         await expect(
           context.keyManager.connect(caller).execute(transferLyxPayload),
         ).to.changeEtherBalances(
+          ethers,
           [await context.universalProfile.getAddress(), lyxRecipientContract.target],
           [`-${amount}`, amount],
         );
@@ -1209,6 +1239,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         await expect(
           context.keyManager.connect(caller).execute(executePayload),
         ).to.changeEtherBalances(
+          ethers,
           [await context.universalProfile.getAddress(), await targetContract.getAddress()],
           [`-${lyxAmount}`, lyxAmount],
         );
@@ -1249,8 +1280,8 @@ export const shouldBehaveLikePermissionTransferValue = (
   });
 
   describe('when caller has TRANSFERVALUE + SUPER_CALL', () => {
-    let caller: SignerWithAddress;
-    let allowedAddress: SignerWithAddress;
+    let caller: HardhatEthersSigner;
+    let allowedAddress: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext(ethers.parseEther('100'));
@@ -1320,6 +1351,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         await expect(() =>
           context.keyManager.connect(caller).execute(transferPayload),
         ).to.changeEtherBalances(
+          ethers,
           [await context.universalProfile.getAddress(), allowedAddress.address],
           [`-${amount}`, amount],
         );
@@ -1342,6 +1374,7 @@ export const shouldBehaveLikePermissionTransferValue = (
         await expect(() =>
           context.keyManager.connect(caller).execute(transferPayload),
         ).to.changeEtherBalances(
+          ethers,
           [await context.universalProfile.getAddress(), allowedAddress.address],
           [`-${amount}`, amount],
         );
@@ -1476,8 +1509,8 @@ export const shouldBehaveLikePermissionTransferValue = (
   });
 
   describe('when caller has SUPER_TRANSFERVALUE + SUPER_CALL', () => {
-    let caller: SignerWithAddress;
-    let allowedAddress: SignerWithAddress;
+    let caller: HardhatEthersSigner;
+    let allowedAddress: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext(ethers.parseEther('100'));
@@ -1529,6 +1562,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           await expect(() =>
             context.keyManager.connect(caller).execute(transferPayload),
           ).to.changeEtherBalances(
+            ethers,
             [await context.universalProfile.getAddress(), recipient],
             [`-${amount}`, amount],
           );

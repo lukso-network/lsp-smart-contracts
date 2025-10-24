@@ -1,18 +1,23 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { time } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type {
+  HardhatEthers,
+  HardhatEthersProvider,
+  HardhatEthersSigner,
+} from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
-  TargetContract,
+  type TargetContract,
   TargetContract__factory,
-  LSP7Mintable,
+} from '../../../types/ethers-contracts/index.js';
+import {
+  type LSP7Mintable,
   LSP7Mintable__factory,
-} from '../../../typechain';
+} from '../../../../lsp7-contracts/types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
@@ -25,24 +30,34 @@ import {
   combinePermissions,
   createValidityTimestamps,
   signLSP6ExecuteRelayCall,
-} from '../../utils/helpers';
+  LOCAL_PRIVATE_KEYS,
+  combineCallTypes,
+} from '../../utils/helpers.js';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
-import { provider, LOCAL_PRIVATE_KEYS, combineCallTypes } from '../../utils/helpers';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
+import { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
 
 export const shouldBehaveLikeExecuteRelayCall = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
+  let networkHelpers: NetworkHelpers;
+  let ethers: HardhatEthers;
+  let provider: HardhatEthersProvider;
   let context: LSP6TestContext;
 
+  before(async () => {
+    ({ ethers, networkHelpers } = await network.connect());
+    provider = ethers.provider;
+  });
+
   describe('`executeRelayCall(..)`', () => {
-    let signer: SignerWithAddress,
-      relayer: SignerWithAddress,
-      random: SignerWithAddress,
-      signerNoAllowedCalls: SignerWithAddress,
-      signerWithoutExecuteRelayCall: SignerWithAddress;
+    let signer: HardhatEthersSigner,
+      relayer: HardhatEthersSigner,
+      random: HardhatEthersSigner,
+      signerNoAllowedCalls: HardhatEthersSigner,
+      signerWithoutExecuteRelayCall: HardhatEthersSigner;
 
     const signerPrivateKey = LOCAL_PRIVATE_KEYS.ACCOUNT1;
 
@@ -635,7 +650,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         describe('(invalid timestamps) `startingTimestamp` is greater than `endingTimestamp`', () => {
           describe('`now` is equal to `startingTimestamp` and `now` is greater than `endingTimestamp`', () => {
             it('reverts', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
               const startingTimestamp = now;
 
               const endingTimestamp = now - 1000;
@@ -667,7 +682,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe('`now` is greater than `startingTimestamp` and `now` is greater than `endingTimestamp`', () => {
             it('reverts', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const endingTimestamp = now - 2000;
               const startingTimestamp = now - 1500;
@@ -700,7 +715,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             it('reverts', async () => {
               const nonce = await context.keyManager.getNonce(signer.address, 3);
 
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const endingTimestamp = now + 1000;
               const startingTimestamp = now + 1500;
@@ -731,7 +746,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe('`now` is lesser than `startingTimestamp` and `now` is greater than `endingTimestamp`', () => {
             it('reverts', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now + 1000;
               const endingTimestamp = now - 1000;
@@ -762,7 +777,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe('`now` is lesser than `startingTimestamp` and `now` is equal to `endingTimestamp`', () => {
             it('reverts', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now + 1000;
               const endingTimestamp = now;
@@ -795,7 +810,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         describe('(valid timestamps) `startingTimestamp` is lesser than `endingTimestamp`', () => {
           describe('(tx can be executed) `now` is equal to `startingTimestamp` and `now` is lesser than `endingTimestamp`', () => {
             it('passes', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now;
               const endingTimestamp = now + 1000;
@@ -832,7 +847,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe('(tx cannot be executed yet) `now` is lesser than `startingTimestamp` and `now` is lesser than `endingTimestamp`', () => {
             it('reverts', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now + 1000;
               const endingTimestamp = now + 1500;
@@ -863,7 +878,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe('(tx is expired) `now` is greater than `startingTimestamp` and `now` is greater than `endingTimestamp`', () => {
             it('reverts', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now - 1500;
               const endingTimestamp = now - 1000;
@@ -894,7 +909,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe('(tx can be executed) `now` is greater than `startingTimestamp` and `now` is lesser than `endingTimestamp`', () => {
             it('passes', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now - 1000;
               const endingTimestamp = now + 1500;
@@ -931,7 +946,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe('(tx can be executed) `now` is greater than `startingTimestamp` and `now` is equal to `endingTimestamp`', () => {
             it('passes', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now - 1000;
               const endingTimestamp = now;
@@ -959,7 +974,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 calldata,
               );
 
-              await time.setNextBlockTimestamp(now);
+              await networkHelpers.time.setNextBlockTimestamp(now);
 
               await context.keyManager
                 .connect(relayer)
@@ -973,7 +988,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         describe('start timestamp = end timestamp', () => {
           describe('start timestamp = end timestamp < now', () => {
             it('reverts', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now - 100;
               const endingTimestamp = now - 100;
@@ -1004,7 +1019,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe('start timestamp = end timestamp > now', () => {
             it('reverts', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now + 100;
               const endingTimestamp = now + 100;
@@ -1035,7 +1050,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe('start timestamp = end timestamp = now', () => {
             it('passes', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now;
               const endingTimestamp = now;
@@ -1062,7 +1077,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
                 calldata,
               );
 
-              await time.setNextBlockTimestamp(now);
+              await networkHelpers.time.setNextBlockTimestamp(now);
 
               await context.keyManager
                 .connect(relayer)
@@ -1105,7 +1120,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         describe('when `endingTimestamp == 0`', () => {
           describe('`startingTimestamp` < now', () => {
             it('passes', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now - 100;
               const endingTimestamp = 0;
@@ -1142,7 +1157,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           describe('`startingTimestamp` > now', () => {
             it('reverts', async () => {
-              const now = await time.latest();
+              const now = await networkHelpers.time.latest();
 
               const startingTimestamp = now + 100;
               const endingTimestamp = 0;
@@ -1363,8 +1378,8 @@ export const shouldBehaveLikeExecuteRelayCall = (
   describe('`executeRelayCallBatch()', () => {
     let context: LSP6TestContext;
 
-    let minter: SignerWithAddress;
-    let tokenRecipient: SignerWithAddress;
+    let minter: HardhatEthersSigner;
+    let tokenRecipient: HardhatEthersSigner;
 
     let tokenContract: LSP7Mintable;
 

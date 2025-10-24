@@ -1,27 +1,31 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
-import { ERC1271_VALUES } from '@lukso/lsp0-contracts';
-import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
+import {
+  ERC725YDataKeys,
+  ERC1271_VALUES,
+  ALL_PERMISSIONS,
+  PERMISSIONS,
+} from '../../../constants.js';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
-
-import { LOCAL_PRIVATE_KEYS } from '../../utils/helpers';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
+import { LOCAL_PRIVATE_KEYS } from '../../utils/helpers.js';
 
 export const shouldBehaveLikePermissionSign = (buildContext: () => Promise<LSP6TestContext>) => {
+  let ethers: HardhatEthers;
   let context: LSP6TestContext;
 
-  let signer: SignerWithAddress, nonSigner: SignerWithAddress;
+  let signer: HardhatEthersSigner, nonSigner: HardhatEthersSigner;
 
   const dataToSign = '0xcafecafe';
 
   before(async () => {
+    ({ ethers } = await network.connect());
     context = await buildContext();
 
     signer = context.accounts[1];

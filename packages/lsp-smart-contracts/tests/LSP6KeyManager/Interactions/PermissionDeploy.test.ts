@@ -1,34 +1,43 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { calculateCreate2 } from 'eth-create2-calculator';
+import { network } from 'hardhat';
+import type {
+  HardhatEthers,
+  HardhatEthersProvider,
+  HardhatEthersSigner,
+} from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import { TargetContract__factory, UniversalProfile__factory } from '../../../typechain';
+import { TargetContract__factory } from '../../../types/ethers-contracts/index.js';
+import { UniversalProfile__factory } from '../../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
-import { abiCoder, combinePermissions, LOCAL_PRIVATE_KEYS, provider } from '../../utils/helpers';
+import { abiCoder, combinePermissions, LOCAL_PRIVATE_KEYS } from '../../utils/helpers.js';
 
 export const shouldBehaveLikePermissionDeploy = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
+  let ethers: HardhatEthers;
+  let provider: HardhatEthersProvider;
   let context: LSP6TestContext;
 
-  let addressCanDeploy: SignerWithAddress,
-    addressCanDeployAndTransferValue: SignerWithAddress,
-    addressCanDeployAndSuperTransferValue: SignerWithAddress,
-    addressCannotDeploy: SignerWithAddress;
+  let addressCanDeploy: HardhatEthersSigner,
+    addressCanDeployAndTransferValue: HardhatEthersSigner,
+    addressCanDeployAndSuperTransferValue: HardhatEthersSigner,
+    addressCannotDeploy: HardhatEthersSigner;
 
   before(async () => {
+    ({ ethers } = await network.connect());
+    provider = ethers.provider;
+
     context = await buildContext(ethers.parseEther('100'));
 
     addressCanDeploy = context.accounts[1];
@@ -136,7 +145,7 @@ export const shouldBehaveLikePermissionDeploy = (
       // check that the newly deployed contract (UP) has the correct owner
       const newUp = new UniversalProfile__factory(context.accounts[0]).attach(
         expectedContractAddress,
-      ) as UniversalProfile;
+      );
       expect(await newUp.owner()).to.equal(initialUpOwner);
 
       // check that the newly deployed contract (UP) has beedn funded with the correct balance
@@ -154,11 +163,13 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
-      const preComputedAddress = calculateCreate2(
-        await context.universalProfile.getAddress(),
-        salt,
-        contractBytecodeToDeploy,
-      ).toLowerCase();
+      const preComputedAddress = ethers
+        .getCreate2Address(
+          await context.universalProfile.getAddress(),
+          salt,
+          contractBytecodeToDeploy,
+        )
+        .toLowerCase();
 
       await expect(context.keyManager.connect(context.mainController).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
@@ -186,11 +197,13 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
-      const preComputedAddress = calculateCreate2(
-        await context.universalProfile.getAddress(),
-        salt,
-        contractBytecodeToDeploy,
-      ).toLowerCase();
+      const preComputedAddress = ethers
+        .getCreate2Address(
+          await context.universalProfile.getAddress(),
+          salt,
+          contractBytecodeToDeploy,
+        )
+        .toLowerCase();
 
       await expect(context.keyManager.connect(context.mainController).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
@@ -202,9 +215,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
       // check that the newly deployed contract (UP) has the correct owner
-      const newUp = new UniversalProfile__factory(context.accounts[0]).attach(
-        preComputedAddress,
-      ) as UniversalProfile;
+      const newUp = new UniversalProfile__factory(context.accounts[0]).attach(preComputedAddress);
 
       expect(await newUp.owner()).to.equal(initialUpOwner);
 
@@ -273,11 +284,13 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
-      const preComputedAddress = calculateCreate2(
-        await context.universalProfile.getAddress(),
-        salt,
-        contractBytecodeToDeploy,
-      ).toLowerCase();
+      const preComputedAddress = ethers
+        .getCreate2Address(
+          await context.universalProfile.getAddress(),
+          salt,
+          contractBytecodeToDeploy,
+        )
+        .toLowerCase();
 
       await expect(context.keyManager.connect(addressCanDeploy).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
@@ -375,11 +388,13 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
-      const preComputedAddress = calculateCreate2(
-        await context.universalProfile.getAddress(),
-        salt,
-        contractBytecodeToDeploy,
-      ).toLowerCase();
+      const preComputedAddress = ethers
+        .getCreate2Address(
+          await context.universalProfile.getAddress(),
+          salt,
+          contractBytecodeToDeploy,
+        )
+        .toLowerCase();
 
       await expect(context.keyManager.connect(addressCanDeployAndTransferValue).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
@@ -485,7 +500,7 @@ export const shouldBehaveLikePermissionDeploy = (
       // check that the newly deployed contract (UP) has the correct owner
       const newUp = new UniversalProfile__factory(context.accounts[0]).attach(
         expectedContractAddress,
-      ) as UniversalProfile;
+      );
       expect(await newUp.owner()).to.equal(initialUpOwner);
 
       // check that the newly deployed contract (UP) has beedn funded with the correct balance
@@ -503,11 +518,13 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
-      const preComputedAddress = calculateCreate2(
-        await context.universalProfile.getAddress(),
-        salt,
-        contractBytecodeToDeploy,
-      ).toLowerCase();
+      const preComputedAddress = ethers
+        .getCreate2Address(
+          await context.universalProfile.getAddress(),
+          salt,
+          contractBytecodeToDeploy,
+        )
+        .toLowerCase();
 
       await expect(
         context.keyManager.connect(addressCanDeployAndSuperTransferValue).execute(payload),
@@ -537,11 +554,13 @@ export const shouldBehaveLikePermissionDeploy = (
         contractBytecodeToDeploy + salt.substring(2),
       ]);
 
-      const preComputedAddress = calculateCreate2(
-        await context.universalProfile.getAddress(),
-        salt,
-        contractBytecodeToDeploy,
-      ).toLowerCase();
+      const preComputedAddress = ethers
+        .getCreate2Address(
+          await context.universalProfile.getAddress(),
+          salt,
+          contractBytecodeToDeploy,
+        )
+        .toLowerCase();
 
       await expect(
         context.keyManager.connect(addressCanDeployAndSuperTransferValue).execute(payload),
@@ -555,9 +574,7 @@ export const shouldBehaveLikePermissionDeploy = (
         );
 
       // check that the newly deployed contract (UP) has the correct owner
-      const newUp = new UniversalProfile__factory(context.accounts[0]).attach(
-        preComputedAddress,
-      ) as UniversalProfile;
+      const newUp = new UniversalProfile__factory(context.accounts[0]).attach(preComputedAddress);
 
       expect(await newUp.owner()).to.equal(initialUpOwner);
 

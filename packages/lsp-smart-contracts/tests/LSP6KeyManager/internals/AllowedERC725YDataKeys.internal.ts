@@ -1,8 +1,15 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { BytesLike } from 'ethers';
-import { LSP6InternalsTestContext } from '../../utils/context';
-import { encodeCompactBytesArray } from '../../utils/helpers';
+import {
+  BytesLike,
+  hexlify,
+  keccak256,
+  randomBytes,
+  toBigInt,
+  toNumber,
+  toUtf8Bytes,
+} from 'ethers';
+import { LSP6InternalsTestContext } from '../../utils/context.js';
+import { encodeCompactBytesArray } from '../../utils/helpers.js';
 
 export type DataKey = {
   length: BytesLike;
@@ -188,9 +195,9 @@ export const testAllowedERC725YDataKeysInternals = (
 
       it('should return `false` if the CompactBytesArray contains a zero length data key', async () => {
         const data = encodeCompactBytesArray([
-          ethers.keccak256(ethers.toUtf8Bytes('1st Data Key')),
+          keccak256(toUtf8Bytes('1st Data Key')),
           '0x',
-          ethers.keccak256(ethers.toUtf8Bytes('2nd Data Key')),
+          keccak256(toUtf8Bytes('2nd Data Key')),
         ]);
 
         const result =
@@ -200,9 +207,9 @@ export const testAllowedERC725YDataKeysInternals = (
 
       it('should return `false` if the CompactBytesArray contains an entry larger than 32 bytes', async () => {
         const data = encodeCompactBytesArray([
-          ethers.keccak256(ethers.toUtf8Bytes('1st Data Key')),
-          ethers.keccak256(ethers.toUtf8Bytes('2nd Data Key')),
-          ethers.hexlify(ethers.randomBytes(33)),
+          keccak256(toUtf8Bytes('1st Data Key')),
+          keccak256(toUtf8Bytes('2nd Data Key')),
+          hexlify(randomBytes(33)),
         ]);
 
         const result =
@@ -212,9 +219,9 @@ export const testAllowedERC725YDataKeysInternals = (
 
       it('should return `false` if the CompactBytesArray contains a data key with a length byte that does not correspond to the length of its element', async () => {
         let data = encodeCompactBytesArray([
-          ethers.keccak256(ethers.toUtf8Bytes('1st Data Key')),
-          ethers.hexlify(ethers.randomBytes(10)), // <-- replace length byte here
-          ethers.keccak256(ethers.toUtf8Bytes('3rd Data Key')),
+          keccak256(toUtf8Bytes('1st Data Key')),
+          hexlify(randomBytes(10)), // <-- replace length byte here
+          keccak256(toUtf8Bytes('3rd Data Key')),
         ]);
 
         // replace the length byte of the 2nd data key with a different value
@@ -231,15 +238,11 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking first dynamic key: should return true', async () => {
           const checkedDataKey =
             dataKeys.firstDynamicKey.key +
-            ethers
-              .hexlify(
-                ethers.randomBytes(
-                  ethers.toNumber(
-                    ethers.toBigInt(32) - BigInt(ethers.toNumber(dataKeys.firstDynamicKey.length)),
-                  ),
-                ),
-              )
-              .substring(2);
+            hexlify(
+              randomBytes(
+                toNumber(toBigInt(32) - BigInt(toNumber(dataKeys.firstDynamicKey.length))),
+              ),
+            ).substring(2);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
@@ -253,15 +256,9 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking second dynamic key: should return true', async () => {
           const checkedDataKey =
             dataKeys.secondDynamicKey.key +
-            ethers
-              .hexlify(
-                ethers.randomBytes(
-                  ethers.toNumber(
-                    ethers.toBigInt(32 - ethers.toNumber(dataKeys.secondDynamicKey.length)),
-                  ),
-                ),
-              )
-              .substring(2);
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+            ).substring(2);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
@@ -341,15 +338,9 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking first dynamic key: should return true', async () => {
           const checkedDataKey =
             dataKeys.firstDynamicKey.key +
-            ethers
-              .hexlify(
-                ethers.randomBytes(
-                  ethers.toNumber(
-                    ethers.toBigInt(32 - ethers.toNumber(dataKeys.firstDynamicKey.length)),
-                  ),
-                ),
-              )
-              .substring(2);
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
+            ).substring(2);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
@@ -363,15 +354,9 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking second dynamic key: should return true', async () => {
           const checkedDataKey =
             dataKeys.secondDynamicKey.key +
-            ethers
-              .hexlify(
-                ethers.randomBytes(
-                  ethers.toNumber(
-                    ethers.toBigInt(32 - ethers.toNumber(dataKeys.secondDynamicKey.length)),
-                  ),
-                ),
-              )
-              .substring(2);
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+            ).substring(2);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
@@ -430,15 +415,9 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking first dynamic key: should return true', async () => {
           const checkedDataKey =
             dataKeys.firstDynamicKey.key +
-            ethers
-              .hexlify(
-                ethers.randomBytes(
-                  ethers.toNumber(
-                    ethers.toBigInt(32 - ethers.toNumber(dataKeys.firstDynamicKey.length)),
-                  ),
-                ),
-              )
-              .substring(2);
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
+            ).substring(2);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
@@ -452,15 +431,9 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking second dynamic key: should return true', async () => {
           const checkedDataKey =
             dataKeys.secondDynamicKey.key +
-            ethers
-              .hexlify(
-                ethers.randomBytes(
-                  ethers.toNumber(
-                    ethers.toBigInt(32 - ethers.toNumber(dataKeys.secondDynamicKey.length)),
-                  ),
-                ),
-              )
-              .substring(2);
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+            ).substring(2);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
@@ -474,15 +447,9 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking third dynamic key: should return true', async () => {
           const checkedDataKey =
             dataKeys.thirdDynamicKey.key +
-            ethers
-              .hexlify(
-                ethers.randomBytes(
-                  ethers.toNumber(
-                    ethers.toBigInt(32 - ethers.toNumber(dataKeys.thirdDynamicKey.length)),
-                  ),
-                ),
-              )
-              .substring(2);
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.thirdDynamicKey.length)))),
+            ).substring(2);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
@@ -496,15 +463,9 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking fourth dynamic key: should return true', async () => {
           const checkedDataKey =
             dataKeys.fourthDynamicKey.key +
-            ethers
-              .hexlify(
-                ethers.randomBytes(
-                  ethers.toNumber(
-                    ethers.toBigInt(32 - ethers.toNumber(dataKeys.fourthDynamicKey.length)),
-                  ),
-                ),
-              )
-              .substring(2);
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.fourthDynamicKey.length)))),
+            ).substring(2);
 
           await expect(
             context.keyManagerInternalTester.verifyAllowedERC725YSingleKey(
@@ -571,7 +532,7 @@ export const testAllowedERC725YDataKeysInternals = (
         });
 
         it('should revert if compactBytesArray length element is superior at 32', async () => {
-          const dynamicKeyOfLength33 = ethers.hexlify(ethers.randomBytes(33));
+          const dynamicKeyOfLength33 = hexlify(randomBytes(33));
           const compactBytesArray_with_invalid_length = encodeCompactBytesArray([
             dataKeys.firstDynamicKey.key,
             dynamicKeyOfLength33,
@@ -625,25 +586,13 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking an array of valid keys: should return true', async () => {
           const checkedDataKeys = [
             dataKeys.firstDynamicKey.key +
-              ethers
-                .hexlify(
-                  ethers.randomBytes(
-                    ethers.toNumber(
-                      ethers.toBigInt(32 - ethers.toNumber(dataKeys.firstDynamicKey.length)),
-                    ),
-                  ),
-                )
-                .substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
+              ).substring(2),
             dataKeys.secondDynamicKey.key +
-              ethers
-                .hexlify(
-                  ethers.randomBytes(
-                    ethers.toNumber(
-                      ethers.toBigInt(32 - ethers.toNumber(dataKeys.secondDynamicKey.length)),
-                    ),
-                  ),
-                )
-                .substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+              ).substring(2),
           ];
 
           expect(
@@ -712,25 +661,13 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking an array of valid keys: should return true', async () => {
           const checkedDataKeys = [
             dataKeys.firstDynamicKey.key +
-              ethers
-                .hexlify(
-                  ethers.randomBytes(
-                    ethers.toNumber(
-                      ethers.toBigInt(32 - ethers.toNumber(dataKeys.firstDynamicKey.length)),
-                    ),
-                  ),
-                )
-                .substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
+              ).substring(2),
             dataKeys.secondDynamicKey.key +
-              ethers
-                .hexlify(
-                  ethers.randomBytes(
-                    ethers.toNumber(
-                      ethers.toBigInt(32 - ethers.toNumber(dataKeys.secondDynamicKey.length)),
-                    ),
-                  ),
-                )
-                .substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+              ).substring(2),
             dataKeys.firstFixedKey.key,
             dataKeys.secondFixedKey.key,
           ];
@@ -768,47 +705,23 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking an array of valid keys: should return true', async () => {
           const checkedDataKeys = [
             dataKeys.firstDynamicKey.key +
-              ethers
-                .hexlify(
-                  ethers.randomBytes(
-                    ethers.toNumber(
-                      ethers.toBigInt(32 - ethers.toNumber(dataKeys.firstDynamicKey.length)),
-                    ),
-                  ),
-                )
-                .substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
+              ).substring(2),
             dataKeys.firstFixedKey.key,
             dataKeys.secondDynamicKey.key +
-              ethers
-                .hexlify(
-                  ethers.randomBytes(
-                    ethers.toNumber(
-                      ethers.toBigInt(32 - ethers.toNumber(dataKeys.secondDynamicKey.length)),
-                    ),
-                  ),
-                )
-                .substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+              ).substring(2),
             dataKeys.thirdDynamicKey.key +
-              ethers
-                .hexlify(
-                  ethers.randomBytes(
-                    ethers.toNumber(
-                      ethers.toBigInt(32 - ethers.toNumber(dataKeys.thirdDynamicKey.length)),
-                    ),
-                  ),
-                )
-                .substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.thirdDynamicKey.length)))),
+              ).substring(2),
             dataKeys.secondFixedKey.key,
             dataKeys.fourthDynamicKey.key +
-              ethers
-                .hexlify(
-                  ethers.randomBytes(
-                    ethers.toNumber(
-                      ethers.toBigInt(32 - ethers.toNumber(dataKeys.fourthDynamicKey.length)),
-                    ),
-                  ),
-                )
-                .substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.fourthDynamicKey.length)))),
+              ).substring(2),
             dataKeys.thirdFixedKey.key,
           ];
 

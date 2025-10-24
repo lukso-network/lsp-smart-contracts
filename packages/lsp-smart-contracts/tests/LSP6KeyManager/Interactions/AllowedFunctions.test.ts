@@ -1,41 +1,55 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
-  LSP7Mintable,
+  type LSP7Mintable,
   LSP7Mintable__factory,
-  LSP8Mintable,
+} from '../../../../lsp7-contracts/types/ethers-contracts/index.js';
+import {
+  type LSP8Mintable,
   LSP8Mintable__factory,
-  TargetContract,
+} from '../../../../lsp8-contracts/types/ethers-contracts/index.js';
+import {
+  type TargetContract,
   TargetContract__factory,
-} from '../../../typechain';
+} from '../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';
-import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
-import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
-import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
-import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
-import { LSP25_VERSION } from '@lukso/lsp25-contracts';
+import {
+  ERC725YDataKeys,
+  INTERFACE_IDS,
+  OPERATION_TYPES,
+  LSP4_TOKEN_TYPES,
+  PERMISSIONS,
+  LSP8_TOKEN_ID_FORMAT,
+  LSP25_VERSION,
+  CALLTYPE,
+} from '../../../constants.js';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 // helpers
-import { LOCAL_PRIVATE_KEYS, combineAllowedCalls, combinePermissions } from '../../utils/helpers';
+import {
+  LOCAL_PRIVATE_KEYS,
+  combineAllowedCalls,
+  combinePermissions,
+} from '../../utils/helpers.js';
 
 export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP6TestContext>) => {
+  let ethers: HardhatEthers;
   let context: LSP6TestContext;
 
-  let addressWithNoAllowedFunctions: SignerWithAddress,
-    addressCanCallOnlyOneFunction: SignerWithAddress;
+  let addressWithNoAllowedFunctions: HardhatEthersSigner,
+    addressCanCallOnlyOneFunction: HardhatEthersSigner;
 
   let targetContract: TargetContract;
 
   before(async () => {
+    ({ ethers } = await network.connect());
     context = await buildContext();
 
     addressWithNoAllowedFunctions = context.accounts[1];
@@ -311,8 +325,8 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
   });
 
   describe('allowed to call only `transfer(...)` function on LSP8 contracts', () => {
-    let addressCanCallOnlyTransferOnLSP8: SignerWithAddress;
-    let addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8: SignerWithAddress;
+    let addressCanCallOnlyTransferOnLSP8: HardhatEthersSigner;
+    let addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8: HardhatEthersSigner;
 
     let lsp7Contract: LSP7Mintable;
     let lsp8Contract: LSP8Mintable;

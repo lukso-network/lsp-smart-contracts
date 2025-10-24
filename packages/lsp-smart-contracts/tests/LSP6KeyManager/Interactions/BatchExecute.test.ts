@@ -1,21 +1,28 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { network } from 'hardhat';
+import type { HardhatEthers } from '@nomicfoundation/hardhat-ethers/types';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
-import { abiCoder, provider } from '../../utils/helpers';
-import { LSP7Mintable, LSP7MintableInit__factory, LSP7Mintable__factory } from '../../../typechain';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
+import { abiCoder } from '../../utils/helpers.js';
+import {
+  type LSP7Mintable,
+  LSP7Mintable__factory,
+  type LSP7MintableInit,
+  LSP7MintableInit__factory,
+} from '../../../../lsp7-contracts/types/ethers-contracts/index.js';
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
+  let ethers: HardhatEthers;
   let context: LSP6TestContext;
 
   // a fictional DAI token on LUKSO
@@ -27,6 +34,7 @@ export const shouldBehaveLikeBatchExecute = (
     rLyxToken: LSP7Mintable;
 
   before(async () => {
+    ({ ethers } = await network.connect());
     context = await buildContext(ethers.parseEther('50'));
 
     const permissionKeys = [
@@ -97,10 +105,11 @@ export const shouldBehaveLikeBatchExecute = (
         .executeBatch([0, 0, 0], batchExecutePayloads);
 
       await expect(tx).to.changeEtherBalance(
+        ethers,
         await context.universalProfile.getAddress(),
         ethers.parseEther('-6'),
       );
-      await expect(tx).to.changeEtherBalances(recipients, amounts);
+      await expect(tx).to.changeEtherBalances(ethers, recipients, amounts);
     });
 
     it('should send LYX + some LSP7 tokens to the same address', async () => {
@@ -139,7 +148,7 @@ export const shouldBehaveLikeBatchExecute = (
         .connect(context.mainController)
         .executeBatch([0, 0], payloads);
 
-      await expect(tx).to.changeEtherBalance(recipient, lyxAmount);
+      await expect(tx).to.changeEtherBalance(ethers, recipient, lyxAmount);
       expect(await lyxDaiToken.balanceOf(recipient)).to.equal(lyxDaiAmount);
     });
 
@@ -450,7 +459,9 @@ export const shouldBehaveLikeBatchExecute = (
 
           // the Key Manager must not hold any funds and must always forward any funds sent to it.
           // it's balance must always be 0 after any execution
-          expect(await provider.getBalance(await context.keyManager.getAddress())).to.equal(0);
+          expect(await ethers.provider.getBalance(await context.keyManager.getAddress())).to.equal(
+            0,
+          );
         });
       });
 
@@ -483,7 +494,11 @@ export const shouldBehaveLikeBatchExecute = (
               .executeBatch(msgValues, [firstSetDataPayload, secondSetDataPayload], {
                 value: totalMsgValue,
               }),
-          ).to.changeEtherBalances([await context.universalProfile.getAddress()], [totalMsgValue]);
+          ).to.changeEtherBalances(
+            ethers,
+            [await context.universalProfile.getAddress()],
+            [totalMsgValue],
+          );
 
           expect(await context.universalProfile.getDataBatch(dataKeys)).to.deep.equal(dataValues);
         });
@@ -519,6 +534,7 @@ export const shouldBehaveLikeBatchExecute = (
               value: totalValues,
             }),
           ).to.changeEtherBalances(
+            ethers,
             [await context.universalProfile.getAddress(), recipient],
             msgValues,
           );
@@ -561,6 +577,7 @@ export const shouldBehaveLikeBatchExecute = (
               value: totalValues,
             }),
           ).to.changeEtherBalances(
+            ethers,
             [await context.universalProfile.getAddress(), recipient],
             msgValues,
           );
@@ -721,6 +738,7 @@ export const shouldBehaveLikeBatchExecute = (
             });
 
           await expect(tx).to.changeEtherBalances(
+            ethers,
             [
               await context.universalProfile.getAddress(),
               firstRecipient,
@@ -736,7 +754,9 @@ export const shouldBehaveLikeBatchExecute = (
 
   describe('when one of the payload reverts', () => {
     it('should revert the whole transaction if first payload reverts', async () => {
-      const upBalance = await provider.getBalance(await context.universalProfile.getAddress());
+      const upBalance = await ethers.provider.getBalance(
+        await context.universalProfile.getAddress(),
+      );
 
       const validAmount = ethers.parseEther('1');
       expect(validAmount).to.be.lt(upBalance); // sanity check
@@ -772,7 +792,9 @@ export const shouldBehaveLikeBatchExecute = (
     });
 
     it('should revert the whole transaction if last payload reverts', async () => {
-      const upBalance = await provider.getBalance(await context.universalProfile.getAddress());
+      const upBalance = await ethers.provider.getBalance(
+        await context.universalProfile.getAddress(),
+      );
 
       const validAmount = ethers.parseEther('1');
       expect(validAmount).to.be.lt(upBalance); // sanity check

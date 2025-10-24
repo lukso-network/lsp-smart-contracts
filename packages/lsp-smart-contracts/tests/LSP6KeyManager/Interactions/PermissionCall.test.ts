@@ -1,6 +1,10 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type {
+  HardhatEthers,
+  HardhatEthersProvider,
+  HardhatEthersSigner,
+} from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
@@ -10,17 +14,17 @@ import {
   FallbackRevert__factory,
   TargetContract,
   TargetContract__factory,
-} from '../../../typechain';
+} from '../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 // helpers
 import {
@@ -29,20 +33,26 @@ import {
   combineCallTypes,
   combinePermissions,
   LOCAL_PRIVATE_KEYS,
-  provider,
-} from '../../utils/helpers';
+} from '../../utils/helpers.js';
 
 export const shouldBehaveLikePermissionCall = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
+  let ethers: HardhatEthers;
+  let provider: HardhatEthersProvider;
   let context: LSP6TestContext;
 
+  before(async () => {
+    ({ ethers } = await network.connect());
+    provider = ethers.provider;
+  });
+
   describe('when making an empty call via `ERC25X.execute(...)` -> (`data` = `0x`, `value` = 0)', () => {
-    let addressCanMakeCallNoAllowedCalls: SignerWithAddress,
-      addressCanMakeCallWithAllowedCalls: SignerWithAddress,
-      addressCannotMakeCallNoAllowedCalls: SignerWithAddress,
-      addressCannotMakeCallWithAllowedCalls: SignerWithAddress,
-      addressWithSuperCall: SignerWithAddress;
+    let addressCanMakeCallNoAllowedCalls: HardhatEthersSigner,
+      addressCanMakeCallWithAllowedCalls: HardhatEthersSigner,
+      addressCannotMakeCallNoAllowedCalls: HardhatEthersSigner,
+      addressCannotMakeCallWithAllowedCalls: HardhatEthersSigner,
+      addressWithSuperCall: HardhatEthersSigner;
 
     let allowedEOA: string;
 
@@ -369,9 +379,9 @@ export const shouldBehaveLikePermissionCall = (
   });
 
   describe('when making a ERC25X.execute(...) call with some `data` payload', () => {
-    let addressCanMakeCallNoAllowedCalls: SignerWithAddress,
-      addressCanMakeCallWithAllowedCalls: SignerWithAddress,
-      addressCannotMakeCall: SignerWithAddress;
+    let addressCanMakeCallNoAllowedCalls: HardhatEthersSigner,
+      addressCanMakeCallWithAllowedCalls: HardhatEthersSigner,
+      addressCannotMakeCall: HardhatEthersSigner;
 
     let targetContract: TargetContract;
 
@@ -838,7 +848,7 @@ export const shouldBehaveLikePermissionCall = (
                 await context.keyManager.getAddress(),
                 encodedMessage,
               ),
-              signature,
+              signature as `0x${string}`,
             );
 
             await expect(
@@ -960,7 +970,7 @@ export const shouldBehaveLikePermissionCall = (
                 await context.keyManager.getAddress(),
                 encodedMessage,
               ),
-              ethereumSignature,
+              ethereumSignature as `0x${string}`,
             );
 
             await expect(
@@ -985,7 +995,7 @@ export const shouldBehaveLikePermissionCall = (
 
   describe('`execute(...)` edge cases', async () => {
     let targetContract: TargetContract;
-    let addressWithNoPermissions: SignerWithAddress;
+    let addressWithNoPermissions: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -1048,18 +1058,18 @@ export const shouldBehaveLikePermissionCall = (
     describe('when the offset of the `data` payload is not `0x00...80`', () => {
       describe('if the offset points backwards to the `value` parameter', () => {
         // We add the target in the allowed calls for each of these controller
-        let controllerCanTransferValue;
-        let controllerCanTransferValueAndCall;
-        let controllerCanCall;
+        let controllerCanTransferValue: HardhatEthersSigner;
+        let controllerCanTransferValueAndCall: HardhatEthersSigner;
+        let controllerCanCall: HardhatEthersSigner;
 
-        let controllerCanOnlySign;
+        let controllerCanOnlySign: HardhatEthersSigner;
 
-        let controllerCanSuperCall;
+        let controllerCanSuperCall: HardhatEthersSigner;
         let controllerCanSuperTransferValue;
 
         let targetContract: FallbackInitializer;
 
-        let executePayload;
+        let executePayload: string;
 
         before(async () => {
           context = await buildContext(ethers.parseEther('50'));
@@ -1243,13 +1253,13 @@ export const shouldBehaveLikePermissionCall = (
 
       describe("if the offset points forwards (there are 32 random bytes between the data's offset and the data's length", () => {
         // We add the target in the allowed calls for each of these controller
-        let controllerCanCall;
-        let controllerCanSuperCall;
-        let controllerCanOnlySign;
+        let controllerCanCall: HardhatEthersSigner;
+        let controllerCanSuperCall: HardhatEthersSigner;
+        let controllerCanOnlySign: HardhatEthersSigner;
 
         let targetContract: FallbackInitializer;
 
-        let executePayload;
+        let executePayload: string;
 
         before(async () => {
           context = await buildContext(ethers.parseEther('50'));

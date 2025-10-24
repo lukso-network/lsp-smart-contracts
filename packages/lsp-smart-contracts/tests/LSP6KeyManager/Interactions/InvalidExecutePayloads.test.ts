@@ -1,20 +1,20 @@
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
-import { TargetContract__factory, TargetContract } from '../../../typechain';
+import { TargetContract__factory, TargetContract } from '../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 export const testInvalidExecutePayloads = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
-  let addressCanMakeCall: SignerWithAddress;
+  let addressCanMakeCall: HardhatEthersSigner;
   let targetContract: TargetContract;
 
   before(async () => {

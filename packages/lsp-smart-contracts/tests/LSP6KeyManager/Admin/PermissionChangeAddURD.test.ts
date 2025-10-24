@@ -1,49 +1,55 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
-import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
+import { ERC725YDataKeys, ALL_PERMISSIONS, PERMISSIONS } from '../../../constants.js';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 // helpers
 import {
   combinePermissions,
   encodeCompactBytesArray,
   getRandomAddresses,
-} from '../../utils/helpers';
+} from '../../utils/helpers.js';
+import { BytesLike } from 'ethers';
+import { AddressLike } from 'ethers';
 
 export const shouldBehaveLikePermissionChangeOrAddURD = (
   buildContext: () => Promise<LSP6TestContext>,
 ) => {
+  let ethers: HardhatEthers;
   let context: LSP6TestContext;
 
+  before(async () => {
+    ({ ethers } = await network.connect());
+  });
+
   describe('setting UniversalReceiverDelegate keys (CHANGE vs ADD)', () => {
-    let canAddAndChangeUniversalReceiverDelegate: SignerWithAddress,
-      canOnlyAddUniversalReceiverDelegate: SignerWithAddress,
-      canOnlyChangeUniversalReceiverDelegate: SignerWithAddress,
-      canOnlySuperSetData: SignerWithAddress,
-      canOnlySetData: SignerWithAddress,
-      canOnlyCall;
+    let canAddAndChangeUniversalReceiverDelegate: HardhatEthersSigner,
+      canOnlyAddUniversalReceiverDelegate: HardhatEthersSigner,
+      canOnlyChangeUniversalReceiverDelegate: HardhatEthersSigner,
+      canOnlySuperSetData: HardhatEthersSigner,
+      canOnlySetData: HardhatEthersSigner,
+      canOnlyCall: HardhatEthersSigner;
 
     let permissionArrayKeys: string[] = [];
     let permissionArrayValues: string[] = [];
 
     // Generate few bytes32 LSP1UniversalReceiverDelegate dataKeys
-    let universalReceiverDelegateKey1,
-      universalReceiverDelegateKey2,
-      universalReceiverDelegateKey3,
-      universalReceiverDelegateKey4;
+    let universalReceiverDelegateKey1: BytesLike,
+      universalReceiverDelegateKey2: BytesLike,
+      universalReceiverDelegateKey3: BytesLike,
+      universalReceiverDelegateKey4: BytesLike;
 
     // Generate few addresses to be used as dataValue for LSP1 Keys
-    let universalReceiverDelegateA,
-      universalReceiverDelegateB,
-      universalReceiverDelegateC,
-      universalReceiverDelegateD;
+    let universalReceiverDelegateA: AddressLike,
+      universalReceiverDelegateB: AddressLike,
+      universalReceiverDelegateC: AddressLike,
+      universalReceiverDelegateD: AddressLike;
 
     before(async () => {
       context = await buildContext();

@@ -1,20 +1,20 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
-import { TargetContract, TargetContract__factory } from '../../../typechain';
+import { TargetContract, TargetContract__factory } from '../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6InternalsTestContext } from '../../utils/context';
-import { setupKeyManagerHelper } from '../../utils/fixtures';
+import { LSP6InternalsTestContext } from '../../utils/context.js';
+import { setupKeyManagerHelper } from '../../utils/fixtures.js';
 
 // helpers
-import { combinePermissions, combineAllowedCalls, combineCallTypes } from '../../utils/helpers';
+import { combinePermissions, combineAllowedCalls, combineCallTypes } from '../../utils/helpers.js';
+import { getAddress, hexlify, parseEther, randomBytes, Wallet } from 'ethers';
 
 async function teardownKeyManagerHelper(
   context: LSP6InternalsTestContext,
@@ -55,7 +55,7 @@ export const testAllowedCallsInternals = (
       });
 
       it('should return `false` if element is not 28 bytes long', async () => {
-        const allowedCalls = ethers.hexlify(ethers.randomBytes(27));
+        const allowedCalls = hexlify(randomBytes(27));
         const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
           allowedCalls,
         );
@@ -106,11 +106,7 @@ export const testAllowedCallsInternals = (
       it('should fail if one of the element is not 28 bytes long', async () => {
         const allowedCalls = combineAllowedCalls(
           [CALLTYPE.VALUE, CALLTYPE.VALUE, CALLTYPE.VALUE],
-          [
-            context.accounts[5].address,
-            ethers.hexlify(ethers.randomBytes(27)),
-            context.accounts[7].address,
-          ],
+          [context.accounts[5].address, hexlify(randomBytes(27)), context.accounts[7].address],
           ['0xffffffff', '0xffffffff', '0xffffffff'],
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
         );
@@ -124,9 +120,9 @@ export const testAllowedCallsInternals = (
   });
 
   describe('testing 2 x addresses encoded as LSP2 CompactBytesArray under `AllowedCalls`', () => {
-    let canCallOnlyTwoAddresses: SignerWithAddress, canCallNoAllowedCalls: SignerWithAddress;
+    let canCallOnlyTwoAddresses: HardhatEthersSigner, canCallNoAllowedCalls: HardhatEthersSigner;
 
-    let allowedEOA: SignerWithAddress, allowedTargetContract: TargetContract;
+    let allowedEOA: HardhatEthersSigner, allowedTargetContract: TargetContract;
 
     let encodedAllowedCalls: string;
 
@@ -202,7 +198,7 @@ export const testAllowedCallsInternals = (
           const executeParams = {
             operationType: OPERATION_TYPES.CALL,
             to: allowedEOA.address,
-            value: ethers.parseEther('1'),
+            value: parseEther('1'),
             data: '0x',
           };
 
@@ -220,12 +216,12 @@ export const testAllowedCallsInternals = (
 
       describe('when the ERC725X payload (transfer 1 LYX)  is for an address not listed in the allowed calls', () => {
         it('should revert', async () => {
-          const disallowedAddress = ethers.getAddress('0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead');
+          const disallowedAddress = getAddress('0xdeadbeefdeadbeefdeaddeadbeefdeadbeefdead');
 
           const executeParams = {
             operationType: OPERATION_TYPES.CALL,
             to: disallowedAddress,
-            value: ethers.parseEther('1'),
+            value: parseEther('1'),
             data: '0x',
           };
 
@@ -245,12 +241,12 @@ export const testAllowedCallsInternals = (
 
       describe('when there is nothing stored under `AllowedCalls` for a controller', () => {
         it('should revert', async () => {
-          const randomAddress = ethers.Wallet.createRandom().address;
+          const randomAddress = Wallet.createRandom().address;
 
           const executeParams = {
             operationType: OPERATION_TYPES.CALL,
             to: randomAddress,
-            value: ethers.parseEther('1'),
+            value: parseEther('1'),
             data: '0x',
           };
 
@@ -311,7 +307,7 @@ export const testAllowedCallsInternals = (
     });
 
     describe('when controller has permission CALL + some AllowedCalls + does `ERC725X.execute(...)` with `operationType == CALL`', () => {
-      let controller: SignerWithAddress;
+      let controller: HardhatEthersSigner;
 
       let permissionKeys: string[];
       let permissionValues: string[];
@@ -426,7 +422,7 @@ export const testAllowedCallsInternals = (
     });
 
     describe('when controller has permission STATICCALL + some AllowedCalls + does `ERC725X.execute(...)` with `operationType == STATICCALL`', () => {
-      let controller: SignerWithAddress;
+      let controller: HardhatEthersSigner;
 
       let permissionKeys: string[];
       let permissionValues: string[];
@@ -541,7 +537,7 @@ export const testAllowedCallsInternals = (
     });
 
     describe('when controller has permission DELEGATECALL + some AllowedCalls + does `ERC725X.execute(...)` with `operationType == DELEGATECALL`', () => {
-      let controller: SignerWithAddress;
+      let controller: HardhatEthersSigner;
 
       let permissionKeys: string[];
       let permissionValues: string[];
@@ -663,7 +659,7 @@ export const testAllowedCallsInternals = (
       '0x' + '00'.repeat(100),
     ];
 
-    let controllers: { description: string; account: SignerWithAddress }[];
+    let controllers: { description: string; account: HardhatEthersSigner }[];
 
     before(async () => {
       context = await buildContext();
@@ -709,13 +705,13 @@ export const testAllowedCallsInternals = (
     });
 
     describe('`verifyAllowedCall(...)`', () => {
-      const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
+      const randomAddress = Wallet.createRandom().address.toLowerCase();
       const randomData = '0xaabbccdd';
 
       const executeParams = {
         operationType: OPERATION_TYPES.CALL,
         to: randomAddress,
-        value: ethers.parseEther('1'),
+        value: parseEther('1'),
         data: randomData,
       };
 
@@ -768,13 +764,13 @@ export const testAllowedCallsInternals = (
       '0x002000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000',
     ];
 
-    const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
+    const randomAddress = Wallet.createRandom().address.toLowerCase();
     const randomData = '0xaabbccdd';
 
     const executeParams = {
       operationType: OPERATION_TYPES.CALL,
       to: randomAddress,
-      value: ethers.parseEther('1'),
+      value: parseEther('1'),
       data: randomData,
     };
 
@@ -825,11 +821,7 @@ export const testAllowedCallsInternals = (
               ),
             )
               .to.be.revertedWithCustomError(context.keyManagerInternalTester, 'NotAllowedCall')
-              .withArgs(
-                context.accounts[index + 1].address,
-                ethers.getAddress(randomAddress),
-                randomData,
-              );
+              .withArgs(context.accounts[index + 1].address, getAddress(randomAddress), randomData);
           });
         });
       });
@@ -837,7 +829,7 @@ export const testAllowedCallsInternals = (
   });
 
   describe('when caller as `0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff` in its allowed calls', () => {
-    let anyAllowedCalls: SignerWithAddress;
+    let anyAllowedCalls: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -872,12 +864,12 @@ export const testAllowedCallsInternals = (
 
     it('should revert', async () => {
       const randomData = '0xaabbccdd';
-      const randomAddress = ethers.Wallet.createRandom().address.toLowerCase();
+      const randomAddress = Wallet.createRandom().address.toLowerCase();
 
       const executeParams = {
         operationType: OPERATION_TYPES.CALL,
         to: randomAddress,
-        value: ethers.parseEther('1'),
+        value: parseEther('1'),
         data: randomData,
       };
 
