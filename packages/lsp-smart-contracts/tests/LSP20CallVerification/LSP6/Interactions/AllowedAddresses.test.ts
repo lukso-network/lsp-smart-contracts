@@ -1,40 +1,50 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type {
+  HardhatEthersProvider,
+  HardhatEthersSigner,
+} from '@nomicfoundation/hardhat-ethers/types';
+import { parseEther } from 'ethers';
 
-import { TargetContract, TargetContract__factory } from '../../../../typechain';
+import {
+  type TargetContract,
+  TargetContract__factory,
+} from '../../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
+import type { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 // helpers
 import {
-  provider,
   EMPTY_PAYLOAD,
   getRandomAddresses,
   combinePermissions,
   combineAllowedCalls,
   combineCallTypes,
-} from '../../../utils/helpers';
+} from '../../../utils/helpers.js';
 
 export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP6TestContext>) => {
+  let provider: HardhatEthersProvider;
   let context: LSP6TestContext;
 
-  let canCallOnlyTwoAddresses: SignerWithAddress, invalidEncodedAllowedCalls: SignerWithAddress;
+  let canCallOnlyTwoAddresses: HardhatEthersSigner, invalidEncodedAllowedCalls: HardhatEthersSigner;
 
-  let allowedEOA: SignerWithAddress,
-    notAllowedEOA: SignerWithAddress,
+  let allowedEOA: HardhatEthersSigner,
+    notAllowedEOA: HardhatEthersSigner,
     allowedTargetContract: TargetContract,
     notAllowedTargetContract: TargetContract;
   const invalidEncodedAllowedCallsValue = '0xbadbadbadbad';
 
   before(async () => {
+    ({
+      ethers: { provider },
+    } = await network.connect());
     context = await buildContext();
 
     canCallOnlyTwoAddresses = context.accounts[1];
@@ -82,7 +92,7 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
 
     await context.mainController.sendTransaction({
       to: await context.universalProfile.getAddress(),
-      value: ethers.parseEther('10'),
+      value: parseEther('10'),
     });
   });
 
@@ -97,7 +107,7 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
           );
           const initialBalanceEOA = await provider.getBalance(recipient);
 
-          const amount = ethers.parseEther('1');
+          const amount = parseEther('1');
 
           await context.universalProfile
             .connect(context.mainController)
@@ -122,7 +132,7 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
       );
       const initialBalanceEOA = await provider.getBalance(allowedEOA.address);
 
-      const amount = ethers.parseEther('1');
+      const amount = parseEther('1');
 
       await context.universalProfile
         .connect(canCallOnlyTwoAddresses)
@@ -164,12 +174,7 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
       await expect(
         context.universalProfile
           .connect(canCallOnlyTwoAddresses)
-          .execute(
-            OPERATION_TYPES.CALL,
-            notAllowedEOA.address,
-            ethers.parseEther('1'),
-            EMPTY_PAYLOAD,
-          ),
+          .execute(OPERATION_TYPES.CALL, notAllowedEOA.address, parseEther('1'), EMPTY_PAYLOAD),
       )
         .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
         .withArgs(canCallOnlyTwoAddresses.address, notAllowedEOA.address, '0x00000000');
@@ -217,7 +222,7 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
           await provider.getBalance(await context.universalProfile.getAddress());
           await provider.getBalance(recipient);
 
-          const amount = ethers.parseEther('1');
+          const amount = parseEther('1');
 
           await expect(
             context.universalProfile

@@ -1,4 +1,4 @@
-import { LSP6TestContext } from '../../utils/context';
+import type { LSP6TestContext } from '../../utils/context.js';
 
 import {
   // Admin
@@ -29,7 +29,7 @@ import {
   // other scenarios
   testSecurityScenarios,
   otherTestScenarios,
-} from './index';
+} from './index.js';
 
 export const shouldBehaveLikeLSP6 = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,

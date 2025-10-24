@@ -1,28 +1,28 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { Wallet } from 'ethers';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS } from '../../../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../../../constants.js';
 import { CALLTYPE, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
+import { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 // helpers
-import { combineAllowedCalls } from '../../../utils/helpers';
+import { combineAllowedCalls } from '../../../utils/helpers.js';
 
 export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
   describe('deleting AllowedCalls', () => {
-    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: HardhatEthersSigner, canOnlyEditPermissions: HardhatEthersSigner;
 
-    let beneficiaryWithPermissions: SignerWithAddress,
-      beneficiaryNoPermissions: SignerWithAddress,
-      invalidBytes: SignerWithAddress,
-      noBytes: SignerWithAddress;
+    let beneficiaryWithPermissions: HardhatEthersSigner,
+      beneficiaryNoPermissions: HardhatEthersSigner,
+      invalidBytes: HardhatEthersSigner,
+      noBytes: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -150,12 +150,12 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
   });
 
   describe('setting Allowed Calls -> Addresses', () => {
-    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: HardhatEthersSigner, canOnlyEditPermissions: HardhatEthersSigner;
 
-    let beneficiary: SignerWithAddress,
-      invalidBeneficiary: SignerWithAddress,
-      zero32Bytes: SignerWithAddress,
-      zero40Bytes: SignerWithAddress;
+    let beneficiary: HardhatEthersSigner,
+      invalidBeneficiary: HardhatEthersSigner,
+      zero32Bytes: HardhatEthersSigner,
+      zero40Bytes: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -297,7 +297,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
       });
 
       it('should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]', async () => {
-        const newController = ethers.Wallet.createRandom();
+        const newController = Wallet.createRandom();
 
         const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + newController.address.substr(2);
@@ -323,7 +323,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
 
       describe('when setting an invalid bytes28[CompactBytesArray] for a new beneficiary', () => {
         it('should revert with error when value = random bytes', async () => {
-          const newController = ethers.Wallet.createRandom();
+          const newController = Wallet.createRandom();
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -337,7 +337,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
         });
 
         it('should revert with error when value = invalid bytes28[CompactBytesArray] (not enough bytes, missing the first length bytes)', async () => {
-          const newController = ethers.Wallet.createRandom();
+          const newController = Wallet.createRandom();
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -354,7 +354,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
 
     describe('when caller has permission EDITPERMISSIONS', () => {
       it('should fail when beneficiary had no values set under AddressPermissions:AllowedCalls:...', async () => {
-        const newController = ethers.Wallet.createRandom();
+        const newController = Wallet.createRandom();
 
         const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + newController.address.substr(2);
@@ -501,12 +501,12 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
   });
 
   describe('setting Allowed Calls -> Functions', () => {
-    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: HardhatEthersSigner, canOnlyEditPermissions: HardhatEthersSigner;
 
-    let beneficiary: SignerWithAddress,
-      invalidBeneficiary: SignerWithAddress,
-      zero32Bytes: SignerWithAddress,
-      zero40Bytes: SignerWithAddress;
+    let beneficiary: HardhatEthersSigner,
+      invalidBeneficiary: HardhatEthersSigner,
+      zero32Bytes: HardhatEthersSigner,
+      zero40Bytes: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -646,7 +646,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
         });
 
         it('should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]', async () => {
-          const newController = ethers.Wallet.createRandom();
+          const newController = Wallet.createRandom();
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -673,7 +673,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
 
       describe('when setting an invalid bytes28[CompactBytesArray] for a new beneficiary', () => {
         it('should fail when setting an invalid bytes28[CompactBytesArray] (= random bytes)', async () => {
-          const newController = ethers.Wallet.createRandom();
+          const newController = Wallet.createRandom();
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -687,7 +687,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
         });
 
         it('should fail when setting an invalid bytes28[CompactBytesArray] (not enough bytes, missing first length byte)', async () => {
-          const newController = ethers.Wallet.createRandom();
+          const newController = Wallet.createRandom();
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -705,7 +705,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
     describe('when caller has EDITPERMISSIONS', () => {
       describe('when controller to edit Allowed Calls for has some permissions set', () => {
         it('should fail when beneficiary had no values set under AddressPermissions:AllowedCalls:...', async () => {
-          const newController = ethers.Wallet.createRandom();
+          const newController = Wallet.createRandom();
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -849,12 +849,12 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
   });
 
   describe('setting Allowed Calls -> Standards', () => {
-    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: HardhatEthersSigner, canOnlyEditPermissions: HardhatEthersSigner;
 
-    let beneficiary: SignerWithAddress,
-      invalidBeneficiary: SignerWithAddress,
-      zero32Bytes: SignerWithAddress,
-      zero40Bytes: SignerWithAddress;
+    let beneficiary: HardhatEthersSigner,
+      invalidBeneficiary: HardhatEthersSigner,
+      zero32Bytes: HardhatEthersSigner,
+      zero40Bytes: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -1029,7 +1029,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
       });
 
       it('should pass when beneficiary had no values set under AddressPermissions:AllowedCalls:... + setting a valid bytes28[CompactBytesArray]', async () => {
-        const newController = ethers.Wallet.createRandom();
+        const newController = Wallet.createRandom();
 
         const key =
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + newController.address.substr(2);
@@ -1063,7 +1063,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
 
       describe('when setting an invalid bytes28[CompactBytesArray] of allowed calls for a new beneficiary', () => {
         it('should fail when setting an bytes28[CompactBytesArray] (= random bytes)', async () => {
-          const newController = ethers.Wallet.createRandom();
+          const newController = Wallet.createRandom();
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -1077,7 +1077,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
         });
 
         it('should fail when setting an invalid bytes28[CompactBytesArray] (not enough bytes, missing first length byte)', async () => {
-          const newController = ethers.Wallet.createRandom();
+          const newController = Wallet.createRandom();
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
@@ -1095,7 +1095,7 @@ export const shouldBehaveLikeSetAllowedCalls = (buildContext: () => Promise<LSP6
     describe('when caller has EDITPERMISSIONS', () => {
       describe('when controller / beneificary had some allowed calls set', () => {
         it('should fail when beneficiary had no values set under AddressPermissions:AllowedCalls:...', async () => {
-          const newController = ethers.Wallet.createRandom();
+          const newController = Wallet.createRandom();
 
           const key =
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +

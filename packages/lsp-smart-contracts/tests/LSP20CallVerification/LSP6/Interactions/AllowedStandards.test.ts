@@ -1,48 +1,59 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type {
+  HardhatEthersSigner,
+  HardhatEthersProvider,
+} from '@nomicfoundation/hardhat-ethers/types';
+import { keccak256, parseEther, toUtf8Bytes } from 'ethers';
 
 import {
-  SignatureValidator,
+  type SignatureValidator,
   SignatureValidator__factory,
-  TargetContract,
+  type TargetContract,
   TargetContract__factory,
-  LSP7Mintable,
+} from '../../../../types/ethers-contracts/index.js';
+import {
+  type LSP7Mintable,
   LSP7Mintable__factory,
-  UniversalProfile,
+} from '../../../../../lsp7-contracts/types/ethers-contracts/index.js';
+import {
+  type UniversalProfile,
   UniversalProfile__factory,
-} from '../../../../typechain';
+} from '../../../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS } from '../../../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../../../constants.js';
 import { OPERATION_TYPES, ERC1271_VALUES } from '@lukso/lsp0-contracts';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
+import type { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 // helpers
 import {
   abiCoder,
-  provider,
   combinePermissions,
   combineAllowedCalls,
   combineCallTypes,
-} from '../../../utils/helpers';
+} from '../../../utils/helpers.js';
 
 export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP6TestContext>) => {
+  let provider: HardhatEthersProvider;
   let context: LSP6TestContext;
 
-  let addressCanInteractOnlyWithERC1271: SignerWithAddress,
-    addressCanInteractOnlyWithLSP7: SignerWithAddress;
+  let addressCanInteractOnlyWithERC1271: HardhatEthersSigner,
+    addressCanInteractOnlyWithLSP7: HardhatEthersSigner;
 
   let targetContract: TargetContract,
     signatureValidatorContract: SignatureValidator,
     otherUniversalProfile: UniversalProfile;
 
   before(async () => {
+    ({
+      ethers: { provider },
+    } = await network.connect());
     context = await buildContext();
 
     addressCanInteractOnlyWithERC1271 = context.accounts[1];
@@ -93,7 +104,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     await context.mainController.sendTransaction({
       to: await context.universalProfile.getAddress(),
-      value: ethers.parseEther('10'),
+      value: parseEther('10'),
     });
   });
 
@@ -112,7 +123,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     describe('should allow to interact with a contract that implement (+ register) any interface', () => {
       it('ERC1271', async () => {
-        const sampleHash = ethers.keccak256(ethers.toUtf8Bytes('Sample Message'));
+        const sampleHash = keccak256(toUtf8Bytes('Sample Message'));
         const sampleSignature = await context.mainController.signMessage('Sample Message');
 
         const payload = signatureValidatorContract.interface.encodeFunctionData(
@@ -134,7 +145,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
       });
 
       it('LSP0 (ERC725Account)', async () => {
-        const key = ethers.keccak256(ethers.toUtf8Bytes('Key'));
+        const key = keccak256(toUtf8Bytes('Key'));
         const value = '0xcafecafecafecafe';
 
         await context.universalProfile.connect(context.mainController).setData(key, value);
@@ -148,7 +159,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
   describe('when caller has only ERC1271 interface ID set for ALLOWED STANDARDS', () => {
     describe('when interacting with a contract that implements + register ERC1271 interface', () => {
       it('should pass', async () => {
-        const sampleHash = ethers.keccak256(ethers.toUtf8Bytes('Sample Message'));
+        const sampleHash = keccak256(toUtf8Bytes('Sample Message'));
         const sampleSignature = await addressCanInteractOnlyWithERC1271.signMessage(
           'Sample Message',
         );
@@ -178,12 +189,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
         await context.universalProfile
           .connect(addressCanInteractOnlyWithERC1271)
-          .execute(
-            OPERATION_TYPES.CALL,
-            otherUniversalProfile.target,
-            ethers.parseEther('1'),
-            '0x',
-          );
+          .execute(OPERATION_TYPES.CALL, otherUniversalProfile.target, parseEther('1'), '0x');
 
         const newAccountBalance = await provider.getBalance(otherUniversalProfile.target);
         expect(newAccountBalance).to.be.gt(initialAccountBalance);
@@ -212,7 +218,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
   describe('when caller has only LSP7 interface ID set for ALLOWED STANDARDS', () => {
     describe('when interacting with a contract that implements + register ERC1271 interface', () => {
       it('should fail', async () => {
-        const sampleHash = ethers.keccak256(ethers.toUtf8Bytes('Sample Message'));
+        const sampleHash = keccak256(toUtf8Bytes('Sample Message'));
         const sampleSignature = await addressCanInteractOnlyWithLSP7.signMessage('Sample Message');
 
         const payload = signatureValidatorContract.interface.encodeFunctionData(
@@ -244,12 +250,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
         await expect(
           context.universalProfile
             .connect(addressCanInteractOnlyWithLSP7)
-            .execute(
-              OPERATION_TYPES.CALL,
-              otherUniversalProfile.target,
-              ethers.parseEther('1'),
-              '0x',
-            ),
+            .execute(OPERATION_TYPES.CALL, otherUniversalProfile.target, parseEther('1'), '0x'),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
           .withArgs(
