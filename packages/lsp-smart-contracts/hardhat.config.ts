@@ -1,6 +1,6 @@
 import type { HardhatUserConfig } from 'hardhat/config';
 import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
-import { SolidityUserConfig } from 'hardhat/types';
+import type { SolidityUserConfig } from 'hardhat/types/config';
 
 // custom built hardhat plugins for CI
 // import './scripts/ci/gas_benchmark';

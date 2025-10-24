@@ -1,13 +1,12 @@
-import { network } from 'hardhat';
 import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 import { LSP1UniversalReceiverDelegateUP__factory } from '../../../lsp1delegate-contracts/types/ethers-contracts/index.js';
 import {
-  LSP6KeyManager,
+  type LSP6KeyManager,
   LSP6KeyManager__factory,
 } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
 import {
-  UniversalProfile,
+  type UniversalProfile,
   UniversalProfile__factory,
 } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
@@ -15,10 +14,8 @@ import { ERC725YDataKeys, PERMISSIONS, ALL_PERMISSIONS } from '../../constants.j
 
 // helpers
 import { combinePermissions } from './helpers.js';
-import { LSP6TestContext, LSP6InternalsTestContext } from './context.js';
-import { AddressLike } from 'ethers';
-
-const { ethers } = await network.connect();
+import type { LSP6TestContext, LSP6InternalsTestContext } from './context.js';
+import { concat, getAddress, parseEther, toBeHex, toBigInt, toNumber, zeroPadValue } from 'ethers';
 
 const ERC725XInterface = UniversalProfile__factory.createInterface();
 
@@ -119,7 +116,7 @@ export async function setupKeyManagerHelper(
  */
 export async function setupProfileWithKeyManagerWithURD(EOA: HardhatEthersSigner) {
   const universalProfile = await new UniversalProfile__factory(EOA).deploy(EOA.address, {
-    value: ethers.parseEther('10'),
+    value: parseEther('10'),
   });
 
   const lsp6KeyManager = await new LSP6KeyManager__factory(EOA).deploy(
@@ -145,7 +142,7 @@ export async function setupProfileWithKeyManagerWithURD(EOA: HardhatEthersSigner
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
       ],
       [
-        ethers.zeroPadValue(ethers.toBeHex(2), 16),
+        zeroPadValue(toBeHex(2), 16),
         EOA.address,
         await lsp1universalReceiverDelegateUP.getAddress(),
         ALL_PERMISSIONS,
@@ -177,13 +174,10 @@ export async function grantLSP11PermissionViaKeyManager(
     ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
   );
 
-  const permissionArrayLength = ethers.toNumber(ethers.toBigInt(rawPermissionArrayLength));
+  const permissionArrayLength = toNumber(toBigInt(rawPermissionArrayLength));
 
   const newPermissionArrayLength = permissionArrayLength + 1;
-  const newRawPermissionArrayLength = ethers.zeroPadValue(
-    ethers.toBeHex(newPermissionArrayLength),
-    16,
-  );
+  const newRawPermissionArrayLength = zeroPadValue(toBeHex(newPermissionArrayLength), 16);
 
   // if the main controller lost access to its UP and don't have any new permission
   // the social recovery contract only needs the permission ADDCONTROLLER
@@ -215,16 +209,16 @@ export function callPayload(to: string, abi: string) {
  */
 export async function getLSP5MapAndArrayKeysValue(account, token) {
   const mapValue = await account.getData(
-    ethers.concat([ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap, await token.getAddress()]),
+    concat([ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap, await token.getAddress()]),
   );
 
   const indexInHex = '0x' + mapValue.substring(10, mapValue.length);
   const interfaceId = mapValue.substring(0, 10);
 
-  const indexInNumber = ethers.toNumber(ethers.toBigInt(indexInHex === '0x' ? 0 : indexInHex));
-  const rawIndexInArray = ethers.zeroPadValue(ethers.toBeHex(indexInNumber), 16);
+  const indexInNumber = toNumber(toBigInt(indexInHex === '0x' ? 0 : indexInHex));
+  const rawIndexInArray = zeroPadValue(toBeHex(indexInNumber), 16);
 
-  const elementInArrayKey = ethers.concat([
+  const elementInArrayKey = concat([
     ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index,
     rawIndexInArray,
   ]);
@@ -235,7 +229,7 @@ export async function getLSP5MapAndArrayKeysValue(account, token) {
   let elementAddress = _elementAddress;
 
   if (elementAddress != '0x') {
-    elementAddress = ethers.getAddress(elementAddress);
+    elementAddress = getAddress(elementAddress);
   }
   return [indexInNumber, interfaceId, arrayLength, elementAddress];
 }

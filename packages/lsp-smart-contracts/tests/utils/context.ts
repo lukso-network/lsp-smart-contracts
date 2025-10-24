@@ -1,17 +1,19 @@
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers.js';
-import { KeyManagerInternalTester, LSP6KeyManager, UniversalProfile } from '../../types/index.js';
+import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { KeyManagerInternalTester } from '../../types/ethers-contracts/index.js';
+import type { LSP6KeyManager } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
+import type { UniversalProfile } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
 export type LSP6TestContext = {
-  accounts: SignerWithAddress[];
-  mainController: SignerWithAddress;
+  accounts: HardhatEthersSigner[];
+  mainController: HardhatEthersSigner;
   universalProfile: UniversalProfile;
   keyManager: LSP6KeyManager;
   initialFunding?: bigint;
 };
 
 export type LSP6InternalsTestContext = {
-  accounts: SignerWithAddress[];
-  mainController: SignerWithAddress;
+  accounts: HardhatEthersSigner[];
+  mainController: HardhatEthersSigner;
   universalProfile: UniversalProfile;
   keyManagerInternalTester: KeyManagerInternalTester;
 };
