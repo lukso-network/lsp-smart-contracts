@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 import {
   type TargetContract,
@@ -21,6 +21,7 @@ import { abiCoder, combineAllowedCalls, combineCallTypes } from '../../../utils/
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>,
 ) => {
+  let ethers: HardhatEthers;
   let context: LSP6TestContext;
 
   let addressCanMakeStaticCall: HardhatEthersSigner,
@@ -30,6 +31,8 @@ export const shouldBehaveLikePermissionStaticCall = (
   let targetContract: TargetContract;
 
   before(async () => {
+    const { network } = await import('hardhat');
+    ({ ethers } = await network.connect());
     context = await buildContext();
 
     addressCanMakeStaticCall = context.accounts[1];
@@ -122,7 +125,7 @@ export const shouldBehaveLikePermissionStaticCall = (
             0,
             targetContractPayload,
           ),
-      ).to.be.reverted;
+      ).to.be.revert(ethers);
 
       // ensure state hasn't changed.
       const newValue = await targetContract.getName();
@@ -294,7 +297,7 @@ export const shouldBehaveLikePermissionStaticCall = (
               0,
               targetPayload,
             ),
-        ).to.be.reverted;
+        ).to.be.revert(ethers);
       });
 
       it('should revert when calling state changing function -> setNumber(uint256)', async () => {
@@ -311,7 +314,7 @@ export const shouldBehaveLikePermissionStaticCall = (
               0,
               targetPayload,
             ),
-        ).to.be.reverted;
+        ).to.be.revert(ethers);
       });
     });
 
@@ -366,7 +369,7 @@ export const shouldBehaveLikePermissionStaticCall = (
               0,
               targetPayload,
             ),
-        ).to.be.reverted;
+        ).to.be.revert(ethers);
       });
 
       it('should revert when calling state changing function -> setNumber(uint256)', async () => {
@@ -383,7 +386,7 @@ export const shouldBehaveLikePermissionStaticCall = (
               0,
               targetPayload,
             ),
-        ).to.be.reverted;
+        ).to.be.revert(ethers);
       });
     });
   });

@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { network } from 'hardhat';
 import type {
   HardhatEthersSigner,
   HardhatEthersProvider,
@@ -51,6 +50,7 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
     otherUniversalProfile: UniversalProfile;
 
   before(async () => {
+    const { network } = await import('hardhat');
     ({
       ethers: { provider },
     } = await network.connect());

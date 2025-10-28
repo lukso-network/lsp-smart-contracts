@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { network } from 'hardhat';
 import type { HardhatEthers } from '@nomicfoundation/hardhat-ethers/types';
 import { getAddress, parseEther, toUtf8String, ZeroAddress, zeroPadValue, Wallet } from 'ethers';
 
@@ -35,6 +34,7 @@ export const shouldBehaveLikeBatchExecute = (
     rLyxToken: LSP7Mintable;
 
   before(async () => {
+    const { network } = await import('hardhat');
     ({ ethers } = await network.connect());
     context = await buildContext(parseEther('50'));
 

@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { network } from 'hardhat';
 import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { getAddress, parseEther, toBigInt, Wallet } from 'ethers';
 
@@ -59,6 +58,7 @@ export const shouldBehaveLikePermissionTransferValue = (
     let graffitiExtension: GraffitiEventExtension;
 
     before(async () => {
+      const { network } = await import('hardhat');
       ({ ethers } = await network.connect());
       context = await buildContext(parseEther('100'));
 
@@ -140,8 +140,8 @@ export const shouldBehaveLikePermissionTransferValue = (
              * verify that balances have been updated
              * @see https://hardhat.org/hardhat-chai-matchers/docs/reference#.changeetherbalances
              */
-            await expect(() =>
-              context.universalProfile
+            expect(
+              await context.universalProfile
                 .connect(context.mainController)
                 .execute(OPERATION_TYPES.CALL, recipient.address, amount, data),
             ).to.changeEtherBalances(
@@ -154,8 +154,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           it('should pass when caller has permission TRANSFERVALUE only', async () => {
             const amount = parseEther('3');
 
-            await expect(() =>
-              context.universalProfile
+            expect(
+              await context.universalProfile
                 .connect(canTransferValue)
                 .execute(OPERATION_TYPES.CALL, recipient.address, amount, data),
             ).to.changeEtherBalances(
@@ -168,8 +168,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           it('should pass when caller has permission TRANSFERVALUE + CALL', async () => {
             const amount = parseEther('3');
 
-            await expect(() =>
-              context.universalProfile
+            expect(
+              await context.universalProfile
                 .connect(canTransferValueAndCall)
                 .execute(OPERATION_TYPES.CALL, recipient.address, amount, data),
             ).to.changeEtherBalances(
@@ -185,8 +185,8 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
             const initialBalanceRecipient = await ethers.provider.getBalance(recipient.address);
 
-            await expect(
-              context.universalProfile
+            expect(
+              await context.universalProfile
                 .connect(cannotTransferValue)
                 .execute(OPERATION_TYPES.CALL, recipient.address, parseEther('3'), data),
             )
@@ -230,8 +230,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           it('should pass when caller has permission TRANSFERVALUE + CALL', async () => {
             const amount = parseEther('3');
 
-            await expect(() =>
-              context.universalProfile
+            expect(
+              await context.universalProfile
                 .connect(canTransferValueAndCall)
                 .execute(OPERATION_TYPES.CALL, recipient.address, amount, data),
             ).to.changeEtherBalances(
@@ -247,8 +247,8 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
             const initialBalanceRecipient = await ethers.provider.getBalance(recipient.address);
 
-            await expect(
-              context.universalProfile
+            expect(
+              await context.universalProfile
                 .connect(canTransferValue)
                 .execute(OPERATION_TYPES.CALL, recipient.address, parseEther('3'), data),
             )
@@ -271,8 +271,8 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
             const initialBalanceRecipient = await ethers.provider.getBalance(recipient.address);
 
-            await expect(
-              context.universalProfile
+            expect(
+              await context.universalProfile
                 .connect(cannotTransferValue)
                 .execute(OPERATION_TYPES.CALL, recipient.address, parseEther('3'), data),
             )
@@ -299,8 +299,8 @@ export const shouldBehaveLikePermissionTransferValue = (
             );
             const initialBalanceRecipient = await ethers.provider.getBalance(recipient.address);
 
-            await expect(
-              context.universalProfile
+            expect(
+              await context.universalProfile
                 .connect(canTransferValue)
                 .execute(OPERATION_TYPES.CALL, recipient.address, parseEther('3'), data),
             )
@@ -320,8 +320,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           it('should pass when caller has permission TRANSFERVALUE + CALL', async () => {
             const amount = parseEther('3');
 
-            await expect(() =>
-              context.universalProfile
+            expect(
+              await context.universalProfile
                 .connect(canTransferValueAndCall)
                 .execute(OPERATION_TYPES.CALL, recipient.address, amount, data),
             ).to.changeEtherBalances(
@@ -346,8 +346,8 @@ export const shouldBehaveLikePermissionTransferValue = (
             recipientUP.target.toString(),
           );
 
-          await expect(
-            context.universalProfile
+          expect(
+            await context.universalProfile
               .connect(canTransferValue)
               .execute(OPERATION_TYPES.CALL, recipientUP.target.toString(), parseEther('3'), data),
           )
@@ -435,8 +435,8 @@ export const shouldBehaveLikePermissionTransferValue = (
       it('Should send 1 LYX to an address hardcoded in Executor (`sendOneLyxHardcoded`)', async () => {
         const amount = parseEther('1');
 
-        await expect(() =>
-          contractCanTransferValue.sendOneLyxHardcoded({
+        expect(
+          await contractCanTransferValue.sendOneLyxHardcoded({
             gasLimit: GAS_PROVIDED,
           }),
         ).to.changeEtherBalances(
@@ -452,8 +452,8 @@ export const shouldBehaveLikePermissionTransferValue = (
       it('Should send 1 LYX to an address provided to Executor (`sendOneLyxToRecipient`)', async () => {
         const amount = parseEther('1');
 
-        await expect(() =>
-          contractCanTransferValue.sendOneLyxToRecipient(recipient, {
+        expect(
+          await contractCanTransferValue.sendOneLyxToRecipient(recipient, {
             gasLimit: GAS_PROVIDED,
           }),
         ).to.changeEtherBalances(
@@ -468,8 +468,8 @@ export const shouldBehaveLikePermissionTransferValue = (
       it('Should send 1 LYX to an address hardcoded in Executor (`sendOneLyxHardcodedRawCall`)', async () => {
         const amount = parseEther('1');
 
-        await expect(() =>
-          contractCanTransferValue.sendOneLyxHardcodedRawCall({
+        expect(
+          await contractCanTransferValue.sendOneLyxHardcodedRawCall({
             gasLimit: GAS_PROVIDED,
           }),
         ).to.changeEtherBalances(
@@ -482,8 +482,8 @@ export const shouldBehaveLikePermissionTransferValue = (
       it('Should send 1 LYX to an address provided to Executor (`sendOneLyxToRecipientRawCall`)', async () => {
         const amount = parseEther('1');
 
-        await expect(() =>
-          contractCanTransferValue.sendOneLyxToRecipientRawCall(recipient, {
+        expect(
+          await contractCanTransferValue.sendOneLyxToRecipientRawCall(recipient, {
             gasLimit: GAS_PROVIDED,
           }),
         ).to.changeEtherBalances(
@@ -572,8 +572,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         [OPERATION_TYPES.CALL, await aliceContext.universalProfile.getAddress(), amount, '0x'],
       );
 
-      await expect(async () =>
-        aliceContext.universalProfile
+      expect(
+        await aliceContext.universalProfile
           .connect(alice)
           .execute(
             OPERATION_TYPES.CALL,
@@ -678,8 +678,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         it(`should allow to send LYX to any EOA (e.g; at address -> ${recipient})`, async () => {
           const amount = parseEther('1');
 
-          await expect(() =>
-            context.universalProfile
+          expect(
+            await context.universalProfile
               .connect(caller)
               .execute(OPERATION_TYPES.CALL, recipient, amount, '0x'),
           ).to.changeEtherBalances(
@@ -694,8 +694,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         it(`should allow to send LYX to any UP contract (e.g: at address -> ${recipientUP})`, async () => {
           const amount = parseEther('1');
 
-          await expect(() =>
-            context.universalProfile
+          expect(
+            await context.universalProfile
               .connect(caller)
               .execute(OPERATION_TYPES.CALL, recipientUP, amount, '0x'),
           ).to.changeEtherBalances(
@@ -713,8 +713,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           const amount = parseEther('1');
           const data = '0x12345678';
 
-          await expect(
-            context.universalProfile
+          expect(
+            await context.universalProfile
               .connect(caller)
               .execute(OPERATION_TYPES.CALL, recipient, amount, data),
           )
@@ -728,8 +728,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           const amount = parseEther('1');
           const data = '0x12345678';
 
-          await expect(
-            context.universalProfile
+          expect(
+            await context.universalProfile
               .connect(caller)
               .execute(OPERATION_TYPES.CALL, recipientUP, amount, data),
           )
@@ -742,8 +742,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         const amount = parseEther('1');
         const data = '0x12345678';
 
-        await expect(
-          context.universalProfile
+        expect(
+          await context.universalProfile
             .connect(caller)
             .execute(OPERATION_TYPES.CALL, lyxRecipientEOA, amount, data),
         ).to.changeEtherBalances(
@@ -757,8 +757,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         const amount = parseEther('1');
         const data = '0x12345678';
 
-        await expect(
-          context.universalProfile
+        expect(
+          await context.universalProfile
             .connect(caller)
             .execute(OPERATION_TYPES.CALL, lyxRecipientContract.target.toString(), amount, data),
         ).to.changeEtherBalances(
@@ -788,8 +788,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           '0x',
         ]);
 
-        await expect(
-          context.universalProfile
+        expect(
+          await context.universalProfile
             .connect(caller)
             .execute(OPERATION_TYPES.CALL, newLSP7Token.target.toString(), 5, lsp7TransferPayload),
         )
@@ -857,8 +857,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           newValue,
         ]);
 
-        await expect(
-          context.universalProfile
+        expect(
+          await context.universalProfile
             .connect(caller)
             .execute(
               OPERATION_TYPES.CALL,
@@ -889,8 +889,8 @@ export const shouldBehaveLikePermissionTransferValue = (
           [newValue],
         );
 
-        await expect(
-          context.universalProfile
+        expect(
+          await context.universalProfile
             .connect(caller)
             .execute(
               OPERATION_TYPES.CALL,
@@ -950,8 +950,8 @@ export const shouldBehaveLikePermissionTransferValue = (
 
         const initialBalanceRecipient = await ethers.provider.getBalance(recipient);
 
-        await expect(
-          context.universalProfile
+        expect(
+          await context.universalProfile
             .connect(caller)
             .execute(OPERATION_TYPES.CALL, recipient, amount, '0x'),
         )
@@ -970,8 +970,8 @@ export const shouldBehaveLikePermissionTransferValue = (
       it('should be allowed to transfer LYX to an allowed address', async () => {
         const amount = parseEther('1');
 
-        await expect(() =>
-          context.universalProfile
+        expect(
+          await context.universalProfile
             .connect(caller)
             .execute(OPERATION_TYPES.CALL, allowedAddress.address, amount, '0x'),
         ).to.changeEtherBalances(
@@ -988,8 +988,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         const amount = parseEther('1');
         const data = '0x12345678';
 
-        await expect(() =>
-          context.universalProfile
+        expect(
+          await context.universalProfile
             .connect(caller)
             .execute(OPERATION_TYPES.CALL, allowedAddress.address, amount, data),
         ).to.changeEtherBalances(
@@ -1091,8 +1091,8 @@ export const shouldBehaveLikePermissionTransferValue = (
 
           const targetPayload = targetContract.interface.encodeFunctionData('updateState', [35]);
 
-          await expect(
-            context.universalProfile
+          expect(
+            await context.universalProfile
               .connect(caller)
               .execute(
                 OPERATION_TYPES.CALL,
@@ -1167,8 +1167,8 @@ export const shouldBehaveLikePermissionTransferValue = (
         it(`should send LYX to EOA -> ${recipient}`, async () => {
           const amount = parseEther('1');
 
-          await expect(() =>
-            context.universalProfile
+          expect(
+            await context.universalProfile
               .connect(caller)
               .execute(OPERATION_TYPES.CALL, recipient, amount, '0x'),
           ).to.changeEtherBalances(

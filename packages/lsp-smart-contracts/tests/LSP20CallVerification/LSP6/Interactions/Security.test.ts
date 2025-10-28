@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { network, artifacts } from 'hardhat';
 import type {
   HardhatEthersProvider,
   HardhatEthersSigner,
@@ -44,8 +43,11 @@ import {
   combineCallTypes,
   encodeCompactBytesArray,
 } from '../../../utils/helpers.js';
+import { NetworkManager } from 'hardhat/types/network';
+import { ArtifactManager } from 'hardhat/types/artifacts';
 
 export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContext>) => {
+  let artifacts: ArtifactManager;
   let provider: HardhatEthersProvider;
   let context: LSP6TestContext;
 
@@ -56,6 +58,8 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
   let targetContract: TargetContract, maliciousContract: Reentrancy;
 
   before(async () => {
+    let network: NetworkManager;
+    ({ network, artifacts } = await import('hardhat'));
     ({
       ethers: { provider },
     } = await network.connect());

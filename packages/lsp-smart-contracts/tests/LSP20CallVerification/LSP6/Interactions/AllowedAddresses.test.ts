@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { network } from 'hardhat';
 import type {
   HardhatEthersProvider,
   HardhatEthersSigner,
@@ -42,6 +41,7 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
   const invalidEncodedAllowedCallsValue = '0xbadbadbadbad';
 
   before(async () => {
+    const { network } = await import('hardhat');
     ({
       ethers: { provider },
     } = await network.connect());

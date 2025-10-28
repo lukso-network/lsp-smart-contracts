@@ -1,15 +1,7 @@
 import { expect } from 'chai';
-import { network } from 'hardhat';
-import { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
-import {
-  hexlify,
-  keccak256,
-  randomBytes,
-  toBigInt,
-  toUtf8Bytes,
-  toQuantity,
-  ZeroAddress,
-} from 'ethers';
+import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { hexlify, keccak256, randomBytes, toBigInt, toUtf8Bytes, ZeroAddress } from 'ethers';
 
 // types
 import {
@@ -52,11 +44,13 @@ export type LSP20TestContext = {
 };
 
 export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestContext>) => {
+  let networkHelpers: NetworkHelpers;
   let ethers: HardhatEthers;
   let context: LSP20TestContext;
 
   before(async () => {
-    ({ ethers } = await network.connect());
+    const { network } = await import('hardhat');
+    ({ ethers, networkHelpers } = await network.connect());
     context = await buildContext();
   });
 
@@ -208,7 +202,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
       describe('when calling `renounceOwnership`', () => {
         it('should pass when the owner is calling', async () => {
-          await ethers.provider.send('hardhat_mine', [toQuantity(500)]);
+          await networkHelpers.mine(500);
 
           await expect(
             context.universalProfile.connect(context.deployParams.owner).renounceOwnership(),
@@ -216,7 +210,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should revert when the non-owner is calling', async () => {
-          await ethers.provider.send('hardhat_mine', [toQuantity(100)]);
+          await networkHelpers.mine(100);
 
           await expect(context.universalProfile.connect(context.accounts[3]).renounceOwnership())
             .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
@@ -245,7 +239,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           it('should renounce ownership of the contract and call the URD of the previous owner', async () => {
             await context.universalProfile.connect(context.accounts[0]).renounceOwnership();
 
-            await ethers.provider.send('hardhat_mine', [toQuantity(199)]);
+            await networkHelpers.mine(199);
 
             const tx = await context.universalProfile
               .connect(context.accounts[0])

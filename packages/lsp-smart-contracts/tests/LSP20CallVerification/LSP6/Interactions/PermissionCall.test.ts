@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { network } from 'hardhat';
 import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 import {
@@ -48,6 +47,7 @@ export const shouldBehaveLikePermissionCall = (
       allowedContractWithFallbackRevert: FallbackRevert;
 
     before(async () => {
+      const { network } = await import('hardhat');
       ({ ethers } = await network.connect());
       context = await buildContext();
 
@@ -208,7 +208,7 @@ export const shouldBehaveLikePermissionCall = (
               .connect(addressCanMakeCallWithAllowedCalls)
               .execute(OPERATION_TYPES.CALL, allowedEOA, 0, '0x');
 
-            await expect(tx).to.not.be.reverted;
+            await expect(tx).to.not.revert(ethers);
 
             expect(tx)
               .to.emit(context.keyManager, 'PermissionsVerified')

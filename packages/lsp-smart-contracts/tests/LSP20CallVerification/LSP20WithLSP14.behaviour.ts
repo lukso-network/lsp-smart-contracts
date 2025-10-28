@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import { network, artifacts } from 'hardhat';
 
-import { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import {
   UPWithInstantAcceptOwnership__factory,
   UPWithInstantAcceptOwnership,
@@ -18,11 +18,12 @@ import {
   keccak256,
   parseEther,
   toBigInt,
-  toQuantity,
   toUtf8Bytes,
   ZeroAddress,
+  Wallet,
 } from 'ethers';
-import { Wallet } from 'ethers';
+import { ArtifactManager } from 'hardhat/types/artifacts';
+import { NetworkManager } from 'hardhat/types/network';
 
 export type LSP14CombinedWithLSP20TestContext = {
   accounts: HardhatEthersSigner[];
@@ -34,12 +35,16 @@ export type LSP14CombinedWithLSP20TestContext = {
 export const shouldBehaveLikeLSP14WithLSP20 = (
   buildContext: (initialFunding?: number | bigint) => Promise<LSP14CombinedWithLSP20TestContext>,
 ) => {
+  let artifacts: ArtifactManager;
+  let networkHelpers: NetworkHelpers;
   let ethers: HardhatEthers;
   let context: LSP14CombinedWithLSP20TestContext;
   let newOwner: HardhatEthersSigner;
 
   before(async () => {
-    ({ ethers } = await network.connect());
+    let network: NetworkManager;
+    ({ network, artifacts } = await import('hardhat'));
+    ({ ethers, networkHelpers } = await network.connect());
     context = await buildContext(parseEther('50'));
     newOwner = context.accounts[1];
   });
@@ -296,7 +301,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         await context.contract.connect(currentOwner).transferOwnership(anotherOwner);
 
         // mine 1,000 blocks
-        await ethers.provider.send('hardhat_mine', [toQuantity(1000)]);
+        await networkHelpers.mine(1000);
 
         renounceOwnershipTx = await context.contract.connect(currentOwner).renounceOwnership();
 
@@ -383,7 +388,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         const renounceOwnershipOnceReceipt = await renounceOwnershipOnce.wait();
 
         // skip 98 blocks, but not enough to reach the delay period
-        await ethers.provider.send('hardhat_mine', [toQuantity(98)]);
+        await networkHelpers.mine(98);
 
         await expect(context.contract.connect(context.deployParams.owner).renounceOwnership())
           .to.be.revertedWithCustomError(context.contract, 'LSP14NotInRenounceOwnershipInterval')
@@ -395,7 +400,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         expect(await context.contract.owner()).to.equal(context.deployParams.owner.address);
 
         // skip 500 blocks for the next test
-        await ethers.provider.send('hardhat_mine', [toQuantity(500)]);
+        await networkHelpers.mine(500);
       });
 
       it('should initialize again if the confirmation period passed', async () => {
@@ -415,7 +420,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
         await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
-        await ethers.provider.send('hardhat_mine', [toQuantity(400)]);
+        await networkHelpers.mine(400);
 
         const tx = await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
@@ -439,7 +444,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
           await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
           // Skip 199 block to reach the time where renouncing ownership can happen
-          await ethers.provider.send('hardhat_mine', [toQuantity(199)]);
+          await networkHelpers.mine(199);
 
           renounceOwnershipSecondTx = await context.contract
             .connect(context.deployParams.owner)
@@ -529,7 +534,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
           await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
           // Skip 199 block to reach the time where renouncing ownership can happen
-          await ethers.provider.send('hardhat_mine', [toQuantity(199)]);
+          await networkHelpers.mine(199);
 
           // Call renounceOwnership for the second time
           await context.contract.connect(context.deployParams.owner).renounceOwnership();
@@ -555,7 +560,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
       // Simulate a scenario where we are at just few hundred blocks after the blockchain started
       // (few hundred blocks after genesis)
-      await ethers.provider.send('hardhat_mine', [toQuantity(138)]);
+      await networkHelpers.mine(138);
     });
 
     it('should instantiate the renounceOwnership process in 2 steps correctly', async () => {

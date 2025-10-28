@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { network } from 'hardhat';
 
 import {
   LSP6KeyManagerInit,
@@ -15,10 +14,10 @@ import { deployProxy } from '../../utils/fixtures.js';
 
 import { shouldBehaveLikeLSP6 } from './LSP20WithLSP6.behaviour.js';
 
-const { ethers } = await network.connect();
-
 describe('LSP20 Init + LSP6 Init with proxy', () => {
   const buildProxyTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
