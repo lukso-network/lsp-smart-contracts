@@ -1,7 +1,5 @@
 import { expect } from 'chai';
-import type {
-  HardhatEthersSigner,
-} from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
@@ -43,7 +41,10 @@ import {
   combineCallTypes,
 } from '../../utils/helpers.js';
 import { getAddress, parseEther, solidityPacked, toBigInt, Wallet } from 'ethers';
-import { LSP6KeyManager, LSP6KeyManager__factory } from '../../../../lsp6-contracts/types/ethers-contracts/index.js';
+import {
+  LSP6KeyManager,
+  LSP6KeyManager__factory,
+} from '../../../../lsp6-contracts/types/ethers-contracts/index.js';
 
 const universalProfileInterface = UniversalProfile__factory.createInterface();
 
@@ -229,7 +230,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             const initialBalanceUP = await context.ethers.provider.getBalance(
               await context.universalProfile.getAddress(),
             );
-            const initialBalanceRecipient = await context.ethers.provider.getBalance(recipient.address);
+            const initialBalanceRecipient = await context.ethers.provider.getBalance(
+              recipient.address,
+            );
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -256,7 +259,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             const initialBalanceUP = await context.ethers.provider.getBalance(
               await context.universalProfile.getAddress(),
             );
-            const initialBalanceRecipient = await context.ethers.provider.getBalance(recipient.address);
+            const initialBalanceRecipient = await context.ethers.provider.getBalance(
+              recipient.address,
+            );
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -290,7 +295,9 @@ export const shouldBehaveLikePermissionTransferValue = (
               await context.universalProfile.getAddress(),
             );
 
-            const initialBalanceRecipient = await context.ethers.provider.getBalance(recipient.address);
+            const initialBalanceRecipient = await context.ethers.provider.getBalance(
+              recipient.address,
+            );
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -333,7 +340,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             const initialBalanceUP = await context.ethers.provider.getBalance(
               await context.universalProfile.getAddress(),
             );
-            const initialBalanceRecipient = await context.ethers.provider.getBalance(recipient.address);
+            const initialBalanceRecipient = await context.ethers.provider.getBalance(
+              recipient.address,
+            );
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -360,7 +369,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             const initialBalanceUP = await context.ethers.provider.getBalance(
               await context.universalProfile.getAddress(),
             );
-            const initialBalanceRecipient = await context.ethers.provider.getBalance(recipient.address);
+            const initialBalanceRecipient = await context.ethers.provider.getBalance(
+              recipient.address,
+            );
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -387,7 +398,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             const initialBalanceUP = await context.ethers.provider.getBalance(
               await context.universalProfile.getAddress(),
             );
-            const initialBalanceRecipient = await context.ethers.provider.getBalance(recipient.address);
+            const initialBalanceRecipient = await context.ethers.provider.getBalance(
+              recipient.address,
+            );
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -420,7 +433,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             const initialBalanceUP = await context.ethers.provider.getBalance(
               await context.universalProfile.getAddress(),
             );
-            const initialBalanceRecipient = await context.ethers.provider.getBalance(recipient.address);
+            const initialBalanceRecipient = await context.ethers.provider.getBalance(
+              recipient.address,
+            );
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -449,7 +464,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             const initialBalanceUP = await context.ethers.provider.getBalance(
               await context.universalProfile.getAddress(),
             );
-            const initialBalanceRecipient = await context.ethers.provider.getBalance(recipient.address);
+            const initialBalanceRecipient = await context.ethers.provider.getBalance(
+              recipient.address,
+            );
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -476,7 +493,9 @@ export const shouldBehaveLikePermissionTransferValue = (
             const initialBalanceUP = await context.ethers.provider.getBalance(
               await context.universalProfile.getAddress(),
             );
-            const initialBalanceRecipient = await context.ethers.provider.getBalance(recipient.address);
+            const initialBalanceRecipient = await context.ethers.provider.getBalance(
+              recipient.address,
+            );
 
             const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -488,7 +507,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             await expect(
               context.keyManager
                 .connect(canNeitherCallNorTransferValue)
-              ['execute(bytes)'](transferPayload),
+                ['execute(bytes)'](transferPayload),
             )
               .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
               .withArgs(canNeitherCallNorTransferValue.address, 'TRANSFERVALUE');
@@ -516,7 +535,7 @@ export const shouldBehaveLikePermissionTransferValue = (
             await expect(() =>
               context.keyManager
                 .connect(canTransferValueAndCall)
-              ['execute(bytes)'](transferPayload),
+                ['execute(bytes)'](transferPayload),
             ).to.changeEtherBalances(
               context.ethers,
               [await context.universalProfile.getAddress(), recipient.address],
@@ -598,7 +617,7 @@ export const shouldBehaveLikePermissionTransferValue = (
           );
 
           const { signature } = await eip191Signer.signDataWithIntendedValidator(
-            await context.keyManager.getAddress() as `0x${string}`,
+            (await context.keyManager.getAddress()) as `0x${string}`,
             encodedMessage,
             LOCAL_PRIVATE_KEYS.ACCOUNT0,
           );
@@ -626,7 +645,9 @@ export const shouldBehaveLikePermissionTransferValue = (
           const initialBalanceUP = await context.ethers.provider.getBalance(
             await context.universalProfile.getAddress(),
           );
-          const initialBalanceRecipient = await context.ethers.provider.getBalance(recipientUP.target);
+          const initialBalanceRecipient = await context.ethers.provider.getBalance(
+            recipientUP.target,
+          );
 
           const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
@@ -655,7 +676,9 @@ export const shouldBehaveLikePermissionTransferValue = (
           const initialBalanceUP = await context.ethers.provider.getBalance(
             await context.universalProfile.getAddress(),
           );
-          const initialBalanceRecipient = await context.ethers.provider.getBalance(recipientUP.target);
+          const initialBalanceRecipient = await context.ethers.provider.getBalance(
+            recipientUP.target,
+          );
 
           const transferPayload = universalProfileInterface.encodeFunctionData('execute', [
             OPERATION_TYPES.CALL,
@@ -690,7 +713,7 @@ export const shouldBehaveLikePermissionTransferValue = (
 
           const tx = context.keyManager
             .connect(canTransferValueAndCall)
-          ['execute(bytes)'](transferPayload);
+            ['execute(bytes)'](transferPayload);
 
           await expect(tx).to.changeEtherBalances(
             context.ethers,
@@ -731,11 +754,11 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        (await contractCanTransferValue.getAddress()).substring(2),
+          (await contractCanTransferValue.getAddress()).substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        (await contractCanTransferValue.getAddress()).substring(2),
+          (await contractCanTransferValue.getAddress()).substring(2),
       ];
 
       const permissionValues = [
@@ -842,25 +865,25 @@ export const shouldBehaveLikePermissionTransferValue = (
       bobUP = await new UniversalProfile__factory(bobMainController).deploy(
         bobMainController.address,
         {
-          value: parseEther('50')
-        }
+          value: parseEther('50'),
+        },
       );
-      bobKeyManager = await new LSP6KeyManager__factory(bobMainController).deploy(
-        bobUP.target,
-      );
+      bobKeyManager = await new LSP6KeyManager__factory(bobMainController).deploy(bobUP.target);
 
       // define permission keys for Alice's UP
       const alicePermissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + aliceMainController.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          aliceMainController.address.substring(2),
       ];
       const alicePermissionValues = [ALL_PERMISSIONS];
 
       const bobPermissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + bobMainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        (await aliceUP.getAddress()).substring(2),
+          bobMainController.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+          (await aliceUP.getAddress()).substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        (await aliceUP.getAddress()).substring(2),
+          (await aliceUP.getAddress()).substring(2),
       ];
 
       const bobPermissionValues = [
@@ -875,19 +898,24 @@ export const shouldBehaveLikePermissionTransferValue = (
       ];
 
       await setupKeyManager(context, alicePermissionKeys, alicePermissionValues);
-      await setupKeyManager({
-        ethers: context.ethers,
-        networkHelpers: context.networkHelpers,
-        accounts: context.accounts,
-        mainController: bobMainController,
-        universalProfile: bobUP,
-        keyManager: bobKeyManager,
-      }, bobPermissionKeys, bobPermissionValues);
+      await setupKeyManager(
+        {
+          ethers: context.ethers,
+          networkHelpers: context.networkHelpers,
+          accounts: context.accounts,
+          mainController: bobMainController,
+          universalProfile: bobUP,
+          keyManager: bobKeyManager,
+        },
+        bobPermissionKeys,
+        bobPermissionValues,
+      );
     });
 
     it('Alice should have ALL PERMISSIONS in her UP', async () => {
       const key =
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + aliceMainController.address.substring(2);
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        aliceMainController.address.substring(2);
 
       // prettier-ignore
       const result = await aliceUP.getData(key);
@@ -895,7 +923,9 @@ export const shouldBehaveLikePermissionTransferValue = (
     });
 
     it('Bob should have ALL PERMISSIONS in his UP', async () => {
-      const key = ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + bobMainController.address.substring(2);
+      const key =
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
+        bobMainController.address.substring(2);
 
       const result = await bobUP.getData(key);
       expect(result).to.equal(ALL_PERMISSIONS);
@@ -919,30 +949,27 @@ export const shouldBehaveLikePermissionTransferValue = (
       const bobUPAddress = await bobUP.getAddress();
       const aliceUPAddress = await aliceUP.getAddress();
 
-      const finalTransferLyxPayload = bobUP.interface.encodeFunctionData(
-        'execute',
-        [OPERATION_TYPES.CALL, aliceUPAddress, amount, '0x'],
-      );
+      const finalTransferLyxPayload = bobUP.interface.encodeFunctionData('execute', [
+        OPERATION_TYPES.CALL,
+        aliceUPAddress,
+        amount,
+        '0x',
+      ]);
 
       const bobKeyManagerPayload = LSP6Interface.encodeFunctionData('execute', [
         finalTransferLyxPayload,
       ]);
 
-      const aliceUniversalProfilePayload =
-        UniversalProfileInterface.encodeFunctionData('execute', [
-          OPERATION_TYPES.CALL,
-          await bobKeyManager.getAddress() as `0x${string}`,
-          0,
-          bobKeyManagerPayload,
-        ]);
+      const aliceUniversalProfilePayload = UniversalProfileInterface.encodeFunctionData('execute', [
+        OPERATION_TYPES.CALL,
+        (await bobKeyManager.getAddress()) as `0x${string}`,
+        0,
+        bobKeyManagerPayload,
+      ]);
 
       await expect(() =>
         aliceKeyManager.connect(aliceMainController).execute(aliceUniversalProfilePayload),
-      ).to.changeEtherBalances(
-        context.ethers,
-        [bobUP, aliceUP],
-        [`- ${amount}`, amount],
-      );
+      ).to.changeEtherBalances(context.ethers, [bobUP, aliceUP], [`- ${amount}`, amount]);
     });
   });
 
@@ -1352,7 +1379,9 @@ export const shouldBehaveLikePermissionTransferValue = (
           .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
           .withArgs(caller.address, recipient, '0x00000000');
 
-        const newBalanceUP = await context.ethers.provider.getBalance(await context.universalProfile.getAddress());
+        const newBalanceUP = await context.ethers.provider.getBalance(
+          await context.universalProfile.getAddress(),
+        );
         expect(newBalanceUP).to.equal(initialBalanceUP);
 
         const newBalanceRecipient = await context.ethers.provider.getBalance(recipient);

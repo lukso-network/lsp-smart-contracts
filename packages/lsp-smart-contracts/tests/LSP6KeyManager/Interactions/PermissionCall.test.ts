@@ -1,7 +1,5 @@
 import { expect } from 'chai';
-import type {
-  HardhatEthersSigner,
-} from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
@@ -71,19 +69,19 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCannotMakeCallNoAllowedCalls.address.substring(2),
+          addressCannotMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCannotMakeCallWithAllowedCalls.address.substring(2),
+          addressCannotMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanMakeCallNoAllowedCalls.address.substring(2),
+          addressCanMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressWithSuperCall.address.substring(2),
+          addressWithSuperCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressCannotMakeCallWithAllowedCalls.address.substring(2),
+          addressCannotMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
       ];
 
       const allowedCallsValues = combineAllowedCalls(
@@ -244,7 +242,9 @@ export const shouldBehaveLikePermissionCall = (
               '0x',
             ]);
 
-            const tx = await context.keyManager.connect(addressCanMakeCallWithAllowedCalls).execute(payload);
+            const tx = await context.keyManager
+              .connect(addressCanMakeCallWithAllowedCalls)
+              .execute(payload);
             const receipt = await tx.wait();
 
             // CHECK the status of this transaction, indicating success (1) or revert (0)
@@ -390,15 +390,15 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanMakeCallNoAllowedCalls.address.substring(2),
+          addressCanMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCannotMakeCall.address.substring(2),
+          addressCannotMakeCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
       ];
 
       const permissionsValues = [
@@ -606,7 +606,7 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress() as `0x${string}`,
+              (await context.keyManager.getAddress()) as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT0,
             );
@@ -664,7 +664,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                await context.keyManager.getAddress() as `0x${string}`,
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
               ),
               signature as `0x${string}`,
@@ -725,7 +725,7 @@ export const shouldBehaveLikePermissionCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                await context.keyManager.getAddress() as `0x${string}`,
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT2,
               );
@@ -780,7 +780,7 @@ export const shouldBehaveLikePermissionCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                await context.keyManager.getAddress() as `0x${string}`,
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT1,
               );
@@ -839,7 +839,7 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                await context.keyManager.getAddress() as `0x${string}`,
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
               ),
               signature as `0x${string}`,
@@ -898,7 +898,7 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress() as `0x${string}`,
+              (await context.keyManager.getAddress()) as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT3,
             );
@@ -961,7 +961,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const incorrectSignerAddress = await eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                await context.keyManager.getAddress() as `0x${string}`,
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
               ),
               ethereumSignature as `0x${string}`,
@@ -1000,7 +1000,7 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
       ];
 
       const permissionValues = [ALL_PERMISSIONS];
@@ -1088,24 +1088,24 @@ export const shouldBehaveLikePermissionCall = (
           const permissionKeys = [
             // permissions
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanTransferValue.address.substring(2),
+              controllerCanTransferValue.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanTransferValueAndCall.address.substring(2),
+              controllerCanTransferValueAndCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanCall.address.substring(2),
+              controllerCanCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanOnlySign.address.substring(2),
+              controllerCanOnlySign.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanSuperCall.address.substring(2),
+              controllerCanSuperCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanSuperTransferValue.address.substring(2),
+              controllerCanSuperTransferValue.address.substring(2),
             // allowed calls
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            controllerCanTransferValue.address.substring(2),
+              controllerCanTransferValue.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            controllerCanTransferValueAndCall.address.substring(2),
+              controllerCanTransferValueAndCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            controllerCanCall.address.substring(2),
+              controllerCanCall.address.substring(2),
           ];
 
           const allowedCall = combineAllowedCalls(
@@ -1189,7 +1189,9 @@ export const shouldBehaveLikePermissionCall = (
 
           describe('when caller has both permissions CALL + TRANSFERVALUE', () => {
             it('should pass and allow to call the contract', async () => {
-              expect(await context.ethers.provider.getBalance(await targetContract.getAddress())).to.equal(0);
+              expect(
+                await context.ethers.provider.getBalance(await targetContract.getAddress()),
+              ).to.equal(0);
 
               await context.keyManager
                 .connect(controllerCanTransferValueAndCall)
@@ -1198,7 +1200,9 @@ export const shouldBehaveLikePermissionCall = (
               expect(await targetContract.caller()).to.equal(
                 await context.universalProfile.getAddress(),
               );
-              expect(await context.ethers.provider.getBalance(await targetContract.getAddress())).to.equal(36);
+              expect(
+                await context.ethers.provider.getBalance(await targetContract.getAddress()),
+              ).to.equal(36);
             });
           });
         });
@@ -1273,14 +1277,14 @@ export const shouldBehaveLikePermissionCall = (
           const permissionKeys = [
             // permissions
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanCall.address.substring(2),
+              controllerCanCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanSuperCall.address.substring(2),
+              controllerCanSuperCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanOnlySign.address.substring(2),
+              controllerCanOnlySign.address.substring(2),
             // allowed calls
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            controllerCanCall.address.substring(2),
+              controllerCanCall.address.substring(2),
           ];
 
           const allowedCall = combineAllowedCalls(

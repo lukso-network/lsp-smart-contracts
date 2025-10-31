@@ -65,15 +65,15 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCanInteractOnlyWithERC1271.address.substring(2),
+        addressCanInteractOnlyWithERC1271.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCanInteractOnlyWithLSP7.address.substring(2),
+        addressCanInteractOnlyWithLSP7.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-      addressCanInteractOnlyWithERC1271.address.substring(2),
+        addressCanInteractOnlyWithERC1271.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-      addressCanInteractOnlyWithLSP7.address.substring(2),
+        addressCanInteractOnlyWithLSP7.address.substring(2),
     ];
 
     const permissionsValues = [
@@ -204,13 +204,11 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
         );
 
         await expect(
-          context.keyManager
-            .connect(addressCanInteractOnlyWithERC1271)
-            .execute(transferLyxPayload)
+          context.keyManager.connect(addressCanInteractOnlyWithERC1271).execute(transferLyxPayload),
         ).to.changeEtherBalances(
           context.ethers,
           [context.universalProfile, otherUniversalProfile.target],
-          [`-${amount}`, amount]
+          [`-${amount}`, amount],
         );
       });
     });

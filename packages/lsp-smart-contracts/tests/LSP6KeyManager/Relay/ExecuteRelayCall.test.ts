@@ -1,7 +1,5 @@
 import { expect } from 'chai';
-import type {
-  HardhatEthersSigner,
-} from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
@@ -41,7 +39,6 @@ export const shouldBehaveLikeExecuteRelayCall = (
 ) => {
   let context: LSP6TestContext;
 
-
   describe('`executeRelayCall(..)`', () => {
     let signer: HardhatEthersSigner,
       relayer: HardhatEthersSigner,
@@ -66,19 +63,17 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + signer.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + signer.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        signerNoAllowedCalls.address.substring(2),
+          signerNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        signerWithoutExecuteRelayCall.address.substring(2),
+          signerWithoutExecuteRelayCall.address.substring(2),
       ];
 
       const allPermissionsWithoutExecuteRelayCall = zeroPadValue(
-        toBeHex(
-          toBigInt(ALL_PERMISSIONS) - toBigInt(PERMISSIONS.EXECUTE_RELAY_CALL),
-        ),
+        toBeHex(toBigInt(ALL_PERMISSIONS) - toBigInt(PERMISSIONS.EXECUTE_RELAY_CALL)),
         32,
       );
 
@@ -147,7 +142,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          await context.keyManager.getAddress() as `0x${string}`,
+          (await context.keyManager.getAddress()) as `0x${string}`,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT5,
         );
@@ -209,7 +204,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress() as `0x${string}` as `0x${string}`,
+              (await context.keyManager.getAddress()) as `0x${string}` as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT1,
             );
@@ -267,7 +262,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress() as `0x${string}`,
+              (await context.keyManager.getAddress()) as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT1,
             );
@@ -327,7 +322,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress() as `0x${string}`,
+              (await context.keyManager.getAddress()) as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT1,
             );
@@ -393,7 +388,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress() as `0x${string}`,
+              (await context.keyManager.getAddress()) as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT3,
             );
@@ -465,7 +460,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                await context.keyManager.getAddress() as `0x${string}`,
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT1,
               );
@@ -486,7 +481,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
                   'ERC725X_InsufficientBalance',
                 )
                 .withArgs(
-                  await context.ethers.provider.getBalance(await context.universalProfile.getAddress()),
+                  await context.ethers.provider.getBalance(
+                    await context.universalProfile.getAddress(),
+                  ),
                   requiredValueForExecution,
                 );
             });
@@ -542,7 +539,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                await context.keyManager.getAddress() as `0x${string}`,
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT1,
               );
@@ -613,7 +610,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                await context.keyManager.getAddress() as `0x${string}`,
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT3,
               );
@@ -1391,7 +1388,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
       ];
 
       const permissionsValues = [ALL_PERMISSIONS];
@@ -1466,7 +1463,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
       );
 
       const hashedDataWithIntendedValidator = eip191.hashDataWithIntendedValidator(
-        await context.keyManager.getAddress() as `0x${string}`,
+        (await context.keyManager.getAddress()) as `0x${string}`,
         encodedMessage,
       );
 
@@ -1609,11 +1606,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           const secondRecipient = context.accounts[2].address;
           const thirdRecipient = context.accounts[3].address;
 
-          const transferAmounts = [
-            parseEther('1'),
-            parseEther('1'),
-            parseEther('1'),
-          ];
+          const transferAmounts = [parseEther('1'), parseEther('1'), parseEther('1')];
 
           const values = [parseEther('1'), parseEther('1'), parseEther('1')];
 
@@ -1691,11 +1684,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           const secondRecipient = context.accounts[2].address;
           const thirdRecipient = context.accounts[3].address;
 
-          const transferAmounts = [
-            parseEther('1'),
-            parseEther('1'),
-            parseEther('1'),
-          ];
+          const transferAmounts = [parseEther('1'), parseEther('1'), parseEther('1')];
 
           const values = [parseEther('1'), parseEther('1'), parseEther('1')];
 
@@ -1773,11 +1762,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
           const secondRecipient = context.accounts[2].address;
           const thirdRecipient = context.accounts[3].address;
 
-          const transferAmounts = [
-            parseEther('1'),
-            parseEther('1'),
-            parseEther('1'),
-          ];
+          const transferAmounts = [parseEther('1'), parseEther('1'), parseEther('1')];
 
           const values = [parseEther('1'), parseEther('1'), parseEther('1')];
 
@@ -1842,12 +1827,7 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
           await expect(tx).to.changeEtherBalances(
             context.ethers,
-            [
-              context.universalProfile,
-              firstRecipient,
-              secondRecipient,
-              thirdRecipient,
-            ],
+            [context.universalProfile, firstRecipient, secondRecipient, thirdRecipient],
             [0, values[0], values[1], values[2]],
           );
         });
@@ -1856,7 +1836,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
 
     describe('when one of the payload reverts', () => {
       it('should revert the whole transaction if first payload reverts', async () => {
-        const upBalance = await context.ethers.provider.getBalance(await context.universalProfile.getAddress());
+        const upBalance = await context.ethers.provider.getBalance(
+          await context.universalProfile.getAddress(),
+        );
 
         const validAmount = parseEther('1');
         expect(validAmount).to.be.lt(upBalance); // sanity check
@@ -1931,7 +1913,9 @@ export const shouldBehaveLikeExecuteRelayCall = (
       });
 
       it('should revert the whole transaction if last payload reverts', async () => {
-        const upBalance = await context.ethers.provider.getBalance(await context.universalProfile.getAddress());
+        const upBalance = await context.ethers.provider.getBalance(
+          await context.universalProfile.getAddress(),
+        );
 
         const validAmount = parseEther('1');
         expect(validAmount).to.be.lt(upBalance); // sanity check

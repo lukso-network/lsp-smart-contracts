@@ -1,6 +1,13 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { ContractTransaction, getAddress, solidityPacked, toQuantity, Wallet, ZeroAddress } from 'ethers';
+import {
+  ContractTransaction,
+  getAddress,
+  solidityPacked,
+  toQuantity,
+  Wallet,
+  ZeroAddress,
+} from 'ethers';
 import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
@@ -58,7 +65,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + canChangeOwner.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      cannotChangeOwner.address.substring(2),
+        cannotChangeOwner.address.substring(2),
     ];
     permissionsValues = [PERMISSIONS.CHANGEOWNER, PERMISSIONS.SETDATA];
     await setupKeyManager(context, permissionsKeys, permissionsValues);
@@ -409,7 +416,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
             [LSP25_VERSION, HARDHAT_CHAINID, firstNonce, validityTimestamps, valueToSend, payload],
           );
           const { signature: firstSignature } = await eip191Signer.signDataWithIntendedValidator(
-            await context.keyManager.getAddress() as `0x${string}`,
+            (await context.keyManager.getAddress()) as `0x${string}`,
             firstEncodedMessage,
             LOCAL_PRIVATE_KEYS.ACCOUNT0 as `0x${string}`,
           );
@@ -428,7 +435,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
             [LSP25_VERSION, HARDHAT_CHAINID, secondNonce, validityTimestamps, valueToSend, payload],
           );
           const { signature: secondSignature } = await eip191Signer.signDataWithIntendedValidator(
-            await context.keyManager.getAddress() as `0x${string}`,
+            (await context.keyManager.getAddress()) as `0x${string}`,
             secondEncodedMessage,
             LOCAL_PRIVATE_KEYS.ACCOUNT0 as `0x${string}`,
           );

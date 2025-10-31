@@ -23,7 +23,15 @@ describe('LSP20 + LSP6 with constructor', () => {
       universalProfile.target,
     );
 
-    return { ethers, networkHelpers, accounts, mainController, universalProfile, keyManager, initialFunding };
+    return {
+      ethers,
+      networkHelpers,
+      accounts,
+      mainController,
+      universalProfile,
+      keyManager,
+      initialFunding,
+    };
   };
 
   describe('when testing deployed contract', () => {

@@ -21,7 +21,17 @@ import { LSP6TestContext } from '../../utils/context.js';
 import { setupKeyManager } from '../../utils/fixtures.js';
 
 import { abiCoder, combinePermissions, LOCAL_PRIVATE_KEYS } from '../../utils/helpers.js';
-import { getAddress, getCreate2Address, hexlify, keccak256, parseEther, randomBytes, solidityPacked, ZeroAddress, zeroPadValue } from 'ethers';
+import {
+  getAddress,
+  getCreate2Address,
+  hexlify,
+  keccak256,
+  parseEther,
+  randomBytes,
+  solidityPacked,
+  ZeroAddress,
+  zeroPadValue,
+} from 'ethers';
 
 export const shouldBehaveLikePermissionDeploy = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
@@ -48,15 +58,15 @@ export const shouldBehaveLikePermissionDeploy = (
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCanDeploy.address.substring(2),
+        addressCanDeploy.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCanDeployAndTransferValue.address.substring(2),
+        addressCanDeployAndTransferValue.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCanDeployAndSuperTransferValue.address.substring(2),
+        addressCanDeployAndSuperTransferValue.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCannotDeploy.address.substring(2),
+        addressCannotDeploy.address.substring(2),
     ];
 
     const permissionsValues = [
@@ -150,7 +160,9 @@ export const shouldBehaveLikePermissionDeploy = (
       expect(await newUp.owner()).to.equal(initialUpOwner);
 
       // check that the newly deployed contract (UP) has beedn funded with the correct balance
-      expect(await context.ethers.provider.getBalance(expectedContractAddress)).to.equal(fundingAmount);
+      expect(await context.ethers.provider.getBalance(expectedContractAddress)).to.equal(
+        fundingAmount,
+      );
     });
 
     it('should be allowed to deploy a contract with CREATE2', async () => {
@@ -168,8 +180,7 @@ export const shouldBehaveLikePermissionDeploy = (
         await context.universalProfile.getAddress(),
         salt,
         keccak256(contractBytecodeToDeploy),
-      )
-        .toLowerCase();
+      ).toLowerCase();
 
       await expect(context.keyManager.connect(context.mainController).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
@@ -201,17 +212,11 @@ export const shouldBehaveLikePermissionDeploy = (
         await context.universalProfile.getAddress(),
         salt,
         keccak256(contractBytecodeToDeploy),
-      )
-        .toLowerCase();
+      ).toLowerCase();
 
       await expect(context.keyManager.connect(context.mainController).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
-        .withArgs(
-          OPERATION_TYPES.CREATE2,
-          getAddress(preComputedAddress),
-          fundingAmount,
-          salt,
-        );
+        .withArgs(OPERATION_TYPES.CREATE2, getAddress(preComputedAddress), fundingAmount, salt);
 
       // check that the newly deployed contract (UP) has the correct owner
       const newUp = new UniversalProfile__factory(context.accounts[0]).attach(preComputedAddress);
@@ -287,8 +292,7 @@ export const shouldBehaveLikePermissionDeploy = (
         await context.universalProfile.getAddress(),
         salt,
         keccak256(contractBytecodeToDeploy),
-      )
-        .toLowerCase();
+      ).toLowerCase();
 
       await expect(context.keyManager.connect(addressCanDeploy).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
@@ -390,8 +394,7 @@ export const shouldBehaveLikePermissionDeploy = (
         await context.universalProfile.getAddress(),
         salt,
         keccak256(contractBytecodeToDeploy),
-      )
-        .toLowerCase();
+      ).toLowerCase();
 
       await expect(context.keyManager.connect(addressCanDeployAndTransferValue).execute(payload))
         .to.emit(context.universalProfile, 'ContractCreated')
@@ -501,7 +504,9 @@ export const shouldBehaveLikePermissionDeploy = (
       expect(await newUp.owner()).to.equal(initialUpOwner);
 
       // check that the newly deployed contract (UP) has beedn funded with the correct balance
-      expect(await context.ethers.provider.getBalance(expectedContractAddress)).to.equal(fundingAmount);
+      expect(await context.ethers.provider.getBalance(expectedContractAddress)).to.equal(
+        fundingAmount,
+      );
     });
 
     it('should be allowed to deploy a contract with CREATE2', async () => {
@@ -519,8 +524,7 @@ export const shouldBehaveLikePermissionDeploy = (
         await context.universalProfile.getAddress(),
         salt,
         keccak256(contractBytecodeToDeploy),
-      )
-        .toLowerCase();
+      ).toLowerCase();
 
       await expect(
         context.keyManager.connect(addressCanDeployAndSuperTransferValue).execute(payload),
@@ -554,19 +558,13 @@ export const shouldBehaveLikePermissionDeploy = (
         await context.universalProfile.getAddress(),
         salt,
         keccak256(contractBytecodeToDeploy),
-      )
-        .toLowerCase();
+      ).toLowerCase();
 
       await expect(
         context.keyManager.connect(addressCanDeployAndSuperTransferValue).execute(payload),
       )
         .to.emit(context.universalProfile, 'ContractCreated')
-        .withArgs(
-          OPERATION_TYPES.CREATE2,
-          getAddress(preComputedAddress),
-          fundingAmount,
-          salt,
-        );
+        .withArgs(OPERATION_TYPES.CREATE2, getAddress(preComputedAddress), fundingAmount, salt);
 
       // check that the newly deployed contract (UP) has the correct owner
       const newUp = new UniversalProfile__factory(context.accounts[0]).attach(preComputedAddress);
@@ -643,7 +641,7 @@ export const shouldBehaveLikePermissionDeploy = (
 
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                await context.keyManager.getAddress() as `0x${string}`,
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
               ),
               ethereumSignature as `0x${string}`,
@@ -687,7 +685,7 @@ export const shouldBehaveLikePermissionDeploy = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress() as `0x${string}`,
+              (await context.keyManager.getAddress()) as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT4 as `0x${string}`,
             );
@@ -735,7 +733,7 @@ export const shouldBehaveLikePermissionDeploy = (
             const eip191Signer = new EIP191Signer();
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                await context.keyManager.getAddress() as `0x${string}`,
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
               ),
               ethereumSignature as `0x${string}`,
@@ -780,7 +778,7 @@ export const shouldBehaveLikePermissionDeploy = (
             const lsp6Signer = new EIP191Signer();
 
             const { signature } = await lsp6Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress() as `0x${string}`,
+              (await context.keyManager.getAddress()) as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT4 as `0x${string}`,
             );

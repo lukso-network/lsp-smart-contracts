@@ -1,7 +1,5 @@
 import { expect } from 'chai';
-import type {
-  HardhatEthersSigner,
-} from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import {
   hexlify,
   keccak256,
@@ -13,7 +11,7 @@ import {
   ZeroHash,
 } from 'ethers';
 
-import { artifacts } from "hardhat"
+import { artifacts } from 'hardhat';
 
 import {
   type Reentrancy,
@@ -70,7 +68,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + signer.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + signer.address.substring(2),
     ];
@@ -194,9 +192,9 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
         [
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          (await universalReceiverDelegateDataUpdater.getAddress()).substring(2),
+            (await universalReceiverDelegateDataUpdater.getAddress()).substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          (await universalReceiverDelegateDataUpdater.getAddress()).substring(2),
+            (await universalReceiverDelegateDataUpdater.getAddress()).substring(2),
         ],
         [
           await universalReceiverDelegateDataUpdater.getAddress(),
@@ -243,11 +241,11 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        (await context.mainController.getAddress()).substring(2),
+          (await context.mainController.getAddress()).substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        (await firstReentrant.getAddress()).substring(2),
+          (await firstReentrant.getAddress()).substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        (await secondReentrant.getAddress()).substring(2),
+          (await secondReentrant.getAddress()).substring(2),
       ];
 
       const permissionValues = [
@@ -284,7 +282,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
           before(async () => {
             const permissionKeys = [
               ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              (await secondReentrant.getAddress()).substring(2),
+                (await secondReentrant.getAddress()).substring(2),
             ];
 
             const permissionValues = [

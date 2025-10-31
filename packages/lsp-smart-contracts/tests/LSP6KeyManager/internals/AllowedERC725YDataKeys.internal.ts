@@ -586,13 +586,13 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking an array of valid keys: should return true', async () => {
           const checkedDataKeys = [
             dataKeys.firstDynamicKey.key +
-            hexlify(
-              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
-            ).substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
+              ).substring(2),
             dataKeys.secondDynamicKey.key +
-            hexlify(
-              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
-            ).substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+              ).substring(2),
           ];
 
           expect(
@@ -661,13 +661,13 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking an array of valid keys: should return true', async () => {
           const checkedDataKeys = [
             dataKeys.firstDynamicKey.key +
-            hexlify(
-              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
-            ).substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
+              ).substring(2),
             dataKeys.secondDynamicKey.key +
-            hexlify(
-              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
-            ).substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+              ).substring(2),
             dataKeys.firstFixedKey.key,
             dataKeys.secondFixedKey.key,
           ];
@@ -705,23 +705,23 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking an array of valid keys: should return true', async () => {
           const checkedDataKeys = [
             dataKeys.firstDynamicKey.key +
-            hexlify(
-              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
-            ).substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
+              ).substring(2),
             dataKeys.firstFixedKey.key,
             dataKeys.secondDynamicKey.key +
-            hexlify(
-              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
-            ).substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+              ).substring(2),
             dataKeys.thirdDynamicKey.key +
-            hexlify(
-              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.thirdDynamicKey.length)))),
-            ).substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.thirdDynamicKey.length)))),
+              ).substring(2),
             dataKeys.secondFixedKey.key,
             dataKeys.fourthDynamicKey.key +
-            hexlify(
-              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.fourthDynamicKey.length)))),
-            ).substring(2),
+              hexlify(
+                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.fourthDynamicKey.length)))),
+              ).substring(2),
             dataKeys.thirdFixedKey.key,
           ];
 

@@ -66,19 +66,19 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCannotMakeCallNoAllowedCalls.address.substring(2),
+          addressCannotMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCannotMakeCallWithAllowedCalls.address.substring(2),
+          addressCannotMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanMakeCallNoAllowedCalls.address.substring(2),
+          addressCanMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressWithSuperCall.address.substring(2),
+          addressWithSuperCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressCannotMakeCallWithAllowedCalls.address.substring(2),
+          addressCannotMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
       ];
 
       const allowedCallsValues = combineAllowedCalls(
@@ -205,7 +205,7 @@ export const shouldBehaveLikePermissionCall = (
             await expect(
               context.universalProfile
                 .connect(addressCanMakeCallWithAllowedCalls)
-                .execute(OPERATION_TYPES.CALL, allowedEOA, 0, '0x')
+                .execute(OPERATION_TYPES.CALL, allowedEOA, 0, '0x'),
             )
               .to.emit(context.keyManager, 'PermissionsVerified')
               .withArgs(addressCanMakeCallWithAllowedCalls.address, 0, '0x00000000');
@@ -339,15 +339,15 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanMakeCallNoAllowedCalls.address.substring(2),
+          addressCanMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCannotMakeCall.address.substring(2),
+          addressCannotMakeCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressCanMakeCallWithAllowedCalls.address.substring(2),
+          addressCanMakeCallWithAllowedCalls.address.substring(2),
       ];
 
       const permissionsValues = [
@@ -496,7 +496,7 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
       ];
 
       const permissionValues = [ALL_PERMISSIONS];
@@ -561,24 +561,24 @@ export const shouldBehaveLikePermissionCall = (
           const permissionKeys = [
             // permissions
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanTransferValue.address.substring(2),
+              controllerCanTransferValue.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanTransferValueAndCall.address.substring(2),
+              controllerCanTransferValueAndCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanCall.address.substring(2),
+              controllerCanCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanOnlySign.address.substring(2),
+              controllerCanOnlySign.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanSuperCall.address.substring(2),
+              controllerCanSuperCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanSuperTransferValue.address.substring(2),
+              controllerCanSuperTransferValue.address.substring(2),
             // allowed calls
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            controllerCanTransferValue.address.substring(2),
+              controllerCanTransferValue.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            controllerCanTransferValueAndCall.address.substring(2),
+              controllerCanTransferValueAndCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            controllerCanCall.address.substring(2),
+              controllerCanCall.address.substring(2),
           ];
 
           const allowedCall = combineAllowedCalls(
@@ -670,9 +670,9 @@ export const shouldBehaveLikePermissionCall = (
 
           describe('when caller has both permissions CALL + TRANSFERVALUE', () => {
             it('should pass and allow to call the contract', async () => {
-              expect(await context.ethers.provider.getBalance(await targetContract.getAddress())).to.equal(
-                0,
-              );
+              expect(
+                await context.ethers.provider.getBalance(await targetContract.getAddress()),
+              ).to.equal(0);
 
               await controllerCanTransferValueAndCall.sendTransaction({
                 to: await context.universalProfile.getAddress(),
@@ -682,9 +682,9 @@ export const shouldBehaveLikePermissionCall = (
               expect(await targetContract.caller()).to.equal(
                 await context.universalProfile.getAddress(),
               );
-              expect(await context.ethers.provider.getBalance(await targetContract.getAddress())).to.equal(
-                36,
-              );
+              expect(
+                await context.ethers.provider.getBalance(await targetContract.getAddress()),
+              ).to.equal(36);
             });
           });
         });
@@ -768,14 +768,14 @@ export const shouldBehaveLikePermissionCall = (
           const permissionKeys = [
             // permissions
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanCall.address.substring(2),
+              controllerCanCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanSuperCall.address.substring(2),
+              controllerCanSuperCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            controllerCanOnlySign.address.substring(2),
+              controllerCanOnlySign.address.substring(2),
             // allowed calls
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            controllerCanCall.address.substring(2),
+              controllerCanCall.address.substring(2),
           ];
 
           const allowedCall = combineAllowedCalls(

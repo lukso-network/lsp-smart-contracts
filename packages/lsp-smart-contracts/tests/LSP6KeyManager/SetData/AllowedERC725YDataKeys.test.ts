@@ -39,15 +39,15 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        controllerCanSetOneKey.address.substring(2),
+          controllerCanSetOneKey.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        controllerCanSetManyKeys.address.substring(2),
+          controllerCanSetManyKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-        controllerCanSetOneKey.address.substring(2),
+          controllerCanSetOneKey.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-        controllerCanSetManyKeys.address.substring(2),
+          controllerCanSetManyKeys.address.substring(2),
       ];
 
       const permissionValues = [
@@ -65,7 +65,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       it('`controllerCanSetOneKey` should have 1 x key in its list of allowed keys', async () => {
         const result = await context.universalProfile.getData(
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          controllerCanSetOneKey.address.substring(2),
+            controllerCanSetOneKey.address.substring(2),
         );
         const decodedResult = decodeCompactBytes(result);
 
@@ -75,7 +75,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       it('`controllerCanSetManyKeys` should have 3 x keys in its list of allowed keys', async () => {
         const result = await context.universalProfile.getData(
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          controllerCanSetManyKeys.address.substring(2),
+            controllerCanSetManyKeys.address.substring(2),
         );
         const decodedResult = decodeCompactBytes(result);
 
@@ -85,7 +85,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       it('`controllerCanSetOneKey` should have the right keys set in its list of allowed keys', async () => {
         const result = await context.universalProfile.getData(
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          controllerCanSetOneKey.address.substring(2),
+            controllerCanSetOneKey.address.substring(2),
         );
         const decodedResult = decodeCompactBytes(result);
 
@@ -95,7 +95,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
       it('`controllerCanSetManyKeys` should have the right keys set in its list of allowed keys', async () => {
         const result = await context.universalProfile.getData(
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          controllerCanSetManyKeys.address.substring(2),
+            controllerCanSetManyKeys.address.substring(2),
         );
         const decodedResult = decodeCompactBytes(result);
 
@@ -557,11 +557,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('1st key in input = not allowed key. Other 2 keys = allowed', async () => {
-            const keys = [
-              keccak256(toUtf8Bytes('XXXXXXXXXX')),
-              customKey2,
-              customKey3,
-            ];
+            const keys = [keccak256(toUtf8Bytes('XXXXXXXXXX')), customKey2, customKey3];
 
             const values = [
               hexlify(toUtf8Bytes('Value XXXXXXXX')),
@@ -582,11 +578,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('2nd key in input = not allowed key. Other 2 keys = allowed', async () => {
-            const keys = [
-              customKey2,
-              keccak256(toUtf8Bytes('XXXXXXXXXX')),
-              customKey3,
-            ];
+            const keys = [customKey2, keccak256(toUtf8Bytes('XXXXXXXXXX')), customKey3];
             const values = [
               hexlify(toUtf8Bytes('Custom Value 2')),
               hexlify(toUtf8Bytes('Value XXXXXXXX')),
@@ -606,11 +598,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
           });
 
           it('3rd key in input = not allowed key. Other 2 keys = allowed', async () => {
-            const keys = [
-              customKey2,
-              customKey3,
-              keccak256(toUtf8Bytes('XXXXXXXXXX')),
-            ];
+            const keys = [customKey2, customKey3, keccak256(toUtf8Bytes('XXXXXXXXXX'))];
 
             const values = [
               hexlify(toUtf8Bytes('Custom Value 2')),
@@ -812,11 +800,11 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        controllerCanSetMappingKeys.address.substring(2),
+          controllerCanSetMappingKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-        controllerCanSetMappingKeys.address.substring(2),
+          controllerCanSetMappingKeys.address.substring(2),
       ];
 
       const permissionValues = [
@@ -1096,11 +1084,11 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        controllerCanSetArrayKeys.address.substring(2),
+          controllerCanSetArrayKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-        controllerCanSetArrayKeys.address.substring(2),
+          controllerCanSetArrayKeys.address.substring(2),
       ];
 
       const permissionValues = [
@@ -1279,11 +1267,11 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
         const permissionKeys = [
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+            context.mainController.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          controllerCanSetSomeKeys.address.substring(2),
+            controllerCanSetSomeKeys.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          controllerCanSetSomeKeys.address.substring(2),
+            controllerCanSetSomeKeys.address.substring(2),
         ];
 
         const permissionValues = [
@@ -1435,11 +1423,11 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
         const permissionKeys = [
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+            context.mainController.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          controllerCanSetSomeKeys.address.substring(2),
+            controllerCanSetSomeKeys.address.substring(2),
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          controllerCanSetSomeKeys.address.substring(2),
+            controllerCanSetSomeKeys.address.substring(2),
         ];
 
         const permissionValues = [
@@ -1617,11 +1605,11 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        controllerCanSetSomeKeys.address.substring(2),
+          controllerCanSetSomeKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-        controllerCanSetSomeKeys.address.substring(2),
+          controllerCanSetSomeKeys.address.substring(2),
       ];
 
       const permissionValues = [
@@ -1715,11 +1703,11 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        controllerCanSetSomeKeys.address.substring(2),
+          controllerCanSetSomeKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-        controllerCanSetSomeKeys.address.substring(2),
+          controllerCanSetSomeKeys.address.substring(2),
       ];
 
       const permissionValues = [

@@ -41,7 +41,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + canChangeOwner.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      cannotChangeOwner.address.substring(2),
+        cannotChangeOwner.address.substring(2),
     ];
 
     permissionsValues = [PERMISSIONS.CHANGEOWNER, PERMISSIONS.SETDATA];
@@ -314,7 +314,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
         await expect(tx).to.changeEtherBalances(
           context.ethers,
           [context.universalProfile, recipient],
-          [`-${amount}`, amount]
+          [`-${amount}`, amount],
         );
       });
     });

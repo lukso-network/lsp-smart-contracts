@@ -62,15 +62,15 @@ export const shouldBehaveLikePermissionStaticCall = (
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCanMakeStaticCall.address.substring(2),
+        addressCanMakeStaticCall.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-      addressCanMakeStaticCall.address.substring(2),
+        addressCanMakeStaticCall.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCannotMakeStaticCall.address.substring(2),
+        addressCannotMakeStaticCall.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCanMakeStaticCallNoAllowedCalls.address.substring(2),
+        addressCanMakeStaticCallNoAllowedCalls.address.substring(2),
     ];
 
     const permissionsValues = [
@@ -621,9 +621,9 @@ export const shouldBehaveLikePermissionStaticCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressWithSuperStaticCall.address.substring(2),
+          addressWithSuperStaticCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressWithSuperStaticCall.address.substring(2),
+          addressWithSuperStaticCall.address.substring(2),
       ];
 
       const permissionValues = [
@@ -703,9 +703,9 @@ export const shouldBehaveLikePermissionStaticCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressWithSuperCall.address.substring(2),
+          addressWithSuperCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressWithSuperCall.address.substring(2),
+          addressWithSuperCall.address.substring(2),
       ];
 
       const permissionValues = [
@@ -775,9 +775,9 @@ export const shouldBehaveLikePermissionStaticCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressWithSuperCallAndStaticCall.address.substring(2),
+          addressWithSuperCallAndStaticCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressWithSuperCallAndStaticCall.address.substring(2),
+          addressWithSuperCallAndStaticCall.address.substring(2),
       ];
 
       const permissionValues = [

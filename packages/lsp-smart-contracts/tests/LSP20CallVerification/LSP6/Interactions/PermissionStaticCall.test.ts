@@ -40,15 +40,15 @@ export const shouldBehaveLikePermissionStaticCall = (
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCanMakeStaticCall.address.substring(2),
+        addressCanMakeStaticCall.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-      addressCanMakeStaticCall.address.substring(2),
+        addressCanMakeStaticCall.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCannotMakeStaticCall.address.substring(2),
+        addressCannotMakeStaticCall.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCanMakeStaticCallNoAllowedCalls.address.substring(2),
+        addressCanMakeStaticCallNoAllowedCalls.address.substring(2),
     ];
 
     const permissionsValues = [

@@ -18,7 +18,19 @@ import {
   type LSP7MintableInit,
   LSP7MintableInit__factory,
 } from '../../../../lsp7-contracts/types/ethers-contracts/index.js';
-import { getAddress, hexlify, keccak256, parseEther, randomBytes, toBigInt, toUtf8Bytes, toUtf8String, Wallet, ZeroAddress, zeroPadValue } from 'ethers';
+import {
+  getAddress,
+  hexlify,
+  keccak256,
+  parseEther,
+  randomBytes,
+  toBigInt,
+  toUtf8Bytes,
+  toUtf8String,
+  Wallet,
+  ZeroAddress,
+  zeroPadValue,
+} from 'ethers';
 
 export const shouldBehaveLikeBatchExecute = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
@@ -38,7 +50,7 @@ export const shouldBehaveLikeBatchExecute = (
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
     ];
 
     const permissionsValues = [ALL_PERMISSIONS];
@@ -418,10 +430,7 @@ export const shouldBehaveLikeBatchExecute = (
         it('should revert and not leave any funds locked on the Key Manager', async () => {
           const amountToFund = parseEther('5');
 
-          const dataKeys = [
-            keccak256(toUtf8Bytes('key1')),
-            keccak256(toUtf8Bytes('key2')),
-          ];
+          const dataKeys = [keccak256(toUtf8Bytes('key1')), keccak256(toUtf8Bytes('key2'))];
           const dataValues = ['0xaaaaaaaa', '0xbbbbbbbb'];
 
           const keyManagerBalanceBefore = await context.ethers.provider.getBalance(
@@ -458,9 +467,9 @@ export const shouldBehaveLikeBatchExecute = (
 
           // the Key Manager must not hold any funds and must always forward any funds sent to it.
           // it's balance must always be 0 after any execution
-          expect(await context.ethers.provider.getBalance(await context.keyManager.getAddress())).to.equal(
-            0,
-          );
+          expect(
+            await context.ethers.provider.getBalance(await context.keyManager.getAddress()),
+          ).to.equal(0);
         });
       });
 
@@ -471,10 +480,7 @@ export const shouldBehaveLikeBatchExecute = (
             (accumulator, currentValue) => accumulator + currentValue,
           );
 
-          const dataKeys = [
-            keccak256(toUtf8Bytes('key1')),
-            keccak256(toUtf8Bytes('key2')),
-          ];
+          const dataKeys = [keccak256(toUtf8Bytes('key1')), keccak256(toUtf8Bytes('key2'))];
           const dataValues = ['0xaaaaaaaa', '0xbbbbbbbb'];
 
           const firstSetDataPayload = context.universalProfile.interface.encodeFunctionData(
@@ -593,11 +599,7 @@ export const shouldBehaveLikeBatchExecute = (
           const secondRecipient = context.accounts[4].address;
           const thirdRecipient = context.accounts[5].address;
 
-          const amountsToTransfer = [
-            parseEther('1'),
-            parseEther('1'),
-            parseEther('1'),
-          ];
+          const amountsToTransfer = [parseEther('1'), parseEther('1'), parseEther('1')];
 
           const values = [parseEther('2'), parseEther('2'), parseEther('2')];
 
@@ -645,11 +647,7 @@ export const shouldBehaveLikeBatchExecute = (
           const secondRecipient = context.accounts[4].address;
           const thirdRecipient = context.accounts[5].address;
 
-          const amountsToTransfer = [
-            parseEther('1'),
-            parseEther('1'),
-            parseEther('1'),
-          ];
+          const amountsToTransfer = [parseEther('1'), parseEther('1'), parseEther('1')];
 
           const values = [parseEther('2'), parseEther('2'), parseEther('2')];
 
@@ -697,11 +695,7 @@ export const shouldBehaveLikeBatchExecute = (
           const secondRecipient = context.accounts[4].address;
           const thirdRecipient = context.accounts[5].address;
 
-          const amountsToTransfer = [
-            parseEther('2'),
-            parseEther('2'),
-            parseEther('2'),
-          ];
+          const amountsToTransfer = [parseEther('2'), parseEther('2'), parseEther('2')];
 
           const values = [parseEther('2'), parseEther('2'), parseEther('2')];
 

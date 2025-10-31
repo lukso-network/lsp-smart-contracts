@@ -36,7 +36,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + signer.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] + signer.address.substring(2),
     ];
@@ -61,7 +61,9 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
     it('should revert', async () => {
       const channelId = toBigInt('0xffffffffffffffffffffffffffffffffff');
 
-      expect(await (context.keyManager as any)["getNonce(address,uint128)"](signer.address, channelId)).to.be.revertedWithPanic();
+      expect(
+        await (context.keyManager as any)['getNonce(address,uint128)'](signer.address, channelId),
+      ).to.be.revertedWithPanic();
     });
   });
 

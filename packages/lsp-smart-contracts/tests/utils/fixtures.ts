@@ -45,7 +45,12 @@ export async function deployProxy(baseContractAddress: string, deployer: Hardhat
   });
   const receipt = await tx.wait();
 
-  if (!receipt || receipt.status !== 1 || receipt.contractAddress === null || receipt.contractAddress === undefined) {
+  if (
+    !receipt ||
+    receipt.status !== 1 ||
+    receipt.contractAddress === null ||
+    receipt.contractAddress === undefined
+  ) {
     throw new Error('Failed to deploy proxy contract');
   }
 
@@ -63,7 +68,7 @@ export async function setupKeyManager(
       // otherwise, the KeyManager will flag the calling main controller as not having the permission CHANGEOWNER
       // when trying to setup the KeyManager
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      _context.mainController.address.substring(2),
+        _context.mainController.address.substring(2),
       ..._dataKeys,
     ],
     [ALL_PERMISSIONS, ..._dataValues],
@@ -90,7 +95,7 @@ export async function setupKeyManagerHelper(
     .setDataBatch(
       [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        _context.mainController.address.substring(2),
+          _context.mainController.address.substring(2),
         ..._permissionsKeys,
       ],
       [ALL_PERMISSIONS, ..._permissionsValues],
@@ -132,7 +137,7 @@ export async function setupProfileWithKeyManagerWithURD(EOA: HardhatEthersSigner
         ERC725YDataKeys.LSP6['AddressPermissions[]'].index + '00000000000000000000000000000001',
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + EOA.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        (await lsp1universalReceiverDelegateUP.getAddress()).substring(2),
+          (await lsp1universalReceiverDelegateUP.getAddress()).substring(2),
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
       ],
       [

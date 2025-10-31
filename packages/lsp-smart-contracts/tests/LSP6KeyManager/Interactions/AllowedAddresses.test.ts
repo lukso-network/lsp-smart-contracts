@@ -54,15 +54,15 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      canCallOnlyTwoAddresses.address.substring(2),
+        canCallOnlyTwoAddresses.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-      canCallOnlyTwoAddresses.address.substring(2),
+        canCallOnlyTwoAddresses.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      invalidEncodedAllowedCalls.address.substring(2),
+        invalidEncodedAllowedCalls.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-      invalidEncodedAllowedCalls.address.substring(2),
+        invalidEncodedAllowedCalls.address.substring(2),
     ];
 
     const encodedAllowedCalls = combineAllowedCalls(
@@ -106,10 +106,12 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
             EMPTY_PAYLOAD,
           ]);
 
-          await expect(context.keyManager.connect(context.mainController).execute(transferPayload)).to.changeEtherBalances(
+          await expect(
+            context.keyManager.connect(context.mainController).execute(transferPayload),
+          ).to.changeEtherBalances(
             context.ethers,
             [context.universalProfile, recipient],
-            [`-${amount}`, amount]
+            [`-${amount}`, amount],
           );
         });
       });
@@ -128,11 +130,11 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
       ]);
 
       await expect(
-        context.keyManager.connect(canCallOnlyTwoAddresses).execute(transferPayload)
+        context.keyManager.connect(canCallOnlyTwoAddresses).execute(transferPayload),
       ).to.changeEtherBalances(
         context.ethers,
         [context.universalProfile, allowedEOA.address],
-        [`-${amount}`, amount]
+        [`-${amount}`, amount],
       );
     });
 

@@ -1,6 +1,14 @@
 import { expect } from 'chai';
 import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
-import { getAddress, getCreate2Address, hexlify, keccak256, randomBytes, ZeroAddress, zeroPadValue } from 'ethers';
+import {
+  getAddress,
+  getCreate2Address,
+  hexlify,
+  keccak256,
+  randomBytes,
+  ZeroAddress,
+  zeroPadValue,
+} from 'ethers';
 
 import { TargetContract__factory } from '../../../../types/ethers-contracts/index.js';
 
@@ -26,11 +34,11 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCanDeploy.address.substring(2),
+        addressCanDeploy.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      addressCannotDeploy.address.substring(2),
+        addressCannotDeploy.address.substring(2),
     ];
 
     const permissionsValues = [ALL_PERMISSIONS, PERMISSIONS.DEPLOY, PERMISSIONS.CALL];

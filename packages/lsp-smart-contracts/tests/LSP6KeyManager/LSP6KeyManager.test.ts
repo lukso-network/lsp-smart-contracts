@@ -29,7 +29,15 @@ describe('LSP6KeyManager with constructor', () => {
       universalProfile.target,
     );
 
-    return { ethers, networkHelpers, accounts, mainController, universalProfile, keyManager, initialFunding };
+    return {
+      ethers,
+      networkHelpers,
+      accounts,
+      mainController,
+      universalProfile,
+      keyManager,
+      initialFunding,
+    };
   };
 
   describe('when deploying the contract', () => {

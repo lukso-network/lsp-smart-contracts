@@ -1,7 +1,5 @@
 import { expect } from 'chai';
-import type {
-  HardhatEthersSigner,
-} from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { parseEther } from 'ethers';
 
 import {
@@ -53,15 +51,15 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      canCallOnlyTwoAddresses.address.substring(2),
+        canCallOnlyTwoAddresses.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-      canCallOnlyTwoAddresses.address.substring(2),
+        canCallOnlyTwoAddresses.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-      invalidEncodedAllowedCalls.address.substring(2),
+        invalidEncodedAllowedCalls.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-      invalidEncodedAllowedCalls.address.substring(2),
+        invalidEncodedAllowedCalls.address.substring(2),
     ];
 
     const encodedAllowedCalls = combineAllowedCalls(
@@ -132,7 +130,9 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
         .connect(canCallOnlyTwoAddresses)
         .execute(OPERATION_TYPES.CALL, allowedEOA.address, amount, EMPTY_PAYLOAD);
 
-      const newBalanceUP = await context.ethers.provider.getBalance(await context.universalProfile.getAddress());
+      const newBalanceUP = await context.ethers.provider.getBalance(
+        await context.universalProfile.getAddress(),
+      );
       expect(newBalanceUP).to.be.lt(initialBalanceUP);
 
       const newBalanceEOA = await context.ethers.provider.getBalance(allowedEOA.address);
@@ -163,7 +163,9 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
       const initialBalanceUP = await context.ethers.provider.getBalance(
         await context.universalProfile.getAddress(),
       );
-      const initialBalanceRecipient = await context.ethers.provider.getBalance(notAllowedEOA.address);
+      const initialBalanceRecipient = await context.ethers.provider.getBalance(
+        notAllowedEOA.address,
+      );
 
       await expect(
         context.universalProfile
@@ -173,7 +175,9 @@ export const shouldBehaveLikeAllowedAddresses = (buildContext: () => Promise<LSP
         .to.be.revertedWithCustomError(context.keyManager, 'NotAllowedCall')
         .withArgs(canCallOnlyTwoAddresses.address, notAllowedEOA.address, '0x00000000');
 
-      const newBalanceUP = await context.ethers.provider.getBalance(await context.universalProfile.getAddress());
+      const newBalanceUP = await context.ethers.provider.getBalance(
+        await context.universalProfile.getAddress(),
+      );
       const newBalanceRecipient = await context.ethers.provider.getBalance(notAllowedEOA.address);
 
       expect(newBalanceUP).to.equal(initialBalanceUP);

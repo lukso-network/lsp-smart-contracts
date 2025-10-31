@@ -29,7 +29,15 @@ describe('LSP20 Init + LSP6 Init with proxy', () => {
     const kmProxy = await deployProxy(await baseKM.getAddress(), mainController);
     const keyManager = baseKM.attach(kmProxy!) as unknown as LSP6KeyManagerInit;
 
-    return { ethers, networkHelpers, accounts, mainController, universalProfile, keyManager, initialFunding };
+    return {
+      ethers,
+      networkHelpers,
+      accounts,
+      mainController,
+      universalProfile,
+      keyManager,
+      initialFunding,
+    };
   };
 
   const initializeProxy = async (context: LSP6TestContext) => {
