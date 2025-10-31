@@ -14,7 +14,7 @@ import {
 
 describe('LSP6KeyManager with constructor', () => {
   const buildTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
-    const { ethers } = await network.connect();
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
@@ -29,33 +29,33 @@ describe('LSP6KeyManager with constructor', () => {
       universalProfile.target,
     );
 
-    return { accounts, mainController, universalProfile, keyManager, initialFunding };
+    return { ethers, networkHelpers, accounts, mainController, universalProfile, keyManager, initialFunding };
   };
 
-  // describe('when deploying the contract', () => {
-  //   describe('when initializing the contract', () => {
-  //     shouldInitializeLikeLSP6(buildTestContext);
-  //   });
-  // });
+  describe('when deploying the contract', () => {
+    describe('when initializing the contract', () => {
+      shouldInitializeLikeLSP6(buildTestContext);
+    });
+  });
 
   describe('when testing deployed contract', () => {
     shouldBehaveLikeLSP6(buildTestContext);
   });
 
-  // describe('testing internal functions', () => {
-  //   testLSP6InternalFunctions(async () => {
-  //     const { ethers } = await network.connect();
-  //     const accounts = await ethers.getSigners();
-  //     const mainController = accounts[0];
+  describe('testing internal functions', () => {
+    testLSP6InternalFunctions(async () => {
+      const { ethers } = await network.connect();
+      const accounts = await ethers.getSigners();
+      const mainController = accounts[0];
 
-  //     const universalProfile = await new UniversalProfile__factory(mainController).deploy(
-  //       mainController.address,
-  //     );
-  //     const keyManagerInternalTester = await new KeyManagerInternalTester__factory(
-  //       mainController,
-  //     ).deploy(universalProfile.target);
+      const universalProfile = await new UniversalProfile__factory(mainController).deploy(
+        mainController.address,
+      );
+      const keyManagerInternalTester = await new KeyManagerInternalTester__factory(
+        mainController,
+      ).deploy(universalProfile.target);
 
-  //     return { mainController, accounts, universalProfile, keyManagerInternalTester };
-  //   });
-  // });
+      return { ethers, mainController, accounts, universalProfile, keyManagerInternalTester };
+    });
+  });
 });

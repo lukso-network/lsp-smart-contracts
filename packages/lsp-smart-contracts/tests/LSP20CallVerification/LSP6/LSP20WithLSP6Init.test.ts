@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 
 import {
-  LSP6KeyManagerInit,
+  type LSP6KeyManagerInit,
   LSP6KeyManagerInit__factory,
 } from '../../../../lsp6-contracts/types/ethers-contracts/index.js';
 import {
-  UniversalProfileInit,
+  type UniversalProfileInit,
   UniversalProfileInit__factory,
 } from '../../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
@@ -17,7 +17,7 @@ import { shouldBehaveLikeLSP6 } from './LSP20WithLSP6.behaviour.js';
 describe('LSP20 Init + LSP6 Init with proxy', () => {
   const buildProxyTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
     const { network } = await import('hardhat');
-    const { ethers } = await network.connect();
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
@@ -29,7 +29,7 @@ describe('LSP20 Init + LSP6 Init with proxy', () => {
     const kmProxy = await deployProxy(await baseKM.getAddress(), mainController);
     const keyManager = baseKM.attach(kmProxy!) as unknown as LSP6KeyManagerInit;
 
-    return { accounts, mainController, universalProfile, keyManager, initialFunding };
+    return { ethers, networkHelpers, accounts, mainController, universalProfile, keyManager, initialFunding };
   };
 
   const initializeProxy = async (context: LSP6TestContext) => {

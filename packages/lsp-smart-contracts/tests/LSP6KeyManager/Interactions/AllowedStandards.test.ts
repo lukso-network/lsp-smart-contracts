@@ -65,15 +65,15 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+      context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanInteractOnlyWithERC1271.address.substring(2),
+      addressCanInteractOnlyWithERC1271.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanInteractOnlyWithLSP7.address.substring(2),
+      addressCanInteractOnlyWithLSP7.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressCanInteractOnlyWithERC1271.address.substring(2),
+      addressCanInteractOnlyWithERC1271.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressCanInteractOnlyWithLSP7.address.substring(2),
+      addressCanInteractOnlyWithLSP7.address.substring(2),
     ];
 
     const permissionsValues = [
@@ -197,19 +197,21 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     describe('when trying to interact an ERC725Account (LSP0)', () => {
       it('should allow to transfer LYX', async () => {
-        const initialAccountBalance = await provider.getBalance(otherUniversalProfile.target);
-
+        const amount = ethers.parseEther('1');
         const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, otherUniversalProfile.target, ethers.parseEther('1'), '0x'],
+          [OPERATION_TYPES.CALL, otherUniversalProfile.target, amount, '0x'],
         );
 
-        await context.keyManager
-          .connect(addressCanInteractOnlyWithERC1271)
-          .execute(transferLyxPayload);
-
-        const newAccountBalance = await provider.getBalance(otherUniversalProfile.target);
-        expect(newAccountBalance).to.be.gt(initialAccountBalance);
+        await expect(
+          context.keyManager
+            .connect(addressCanInteractOnlyWithERC1271)
+            .execute(transferLyxPayload)
+        ).to.changeEtherBalances(
+          context.ethers,
+          [context.universalProfile, otherUniversalProfile.target],
+          [`-${amount}`, amount]
+        );
       });
     });
 

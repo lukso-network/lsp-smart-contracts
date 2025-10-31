@@ -17,7 +17,7 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+      context.mainController.address.substring(2),
     ];
 
     const permissionValues = [ALL_PERMISSIONS];
@@ -46,7 +46,7 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
           context.mainController.address,
           calldata,
         ),
-      ).to.not.be.reverted;
+      ).to.not.revert(context.ethers);
     });
 
     it('should revert if the address param is not left padded with 12 x `00` bytes', async () => {
@@ -81,7 +81,7 @@ export const testExecuteInternals = (buildContext: () => Promise<LSP6InternalsTe
           context.mainController.address,
           invalidCalldata,
         ),
-      ).to.be.reverted;
+      ).to.revert(context.ethers);
     });
   });
 };

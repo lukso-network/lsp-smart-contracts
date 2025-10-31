@@ -153,11 +153,11 @@ export const testAllowedCallsInternals = (
 
       const permissionsKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canCallOnlyTwoAddresses.address.substring(2),
+        canCallOnlyTwoAddresses.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          canCallOnlyTwoAddresses.address.substring(2),
+        canCallOnlyTwoAddresses.address.substring(2),
       ];
 
       const permissionsValues = [
@@ -184,9 +184,9 @@ export const testAllowedCallsInternals = (
         );
         expect(bytesResult).to.equal('0x');
 
-        const resultFromAccount = await context.universalProfile['getData(bytes32)'](
+        const resultFromAccount = await context.universalProfile.getData(
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            context.mainController.address.substring(2),
+          context.mainController.address.substring(2),
         );
         expect(resultFromAccount).to.equal('0x');
       });
@@ -210,7 +210,7 @@ export const testAllowedCallsInternals = (
               executeParams.value,
               executeParams.data,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
       });
 
@@ -371,7 +371,7 @@ export const testAllowedCallsInternals = (
             executeParams.value,
             executeParams.data,
           ),
-        ).to.not.be.reverted;
+        ).to.not.revert(context.ethers);
       });
 
       it('should fail with `NotAllowedCall` error when the allowed address has `s` permission only (`s` = STATICCALL)', async () => {
@@ -507,7 +507,7 @@ export const testAllowedCallsInternals = (
             executeParams.value,
             executeParams.data,
           ),
-        ).to.not.be.reverted;
+        ).to.not.revert(context.ethers);
       });
 
       it('should fail with `NotAllowedCall` error when the allowed address has `d` permission only (`d` = DELEGATECALL)', async () => {
@@ -643,7 +643,7 @@ export const testAllowedCallsInternals = (
             executeParams.value,
             executeParams.data,
           ),
-        ).to.not.be.reverted;
+        ).to.not.revert(context.ethers);
       });
     });
   });
@@ -677,7 +677,7 @@ export const testAllowedCallsInternals = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
         ...Object.values(controllers).map(
           (controller) =>
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
@@ -779,19 +779,19 @@ export const testAllowedCallsInternals = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.accounts[1].address.substring(2),
+        context.accounts[1].address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.accounts[2].address.substring(2),
+        context.accounts[2].address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.accounts[3].address.substring(2),
+        context.accounts[3].address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          context.accounts[1].address.substring(2),
+        context.accounts[1].address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          context.accounts[2].address.substring(2),
+        context.accounts[2].address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          context.accounts[3].address.substring(2),
+        context.accounts[3].address.substring(2),
       ];
 
       let permissionValues = [
@@ -838,11 +838,11 @@ export const testAllowedCallsInternals = (
 
       const permissionsKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          anyAllowedCalls.address.substring(2),
+        anyAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          anyAllowedCalls.address.substring(2),
+        anyAllowedCalls.address.substring(2),
       ];
 
       const permissionsValues = [

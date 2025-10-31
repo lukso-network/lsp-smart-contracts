@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { encodeData, ERC725JSONSchema } from '@erc725/erc725.js';
-import { hexlify, keccak256, toUtf8Bytes } from 'ethers';
+import { hexlify, keccak256, parseEther, toUtf8Bytes } from 'ethers';
 
 import {
   type ExecutorLSP20,
@@ -23,6 +23,8 @@ import {
   combinePermissions,
   encodeCompactBytesArray,
 } from '../../../utils/helpers.js';
+import { type UniversalProfile, UniversalProfile__factory } from '../../../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import { type LSP6KeyManager, LSP6KeyManager__factory } from '../../../../../lsp6-contracts/types/ethers-contracts/index.js';
 
 const BasicUPSetup_Schema: ERC725JSONSchema[] = [
   {
@@ -65,13 +67,13 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
       const permissionsKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canSetDataWithAllowedERC725YDataKeys.address.substring(2),
+        canSetDataWithAllowedERC725YDataKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          canSetDataWithAllowedERC725YDataKeys.address.substring(2),
+        canSetDataWithAllowedERC725YDataKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          canSetDataWithoutAllowedERC725YDataKeys.address.substring(2),
+        canSetDataWithoutAllowedERC725YDataKeys.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + cannotSetData.address.substring(2),
       ];
 
@@ -459,11 +461,11 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          (await contractCanSetData.getAddress()).substring(2),
+        (await contractCanSetData.getAddress()).substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          (await contractCanSetData.getAddress()).substring(2),
+        (await contractCanSetData.getAddress()).substring(2),
       ];
 
       const compactedAllowedERC725YDataKeys = encodeCompactBytesArray([
@@ -585,60 +587,88 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
   });
 
   describe('when caller is another UniversalProfile (with a KeyManager attached as owner)', () => {
+    let context: LSP6TestContext;
+
+    const UniversalProfileInterface = UniversalProfile__factory.createInterface();
+    const LSP6Interface = LSP6KeyManager__factory.createInterface();
+
     // UP making the call
-    let alice: HardhatEthersSigner;
-    let aliceContext: LSP6TestContext;
+    let aliceMainController: HardhatEthersSigner;
+    let aliceUP: UniversalProfile;
+    let aliceKeyManager: LSP6KeyManager;
 
     // UP being called
-    let bob: HardhatEthersSigner;
-    let bobContext: LSP6TestContext;
+    let bobMainController: HardhatEthersSigner;
+    let bobUP: UniversalProfile;
+    let bobKeyManager: LSP6KeyManager;
 
     before(async () => {
-      aliceContext = await buildContext();
-      alice = aliceContext.accounts[0];
+      // re-initialize the top level context
+      context = await buildContext();
 
-      bobContext = await buildContext();
-      bob = bobContext.accounts[1];
+      // define main controller addresses
+      aliceMainController = context.accounts[0];
+      bobMainController = context.accounts[1];
+
+      // define UPs
+      aliceUP = context.universalProfile;
+      aliceKeyManager = context.keyManager;
+
+      bobUP = await new UniversalProfile__factory(bobMainController).deploy(
+        bobMainController.address,
+        {
+          value: parseEther('50')
+        }
+      );
+      bobKeyManager = await new LSP6KeyManager__factory(bobMainController).deploy(
+        bobUP.target,
+      );
 
       const alicePermissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + alice.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + aliceMainController.address.substring(2),
       ];
       const alicePermissionValues = [ALL_PERMISSIONS];
 
       const bobPermissionKeys = [
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + bob.address.substring(2),
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + bobMainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          (await aliceContext.universalProfile.getAddress()).substring(2),
+        (await aliceUP.getAddress()).substring(2),
       ];
 
       const bobPermissionValues = [ALL_PERMISSIONS, PERMISSIONS.SETDATA];
 
-      await setupKeyManager(aliceContext, alicePermissionKeys, alicePermissionValues);
-
-      await setupKeyManager(bobContext, bobPermissionKeys, bobPermissionValues);
+      await setupKeyManager(context, alicePermissionKeys, alicePermissionValues);
+      await setupKeyManager({
+        ethers: context.ethers,
+        networkHelpers: context.networkHelpers,
+        accounts: context.accounts,
+        mainController: bobMainController,
+        universalProfile: bobUP,
+        keyManager: bobKeyManager,
+      }, bobPermissionKeys, bobPermissionValues);
     });
 
     it('Alice should have ALL PERMISSIONS in her UP', async () => {
       const key =
-        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + alice.address.substring(2);
+        ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + aliceMainController.address.substring(2);
 
-      const result = await aliceContext.universalProfile.getData(key);
+      const result = await aliceUP.getData(key);
       expect(result).to.equal(ALL_PERMISSIONS);
     });
 
     it('Bob should have ALL PERMISSIONS in his UP', async () => {
-      const key = ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + bob.address.substring(2);
+      const key = ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + bobMainController.address.substring(2);
 
-      const result = await bobContext.universalProfile.getData(key);
+      const result = await bobUP.getData(key);
       expect(result).to.equal(ALL_PERMISSIONS);
     });
 
     it("Alice's UP should have permission SETDATA on Bob's UP", async () => {
       const key =
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        (await aliceContext.universalProfile.getAddress()).substring(2);
+        (await aliceUP.getAddress()).substring(2);
 
-      const result = await bobContext.universalProfile.getData(key);
+      const result = await bobUP.getData(key);
       expect(result).to.equal(PERMISSIONS.SETDATA);
     });
 
@@ -646,23 +676,23 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       const key = keccak256(toUtf8Bytes("Alice's Key"));
       const value = hexlify(toUtf8Bytes("Alice's Value"));
 
-      const finalSetDataPayload = bobContext.universalProfile.interface.encodeFunctionData(
+      const finalSetDataPayload = UniversalProfileInterface.encodeFunctionData(
         'setData',
         [key, value],
       );
 
       await expect(
-        aliceContext.universalProfile
-          .connect(alice)
+        aliceUP
+          .connect(aliceMainController)
           .execute(
             OPERATION_TYPES.CALL,
-            await bobContext.universalProfile.getAddress(),
+            await bobUP.getAddress(),
             0,
             finalSetDataPayload,
           ),
       )
-        .to.be.revertedWithCustomError(bobContext.keyManager, 'NoERC725YDataKeysAllowed')
-        .withArgs(await aliceContext.universalProfile.getAddress());
+        .to.be.revertedWithCustomError(bobKeyManager, 'NoERC725YDataKeysAllowed')
+        .withArgs(await aliceUP.getAddress());
     });
 
     it("Alice's UP should be able to `setData(...)` on Bob's UP when it has AllowedERC725YDataKeys", async () => {
@@ -670,29 +700,29 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       const value = hexlify(toUtf8Bytes("Alice's Value"));
 
       // Adding `key` to AllowedERC725YDataKeys for Alice
-      await bobContext.universalProfile
-        .connect(bob)
+      await bobUP
+        .connect(bobMainController)
         .setData(
           ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-            (await aliceContext.universalProfile.getAddress()).substring(2),
+          (await aliceUP.getAddress()).substring(2),
           encodeCompactBytesArray([key]),
         );
 
-      const finalSetDataPayload = bobContext.universalProfile.interface.encodeFunctionData(
+      const finalSetDataPayload = bobUP.interface.encodeFunctionData(
         'setData',
         [key, value],
       );
 
-      await aliceContext.universalProfile
-        .connect(alice)
+      await aliceUP
+        .connect(aliceMainController)
         .execute(
           OPERATION_TYPES.CALL,
-          await bobContext.universalProfile.getAddress(),
+          await bobUP.getAddress(),
           0,
           finalSetDataPayload,
         );
 
-      const result = await bobContext.universalProfile.getData(key);
+      const result = await bobUP.getData(key);
       expect(result).to.equal(value);
     });
   });
@@ -714,7 +744,7 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + caller.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedERC725YDataKeys'] +
-          caller.address.substring(2),
+        caller.address.substring(2),
       ];
 
       const permissionValues = [

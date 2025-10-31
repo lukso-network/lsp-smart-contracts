@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import type { HardhatEthers } from '@nomicfoundation/hardhat-ethers/types';
 import { getAddress, parseEther, toUtf8String, ZeroAddress, zeroPadValue, Wallet } from 'ethers';
 
 import {
@@ -22,7 +21,6 @@ import { abiCoder } from '../../../utils/helpers.js';
 export const shouldBehaveLikeBatchExecute = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
-  let ethers: HardhatEthers;
   let context: LSP6TestContext;
 
   // a fictional DAI token on LUKSO
@@ -34,8 +32,6 @@ export const shouldBehaveLikeBatchExecute = (
     rLyxToken: LSP7Mintable;
 
   before(async () => {
-    const { network } = await import('hardhat');
-    ({ ethers } = await network.connect());
     context = await buildContext(parseEther('50'));
 
     // main controller permissions are already set in the fixture
@@ -95,11 +91,11 @@ export const shouldBehaveLikeBatchExecute = (
         .executeBatch(operations, recipients, amounts, data);
 
       await expect(tx).to.changeEtherBalance(
-        ethers,
+        context.ethers,
         await context.universalProfile.getAddress(),
         parseEther('-6'),
       );
-      await expect(tx).to.changeEtherBalances(ethers, recipients, amounts);
+      await expect(tx).to.changeEtherBalances(context.ethers, recipients, amounts);
     });
 
     it('should send LYX + some LSP7 tokens to the same address', async () => {
@@ -141,7 +137,7 @@ export const shouldBehaveLikeBatchExecute = (
         .executeBatch(operationTypes, targets, values, payloads);
 
       await expect(tx).to.changeEtherBalances(
-        ethers,
+        context.ethers,
         [recipient, await universalProfile.getAddress()],
         [lyxAmount, `-${lyxAmount}`],
       );
@@ -448,7 +444,7 @@ export const shouldBehaveLikeBatchExecute = (
 
   describe('when one of the payload reverts', () => {
     it('should revert the whole transaction if first payload reverts', async () => {
-      const upBalance = await ethers.provider.getBalance(
+      const upBalance = await context.ethers.provider.getBalance(
         await context.universalProfile.getAddress(),
       );
 
@@ -473,7 +469,7 @@ export const shouldBehaveLikeBatchExecute = (
     });
 
     it('should revert the whole transaction if last payload reverts', async () => {
-      const upBalance = await ethers.provider.getBalance(
+      const upBalance = await context.ethers.provider.getBalance(
         await context.universalProfile.getAddress(),
       );
 
@@ -500,7 +496,7 @@ export const shouldBehaveLikeBatchExecute = (
 
   describe('when one of the payload is a delegate call', () => {
     it('should revert the whole transaction', async () => {
-      const upBalance = await ethers.provider.getBalance(
+      const upBalance = await context.ethers.provider.getBalance(
         await context.universalProfile.getAddress(),
       );
 
@@ -522,7 +518,7 @@ export const shouldBehaveLikeBatchExecute = (
     });
 
     it('should revert the whole transaction when calling through `batchCalls`', async () => {
-      const upBalance = await ethers.provider.getBalance(
+      const upBalance = await context.ethers.provider.getBalance(
         await context.universalProfile.getAddress(),
       );
 

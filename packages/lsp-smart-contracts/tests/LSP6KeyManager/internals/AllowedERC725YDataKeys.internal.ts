@@ -250,7 +250,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_2d,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking second dynamic key: should return true', async () => {
@@ -266,7 +266,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_2d,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking 10 random data keys: all should return false', async () => {
@@ -299,7 +299,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_2f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking second fixed key: should return true', async () => {
@@ -311,7 +311,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_2f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking 10 random data keys: all should return false', async () => {
@@ -348,7 +348,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_2d_2f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking second dynamic key: should return true', async () => {
@@ -364,7 +364,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_2d_2f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking first fixed key: should return true', async () => {
@@ -376,7 +376,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_2d_2f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking second fixed key: should return true', async () => {
@@ -388,7 +388,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_2d_2f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking 10 random data keys: all should return false', async () => {
@@ -425,7 +425,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_mixed_d_f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking second dynamic key: should return true', async () => {
@@ -441,7 +441,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_mixed_d_f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking third dynamic key: should return true', async () => {
@@ -457,7 +457,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_mixed_d_f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking fourth dynamic key: should return true', async () => {
@@ -473,7 +473,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_mixed_d_f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking first fixed key: should return true', async () => {
@@ -485,7 +485,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_mixed_d_f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking second fixed key: should return true', async () => {
@@ -497,7 +497,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_mixed_d_f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking third fixed key: should return true', async () => {
@@ -509,7 +509,7 @@ export const testAllowedERC725YDataKeysInternals = (
               checkedDataKey,
               compactBytesArray_mixed_d_f,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking 10 random data keys: all should return false', async () => {
@@ -586,13 +586,13 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking an array of valid keys: should return true', async () => {
           const checkedDataKeys = [
             dataKeys.firstDynamicKey.key +
-              hexlify(
-                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
-              ).substring(2),
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
+            ).substring(2),
             dataKeys.secondDynamicKey.key +
-              hexlify(
-                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
-              ).substring(2),
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+            ).substring(2),
           ];
 
           expect(
@@ -603,7 +603,7 @@ export const testAllowedERC725YDataKeysInternals = (
               [false, false],
               0,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking an array of invalid keys: all should return false', async () => {
@@ -636,7 +636,7 @@ export const testAllowedERC725YDataKeysInternals = (
               Array(dataKeysToReturn.length).fill(false),
               0,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking an array of invalid keys: all should return false', async () => {
@@ -661,13 +661,13 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking an array of valid keys: should return true', async () => {
           const checkedDataKeys = [
             dataKeys.firstDynamicKey.key +
-              hexlify(
-                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
-              ).substring(2),
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
+            ).substring(2),
             dataKeys.secondDynamicKey.key +
-              hexlify(
-                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
-              ).substring(2),
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+            ).substring(2),
             dataKeys.firstFixedKey.key,
             dataKeys.secondFixedKey.key,
           ];
@@ -680,7 +680,7 @@ export const testAllowedERC725YDataKeysInternals = (
               Array(checkedDataKeys.length).fill(false),
               0,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking an array of invalid keys: all should return false', async () => {
@@ -705,23 +705,23 @@ export const testAllowedERC725YDataKeysInternals = (
         it('checking an array of valid keys: should return true', async () => {
           const checkedDataKeys = [
             dataKeys.firstDynamicKey.key +
-              hexlify(
-                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
-              ).substring(2),
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.firstDynamicKey.length)))),
+            ).substring(2),
             dataKeys.firstFixedKey.key,
             dataKeys.secondDynamicKey.key +
-              hexlify(
-                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
-              ).substring(2),
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.secondDynamicKey.length)))),
+            ).substring(2),
             dataKeys.thirdDynamicKey.key +
-              hexlify(
-                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.thirdDynamicKey.length)))),
-              ).substring(2),
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.thirdDynamicKey.length)))),
+            ).substring(2),
             dataKeys.secondFixedKey.key,
             dataKeys.fourthDynamicKey.key +
-              hexlify(
-                randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.fourthDynamicKey.length)))),
-              ).substring(2),
+            hexlify(
+              randomBytes(toNumber(toBigInt(32 - toNumber(dataKeys.fourthDynamicKey.length)))),
+            ).substring(2),
             dataKeys.thirdFixedKey.key,
           ];
 
@@ -733,7 +733,7 @@ export const testAllowedERC725YDataKeysInternals = (
               Array(checkedDataKeys.length).fill(false),
               0,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('checking an array of invalid keys: all should return false', async () => {

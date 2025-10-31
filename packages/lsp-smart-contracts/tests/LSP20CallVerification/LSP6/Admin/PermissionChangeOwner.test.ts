@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
-import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { parseEther, ZeroAddress, Wallet, ContractTransactionResponse, toQuantity } from 'ethers';
 
 // constants
@@ -20,8 +19,6 @@ import { setupKeyManager } from '../../../utils/fixtures.js';
 export const shouldBehaveLikePermissionChangeOwner = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
-  let ethers: HardhatEthers;
-  let networkHelpers: NetworkHelpers;
   let context: LSP6TestContext;
 
   let canChangeOwner: HardhatEthersSigner, cannotChangeOwner: HardhatEthersSigner;
@@ -32,8 +29,6 @@ export const shouldBehaveLikePermissionChangeOwner = (
   let permissionsValues: string[];
 
   before(async () => {
-    const { network } = await import('hardhat');
-    ({ ethers, networkHelpers } = await network.connect());
     context = await buildContext(parseEther('10'));
 
     canChangeOwner = context.accounts[1];
@@ -46,7 +41,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
     permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] + canChangeOwner.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        cannotChangeOwner.address.substring(2),
+      cannotChangeOwner.address.substring(2),
     ];
 
     permissionsValues = [PERMISSIONS.CHANGEOWNER, PERMISSIONS.SETDATA];
@@ -122,7 +117,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           expect(result).to.equal(value);
         });
 
-        it.skip('execute(...) - LYX transfer', async () => {
+        it('execute(...) - LYX transfer', async () => {
           const recipient = context.accounts[8];
           const amount = parseEther('3');
 
@@ -131,7 +126,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
             .execute(OPERATION_TYPES.CALL, recipient.address, amount, '0x');
 
           await expect(tx).to.changeEtherBalances(
-            ethers,
+            context.ethers,
             [recipient, context.universalProfile],
             [amount, `-${amount}`],
           );
@@ -314,19 +309,18 @@ export const shouldBehaveLikePermissionChangeOwner = (
           '0x',
         ]);
 
-        const tx = await newKeyManager.connect(context.mainController).execute(payload);
+        const tx = newKeyManager.connect(context.mainController).execute(payload);
 
-        expect(tx).to.changeEtherBalance(ethers, recipient, amount);
-        expect(tx).to.changeEtherBalance(
-          ethers,
-          await context.universalProfile.getAddress(),
-          context.initialFunding! - amount,
+        await expect(tx).to.changeEtherBalances(
+          context.ethers,
+          [context.universalProfile, recipient],
+          [`-${amount}`, amount]
         );
       });
     });
   });
 
-  describe.skip('when calling `renounceOwnership(...)`', () => {
+  describe('when calling `renounceOwnership(...)`', () => {
     describe('caller has ALL PERMISSIONS`', async () => {
       let renounceOwnershipFirstTx: ContractTransactionResponse;
       let renounceOwnershipSecondTx: ContractTransactionResponse;
@@ -338,7 +332,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           .renounceOwnership();
 
         // mine 200 blocks
-        await networkHelpers.mine(200);
+        await context.networkHelpers.mine(200);
 
         // 2nd call
         renounceOwnershipSecondTx = await context.universalProfile

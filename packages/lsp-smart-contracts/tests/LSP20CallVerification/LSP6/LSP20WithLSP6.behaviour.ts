@@ -34,8 +34,7 @@ import {
 export const shouldBehaveLikeLSP6 = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
-  // TODO tests crash
-  describe.skip('CHANGEOWNER', () => {
+  describe('CHANGEOWNER', () => {
     shouldBehaveLikePermissionChangeOwner(buildContext);
   });
 
@@ -95,7 +94,7 @@ export const shouldBehaveLikeLSP6 = (
     otherTestScenarios(buildContext);
   });
 
-  describe.only('Security', () => {
+  describe('Security', () => {
     testSecurityScenarios(buildContext);
   });
 };

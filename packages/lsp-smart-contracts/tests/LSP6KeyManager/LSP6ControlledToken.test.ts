@@ -157,6 +157,8 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
   describe('using transferOwnership(..) in LSP7 through LSP6', () => {
     before("previous token contract's ownership was renounced, build new context", async () => {
       context = await buildContext();
+      newOwner = context.accounts[1];
+      anotherNewOwner = context.accounts[2];
     });
 
     it('should change the owner of LSP7 contract', async () => {
@@ -184,7 +186,9 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       const key = keccak256(toUtf8Bytes('FirstRandomString'));
       const value = keccak256(toUtf8Bytes('SecondRandomString'));
 
-      await context.token.connect(newOwner).setData(key, value);
+      expect(await context.token.owner()).to.equal(newOwner.address);
+
+      const result = await context.token.connect(newOwner).setData(key, value);
 
       expect(await context.token.getData(key)).to.equal(value);
     });
@@ -247,6 +251,11 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
   describe('using setData(..) in lSP7 through LSP6', () => {
     before(async () => {
       context = await buildContext();
+      addressCanChangeOwner = context.accounts[1];
+      addressCanEditPermissions = context.accounts[2];
+      addressCanAddController = context.accounts[3];
+      addressCanSetData = context.accounts[4];
+      addressCanSign = context.accounts[5];
     });
 
     describe('testing CHANGEOWNER permission', () => {

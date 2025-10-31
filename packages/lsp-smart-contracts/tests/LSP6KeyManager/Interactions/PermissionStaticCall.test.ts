@@ -30,6 +30,7 @@ import {
   combineCallTypes,
   combinePermissions,
 } from '../../utils/helpers.js';
+import { network } from 'hardhat';
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>,
@@ -61,15 +62,15 @@ export const shouldBehaveLikePermissionStaticCall = (
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+      context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanMakeStaticCall.address.substring(2),
+      addressCanMakeStaticCall.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressCanMakeStaticCall.address.substring(2),
+      addressCanMakeStaticCall.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCannotMakeStaticCall.address.substring(2),
+      addressCannotMakeStaticCall.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanMakeStaticCallNoAllowedCalls.address.substring(2),
+      addressCanMakeStaticCallNoAllowedCalls.address.substring(2),
     ];
 
     const permissionsValues = [
@@ -146,7 +147,7 @@ export const shouldBehaveLikePermissionStaticCall = (
 
   describe('when caller has permission STATICCALL + some allowed calls', () => {
     describe('when calling a `view` function on a target contract', () => {
-      it('should pass and return data when `value` param is 0 ', async () => {
+      it('should pass and return data when `value` param is 0', async () => {
         const targetContractPayload = targetContract.interface.encodeFunctionData('getName');
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
@@ -326,8 +327,9 @@ export const shouldBehaveLikePermissionStaticCall = (
           targetContractPayload,
         ]);
 
-        await expect(context.keyManager.connect(addressCanMakeStaticCall).execute(executePayload))
-          .to.be.reverted;
+        await expect(
+          context.keyManager.connect(addressCanMakeStaticCall).execute(executePayload),
+        ).to.revert(context.ethers);
 
         // ensure state hasn't changed.
         const newValue = await targetContract.getName();
@@ -397,7 +399,7 @@ export const shouldBehaveLikePermissionStaticCall = (
   });
 
   describe('when caller has permission STATICCALL + 2 x allowed addresses', () => {
-    let caller: HardhatEtherSigner;
+    let caller: HardhatEthersSigner;
     let allowedTargetContracts: [TargetContract, TargetContract];
 
     before(async () => {
@@ -503,7 +505,9 @@ export const shouldBehaveLikePermissionStaticCall = (
           targetPayload,
         ]);
 
-        await expect(context.keyManager.connect(caller).execute.staticCall(payload)).to.be.reverted;
+        await expect(context.keyManager.connect(caller).execute.staticCall(payload)).to.revert(
+          context.ethers,
+        );
       });
 
       it('should revert when calling state changing function -> setNumber(uint256)', async () => {
@@ -518,7 +522,9 @@ export const shouldBehaveLikePermissionStaticCall = (
           targetPayload,
         ]);
 
-        await expect(context.keyManager.connect(caller).execute.staticCall(payload)).to.be.reverted;
+        await expect(context.keyManager.connect(caller).execute.staticCall(payload)).to.revert(
+          context.ethers,
+        );
       });
     });
 
@@ -575,7 +581,9 @@ export const shouldBehaveLikePermissionStaticCall = (
           targetPayload,
         ]);
 
-        await expect(context.keyManager.connect(caller).execute.staticCall(payload)).to.be.reverted;
+        await expect(context.keyManager.connect(caller).execute.staticCall(payload)).to.revert(
+          context.ethers,
+        );
       });
 
       it('should revert when calling state changing function -> setNumber(uint256)', async () => {
@@ -590,13 +598,15 @@ export const shouldBehaveLikePermissionStaticCall = (
           targetPayload,
         ]);
 
-        await expect(context.keyManager.connect(caller).execute.staticCall(payload)).to.be.reverted;
+        await expect(context.keyManager.connect(caller).execute.staticCall(payload)).to.revert(
+          context.ethers,
+        );
       });
     });
   });
 
   describe('when caller has permission SUPER_STATICCALL + 2 allowed addresses', () => {
-    let addressWithSuperStaticCall: HardhatEtherSigner;
+    let addressWithSuperStaticCall: HardhatEthersSigner;
     let allowedTargetContracts: [TargetContract, TargetContract];
 
     before(async () => {
@@ -611,9 +621,9 @@ export const shouldBehaveLikePermissionStaticCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          addressWithSuperStaticCall.address.substring(2),
+        addressWithSuperStaticCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          addressWithSuperStaticCall.address.substring(2),
+        addressWithSuperStaticCall.address.substring(2),
       ];
 
       const permissionValues = [
@@ -678,7 +688,7 @@ export const shouldBehaveLikePermissionStaticCall = (
   });
 
   describe('when caller has permission SUPER_CALL + 2 allowed addresses', () => {
-    let addressWithSuperCall: HardhatEtherSigner;
+    let addressWithSuperCall: HardhatEthersSigner;
     let allowedTargetContracts: [TargetContract, TargetContract];
 
     before(async () => {
@@ -693,9 +703,9 @@ export const shouldBehaveLikePermissionStaticCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          addressWithSuperCall.address.substring(2),
+        addressWithSuperCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          addressWithSuperCall.address.substring(2),
+        addressWithSuperCall.address.substring(2),
       ];
 
       const permissionValues = [
@@ -750,7 +760,7 @@ export const shouldBehaveLikePermissionStaticCall = (
   });
 
   describe('when caller has permission SUPER_CALL + STATICCALL + 2 allowed addresses', () => {
-    let addressWithSuperCallAndStaticCall: HardhatEtherSigner;
+    let addressWithSuperCallAndStaticCall: HardhatEthersSigner;
     let allowedTargetContracts: [TargetContract, TargetContract];
 
     before(async () => {
@@ -765,9 +775,9 @@ export const shouldBehaveLikePermissionStaticCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          addressWithSuperCallAndStaticCall.address.substring(2),
+        addressWithSuperCallAndStaticCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          addressWithSuperCallAndStaticCall.address.substring(2),
+        addressWithSuperCallAndStaticCall.address.substring(2),
       ];
 
       const permissionValues = [

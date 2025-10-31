@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import type {
   HardhatEthersSigner,
-  HardhatEthersProvider,
 } from '@nomicfoundation/hardhat-ethers/types';
 import { keccak256, parseEther, toUtf8Bytes } from 'ethers';
 
@@ -39,7 +38,6 @@ import {
 } from '../../../utils/helpers.js';
 
 export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP6TestContext>) => {
-  let provider: HardhatEthersProvider;
   let context: LSP6TestContext;
 
   let addressCanInteractOnlyWithERC1271: HardhatEthersSigner,
@@ -50,10 +48,6 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
     otherUniversalProfile: UniversalProfile;
 
   before(async () => {
-    const { network } = await import('hardhat');
-    ({
-      ethers: { provider },
-    } = await network.connect());
     context = await buildContext();
 
     addressCanInteractOnlyWithERC1271 = context.accounts[1];
@@ -71,15 +65,15 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     const permissionsKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+      context.mainController.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanInteractOnlyWithERC1271.address.substring(2),
+      addressCanInteractOnlyWithERC1271.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        addressCanInteractOnlyWithLSP7.address.substring(2),
+      addressCanInteractOnlyWithLSP7.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressCanInteractOnlyWithERC1271.address.substring(2),
+      addressCanInteractOnlyWithERC1271.address.substring(2),
       ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-        addressCanInteractOnlyWithLSP7.address.substring(2),
+      addressCanInteractOnlyWithLSP7.address.substring(2),
     ];
 
     const permissionsValues = [
@@ -185,13 +179,13 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     describe('when trying to interact an ERC725Account (LSP0)', () => {
       it('should allow to transfer LYX', async () => {
-        const initialAccountBalance = await provider.getBalance(otherUniversalProfile.target);
+        const initialAccountBalance = await context.ethers.provider.getBalance(otherUniversalProfile.target);
 
         await context.universalProfile
           .connect(addressCanInteractOnlyWithERC1271)
           .execute(OPERATION_TYPES.CALL, otherUniversalProfile.target, parseEther('1'), '0x');
 
-        const newAccountBalance = await provider.getBalance(otherUniversalProfile.target);
+        const newAccountBalance = await context.ethers.provider.getBalance(otherUniversalProfile.target);
         expect(newAccountBalance).to.be.gt(initialAccountBalance);
       });
     });

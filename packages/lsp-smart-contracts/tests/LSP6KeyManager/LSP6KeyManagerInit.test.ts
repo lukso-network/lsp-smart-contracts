@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
-import { LSP6TestContext } from '../utils/context.js';
+import type { LSP6TestContext } from '../utils/context.js';
 
-import { UniversalProfileInit__factory } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
-import { LSP6KeyManagerInit__factory } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
+import { type UniversalProfile, UniversalProfileInit__factory } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import { type LSP6KeyManager, LSP6KeyManagerInit__factory } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
 import { deployProxy } from '../utils/fixtures.js';
 import { shouldBehaveLikeLSP6, shouldInitializeLikeLSP6 } from './LSP6KeyManager.behaviour.js';
 
@@ -11,19 +11,19 @@ describe('LSP6KeyManager with proxy', () => {
   let context: LSP6TestContext;
 
   const buildProxyTestContext = async (initialFunding?: bigint): Promise<LSP6TestContext> => {
-    const { ethers } = await network.connect();
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await ethers.getSigners();
     const mainController = accounts[0];
 
     const baseUP = await new UniversalProfileInit__factory(mainController).deploy();
     const upProxy = await deployProxy(baseUP.target as string, mainController);
-    const universalProfile = baseUP.attach(upProxy);
+    const universalProfile = baseUP.attach(upProxy) as unknown as UniversalProfile;
 
     const baseKM = await new LSP6KeyManagerInit__factory(mainController).deploy();
     const kmProxy = await deployProxy(await baseKM.getAddress(), mainController);
-    const keyManager = baseKM.attach(kmProxy);
+    const keyManager = baseKM.attach(kmProxy) as unknown as LSP6KeyManager;
 
-    return { accounts, mainController, universalProfile, keyManager, initialFunding };
+    return { ethers, networkHelpers, accounts, mainController, universalProfile, keyManager, initialFunding };
   };
 
   const initializeProxies = async (context: LSP6TestContext) => {

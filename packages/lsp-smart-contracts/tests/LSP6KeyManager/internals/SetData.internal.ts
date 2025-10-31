@@ -15,7 +15,7 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
 
     const permissionKeys = [
       ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-        context.mainController.address.substring(2),
+      context.mainController.address.substring(2),
     ];
 
     const permissionValues = [ALL_PERMISSIONS];
@@ -92,7 +92,7 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
               dataKeys,
               dataValues,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
       });
     });

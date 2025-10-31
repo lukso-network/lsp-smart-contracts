@@ -59,7 +59,6 @@
     "esbuild": "^0.17.15",
     "eslint": "^9.37.0",
     "eslint-config-custom": "*",
-    "eth-create2-calculator": "^1.1.5",
     "ethers": "^6.11.0",
     "husky": "^9.1.7",
     "markdown-table-ts": "^1.0.3",

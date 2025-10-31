@@ -1,8 +1,5 @@
 import { expect } from 'chai';
-import { network } from 'hardhat';
 import type {
-  HardhatEthers,
-  HardhatEthersProvider,
   HardhatEthersSigner,
 } from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
@@ -34,18 +31,12 @@ import {
   combinePermissions,
   LOCAL_PRIVATE_KEYS,
 } from '../../utils/helpers.js';
+import { parseEther, solidityPacked, Wallet } from 'ethers';
 
 export const shouldBehaveLikePermissionCall = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
-  let ethers: HardhatEthers;
-  let provider: HardhatEthersProvider;
   let context: LSP6TestContext;
-
-  before(async () => {
-    ({ ethers } = await network.connect());
-    provider = ethers.provider;
-  });
 
   describe('when making an empty call via `ERC25X.execute(...)` -> (`data` = `0x`, `value` = 0)', () => {
     let addressCanMakeCallNoAllowedCalls: HardhatEthersSigner,
@@ -80,19 +71,19 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          addressCannotMakeCallNoAllowedCalls.address.substring(2),
+        addressCannotMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          addressCannotMakeCallWithAllowedCalls.address.substring(2),
+        addressCannotMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          addressCanMakeCallNoAllowedCalls.address.substring(2),
+        addressCanMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          addressCanMakeCallWithAllowedCalls.address.substring(2),
+        addressCanMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          addressWithSuperCall.address.substring(2),
+        addressWithSuperCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          addressCannotMakeCallWithAllowedCalls.address.substring(2),
+        addressCannotMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          addressCanMakeCallWithAllowedCalls.address.substring(2),
+        addressCanMakeCallWithAllowedCalls.address.substring(2),
       ];
 
       const allowedCallsValues = combineAllowedCalls(
@@ -121,7 +112,7 @@ export const shouldBehaveLikePermissionCall = (
 
     describe('when caller does not have permission CALL and no Allowed Calls', () => {
       it('should fail with `NotAuthorised` error when `to` is an EOA', async () => {
-        const targetEOA = ethers.Wallet.createRandom().address;
+        const targetEOA = Wallet.createRandom().address;
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -157,7 +148,7 @@ export const shouldBehaveLikePermissionCall = (
 
     describe('when caller does not have permission CALL but have some Allowed Calls', () => {
       it('should fail with `NotAuthorised` error when `to` is an EOA', async () => {
-        const targetEOA = ethers.Wallet.createRandom().address;
+        const targetEOA = Wallet.createRandom().address;
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -193,7 +184,7 @@ export const shouldBehaveLikePermissionCall = (
 
     describe('when caller has permission CALL, but no Allowed Calls', () => {
       it('should fail with `NoCallsAllowed` error when `to` is an EOA', async () => {
-        const targetEOA = ethers.Wallet.createRandom().address;
+        const targetEOA = Wallet.createRandom().address;
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -227,7 +218,7 @@ export const shouldBehaveLikePermissionCall = (
       describe('when `to` is an EOA', () => {
         describe('when `to` is NOT in the list of Allowed Calls', () => {
           it('should fail with `NotAllowedCall` error', async () => {
-            const targetEOA = ethers.Wallet.createRandom().address;
+            const targetEOA = Wallet.createRandom().address;
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -253,9 +244,12 @@ export const shouldBehaveLikePermissionCall = (
               '0x',
             ]);
 
-            await expect(
-              context.keyManager.connect(addressCanMakeCallWithAllowedCalls).execute(payload),
-            ).to.not.be.reverted;
+            const tx = await context.keyManager.connect(addressCanMakeCallWithAllowedCalls).execute(payload);
+            const receipt = await tx.wait();
+
+            // CHECK the status of this transaction, indicating success (1) or revert (0)
+            expect(receipt).to.not.be.null;
+            expect(receipt?.status).to.equal(1);
           });
         });
       });
@@ -322,7 +316,7 @@ export const shouldBehaveLikePermissionCall = (
 
     describe('when caller has permission SUPER_CALL', () => {
       it('should pass and allow to call an EOA', async () => {
-        const targetEOA = ethers.Wallet.createRandom().address;
+        const targetEOA = Wallet.createRandom().address;
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -396,15 +390,15 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          addressCanMakeCallNoAllowedCalls.address.substring(2),
+        addressCanMakeCallNoAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          addressCanMakeCallWithAllowedCalls.address.substring(2),
+        addressCanMakeCallWithAllowedCalls.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          addressCannotMakeCall.address.substring(2),
+        addressCannotMakeCall.address.substring(2),
         ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-          addressCanMakeCallWithAllowedCalls.address.substring(2),
+        addressCanMakeCallWithAllowedCalls.address.substring(2),
       ];
 
       const permissionsValues = [
@@ -597,7 +591,7 @@ export const shouldBehaveLikePermissionCall = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.solidityPacked(
+            const encodedMessage = solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -612,7 +606,7 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress(),
+              await context.keyManager.getAddress() as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT0,
             );
@@ -654,7 +648,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const eip191Signer = new EIP191Signer();
 
-            const encodedMessage = ethers.solidityPacked(
+            const encodedMessage = solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -670,10 +664,10 @@ export const shouldBehaveLikePermissionCall = (
 
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                await context.keyManager.getAddress(),
+                await context.keyManager.getAddress() as `0x${string}`,
                 encodedMessage,
               ),
-              signature,
+              signature as `0x${string}`,
             );
 
             await expect(
@@ -716,7 +710,7 @@ export const shouldBehaveLikePermissionCall = (
               const HARDHAT_CHAINID = 31337;
               const valueToSend = 0;
 
-              const encodedMessage = ethers.solidityPacked(
+              const encodedMessage = solidityPacked(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   LSP25_VERSION,
@@ -731,7 +725,7 @@ export const shouldBehaveLikePermissionCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                await context.keyManager.getAddress(),
+                await context.keyManager.getAddress() as `0x${string}`,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT2,
               );
@@ -771,7 +765,7 @@ export const shouldBehaveLikePermissionCall = (
               const HARDHAT_CHAINID = 31337;
               const valueToSend = 0;
 
-              const encodedMessage = ethers.solidityPacked(
+              const encodedMessage = solidityPacked(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   LSP25_VERSION,
@@ -786,7 +780,7 @@ export const shouldBehaveLikePermissionCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                await context.keyManager.getAddress(),
+                await context.keyManager.getAddress() as `0x${string}`,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT1,
               );
@@ -828,7 +822,7 @@ export const shouldBehaveLikePermissionCall = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.solidityPacked(
+            const encodedMessage = solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -845,7 +839,7 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                await context.keyManager.getAddress(),
+                await context.keyManager.getAddress() as `0x${string}`,
                 encodedMessage,
               ),
               signature as `0x${string}`,
@@ -889,7 +883,7 @@ export const shouldBehaveLikePermissionCall = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.solidityPacked(
+            const encodedMessage = solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -904,7 +898,7 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress(),
+              await context.keyManager.getAddress() as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT3,
             );
@@ -949,7 +943,7 @@ export const shouldBehaveLikePermissionCall = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.solidityPacked(
+            const encodedMessage = solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -967,7 +961,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const incorrectSignerAddress = await eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                await context.keyManager.getAddress(),
+                await context.keyManager.getAddress() as `0x${string}`,
                 encodedMessage,
               ),
               ethereumSignature as `0x${string}`,
@@ -1006,7 +1000,7 @@ export const shouldBehaveLikePermissionCall = (
 
       const permissionKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-          context.mainController.address.substring(2),
+        context.mainController.address.substring(2),
       ];
 
       const permissionValues = [ALL_PERMISSIONS];
@@ -1056,6 +1050,10 @@ export const shouldBehaveLikePermissionCall = (
     });
 
     describe('when the offset of the `data` payload is not `0x00...80`', () => {
+      before(async () => {
+        addressWithNoPermissions = context.accounts[1];
+      });
+
       describe('if the offset points backwards to the `value` parameter', () => {
         // We add the target in the allowed calls for each of these controller
         let controllerCanTransferValue: HardhatEthersSigner;
@@ -1072,9 +1070,9 @@ export const shouldBehaveLikePermissionCall = (
         let executePayload: string;
 
         before(async () => {
-          context = await buildContext(ethers.parseEther('50'));
+          context = await buildContext(parseEther('50'));
 
-          const accounts = await ethers.getSigners();
+          const accounts = await context.ethers.getSigners();
 
           controllerCanTransferValue = accounts[1];
           controllerCanTransferValueAndCall = accounts[2];
@@ -1090,24 +1088,24 @@ export const shouldBehaveLikePermissionCall = (
           const permissionKeys = [
             // permissions
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              controllerCanTransferValue.address.substring(2),
+            controllerCanTransferValue.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              controllerCanTransferValueAndCall.address.substring(2),
+            controllerCanTransferValueAndCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              controllerCanCall.address.substring(2),
+            controllerCanCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              controllerCanOnlySign.address.substring(2),
+            controllerCanOnlySign.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              controllerCanSuperCall.address.substring(2),
+            controllerCanSuperCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              controllerCanSuperTransferValue.address.substring(2),
+            controllerCanSuperTransferValue.address.substring(2),
             // allowed calls
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-              controllerCanTransferValue.address.substring(2),
+            controllerCanTransferValue.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-              controllerCanTransferValueAndCall.address.substring(2),
+            controllerCanTransferValueAndCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-              controllerCanCall.address.substring(2),
+            controllerCanCall.address.substring(2),
           ];
 
           const allowedCall = combineAllowedCalls(
@@ -1191,7 +1189,7 @@ export const shouldBehaveLikePermissionCall = (
 
           describe('when caller has both permissions CALL + TRANSFERVALUE', () => {
             it('should pass and allow to call the contract', async () => {
-              expect(await provider.getBalance(await targetContract.getAddress())).to.equal(0);
+              expect(await context.ethers.provider.getBalance(await targetContract.getAddress())).to.equal(0);
 
               await context.keyManager
                 .connect(controllerCanTransferValueAndCall)
@@ -1200,7 +1198,7 @@ export const shouldBehaveLikePermissionCall = (
               expect(await targetContract.caller()).to.equal(
                 await context.universalProfile.getAddress(),
               );
-              expect(await provider.getBalance(await targetContract.getAddress())).to.equal(36);
+              expect(await context.ethers.provider.getBalance(await targetContract.getAddress())).to.equal(36);
             });
           });
         });
@@ -1262,9 +1260,9 @@ export const shouldBehaveLikePermissionCall = (
         let executePayload: string;
 
         before(async () => {
-          context = await buildContext(ethers.parseEther('50'));
+          context = await buildContext(parseEther('50'));
 
-          const accounts = await ethers.getSigners();
+          const accounts = await context.ethers.getSigners();
 
           controllerCanCall = accounts[1];
           controllerCanSuperCall = accounts[2];
@@ -1275,14 +1273,14 @@ export const shouldBehaveLikePermissionCall = (
           const permissionKeys = [
             // permissions
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              controllerCanCall.address.substring(2),
+            controllerCanCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              controllerCanSuperCall.address.substring(2),
+            controllerCanSuperCall.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-              controllerCanOnlySign.address.substring(2),
+            controllerCanOnlySign.address.substring(2),
             // allowed calls
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-              controllerCanCall.address.substring(2),
+            controllerCanCall.address.substring(2),
           ];
 
           const allowedCall = combineAllowedCalls(
