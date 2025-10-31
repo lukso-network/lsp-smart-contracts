@@ -1,66 +1,67 @@
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 import {
-  LSP0ERC725Account,
-  LSP9Vault,
   CheckerExtension__factory,
-  ERC165Extension,
-  ERC165Extension__factory,
   RevertStringExtension__factory,
-  RevertCustomExtension,
+  type ERC165Extension,
+  ERC165Extension__factory,
+  type RevertCustomExtension,
   RevertCustomExtension__factory,
-  EmitEventExtension,
+  type EmitEventExtension,
   EmitEventExtension__factory,
+  type TransferExtension,
   TransferExtension__factory,
-  TransferExtension,
+  type ReenterAccountExtension,
   ReenterAccountExtension__factory,
-  ReenterAccountExtension,
-  BuyExtension,
+  type BuyExtension,
   BuyExtension__factory,
+  type NameExtension,
   NameExtension__factory,
-  NameExtension,
+  type AgeExtension,
   AgeExtension__factory,
-  AgeExtension,
-} from '../../typechain';
+} from '../../types/ethers-contracts/index.js';
+import { type LSP0ERC725Account } from '../../../lsp0-contracts/types/ethers-contracts/index.js';
+import { type LSP9Vault } from '../../../lsp9-contracts/types/ethers-contracts/index.js';
 
 // helpers
-import { abiCoder, provider } from '../utils/helpers';
+import { abiCoder } from '../utils/helpers.js';
 
 // constants
-import { ERC725YDataKeys } from '../../constants';
+import { ERC725YDataKeys } from '../../constants.js';
 
 export type LSP17TestContext = {
-  accounts: SignerWithAddress[];
+  ethers: HardhatEthers;
+  accounts: HardhatEthersSigner[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  contract: LSP0ERC725Account | LSP9Vault | any;
+  contract: LSP0ERC725Account | LSP9Vault;
   deployParams: { owner: string };
 };
 
 export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestContext>) => {
   let context: LSP17TestContext;
-  let notExistingFunctionSignature,
-    checkMsgVariableFunctionSelector,
-    nameFunctionSelector,
-    ageFunctionSelector,
-    transferFunctionSelector,
-    reenterAccountFunctionSelector,
-    revertStringFunctionSelector,
-    revertCustomFunctionSelector,
-    emitEventFunctionSelector,
-    buyFunctionSelector,
-    supportsInterfaceFunctionSelector;
+  let notExistingFunctionSignature: string,
+    checkMsgVariableFunctionSelector: string,
+    nameFunctionSelector: string,
+    ageFunctionSelector: string,
+    transferFunctionSelector: string,
+    reenterAccountFunctionSelector: string,
+    revertStringFunctionSelector: string,
+    revertCustomFunctionSelector: string,
+    emitEventFunctionSelector: string,
+    buyFunctionSelector: string,
+    supportsInterfaceFunctionSelector: string;
 
-  let checkMsgVariableFunctionExtensionHandlerKey,
-    nameFunctionExtensionHandlerKey,
-    ageFunctionExtensionHandlerKey,
-    transferFunctionExtensionHandlerKey,
-    reenterAccountFunctionExtensionHandlerKey,
-    revertStringFunctionExtensionHandlerKey,
-    revertCustomFunctionExtensionHandlerKey,
-    emitEventFunctionExtensionHandlerKey,
-    buyFunctionExtensionHandlerKey,
-    supportsInterfaceFunctionExtensionHandlerKey;
+  let checkMsgVariableFunctionExtensionHandlerKey: string,
+    nameFunctionExtensionHandlerKey: string,
+    ageFunctionExtensionHandlerKey: string,
+    transferFunctionExtensionHandlerKey: string,
+    reenterAccountFunctionExtensionHandlerKey: string,
+    revertStringFunctionExtensionHandlerKey: string,
+    revertCustomFunctionExtensionHandlerKey: string,
+    emitEventFunctionExtensionHandlerKey: string,
+    buyFunctionExtensionHandlerKey: string,
+    supportsInterfaceFunctionExtensionHandlerKey: string;
 
   before(async () => {
     context = await buildContext();
@@ -244,9 +245,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 const checkerExtension = await new CheckerExtension__factory(
                   context.accounts[0],
                 ).deploy();
+                const owner = await context.ethers.getSigner(context.deployParams.owner);
 
                 await context.contract
-                  .connect(context.deployParams.owner)
+                  .connect(owner)
                   .setData(
                     checkMsgVariableFunctionExtensionHandlerKey,
                     await checkerExtension.getAddress(),
@@ -268,7 +270,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     data: checkMsgVariableFunctionSignature,
                     value: 100, // different value
                   }),
-                ).to.be.reverted;
+                ).to.revert(context.ethers);
               });
 
               it('should fail if passed a different address from the msg.sender', async () => {
@@ -287,7 +289,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     data: checkMsgVariableFunctionSignature,
                     value: value,
                   }),
-                ).to.be.reverted;
+                ).to.revert(context.ethers);
               });
 
               it('should pass if passed the same address and value as the msg.sender and msg.value', async () => {
@@ -312,9 +314,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
             const revertStringExtension = await new RevertStringExtension__factory(
               context.accounts[0],
             ).deploy();
+            const owner = await context.ethers.getSigner(context.deployParams.owner);
 
             await context.contract
-              .connect(context.deployParams.owner)
+              .connect(owner)
               .setData(
                 revertStringFunctionExtensionHandlerKey,
                 await revertStringExtension.getAddress(),
@@ -345,9 +348,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
             revertCustomExtension = await new RevertCustomExtension__factory(
               context.accounts[0],
             ).deploy();
+            const owner = await context.ethers.getSigner(context.deployParams.owner);
 
             await context.contract
-              .connect(context.deployParams.owner)
+              .connect(owner)
               .setData(
                 revertCustomFunctionExtensionHandlerKey,
                 await revertCustomExtension.getAddress(),
@@ -376,9 +380,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
             emitEventExtension = await new EmitEventExtension__factory(
               context.accounts[0],
             ).deploy();
+            const owner = await context.ethers.getSigner(context.deployParams.owner);
 
             await context.contract
-              .connect(context.deployParams.owner)
+              .connect(owner)
               .setData(emitEventFunctionExtensionHandlerKey, await emitEventExtension.getAddress());
           });
 
@@ -398,14 +403,15 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
           before(async () => {
             nameExtension = await new NameExtension__factory(context.accounts[0]).deploy();
+            const owner = await context.ethers.getSigner(context.deployParams.owner);
 
             await context.contract
-              .connect(context.deployParams.owner)
-              .setData(nameFunctionExtensionHandlerKey, nameExtension.target);
+              .connect(owner)
+              .setData(nameFunctionExtensionHandlerKey, nameExtension.target.toString());
           });
 
           it('should pass and return the name correctly', async () => {
-            const returnValue = await provider.call({
+            const returnValue = await context.ethers.provider.call({
               from: context.accounts[0].address,
               to: await context.contract.getAddress(),
               data: nameFunctionSelector,
@@ -420,14 +426,15 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
           before(async () => {
             ageExtension = await new AgeExtension__factory(context.accounts[0]).deploy();
+            const owner = await context.ethers.getSigner(context.deployParams.owner);
 
             await context.contract
-              .connect(context.deployParams.owner)
-              .setData(ageFunctionExtensionHandlerKey, ageExtension.target);
+              .connect(owner)
+              .setData(ageFunctionExtensionHandlerKey, ageExtension.target.toString());
           });
 
           it('should pass and return the age correctly', async () => {
-            const returnValue = await provider.call({
+            const returnValue = await context.ethers.provider.call({
               from: context.accounts[0].address,
               to: await context.contract.getAddress(),
               data: ageFunctionSelector,
@@ -442,9 +449,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
           before(async () => {
             transferExtension = await new TransferExtension__factory(context.accounts[0]).deploy();
+            const owner = await context.ethers.getSigner(context.deployParams.owner);
 
             await context.contract
-              .connect(context.deployParams.owner)
+              .connect(owner)
               .setData(transferFunctionExtensionHandlerKey, await transferExtension.getAddress());
           });
 
@@ -475,14 +483,17 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
           before(async () => {
             buyExtension = await new BuyExtension__factory(context.accounts[0]).deploy();
+            const owner = await context.ethers.getSigner(context.deployParams.owner);
 
             await context.contract
-              .connect(context.deployParams.owner)
+              .connect(owner)
               .setData(buyFunctionExtensionHandlerKey, await buyExtension.getAddress());
           });
 
           it('should pass and receive the value sent within the contract', async () => {
-            const balanceBefore = await provider.getBalance(await buyExtension.getAddress());
+            const balanceBefore = await context.ethers.provider.getBalance(
+              await buyExtension.getAddress(),
+            );
 
             expect(balanceBefore).to.equal(0);
 
@@ -492,7 +503,9 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               data: buyFunctionSelector,
             });
 
-            const balanceAfter = await provider.getBalance(await buyExtension.getAddress());
+            const balanceAfter = await context.ethers.provider.getBalance(
+              await buyExtension.getAddress(),
+            );
 
             expect(balanceAfter).to.equal(100);
           });
@@ -505,9 +518,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
             reenterAccountExtension = await new ReenterAccountExtension__factory(
               context.accounts[0],
             ).deploy();
+            const owner = await context.ethers.getSigner(context.deployParams.owner);
 
             await context.contract
-              .connect(context.deployParams.owner)
+              .connect(owner)
               .setData(
                 reenterAccountFunctionExtensionHandlerKey,
                 await reenterAccountExtension.getAddress(),
@@ -544,9 +558,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                 emitEventExtension = await new EmitEventExtension__factory(
                   context.accounts[0],
                 ).deploy();
+                const owner = await context.ethers.getSigner(context.deployParams.owner);
 
                 await context.contract
-                  .connect(context.deployParams.owner)
+                  .connect(owner)
                   .setData(
                     emitEventFunctionExtensionHandlerKey,
                     await emitEventExtension.getAddress(),
@@ -580,9 +595,10 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
             let erc165Extension: ERC165Extension;
             before(async () => {
               erc165Extension = await new ERC165Extension__factory(context.accounts[0]).deploy();
+              const owner = await context.ethers.getSigner(context.deployParams.owner);
 
               await context.contract
-                .connect(context.deployParams.owner)
+                .connect(owner)
                 .setData(
                   supportsInterfaceFunctionExtensionHandlerKey,
                   await erc165Extension.getAddress(),

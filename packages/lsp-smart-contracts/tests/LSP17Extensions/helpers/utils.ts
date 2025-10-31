@@ -1,12 +1,9 @@
-import { ethers } from 'hardhat';
-import { Create2Factory } from './Create2Factory';
+import { getBytes, ZeroAddress } from 'ethers';
+import { Create2Factory } from './Create2Factory.js';
 import { EntryPoint__factory, EntryPoint } from '@account-abstraction/contracts';
 
-export const AddressZero = ethers.ZeroAddress;
-
 export function callDataCost(data: string): number {
-  return ethers
-    .getBytes(data)
+  return getBytes(data)
     .map((x) => (x === 0 ? 4 : 16))
     .reduce((sum, x) => sum + x);
 }

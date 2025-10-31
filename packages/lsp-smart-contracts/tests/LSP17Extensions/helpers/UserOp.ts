@@ -7,16 +7,16 @@ import {
   toBeHex,
   hexlify,
   toNumber,
+  ZeroAddress,
 } from 'ethers';
 import { Wallet } from 'ethers';
-import { AddressZero, callDataCost } from './utils';
+import { callDataCost } from './utils.js';
 import { ecsign, toRpcSig, keccak256 as keccak256_buffer } from 'ethereumjs-util';
-import { Create2Factory } from './Create2Factory';
+import { Create2Factory } from './Create2Factory.js';
 import { EntryPoint } from '@account-abstraction/contracts';
 import { AbiCoder } from 'ethers';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import * as typ from './solidityTypes';
-import { ethers as hreEther } from 'hardhat';
+import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import * as typ from './solidityTypes.js';
 
 export interface UserOperation {
   sender: typ.address;
@@ -105,7 +105,7 @@ export function getUserOpHash(op: UserOperation, entryPoint: string, chainId: nu
 }
 
 export const DefaultsForUserOp: UserOperation = {
-  sender: AddressZero,
+  sender: ZeroAddress,
   nonce: 0,
   initCode: '0x',
   callData: '0x',
@@ -170,7 +170,7 @@ export function fillUserOpDefaults(
 // verificationGasLimit: hard-code default at 100k. should add "create2" cost
 export async function fillUserOp(
   op: Partial<UserOperation>,
-  signer: SignerWithAddress,
+  signer: HardhatEthersSigner,
   entryPoint?: EntryPoint,
 ): Promise<UserOperation> {
   const op1 = { ...op };
@@ -244,7 +244,7 @@ export async function fillUserOp(
 
 export async function fillAndSign(
   op: Partial<UserOperation>,
-  signer: SignerWithAddress,
+  signer: HardhatEthersSigner,
   entryPoint?: EntryPoint,
 ): Promise<UserOperation> {
   const provider = hreEther.provider;

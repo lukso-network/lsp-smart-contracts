@@ -1,42 +1,45 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 import {
-  NameExtension,
-  NameExtension__factory,
-  AgeExtension__factory,
-  AgeExtension,
-  LSP0ERC725Account,
-  LSP9Vault,
-  CheckerExtension__factory,
-  ERC165Extension,
   ERC165Extension__factory,
+  CheckerExtension__factory,
+  type NameExtension,
+  NameExtension__factory,
+  type AgeExtension,
+  AgeExtension__factory,
+  type ERC165Extension,
   RevertStringExtension__factory,
-  RevertCustomExtension,
+  type RevertCustomExtension,
   RevertCustomExtension__factory,
-  EmitEventExtension,
+  type EmitEventExtension,
   EmitEventExtension__factory,
+  type TransferExtension,
   TransferExtension__factory,
-  TransferExtension,
+  type ReenterAccountExtension,
   ReenterAccountExtension__factory,
-  ReenterAccountExtension,
-  OnERC721ReceivedExtension,
-  OnERC721ReceivedExtension__factory,
-  RequireCallbackToken,
+  type RequireCallbackToken,
   RequireCallbackToken__factory,
-  RevertFallbackExtension,
+  type RevertFallbackExtension,
   RevertFallbackExtension__factory,
-} from '../../typechain';
+} from '../../types/ethers-contracts/index.js';
+import {
+  type OnERC721ReceivedExtension,
+  OnERC721ReceivedExtension__factory,
+} from '../../../lsp17-contracts/types/ethers-contracts/index.js';
+import { type LSP0ERC725Account } from '../../../lsp0-contracts/types/ethers-contracts/index.js';
+import { type LSP9Vault } from '../../../lsp9-contracts/types/ethers-contracts/index.js';
 
 // helpers
-import { abiCoder, provider } from '../utils/helpers';
+import { abiCoder } from '../utils/helpers.js';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS } from '../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS } from '../../constants.js';
+import { hexlify, randomBytes, toUtf8Bytes, ZeroAddress } from 'ethers';
 
 export type LSP17TestContext = {
-  accounts: SignerWithAddress[];
+  ethers: HardhatEthers;
+  accounts: HardhatEthersSigner[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   contract: LSP0ERC725Account | LSP9Vault | any;
   deployParams: { owner: string };
@@ -44,28 +47,28 @@ export type LSP17TestContext = {
 
 export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestContext>) => {
   let context: LSP17TestContext;
-  let notExistingFunctionSignature,
-    onERC721ReceivedFunctionSelector,
-    checkMsgVariableFunctionSelector,
-    nameFunctionSelector,
-    ageFunctionSelector,
-    transferFunctionSelector,
-    reenterAccountFunctionSelector,
-    revertStringFunctionSelector,
-    revertCustomFunctionSelector,
-    emitEventFunctionSelector,
-    supportsInterfaceFunctionSelector;
+  let notExistingFunctionSignature: string,
+    onERC721ReceivedFunctionSelector: string,
+    checkMsgVariableFunctionSelector: string,
+    nameFunctionSelector: string,
+    ageFunctionSelector: string,
+    transferFunctionSelector: string,
+    reenterAccountFunctionSelector: string,
+    revertStringFunctionSelector: string,
+    revertCustomFunctionSelector: string,
+    emitEventFunctionSelector: string,
+    supportsInterfaceFunctionSelector: string;
 
-  let checkMsgVariableFunctionExtensionHandlerKey,
-    nameFunctionExtensionHandlerKey,
-    ageFunctionExtensionHandlerKey,
-    transferFunctionExtensionHandlerKey,
-    reenterAccountFunctionExtensionHandlerKey,
-    revertStringFunctionExtensionHandlerKey,
-    revertCustomFunctionExtensionHandlerKey,
-    emitEventFunctionExtensionHandlerKey,
-    onERC721ReceivedFunctionExtensionHandlerKey,
-    supportsInterfaceFunctionExtensionHandlerKey;
+  let checkMsgVariableFunctionExtensionHandlerKey: string,
+    nameFunctionExtensionHandlerKey: string,
+    ageFunctionExtensionHandlerKey: string,
+    transferFunctionExtensionHandlerKey: string,
+    reenterAccountFunctionExtensionHandlerKey: string,
+    revertStringFunctionExtensionHandlerKey: string,
+    revertCustomFunctionExtensionHandlerKey: string,
+    emitEventFunctionExtensionHandlerKey: string,
+    onERC721ReceivedFunctionExtensionHandlerKey: string,
+    supportsInterfaceFunctionExtensionHandlerKey: string;
 
   before(async () => {
     context = await buildContext();
@@ -199,7 +202,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               '0x',
               abiCoder.encode(
                 ['bytes', 'bytes'],
-                [ethers.hexlify(ethers.toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
+                [hexlify(toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
               ),
             );
         });
@@ -212,7 +215,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
       describe('when calling the contract with transferOwnership Signature', () => {
         it('should pass and set the pending owner', async () => {
           const pendingOwnerBefore = await context.contract.pendingOwner();
-          expect(pendingOwnerBefore).to.equal(ethers.ZeroAddress);
+          expect(pendingOwnerBefore).to.equal(ZeroAddress);
 
           const transferOwnershipPayload = context.contract.interface.encodeFunctionData(
             'transferOwnership',
@@ -513,7 +516,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
           });
 
           it('should pass and return the name correctly', async () => {
-            const returnValue = await provider.call({
+            const returnValue = await context.ethers.provider.call({
               from: context.accounts[0].address,
               to: await context.contract.getAddress(),
               data: nameFunctionSelector,
@@ -535,7 +538,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
           });
 
           it('should pass and return the age correctly', async () => {
-            const returnValue = await provider.call({
+            const returnValue = await context.ethers.provider.call({
               from: context.accounts[0].address,
               to: await context.contract.getAddress(),
               data: ageFunctionSelector,
@@ -760,7 +763,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     '0x',
                     abiCoder.encode(
                       ['bytes', 'bytes'],
-                      [ethers.hexlify(ethers.toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
+                      [hexlify(toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
                     ),
                   );
               });
@@ -783,8 +786,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               it('should pass and emit ValueReceived value', async () => {
                 const amountSent = 2;
                 const graffiti =
-                  '0x00000000' +
-                  ethers.hexlify(ethers.toUtf8Bytes('This is a small tip for you!')).substring(2);
+                  '0x00000000' + hexlify(toUtf8Bytes('This is a small tip for you!')).substring(2);
 
                 const tx = await context.accounts[0].sendTransaction({
                   to: await context.contract.getAddress(),
@@ -816,7 +818,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     '0x',
                     abiCoder.encode(
                       ['bytes', 'bytes'],
-                      [ethers.hexlify(ethers.toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
+                      [hexlify(toUtf8Bytes('LSP1: typeId out of scope')), '0x'],
                     ),
                   );
               });
@@ -826,9 +828,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               it('should pass', async () => {
                 const graffiti =
                   '0x00000000' +
-                  ethers
-                    .hexlify(ethers.toUtf8Bytes('Sending a decentralized message'))
-                    .substring(2);
+                  hexlify(toUtf8Bytes('Sending a decentralized message')).substring(2);
 
                 await expect(
                   context.accounts[0].sendTransaction({
@@ -878,9 +878,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               it('should revert', async () => {
                 const graffiti =
                   '0x00000000' +
-                  ethers
-                    .hexlify(ethers.toUtf8Bytes('Sending a decentralized message'))
-                    .substring(2);
+                  hexlify(toUtf8Bytes('Sending a decentralized message')).substring(2);
 
                 await expect(
                   context.accounts[0].sendTransaction({
@@ -897,8 +895,8 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
 
     describe('edge cases', () => {
       describe('when setting less than 20 bytes as data value for the LSP17Extension data key', () => {
-        const randomSelector = ethers.hexlify(ethers.randomBytes(4));
-        const randomBytes10Value = ethers.hexlify(ethers.randomBytes(10));
+        const randomSelector = hexlify(randomBytes(4));
+        const randomBytes10Value = hexlify(randomBytes(10));
 
         const lsp17DataKey =
           ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
