@@ -1,30 +1,32 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP8Tester__factory, LSP8IdentifiableDigitalAsset } from '../../../typechain';
+import { LSP8Tester__factory } from '../../../types/ethers-contracts/index.js';
+import { type LSP8IdentifiableDigitalAsset } from '../../../../lsp8-contracts/types/ethers-contracts/index.js';
 
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP8,
   shouldInitializeLikeLSP8,
   LSP8TestContext,
-} from '../LSP8IdentifiableDigitalAsset.behaviour';
+} from '../LSP8IdentifiableDigitalAsset.behaviour.js';
 
 import {
   LSP17TestContext,
   shouldBehaveLikeLSP17,
-} from '../../LSP17ContractExtension/LSP17ExtendableTokens.behaviour';
+} from '../../LSP17ContractExtension/LSP17ExtendableTokens.behaviour.js';
 
 import {
   LS4DigitalAssetMetadataTestContext,
   shouldBehaveLikeLSP4DigitalAssetMetadata,
-} from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
+} from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 describe('LSP8IdentifiableDigitalAsset with constructor', () => {
   const buildTestContext = async (nftType: number): Promise<LSP8TestContext> => {
-    const accounts = await getNamedAccounts();
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
     const deployParams = {
       name: 'LSP8 - deployed with constructor',
       symbol: 'NFT',
@@ -40,12 +42,12 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       deployParams.lsp8TokenIdFormat,
     );
 
-    return { accounts, lsp8, deployParams };
+    return { ethers, accounts, lsp8, deployParams };
   };
 
   const buildLSP4DigitalAssetMetadataTestContext =
     async (): Promise<LS4DigitalAssetMetadataTestContext> => {
-      const { lsp8 } = await buildTestContext(LSP8_TOKEN_ID_FORMAT.NUMBER);
+      const { ethers, lsp8 } = await buildTestContext(LSP8_TOKEN_ID_FORMAT.NUMBER);
       const accounts = await ethers.getSigners();
 
       const deployParams = {
@@ -53,14 +55,12 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
         lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       };
 
-      return {
-        contract: lsp8 as LSP8IdentifiableDigitalAsset,
-        accounts,
-        deployParams,
-      };
+      return { ethers, contract: lsp8 as LSP8IdentifiableDigitalAsset, accounts, deployParams };
     };
 
   const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
     const accounts = await ethers.getSigners();
 
     const deployParams = {
@@ -78,11 +78,13 @@ describe('LSP8IdentifiableDigitalAsset with constructor', () => {
       deployParams.lsp8TokenIdFormat,
     );
 
-    return { accounts, contract, deployParams };
+    return { ethers, accounts, contract, deployParams: { owner: deployParams.owner.address } };
   };
 
   describe('when deploying the contract', () => {
     it('should revert when deploying with address(0) as owner', async () => {
+      const { network } = await import('hardhat');
+      const { ethers } = await network.connect();
       const accounts = await ethers.getSigners();
 
       const deployParams = {

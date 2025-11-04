@@ -1,30 +1,29 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { ZeroAddress } from 'ethers';
 
-import {
-  LSP8InitTester__factory,
-  LSP8IdentifiableDigitalAsset,
-  LSP8Tester,
-} from '../../../typechain';
+import { type LSP8Tester, LSP8InitTester__factory } from '../../../types/ethers-contracts/index.js';
+import { type LSP8IdentifiableDigitalAsset } from '../../../../lsp8-contracts/types/ethers-contracts/index.js';
 
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP8,
   shouldInitializeLikeLSP8,
-  LSP8TestContext,
-} from '../LSP8IdentifiableDigitalAsset.behaviour';
+  type LSP8TestContext,
+} from '../LSP8IdentifiableDigitalAsset.behaviour.js';
 
 import {
-  LS4DigitalAssetMetadataTestContext,
   shouldBehaveLikeLSP4DigitalAssetMetadata,
-} from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
+  type LS4DigitalAssetMetadataTestContext,
+} from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour.js';
 
-import { deployProxy } from '../../utils/fixtures';
+import { deployProxy } from '../../utils/fixtures.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 
 describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
   const buildTestContext = async (nftType: number): Promise<LSP8TestContext> => {
-    const accounts = await getNamedAccounts();
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
     const deployParams = {
       name: 'LSP8 - deployed with constructor',
       symbol: 'NFT',
@@ -37,12 +36,12 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
     const lsp8Proxy = await deployProxy(await lsp8TesterInit.getAddress(), accounts.owner);
     const lsp8 = lsp8TesterInit.attach(lsp8Proxy) as LSP8Tester;
 
-    return { accounts, lsp8, deployParams };
+    return { ethers, accounts, lsp8, deployParams };
   };
 
   const buildLSP4DigitalAssetMetadataTestContext =
     async (): Promise<LS4DigitalAssetMetadataTestContext> => {
-      const { lsp8 } = await buildTestContext(0);
+      const { ethers, lsp8 } = await buildTestContext(0);
       const accounts = await ethers.getSigners();
 
       const deployParams = {
@@ -51,6 +50,7 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
       };
 
       return {
+        ethers,
         contract: lsp8 as LSP8IdentifiableDigitalAsset,
         accounts,
         deployParams,
@@ -79,7 +79,7 @@ describe('LSP8IdentifiableDigitalAssetInit with proxy', () => {
         context.lsp8['initialize(string,string,address,uint256,uint256)'](
           context.deployParams.name,
           context.deployParams.symbol,
-          ethers.ZeroAddress,
+          ZeroAddress,
           0,
           context.deployParams.lsp4TokenType,
         ),

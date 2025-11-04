@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 import {
   type LSP17ExtendableTester,
@@ -11,6 +11,7 @@ import {
 } from '../../types/ethers-contracts/index.js';
 
 describe('LSP17Extendable - Basic Implementation', () => {
+  let ethers: HardhatEthers;
   let accounts: HardhatEthersSigner[];
 
   let lsp17Implementation: LSP17ExtendableTester;
@@ -38,7 +39,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
 
   before('setup', async () => {
     const { network } = await import('hardhat');
-    const { ethers } = await network.connect();
+    ({ ethers } = await network.connect());
     accounts = await ethers.getSigners();
 
     lsp17Implementation = await new LSP17ExtendableTester__factory(accounts[0]).deploy();
@@ -159,7 +160,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
             to: await lsp17Implementation.getAddress(),
             data: selectorRevertNoErrorData,
           }),
-        ).to.be.reverted;
+        ).to.revert(ethers);
       });
     });
   });

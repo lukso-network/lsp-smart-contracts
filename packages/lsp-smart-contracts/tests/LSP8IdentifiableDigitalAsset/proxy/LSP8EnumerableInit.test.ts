@@ -1,20 +1,26 @@
 import { expect } from 'chai';
-import { LSP8EnumerableInitTester, LSP8EnumerableInitTester__factory } from '../../../typechain';
 
-import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
-  shouldBehaveLikeLSP8Enumerable,
-  LSP8EnumerableTestContext,
-  getNamedAccounts,
-} from '../LSP8Enumerable.behaviour';
+  type LSP8EnumerableInitTester,
+  LSP8EnumerableInitTester__factory,
+} from '../../../types/ethers-contracts/index.js';
 
-import { deployProxy } from '../../utils/fixtures';
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour.js';
+import {
+  getNamedAccounts,
+  shouldBehaveLikeLSP8Enumerable,
+  type LSP8EnumerableTestContext,
+} from '../LSP8Enumerable.behaviour.js';
+
+import { deployProxy } from '../../utils/fixtures.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 describe('LSP8EnumerableInit with proxy', () => {
   const buildTestContext = async () => {
-    const accounts = await getNamedAccounts();
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
     const deployParams = {
       name: 'LSP8 Enumerable - deployed with proxy',
       symbol: 'LSP8 NMRBL',
@@ -34,7 +40,7 @@ describe('LSP8EnumerableInit with proxy', () => {
       lsp8EnumerableProxy,
     ) as LSP8EnumerableInitTester;
 
-    return { accounts, lsp8Enumerable, deployParams };
+    return { ethers, accounts, lsp8Enumerable, deployParams };
   };
 
   const initializeProxy = async (context: LSP8EnumerableTestContext) => {

@@ -1,14 +1,17 @@
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
-import { LSP8BurnableTester, LSP8BurnableTester__factory } from '../../../typechain';
+import {
+  type LSP8BurnableTester,
+  LSP8BurnableTester__factory,
+} from '../../../types/ethers-contracts/index.js';
 
-import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 type LSP8BurnableTestContext = {
-  accounts: SignerWithAddress[];
+  ethers: HardhatEthers;
+  accounts: HardhatEthersSigner[];
   lsp8Burnable: LSP8BurnableTester;
   deployParams: {
     name: string;
@@ -21,6 +24,8 @@ type LSP8BurnableTestContext = {
 
 describe('LSP8Burnable with constructor', () => {
   const buildTestContext = async () => {
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       name: 'LSP8 Burnable - deployed with constructor',
@@ -38,7 +43,7 @@ describe('LSP8Burnable with constructor', () => {
       deployParams.lsp8TokenIdFormat,
     );
 
-    return { accounts, lsp8Burnable, deployParams };
+    return { ethers, accounts, lsp8Burnable, deployParams };
   };
 
   describe('when deploying the contract', () => {
@@ -49,9 +54,10 @@ describe('LSP8Burnable with constructor', () => {
     });
 
     shouldInitializeLikeLSP8(async () => {
-      const { lsp8Burnable: lsp8, deployParams } = context;
+      const { ethers, lsp8Burnable: lsp8, deployParams } = context;
 
       return {
+        ethers,
         lsp8,
         deployParams,
         initializeTransaction: context.lsp8Burnable.deploymentTransaction(),

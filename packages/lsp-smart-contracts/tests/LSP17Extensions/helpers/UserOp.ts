@@ -13,10 +13,11 @@ import { Wallet } from 'ethers';
 import { callDataCost } from './utils.js';
 import { ecsign, toRpcSig, keccak256 as keccak256_buffer } from 'ethereumjs-util';
 import { Create2Factory } from './Create2Factory.js';
-import { EntryPoint } from '@account-abstraction/contracts';
 import { AbiCoder } from 'ethers';
-import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { type MockEntryPoint } from '../../../types/ethers-contracts/index.js';
 import * as typ from './solidityTypes.js';
+import { UserOperationStruct } from '../../../types/ethers-contracts/EntryPoint.sol/MockEntryPoint.js';
 
 export interface UserOperation {
   sender: typ.address;
@@ -32,7 +33,7 @@ export interface UserOperation {
   signature: typ.bytes;
 }
 
-export function packUserOp(op: UserOperation, forSignature = true): string {
+export function packUserOp(op: UserOperationStruct, forSignature = true): string {
   if (forSignature) {
     // Encoding the UserOperation object fields into a single string for signature
     return AbiCoder.defaultAbiCoder().encode(
@@ -94,7 +95,11 @@ export function packUserOp(op: UserOperation, forSignature = true): string {
   }
 }
 
-export function getUserOpHash(op: UserOperation, entryPoint: string, chainId: number): string {
+export function getUserOpHash(
+  op: UserOperationStruct,
+  entryPoint: string,
+  chainId: number,
+): string {
   const userOpHash = keccak256(packUserOp(op, true));
   // Encoding the UserOperation hash, entryPoint address, and chainId for final hash computation
   const enc = AbiCoder.defaultAbiCoder().encode(
@@ -119,11 +124,11 @@ export const DefaultsForUserOp: UserOperation = {
 };
 
 export function signUserOp(
-  op: UserOperation,
+  op: UserOperationStruct,
   signer: Wallet,
   entryPoint: string,
   chainId: number,
-): UserOperation {
+): UserOperationStruct {
   const message = getUserOpHash(op, entryPoint, chainId);
   const msg1 = Buffer.concat([
     Buffer.from('\x19Ethereum Signed Message:\n32', 'ascii'),
@@ -141,9 +146,9 @@ export function signUserOp(
 }
 
 export function fillUserOpDefaults(
-  op: Partial<UserOperation>,
+  op: Partial<UserOperationStruct>,
   defaults = DefaultsForUserOp,
-): UserOperation {
+): UserOperationStruct {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const partial: any = { ...op };
 
@@ -169,12 +174,13 @@ export function fillUserOpDefaults(
 // callGasLimit: VERY crude estimation (by estimating call to account, and add rough entryPoint overhead
 // verificationGasLimit: hard-code default at 100k. should add "create2" cost
 export async function fillUserOp(
-  op: Partial<UserOperation>,
+  ethers: HardhatEthers,
+  op: Partial<UserOperationStruct>,
   signer: HardhatEthersSigner,
-  entryPoint?: EntryPoint,
-): Promise<UserOperation> {
+  entryPoint: MockEntryPoint,
+): Promise<UserOperationStruct> {
   const op1 = { ...op };
-  const provider = hreEther.provider;
+  const provider = ethers.provider;
   if (op.initCode != null) {
     const initAddr = dataSlice(op1.initCode as BytesLike, 0, 20);
     const initCallData = dataSlice(op1.initCode as BytesLike, 20);
@@ -186,8 +192,8 @@ export async function fillUserOp(
         op1.sender = Create2Factory.getDeployedAddress(ctr, salt);
       } else {
         if (provider == null) throw new Error('no entrypoint/provider');
-        op1.sender = await entryPoint.callStatic
-          .getSenderAddress(op1.initCode as BytesLike)
+        op1.sender = await entryPoint.getSenderAddress
+          .staticCall(op1.initCode as BytesLike)
           .catch((e) => e.errorArgs.sender);
       }
     }
@@ -208,7 +214,11 @@ export async function fillUserOp(
     const signerKeyAsUint192 = toBeHex(toBigInt(signer.address));
 
     try {
-      op1.nonce = await entryPoint.getNonce(op1.sender, signerKeyAsUint192);
+      if (op1.sender) {
+        op1.nonce = await entryPoint.getNonce(op1.sender, signerKeyAsUint192);
+      } else {
+        op1.nonce = 0;
+      }
     } catch {
       op1.nonce = 0;
     }
@@ -227,7 +237,7 @@ export async function fillUserOp(
     if (provider == null) throw new Error('must have entryPoint to autofill maxFeePerGas');
     const block = await provider.getBlock('latest');
     op1.maxFeePerGas =
-      block.baseFeePerGas +
+      (block?.baseFeePerGas || 0n) +
       BigInt(op1.maxPriorityFeePerGas ?? DefaultsForUserOp.maxPriorityFeePerGas);
   }
 
@@ -243,12 +253,13 @@ export async function fillUserOp(
 }
 
 export async function fillAndSign(
-  op: Partial<UserOperation>,
+  ethers: HardhatEthers,
+  op: Partial<UserOperationStruct>,
   signer: HardhatEthersSigner,
-  entryPoint?: EntryPoint,
-): Promise<UserOperation> {
-  const provider = hreEther.provider;
-  const op2 = await fillUserOp(op, signer, entryPoint);
+  entryPoint: MockEntryPoint,
+): Promise<UserOperationStruct> {
+  const provider = ethers.provider;
+  const op2 = await fillUserOp(ethers, op, signer, entryPoint);
 
   const chainId = await provider.getNetwork().then((net) => net.chainId);
   const message = getBytes(getUserOpHash(op2, entryPoint.target as string, toNumber(chainId)));

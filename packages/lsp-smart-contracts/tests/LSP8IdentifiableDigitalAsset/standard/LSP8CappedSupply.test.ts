@@ -1,19 +1,19 @@
-import { ethers } from 'hardhat';
+import { LSP8CappedSupplyTester__factory } from '../../../types/ethers-contracts/index.js';
 
-import { LSP8CappedSupplyTester__factory } from '../../../typechain';
-
-import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour.js';
 import {
-  shouldBehaveLikeLSP8CappedSupply,
-  LSP8CappedSupplyTestContext,
   getNamedAccounts,
-} from '../LSP8CappedSupply.behaviour';
+  shouldBehaveLikeLSP8CappedSupply,
+  type LSP8CappedSupplyTestContext,
+} from '../LSP8CappedSupply.behaviour.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 describe('LSP8CappedSupply with constructor', () => {
   const buildTestContext = async () => {
-    const accounts = await getNamedAccounts();
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
     const deployParams = {
       name: 'LSP8 capped supply - deployed with constructor',
       symbol: 'CAP',
@@ -31,7 +31,7 @@ describe('LSP8CappedSupply with constructor', () => {
       deployParams.tokenSupplyCap,
     );
 
-    return { accounts, lsp8CappedSupply, deployParams };
+    return { ethers, accounts, lsp8CappedSupply, deployParams };
   };
 
   describe('when deploying the contract', () => {
@@ -42,9 +42,10 @@ describe('LSP8CappedSupply with constructor', () => {
     });
 
     shouldInitializeLikeLSP8(async () => {
-      const { lsp8CappedSupply: lsp8, deployParams } = context;
+      const { ethers, lsp8CappedSupply: lsp8, deployParams } = context;
 
       return {
+        ethers,
         lsp8,
         deployParams,
         initializeTransaction: context.lsp8CappedSupply.deploymentTransaction(),

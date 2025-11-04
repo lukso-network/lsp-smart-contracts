@@ -352,7 +352,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     data: checkMsgVariableFunctionSignature,
                     value: 100, // different value
                   }),
-                ).to.be.reverted;
+                ).to.revert(context.ethers);
               });
 
               it('should fail if passed a different address from the msg.sender', async () => {
@@ -371,7 +371,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     data: checkMsgVariableFunctionSignature,
                     value: value,
                   }),
-                ).to.be.reverted;
+                ).to.revert(context.ethers);
               });
 
               it('should pass if passed the same address and value as the msg.sender and msg.value', async () => {
@@ -607,7 +607,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                   to: await context.contract.getAddress(),
                   data: reenterAccountFunctionSignature,
                 }),
-              ).to.not.be.reverted;
+              ).to.not.revert(context.ethers);
             });
           });
 
@@ -722,7 +722,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
               to: await context.contract.getAddress(),
               data: '0x01',
             }),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
       });
 
@@ -776,7 +776,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     to: await context.contract.getAddress(),
                     data: '0x00000000',
                   }),
-                ).to.not.be.reverted;
+                ).to.not.revert(context.ethers);
               });
             });
           });
@@ -835,7 +835,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     to: await context.contract.getAddress(),
                     data: graffiti,
                   }),
-                ).to.not.be.reverted;
+                ).to.not.revert(context.ethers);
               });
             });
           });
@@ -870,7 +870,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     to: await context.contract.getAddress(),
                     data: '0x00000000',
                   }),
-                ).to.be.reverted;
+                ).to.revert(context.ethers);
               });
             });
 
@@ -885,7 +885,7 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
                     to: await context.contract.getAddress(),
                     data: graffiti,
                   }),
-                ).to.be.reverted;
+                ).to.revert(context.ethers);
               });
             });
           });
@@ -933,7 +933,9 @@ export const shouldBehaveLikeLSP17 = (buildContext: () => Promise<LSP17TestConte
         describe('when minting to the account', () => {
           describe('before setting the onERC721ReceivedExtension', () => {
             it('should fail since onERC721Received is not implemented', async () => {
-              await expect(token.mint(await context.contract.getAddress())).to.be.reverted;
+              await expect(token.mint(await context.contract.getAddress())).to.revert(
+                context.ethers,
+              );
             });
           });
 
