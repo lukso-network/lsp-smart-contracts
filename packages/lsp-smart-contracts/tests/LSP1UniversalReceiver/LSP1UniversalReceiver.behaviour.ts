@@ -1,23 +1,26 @@
 import { expect } from 'chai';
 import { parseEther } from 'ethers';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
 
 // types
 import {
-  UniversalProfile,
-  UniversalReceiverTester,
+  type UniversalReceiverTester,
+  type UniversalReceiverDelegateRevert,
   UniversalReceiverDelegateRevert__factory,
-  UniversalReceiverDelegateRevert,
-} from '../../typechain';
+} from '../../types/ethers-contracts/index.js';
+import type { UniversalProfile } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
 // helpers
-import { abiCoder, LSP1_HOOK_PLACEHOLDER } from '../utils/helpers';
+import { abiCoder, LSP1_HOOK_PLACEHOLDER } from '../utils/helpers.js';
 
 // constants
-import { ERC725YDataKeys } from '../../constants';
+import { ERC725YDataKeys } from '../../constants.js';
 
 export type LSP1TestContext = {
-  accounts: SignerWithAddress[];
+  ethers: HardhatEthers;
+  networkHelpers: NetworkHelpers;
+  accounts: HardhatEthersSigner[];
   // contract that implement the LSP1 - Universal Receiver interface
   lsp1Implementation: UniversalProfile;
   // contract that call the `universalReceiver(...)` function (for testing)
@@ -139,7 +142,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
             .connect(context.accounts[0])
             .setData(
               ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-                LSP1_HOOK_PLACEHOLDER.substring(2, 42),
+              LSP1_HOOK_PLACEHOLDER.substring(2, 42),
               await revertableURD.getAddress(),
             );
         });

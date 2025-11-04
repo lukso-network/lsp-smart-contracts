@@ -4,19 +4,19 @@ import { LSP8Tester__factory } from '../../../types/ethers-contracts/index.js';
 import { type LSP8IdentifiableDigitalAsset } from '../../../../lsp8-contracts/types/ethers-contracts/index.js';
 
 import {
+  type LSP8TestContext,
   getNamedAccounts,
   shouldBehaveLikeLSP8,
   shouldInitializeLikeLSP8,
-  LSP8TestContext,
 } from '../LSP8IdentifiableDigitalAsset.behaviour.js';
 
 import {
-  LSP17TestContext,
+  type LSP17TestContext,
   shouldBehaveLikeLSP17,
 } from '../../LSP17ContractExtension/LSP17ExtendableTokens.behaviour.js';
 
 import {
-  LS4DigitalAssetMetadataTestContext,
+  type LS4DigitalAssetMetadataTestContext,
   shouldBehaveLikeLSP4DigitalAssetMetadata,
 } from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';

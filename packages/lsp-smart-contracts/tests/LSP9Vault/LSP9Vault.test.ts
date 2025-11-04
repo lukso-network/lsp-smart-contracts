@@ -1,31 +1,33 @@
-import { ethers } from 'hardhat';
+import { network } from 'hardhat';
 import { expect } from 'chai';
 
 import {
-  LSP14TestContext,
+  type LSP14TestContext,
   shouldBehaveLikeLSP14,
-} from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour';
+} from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour.js';
 
-import { UniversalProfile, LSP6KeyManager, LSP9Vault__factory } from '../../typechain';
+import { type LSP6KeyManager } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
+import { type UniversalProfile } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import { LSP9Vault__factory } from '../../../lsp9-contracts/types/ethers-contracts/index.js';
 
 import {
+  type LSP9TestContext,
   getNamedAccounts,
   shouldBehaveLikeLSP9,
   shouldInitializeLikeLSP9,
-  LSP9TestContext,
-} from './LSP9Vault.behaviour';
+} from './LSP9Vault.behaviour.js';
 
 import {
-  LSP17TestContext,
+  type LSP17TestContext,
   shouldBehaveLikeLSP17,
-} from '../LSP17ContractExtension/LSP17Extendable.behaviour';
+} from '../LSP17ContractExtension/LSP17Extendable.behaviour.js';
 
-import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
-import { provider } from '../utils/helpers';
+import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures.js';
 
 describe('LSP9Vault with constructor', () => {
   const buildTestContext = async (initialFunding?: number): Promise<LSP9TestContext> => {
-    const accounts = await getNamedAccounts();
+    const { ethers } = await network.connect()
+    const accounts = await getNamedAccounts(ethers);
 
     const deployParams = {
       newOwner: accounts.owner.address,
@@ -41,6 +43,7 @@ describe('LSP9Vault with constructor', () => {
     const lsp6KeyManager = KM1 as LSP6KeyManager;
 
     return {
+      ethers,
       accounts,
       lsp9Vault,
       deployParams,
@@ -52,6 +55,7 @@ describe('LSP9Vault with constructor', () => {
   const buildLSP14TestContext = async (
     initialFunding?: number | bigint,
   ): Promise<LSP14TestContext> => {
+    const { ethers, networkHelpers } = await network.connect()
     const accounts = await ethers.getSigners();
     const deployParams = { owner: accounts[0], initialFunding };
 
@@ -62,6 +66,8 @@ describe('LSP9Vault with constructor', () => {
     const onlyOwnerCustomError = 'Only Owner or reentered Universal Receiver Delegate allowed';
 
     return {
+      ethers,
+      networkHelpers,
       accounts,
       contract: lsp9Vault,
       deployParams,
@@ -70,13 +76,14 @@ describe('LSP9Vault with constructor', () => {
   };
 
   const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+    const { ethers } = await network.connect()
     const accounts = await ethers.getSigners();
     const deployParams = {
       owner: accounts[0],
     };
     const contract = await new LSP9Vault__factory(accounts[0]).deploy(deployParams.owner.address);
 
-    return { accounts, contract, deployParams };
+    return { ethers, accounts, contract, deployParams };
   };
 
   [{ initialFunding: undefined }, { initialFunding: 0 }, { initialFunding: 5 }].forEach(
@@ -89,7 +96,7 @@ describe('LSP9Vault with constructor', () => {
         });
 
         it(`should have deployed with the correct funding amount (${testCase.initialFunding})`, async () => {
-          const balance = await provider.getBalance(await context.lsp9Vault.getAddress());
+          const balance = await context.ethers.provider.getBalance(await context.lsp9Vault.getAddress());
           expect(balance).to.equal(testCase.initialFunding || 0);
         });
       });

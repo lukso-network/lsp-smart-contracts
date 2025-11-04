@@ -1,35 +1,36 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { UniversalReceiverTester__factory, UniversalProfile__factory } from '../../../typechain';
+import { UniversalReceiverTester__factory } from '../types/ethers-contracts/index.js';
+import { UniversalProfile__factory } from '../../universalprofile-contracts/types/ethers-contracts/index.js';
 
 import {
-  LSP1TestContext,
+  type LSP1TestContext,
   shouldBehaveLikeLSP1,
-} from './LSP1UniversalReceiver/LSP1UniversalReceiver.behaviour';
+} from './LSP1UniversalReceiver/LSP1UniversalReceiver.behaviour.js';
 
 import {
-  LSP17TestContext,
+  type LSP17TestContext,
   shouldBehaveLikeLSP17,
-} from './LSP17ContractExtension/LSP17Extendable.behaviour';
+} from './LSP17ContractExtension/LSP17Extendable.behaviour.js';
 
 import {
-  LSP20TestContext,
+  type LSP20TestContext,
   shouldBehaveLikeLSP20,
-} from './LSP20CallVerification/LSP20CallVerification.behaviour';
+} from './LSP20CallVerification/LSP20CallVerification.behaviour.js';
 
 import {
-  LSP3TestContext,
+  type LSP3TestContext,
   shouldInitializeLikeLSP3,
   shouldBehaveLikeLSP3,
-} from './UniversalProfile.behaviour';
-import { provider } from './utils/helpers';
+} from './UniversalProfile.behaviour.js';
 import {
-  LSP14CombinedWithLSP20TestContext,
+  type LSP14CombinedWithLSP20TestContext,
   shouldBehaveLikeLSP14WithLSP20,
-} from './LSP20CallVerification/LSP20WithLSP14.behaviour';
+} from './LSP20CallVerification/LSP20WithLSP14.behaviour.js';
+import { network } from 'hardhat';
 
 describe('UniversalProfile with constructor', () => {
   const buildLSP3TestContext = async (initialFunding?: number): Promise<LSP3TestContext> => {
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       owner: accounts[0],
@@ -44,10 +45,11 @@ describe('UniversalProfile with constructor', () => {
 
     await universalProfile.waitForDeployment();
 
-    return { accounts, universalProfile, deployParams };
+    return { ethers, networkHelpers, accounts, universalProfile, deployParams };
   };
 
   const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await ethers.getSigners();
 
     const lsp1Implementation = await new UniversalProfile__factory(accounts[0]).deploy(
@@ -56,12 +58,13 @@ describe('UniversalProfile with constructor', () => {
 
     const lsp1Checker = await new UniversalReceiverTester__factory(accounts[0]).deploy();
 
-    return { accounts, lsp1Implementation, lsp1Checker };
+    return { ethers, networkHelpers, accounts, lsp1Implementation, lsp1Checker };
   };
 
   const buildLSP14WithLSP20TestContext = async (
     initialFunding?: number | bigint,
   ): Promise<LSP14CombinedWithLSP20TestContext> => {
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       owner: accounts[0],
@@ -75,10 +78,11 @@ describe('UniversalProfile with constructor', () => {
 
     const onlyOwnerCustomError = 'OwnableCallerNotTheOwner';
 
-    return { accounts, contract, deployParams, onlyOwnerCustomError };
+    return { ethers, networkHelpers, accounts, contract, deployParams, onlyOwnerCustomError };
   };
 
   const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+    const { ethers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       owner: accounts[0],
@@ -87,10 +91,12 @@ describe('UniversalProfile with constructor', () => {
       deployParams.owner.address,
     );
 
-    return { accounts, contract, deployParams };
+    // TODO: fix typing here, ensure if we pass `HardhatEthersSigner` or `string`
+    return { ethers, accounts, contract, deployParams };
   };
 
   const buildLSP20TestContext = async (): Promise<LSP20TestContext> => {
+    const { ethers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       owner: accounts[0],
@@ -112,7 +118,7 @@ describe('UniversalProfile with constructor', () => {
         });
 
         it(`should have deployed with the correct funding amount (${testCase.initialFunding})`, async () => {
-          const balance = await provider.getBalance(await context.universalProfile.getAddress());
+          const balance = await context.ethers.provider.getBalance(await context.universalProfile.getAddress());
           expect(balance).to.equal(testCase.initialFunding || 0);
         });
       });

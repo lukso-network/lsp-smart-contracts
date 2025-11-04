@@ -5,10 +5,10 @@ import { type LSP8Tester, LSP8InitTester__factory } from '../../../types/ethers-
 import { type LSP8IdentifiableDigitalAsset } from '../../../../lsp8-contracts/types/ethers-contracts/index.js';
 
 import {
+  type LSP8TestContext,
   getNamedAccounts,
   shouldBehaveLikeLSP8,
   shouldInitializeLikeLSP8,
-  type LSP8TestContext,
 } from '../LSP8IdentifiableDigitalAsset.behaviour.js';
 
 import {

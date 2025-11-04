@@ -5,8 +5,8 @@ import {
 
 import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour.js';
 import {
+  type LSP8MintableTestContext,
   shouldBehaveLikeLSP8Mintable,
-  LSP8MintableTestContext,
   getNamedAccounts,
 } from '../LSP8Mintable.behaviour.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
