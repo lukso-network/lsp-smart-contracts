@@ -1,19 +1,19 @@
 import { expect } from 'chai';
+import { type BytesLike, hexlify, keccak256, parseEther, toUtf8Bytes } from 'ethers';
 
-// types
-import { BytesLike, hexlify, keccak256, parseEther, toUtf8Bytes } from 'ethers';
-import { SingleReentrancyRelayer__factory, UniversalProfile__factory } from '../../../typechain';
+import { SingleReentrancyRelayer__factory } from '../../../types/ethers-contracts/index.js';
+import { UniversalProfile__factory } from '../../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
+import { type LSP6TestContext } from '../../utils/context.js';
 
 // helpers
 import {
   // Types
-  ReentrancyContext,
+  type ReentrancyContext,
   // Test cases
   transferValueTestCases,
   setDataTestCases,
@@ -24,8 +24,7 @@ import {
   // Functions
   generateSingleRelayPayload,
   loadTestCase,
-} from './reentrancyHelpers';
-import { provider } from '../../utils/helpers';
+} from './reentrancyHelpers.js';
 
 export const testSingleExecuteToSingleExecuteRelayCall = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
@@ -107,18 +106,20 @@ export const testSingleExecuteToSingleExecuteRelayCall = (
         await reentrancyContext.singleReentarncyRelayer.getAddress(),
       );
 
-      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
-        parseEther('10'),
-      );
+      expect(
+        await context.ethers.provider.getBalance(await context.universalProfile.getAddress()),
+      ).to.equal(parseEther('10'));
 
       await context.keyManager.connect(reentrancyContext.caller).execute(executePayload);
 
-      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
-        parseEther('9'),
-      );
+      expect(
+        await context.ethers.provider.getBalance(await context.universalProfile.getAddress()),
+      ).to.equal(parseEther('9'));
 
       expect(
-        await provider.getBalance(await reentrancyContext.singleReentarncyRelayer.getAddress()),
+        await context.ethers.provider.getBalance(
+          await reentrancyContext.singleReentarncyRelayer.getAddress(),
+        ),
       ).to.equal(parseEther('1'));
     });
   });
