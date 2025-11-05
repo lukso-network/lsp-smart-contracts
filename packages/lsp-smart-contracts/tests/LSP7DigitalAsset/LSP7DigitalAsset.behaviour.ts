@@ -2108,12 +2108,12 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
     });
   });
 
-  describe.skip('transferOwnership', () => {
+  describe('transferOwnership', () => {
+    let context: LSP7TestContext;
     let oldOwner: HardhatEthersSigner;
     let newOwner: HardhatEthersSigner;
 
     before(async () => {
-      // TODO refactor to not rebuild context
       context = await buildContext();
       oldOwner = context.accounts.owner;
       newOwner = context.accounts.anyone;
@@ -2125,17 +2125,15 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
     });
 
     it('should not allow non-owners to transfer ownership', async () => {
-      const newOwner = context.accounts.anyone;
+      expect(await context.lsp7.owner()).to.equal(newOwner.address);
+      const accounts = await context.ethers.getSigners();
+      const random = accounts[10];
       await expect(
-        context.lsp7.connect(newOwner).transferOwnership(newOwner.address),
+        context.lsp7.connect(random).transferOwnership(random.address),
       ).to.be.revertedWith('Ownable: caller is not the owner');
     });
 
     describe('after transferring ownership of the contract', () => {
-      beforeEach(async () => {
-        await context.lsp7.connect(oldOwner).transferOwnership(newOwner.address);
-      });
-
       it('old owner should not be allowed to use `transferOwnership(..)`', async () => {
         const randomAddress = context.accounts.anyone.address;
         await expect(
@@ -2172,6 +2170,15 @@ export const shouldBehaveLikeLSP7 = (buildContext: () => Promise<LSP7TestContext
       });
 
       it('new owner should be allowed to use `setData(..)`', async () => {
+        context = await buildContext();
+        oldOwner = context.accounts.owner;
+        newOwner = context.accounts.anyone;
+
+        expect(await context.lsp7.owner()).to.equal(oldOwner.address);
+
+        await context.lsp7.connect(oldOwner).transferOwnership(newOwner.address);
+        expect(await context.lsp7.owner()).to.equal(newOwner.address);
+
         const key = keccak256(toUtf8Bytes('key'));
         const value = keccak256(toUtf8Bytes('value'));
         await context.lsp7.connect(newOwner).setData(key, value);

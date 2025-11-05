@@ -759,13 +759,17 @@ export const shouldBehaveLikeLSP8 = (
   });
 
   describe('transfers', () => {
+    let context: LSP8TestContext;
+
     type HelperContracts = {
       tokenReceiverWithLSP1: TokenReceiverWithLSP1;
       tokenReceiverWithoutLSP1: TokenReceiverWithoutLSP1;
     };
     let helperContracts: HelperContracts;
 
-    before(async () => {
+    beforeEach(async () => {
+      context = await buildContext(0);
+
       helperContracts = {
         tokenReceiverWithLSP1: await new TokenReceiverWithLSP1__factory(
           context.accounts.owner,
@@ -774,10 +778,6 @@ export const shouldBehaveLikeLSP8 = (
           context.accounts.owner,
         ).deploy(),
       };
-    });
-
-    beforeEach(async () => {
-      context = await buildContext(0);
 
       // mint a tokenId
       await context.lsp8.mint(
@@ -1816,12 +1816,6 @@ export const shouldBehaveLikeLSP8 = (
     });
 
     describe('after transferring ownership of the contract', () => {
-      beforeEach(async () => {
-        context = await buildContext(0);
-
-        await context.lsp8.connect(oldOwner).transferOwnership(newOwner.address);
-      });
-
       it('old owner should not be allowed to use `transferOwnership(..)`', async () => {
         const randomAddress = context.accounts.anyone.address;
         await expect(
@@ -1858,6 +1852,15 @@ export const shouldBehaveLikeLSP8 = (
       });
 
       it('new owner should be allowed to use `setData(..)`', async () => {
+        context = await buildContext(0);
+        oldOwner = context.accounts.owner;
+        newOwner = context.accounts.anyone;
+
+        expect(await context.lsp8.owner()).to.equal(oldOwner.address);
+
+        await context.lsp8.connect(oldOwner).transferOwnership(newOwner.address);
+        expect(await context.lsp8.owner()).to.equal(newOwner.address);
+
         const key = keccak256(toUtf8Bytes('key'));
         const value = keccak256(toUtf8Bytes('value'));
         await context.lsp8.connect(newOwner).setData(key, value);
