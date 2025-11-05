@@ -1,15 +1,14 @@
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import {
   CalculateLSPInterfaces,
   CalculateLSPInterfaces__factory,
   CalculateERCInterfaces,
   CalculateERCInterfaces__factory,
-} from '../../typechain';
+} from '../../types/ethers-contracts/index.js';
 
 // utils
-import { INTERFACE_IDS } from '../../constants';
+import { INTERFACE_IDS } from '../../constants.js';
 
 /**
  * @dev these tests check that the ERC165 interface IDs stored in `constant.ts`
@@ -21,10 +20,12 @@ import { INTERFACE_IDS } from '../../constants';
  *      - tests that use or check for these interface IDs rely on correct values
  */
 describe('Calculate LSP interfaces', () => {
-  let accounts: SignerWithAddress[];
+  let accounts: HardhatEthersSigner[];
   let contract: CalculateLSPInterfaces;
 
   before(async () => {
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
     accounts = await ethers.getSigners();
     contract = await new CalculateLSPInterfaces__factory(accounts[0]).deploy();
   });
@@ -106,10 +107,12 @@ describe('Calculate LSP interfaces', () => {
 });
 
 describe('Calculate ERC interfaces', () => {
-  let accounts: SignerWithAddress[];
+  let accounts: HardhatEthersSigner[];
   let contract: CalculateERCInterfaces;
 
   before(async () => {
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
     accounts = await ethers.getSigners();
     contract = await new CalculateERCInterfaces__factory(accounts[0]).deploy();
   });

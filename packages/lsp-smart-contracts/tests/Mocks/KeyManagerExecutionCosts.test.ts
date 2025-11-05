@@ -1,29 +1,27 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
 import {
+  type UniversalProfile,
   UniversalProfile__factory,
-  LSP6KeyManager__factory,
-  UniversalProfile,
-} from '../../typechain';
-import { ERC725YDataKeys, INTERFACE_IDS } from '../../constants';
+} from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import { LSP6KeyManager__factory } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
+
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
-import { LSP6TestContext } from '../utils/context';
-import {
-  provider,
-  combinePermissions,
-  combineAllowedCalls,
-  combineCallTypes,
-} from '../utils/helpers';
+import { type LSP6TestContext } from '../utils/context.js';
+import { combinePermissions, combineAllowedCalls, combineCallTypes } from '../utils/helpers.js';
 
-import { setupKeyManager } from '../utils/fixtures';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { setupKeyManager } from '../utils/fixtures.js';
+import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { parseEther, toNumber } from 'ethers';
 
 describe('Key Manager gas cost interactions', () => {
   describe('when using LSP6KeyManager with constructor', () => {
     const buildLSP6TestContext = async (): Promise<LSP6TestContext> => {
+      const { network } = await import('hardhat');
+      const { ethers, networkHelpers } = await network.connect();
       const accounts = await ethers.getSigners();
       const mainController = accounts[0];
 
@@ -34,14 +32,14 @@ describe('Key Manager gas cost interactions', () => {
         await universalProfile.getAddress(),
       );
 
-      return { accounts, mainController, universalProfile, keyManager };
+      return { ethers, networkHelpers, accounts, mainController, universalProfile, keyManager };
     };
 
     describe('after deploying the contract', () => {
       let context: LSP6TestContext;
 
-      let restrictedToOneAddress: SignerWithAddress,
-        restrictedToOneAddressAndStandard: SignerWithAddress;
+      let restrictedToOneAddress: HardhatEthersSigner,
+        restrictedToOneAddressAndStandard: HardhatEthersSigner;
 
       let contractImplementsERC1271: UniversalProfile;
 
@@ -90,13 +88,13 @@ describe('Key Manager gas cost interactions', () => {
 
         await context.mainController.sendTransaction({
           to: await context.universalProfile.getAddress(),
-          value: ethers.parseEther('10'),
+          value: parseEther('10'),
         });
       });
 
       describe('display gas cost', () => {
         it('when caller has any allowed address and standard allowed', async () => {
-          const initialAccountBalance = await provider.getBalance(
+          const initialAccountBalance = await context.ethers.provider.getBalance(
             await contractImplementsERC1271.getAddress(),
           );
 
@@ -105,7 +103,7 @@ describe('Key Manager gas cost interactions', () => {
             [
               OPERATION_TYPES.CALL,
               await contractImplementsERC1271.getAddress(),
-              ethers.parseEther('1'),
+              parseEther('1'),
               '0x',
             ],
           );
@@ -116,12 +114,9 @@ describe('Key Manager gas cost interactions', () => {
 
           const receipt = await tx.wait();
 
-          console.log(
-            'gas cost LYX transfer - everything allowed: ',
-            ethers.toNumber(receipt.gasUsed),
-          );
+          console.log('gas cost LYX transfer - everything allowed: ', toNumber(receipt!.gasUsed));
 
-          const newAccountBalance = await provider.getBalance(
+          const newAccountBalance = await context.ethers.provider.getBalance(
             await contractImplementsERC1271.getAddress(),
           );
           expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
@@ -129,7 +124,7 @@ describe('Key Manager gas cost interactions', () => {
       });
 
       it('when caller has only 1 x allowed address allowed', async () => {
-        const initialAccountBalance = await provider.getBalance(
+        const initialAccountBalance = await context.ethers.provider.getBalance(
           await contractImplementsERC1271.getAddress(),
         );
 
@@ -138,7 +133,7 @@ describe('Key Manager gas cost interactions', () => {
           [
             OPERATION_TYPES.CALL,
             await contractImplementsERC1271.getAddress(),
-            ethers.parseEther('1'),
+            parseEther('1'),
             '0x',
           ],
         );
@@ -151,17 +146,17 @@ describe('Key Manager gas cost interactions', () => {
 
         console.log(
           'gas cost LYX transfer - with 1 x allowed address: ',
-          ethers.toNumber(receipt.gasUsed),
+          toNumber(receipt!.gasUsed),
         );
 
-        const newAccountBalance = await provider.getBalance(
+        const newAccountBalance = await context.ethers.provider.getBalance(
           await contractImplementsERC1271.getAddress(),
         );
         expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);
       });
 
       it('when caller has only 1 x allowed address + 1 x allowed standard allowed', async () => {
-        const initialAccountBalance = await provider.getBalance(
+        const initialAccountBalance = await context.ethers.provider.getBalance(
           await contractImplementsERC1271.getAddress(),
         );
 
@@ -170,7 +165,7 @@ describe('Key Manager gas cost interactions', () => {
           [
             OPERATION_TYPES.CALL,
             await contractImplementsERC1271.getAddress(),
-            ethers.parseEther('1'),
+            parseEther('1'),
             '0x',
           ],
         );
@@ -183,10 +178,10 @@ describe('Key Manager gas cost interactions', () => {
 
         console.log(
           'gas cost LYX transfer - with 1 x allowed address + 1 x allowed standard: ',
-          ethers.toNumber(receipt.gasUsed),
+          toNumber(receipt!.gasUsed),
         );
 
-        const newAccountBalance = await provider.getBalance(
+        const newAccountBalance = await context.ethers.provider.getBalance(
           await contractImplementsERC1271.getAddress(),
         );
         expect(newAccountBalance).to.be.greaterThan(initialAccountBalance);

@@ -1,8 +1,10 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { hexlify, keccak256, toUtf8Bytes } from 'ethers';
-import { LSP1TypeIDsTester, LSP1TypeIDsTester__factory } from '../../typechain';
-import { LSP1_TYPE_IDS } from '../../constants';
+import {
+  LSP1TypeIDsTester,
+  LSP1TypeIDsTester__factory,
+} from '../../types/ethers-contracts/index.js';
+import { LSP1_TYPE_IDS } from '../../constants.js';
 
 describe('calculate LSP1 Type IDs', () => {
   const LSP1TypeIds = Object.entries(LSP1_TYPE_IDS);
@@ -19,6 +21,8 @@ describe('calculate LSP1 Type IDs', () => {
     let LSP1TypeIDsTester: LSP1TypeIDsTester;
 
     before('Deploying `LSP1TypeIDs` tester contract', async () => {
+      const { network } = await import('hardhat');
+      const { ethers } = await network.connect();
       const signers = await ethers.getSigners();
       LSP1TypeIDsTester = await new LSP1TypeIDsTester__factory(signers[0]).deploy();
     });
