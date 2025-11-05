@@ -3,10 +3,11 @@ import { network } from 'hardhat';
 import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
 import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
+import { UniversalReceiverTester__factory } from '../types/ethers-contracts/index.js';
 import {
-  UniversalReceiverTester__factory,
-} from '../types/ethers-contracts/index.js';
-import { type UniversalProfileInit, UniversalProfileInit__factory } from '../../universalprofile-contracts/types/ethers-contracts/index.js';
+  type UniversalProfileInit,
+  UniversalProfileInit__factory,
+} from '../../universalprofile-contracts/types/ethers-contracts/index.js';
 import type { LSP0ERC725Account } from '../../lsp0-contracts/types/ethers-contracts/LSP0ERC725Account.js';
 import { deployProxy } from './utils/fixtures.js';
 
@@ -58,15 +59,20 @@ describe('UniversalProfileInit with proxy', () => {
       accounts[0],
     );
 
-    const universalProfile = universalProfileInit.attach(universalProfileProxy) as UniversalProfileInit;
+    const universalProfile = universalProfileInit.attach(
+      universalProfileProxy,
+    ) as UniversalProfileInit;
 
     return { ethers, networkHelpers, accounts, universalProfile, deployParams };
   };
 
   const initializeProxy = async (context: LSP3TestContext) => {
-    return (context.universalProfile as UniversalProfileInit).initialize(context.deployParams.owner.address, {
-      value: context.deployParams.initialFunding,
-    });
+    return (context.universalProfile as UniversalProfileInit).initialize(
+      context.deployParams.owner.address,
+      {
+        value: context.deployParams.initialFunding,
+      },
+    );
   };
 
   const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
@@ -75,7 +81,9 @@ describe('UniversalProfileInit with proxy', () => {
       accounts[0],
     );
 
-    const lsp1Implementation = universalProfileInit.attach(universalProfileProxy) as UniversalProfileInit;
+    const lsp1Implementation = universalProfileInit.attach(
+      universalProfileProxy,
+    ) as UniversalProfileInit;
 
     await lsp1Implementation.initialize(accounts[0].address);
 
@@ -97,7 +105,9 @@ describe('UniversalProfileInit with proxy', () => {
       accounts[0],
     );
 
-    const universalProfile = universalProfileInit.attach(universalProfileProxy) as UniversalProfileInit;
+    const universalProfile = universalProfileInit.attach(
+      universalProfileProxy,
+    ) as UniversalProfileInit;
 
     const onlyOwnerCustomError = 'OwnableCallerNotTheOwner';
 
@@ -121,7 +131,9 @@ describe('UniversalProfileInit with proxy', () => {
       accounts[0],
     );
 
-    const universalProfile = universalProfileInit.attach(universalProfileProxy) as UniversalProfileInit;
+    const universalProfile = universalProfileInit.attach(
+      universalProfileProxy,
+    ) as UniversalProfileInit;
 
     return { ethers, accounts, contract: universalProfile, deployParams };
   };
@@ -139,7 +151,9 @@ describe('UniversalProfileInit with proxy', () => {
       accounts[0],
     );
 
-    const universalProfile = universalProfileInit.attach(universalProfileProxy) as UniversalProfileInit;
+    const universalProfile = universalProfileInit.attach(
+      universalProfileProxy,
+    ) as UniversalProfileInit;
 
     return { accounts, universalProfile: universalProfile, deployParams };
   };
@@ -165,7 +179,9 @@ describe('UniversalProfileInit with proxy', () => {
         it(`should have initialized with the correct funding amount (${testCase.initialFunding})`, async () => {
           const context = await buildLSP3TestContext(testCase.initialFunding);
           await initializeProxy(context);
-          const balance = await context.ethers.provider.getBalance(await context.universalProfile.getAddress());
+          const balance = await context.ethers.provider.getBalance(
+            await context.universalProfile.getAddress(),
+          );
           expect(balance).to.equal(testCase.initialFunding || 0);
         });
       });

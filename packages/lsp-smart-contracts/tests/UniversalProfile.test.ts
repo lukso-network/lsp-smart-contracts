@@ -118,7 +118,9 @@ describe('UniversalProfile with constructor', () => {
         });
 
         it(`should have deployed with the correct funding amount (${testCase.initialFunding})`, async () => {
-          const balance = await context.ethers.provider.getBalance(await context.universalProfile.getAddress());
+          const balance = await context.ethers.provider.getBalance(
+            await context.universalProfile.getAddress(),
+          );
           expect(balance).to.equal(testCase.initialFunding || 0);
         });
       });

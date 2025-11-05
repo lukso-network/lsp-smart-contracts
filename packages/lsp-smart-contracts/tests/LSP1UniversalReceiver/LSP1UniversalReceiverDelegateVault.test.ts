@@ -1,9 +1,7 @@
 import { ERC725YDataKeys } from '../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
-import {
-  LSP1UniversalReceiverDelegateVault__factory,
-} from '../../../lsp1delegate-contracts/types/ethers-contracts/index.js';
+import { LSP1UniversalReceiverDelegateVault__factory } from '../../../lsp1delegate-contracts/types/ethers-contracts/index.js';
 import { UniversalProfile__factory } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
 import { LSP9Vault__factory } from '../../../lsp9-contracts/types/ethers-contracts/index.js';
 

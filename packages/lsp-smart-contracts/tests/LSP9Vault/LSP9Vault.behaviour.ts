@@ -21,10 +21,26 @@ import { ARRAY_LENGTH, abiCoder, combineAllowedCalls } from '../utils/helpers.js
 import { callPayload } from '../utils/fixtures.js';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS, SupportedStandards, LSP1_TYPE_IDS } from '../../constants.js';
+import {
+  ERC725YDataKeys,
+  INTERFACE_IDS,
+  SupportedStandards,
+  LSP1_TYPE_IDS,
+} from '../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
-import { ContractTransactionResponse, getAddress, hexlify, keccak256, parseEther, randomBytes, solidityPackedKeccak256, toBigInt, toUtf8Bytes, ZeroAddress } from 'ethers';
+import {
+  ContractTransactionResponse,
+  getAddress,
+  hexlify,
+  keccak256,
+  parseEther,
+  randomBytes,
+  solidityPackedKeccak256,
+  toBigInt,
+  toUtf8Bytes,
+  ZeroAddress,
+} from 'ethers';
 
 export type LSP9TestAccounts = {
   owner: HardhatEthersSigner;
@@ -331,8 +347,7 @@ export const shouldBehaveLikeLSP9 = (
           describe('using setData', () => {
             it('should pass', async () => {
               const key =
-                ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-                hexlify(randomBytes(20)).substring(2);
+                ERC725YDataKeys.LSP17.LSP17ExtensionPrefix + hexlify(randomBytes(20)).substring(2);
 
               const value = '0xaabbccdd';
 
@@ -349,8 +364,7 @@ export const shouldBehaveLikeLSP9 = (
               const value1 = hexlify(randomBytes(5));
 
               const key2 =
-                ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-                hexlify(randomBytes(20)).substring(2);
+                ERC725YDataKeys.LSP17.LSP17ExtensionPrefix + hexlify(randomBytes(20)).substring(2);
 
               const value2 = hexlify(randomBytes(5));
 
@@ -689,9 +703,9 @@ export const shouldBehaveLikeLSP9 = (
         const payload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
           [
             ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
-            context.accounts.friend.address.substring(2),
+              context.accounts.friend.address.substring(2),
             ERC725YDataKeys.LSP6['AddressPermissions:AllowedCalls'] +
-            context.accounts.friend.address.substring(2),
+              context.accounts.friend.address.substring(2),
           ],
           [
             friendPermissions,

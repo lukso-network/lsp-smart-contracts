@@ -32,7 +32,7 @@ import {
 } from '../../types/ethers-contracts/index.js';
 import {
   type LSP1UniversalReceiverDelegateUP,
-  LSP1UniversalReceiverDelegateUP__factory
+  LSP1UniversalReceiverDelegateUP__factory,
 } from '../../../lsp1delegate-contracts/types/ethers-contracts/index.js';
 import {
   type UniversalProfile,
@@ -64,7 +64,6 @@ import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 import { callPayload, getLSP5MapAndArrayKeysValue, setupKeyManager } from '../utils/fixtures.js';
 import type { LSP6TestContext } from '../utils/context.js';
 
-
 export type LSP1TestAccounts = {
   owner1: HardhatEthersSigner;
   owner2: HardhatEthersSigner;
@@ -87,7 +86,10 @@ export type LSP1DelegateTestContext = {
  * Returns the LSP10 arraylength, elementAddress, index and interfaceId of the vault provided
  * for the account provided.
  */
-async function getLSP10MapAndArrayKeysValue(account: UniversalProfile, lsp9Vault: LSP9Vault): Promise<[number, string, string, string]> {
+async function getLSP10MapAndArrayKeysValue(
+  account: UniversalProfile,
+  lsp9Vault: LSP9Vault,
+): Promise<[number, string, string, string]> {
   const mapValue = await account.getData(
     concat([ERC725YDataKeys.LSP10.LSP10VaultsMap, await lsp9Vault.getAddress()]),
   );
@@ -98,10 +100,7 @@ async function getLSP10MapAndArrayKeysValue(account: UniversalProfile, lsp9Vault
 
   const rawIndexInArray = zeroPadValue(toBeHex(indexInNumber), 16);
 
-  const elementInArrayKey = concat([
-    ERC725YDataKeys.LSP10['LSP10Vaults[]'].index,
-    rawIndexInArray,
-  ]);
+  const elementInArrayKey = concat([ERC725YDataKeys.LSP10['LSP10Vaults[]'].index, rawIndexInArray]);
 
   const arrayKey = ERC725YDataKeys.LSP10['LSP10Vaults[]'].length;
   const [arrayLength, _elementAddress] = await account.getDataBatch([arrayKey, elementInArrayKey]);
@@ -207,9 +206,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           const [resultDelegate, resultTypeID] = abiCoder.decode(['bytes', 'bytes'], decodedResult);
 
-          expect(resultDelegate).to.equal(
-            hexlify(toUtf8Bytes('LSP1: typeId out of scope')),
-          );
+          expect(resultDelegate).to.equal(hexlify(toUtf8Bytes('LSP1: typeId out of scope')));
 
           expect(resultTypeID).to.equal('0x');
         });
@@ -251,7 +248,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           ERC725YDataKeys.LSP10['LSP10Vaults[]'].length,
           ERC725YDataKeys.LSP10['LSP10Vaults[]'].index + '0'.repeat(32),
           ERC725YDataKeys.LSP10.LSP10VaultsMap +
-          (await sentUniversalProfile.getAddress()).substring(2),
+            (await sentUniversalProfile.getAddress()).substring(2),
         ];
         const receivedVaultsValues = ['0x', '0x', '0x'];
 
@@ -310,7 +307,7 @@ export const shouldBehaveLikeLSP1Delegate = (
                 ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
                 ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00'.repeat(16),
                 ERC725YDataKeys.LSP5['LSP5ReceivedAssetsMap'] +
-                (await deployedLSP7Token.getAddress()).substring(2),
+                  (await deployedLSP7Token.getAddress()).substring(2),
               ],
               ['0x', '0x', '0x'],
             ],
@@ -505,10 +502,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp7TokenC.getAddress()).substring(2),
+                (await lsp7TokenC.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000002',
+                '00000000000000000000000000000002',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -543,10 +540,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp7TokenA.getAddress()).substring(2),
+                (await lsp7TokenA.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000001',
+                '00000000000000000000000000000001',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -593,10 +590,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp7TokenB.getAddress()).substring(2),
+                (await lsp7TokenB.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000000',
+                '00000000000000000000000000000000',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -707,10 +704,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp7TokenA.getAddress()).substring(2),
+                (await lsp7TokenA.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000002',
+                '00000000000000000000000000000002',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -815,10 +812,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp7TokenB.getAddress()).substring(2),
+                (await lsp7TokenB.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000001',
+                '00000000000000000000000000000001',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -855,10 +852,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp7TokenB.getAddress()).substring(2),
+                (await lsp7TokenB.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000001',
+                '00000000000000000000000000000001',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -1067,9 +1064,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           const [resultDelegate] = abiCoder.decode(['bytes', 'bytes'], genericExecutorResult);
 
-          expect(resultDelegate).to.equal(
-            hexlify(toUtf8Bytes('LSP1: full balance is not sent')),
-          );
+          expect(resultDelegate).to.equal(hexlify(toUtf8Bytes('LSP1: full balance is not sent')));
 
           // check that the correct string is emitted in the event
           await expect(
@@ -1207,10 +1202,7 @@ export const shouldBehaveLikeLSP1Delegate = (
             ),
             abiCoder.encode(
               ['bytes', 'bytes'],
-              [
-                solidityPacked(['string'], ['LSP5: Error generating data key/value pairs']),
-                '0x',
-              ],
+              [solidityPacked(['string'], ['LSP5: Error generating data key/value pairs']), '0x'],
             ),
           );
       });
@@ -1220,8 +1212,7 @@ export const shouldBehaveLikeLSP1Delegate = (
       const lsp5ArrayLengthDataKey = ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length;
 
       // set the `LSP5ReceivedAssets[]` length value to the max(uint128)`
-      const lsp5ArrayLengthDataValue =
-        toBigInt('0xffffffffffffffffffffffffffffffff') - BigInt(2);
+      const lsp5ArrayLengthDataValue = toBigInt('0xffffffffffffffffffffffffffffffff') - BigInt(2);
 
       before(async () => {
         const setDataPayload = context.universalProfile1.interface.encodeFunctionData('setData', [
@@ -1246,7 +1237,7 @@ export const shouldBehaveLikeLSP1Delegate = (
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00'.repeat(16),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssetsMap'] +
-              (await token.getAddress()).substring(2),
+                (await token.getAddress()).substring(2),
             ],
             ['0x', '0x', '0x'],
           ],
@@ -1283,9 +1274,7 @@ export const shouldBehaveLikeLSP1Delegate = (
           await context.universalProfile1.getData(
             ERC725YDataKeys.LSP5['LSP5ReceivedAssetsMap'] + (await token.getAddress()).substring(2),
           ),
-        ).to.equal(
-          solidityPacked(['bytes4', 'uint128'], [INTERFACE_IDS.LSP7DigitalAsset, index]),
-        );
+        ).to.equal(solidityPacked(['bytes4', 'uint128'], [INTERFACE_IDS.LSP7DigitalAsset, index]));
       });
     });
 
@@ -1944,10 +1933,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp8TokenC.getAddress()).substring(2),
+                (await lsp8TokenC.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000002',
+                '00000000000000000000000000000002',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -1978,10 +1967,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp8TokenA.getAddress()).substring(2),
+                (await lsp8TokenA.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000001',
+                '00000000000000000000000000000001',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -2020,10 +2009,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp8TokenB.getAddress()).substring(2),
+                (await lsp8TokenB.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000000',
+                '00000000000000000000000000000000',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -2107,10 +2096,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp8TokenA.getAddress()).substring(2),
+                (await lsp8TokenA.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000002',
+                '00000000000000000000000000000002',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -2215,10 +2204,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp8TokenB.getAddress()).substring(2),
+                (await lsp8TokenB.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000001',
+                '00000000000000000000000000000001',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -2255,10 +2244,10 @@ export const shouldBehaveLikeLSP1Delegate = (
           const [mapValue, arrayLength, elementAddress] =
             await context.universalProfile1.getDataBatch([
               ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-              (await lsp8TokenB.getAddress()).substring(2),
+                (await lsp8TokenB.getAddress()).substring(2),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index +
-              '00000000000000000000000000000001',
+                '00000000000000000000000000000001',
             ]);
 
           expect(mapValue).to.equal('0x');
@@ -2341,9 +2330,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
           const [resultDelegate] = abiCoder.decode(['bytes', 'bytes'], genericExecutorResult);
 
-          expect(resultDelegate).to.equal(
-            hexlify(toUtf8Bytes('LSP1: full balance is not sent')),
-          );
+          expect(resultDelegate).to.equal(hexlify(toUtf8Bytes('LSP1: full balance is not sent')));
 
           // check that the correct string is emitted in the event
           await expect(
@@ -2854,7 +2841,7 @@ export const shouldBehaveLikeLSP1Delegate = (
     let lsp1Delegate: LSP1UniversalReceiverDelegateUP;
 
     before(async () => {
-      const { ethers, networkHelpers } = await network.connect()
+      const { ethers, networkHelpers } = await network.connect();
       const signerAddresses = await ethers.getSigners();
       const profileOwner = signerAddresses[0];
 
@@ -2944,10 +2931,7 @@ export const shouldBehaveLikeLSP1Delegate = (
 
         const expectedReturnedValues = abiCoder.encode(
           ['bytes', 'bytes'],
-          [
-            hexlify(toUtf8Bytes('LSP10: Error generating data key/value pairs')),
-            '0x',
-          ],
+          [hexlify(toUtf8Bytes('LSP10: Error generating data key/value pairs')), '0x'],
         );
 
         // 5. accept ownership of the Vault

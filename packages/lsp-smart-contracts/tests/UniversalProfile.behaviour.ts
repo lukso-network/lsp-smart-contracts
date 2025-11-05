@@ -21,7 +21,20 @@ import { LSP1_HOOK_PLACEHOLDER, abiCoder, getRandomAddresses } from './utils/hel
 // constants
 import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS, SupportedStandards } from '../constants.js';
 import { ERC1271_VALUES, OPERATION_TYPES } from '@lukso/lsp0-contracts';
-import { BytesLike, hashMessage, hexlify, keccak256, parseEther, randomBytes, toBeHex, toBigInt, toUtf8Bytes, Wallet, ZeroAddress, zeroPadValue } from 'ethers';
+import {
+  BytesLike,
+  hashMessage,
+  hexlify,
+  keccak256,
+  parseEther,
+  randomBytes,
+  toBeHex,
+  toBigInt,
+  toUtf8Bytes,
+  Wallet,
+  ZeroAddress,
+  zeroPadValue,
+} from 'ethers';
 
 export type LSP3TestContext = {
   ethers: HardhatEthers;
@@ -180,7 +193,7 @@ export const shouldBehaveLikeLSP3 = (
 
         lsp12IssuedAssetsKeys.push(
           ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index +
-          zeroPadValue(hexIndex, 16).substring(2),
+            zeroPadValue(hexIndex, 16).substring(2),
         );
 
         lsp12IssuedAssetsValues.push(newIssuedAssets[ii]);
@@ -210,7 +223,7 @@ export const shouldBehaveLikeLSP3 = (
 
         lsp12IssuedAssetsKeys.push(
           ERC725YDataKeys.LSP12['LSP12IssuedAssets[]'].index +
-          zeroPadValue(hexIndex, 16).substring(2),
+            zeroPadValue(hexIndex, 16).substring(2),
         );
 
         lsp12IssuedAssetsValues.push(Wallet.createRandom().address.toLowerCase());
@@ -608,7 +621,7 @@ export const shouldBehaveLikeLSP3 = (
         .connect(context.deployParams.owner)
         .setData(
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-          LSP1_TYPE_IDS.LSP0ValueReceived.substring(2, 42),
+            LSP1_TYPE_IDS.LSP0ValueReceived.substring(2, 42),
           await universalReceiverDelegateLYX.getAddress(),
         );
     });
@@ -715,7 +728,7 @@ export const shouldBehaveLikeLSP3 = (
             LSP1_HOOK_PLACEHOLDER,
             '0xaabbccdd',
             abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
-          )
+          );
 
         // TODO: repair this assertion not passing
         // await expect(tx)

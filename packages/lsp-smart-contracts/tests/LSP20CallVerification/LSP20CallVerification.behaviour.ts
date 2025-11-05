@@ -236,16 +236,14 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
             context = await buildContext();
           });
 
-          // TODO: fix Error: VM Exception while processing transaction: reverted with an unrecognized custom error 
+          // TODO: fix Error: VM Exception while processing transaction: reverted with an unrecognized custom error
           // (return data: 0x1b08094200000000000000000000000000000000000000000000000000000000000000d3000000000000000000000000000000000000000000000000000000000000019b)
           it.skip('should renounce ownership of the contract and call the URD of the previous owner', async () => {
             await context.universalProfile.connect(context.accounts[0]).renounceOwnership();
 
             await networkHelpers.mine(199);
 
-            const tx = context.universalProfile
-              .connect(context.accounts[0])
-              .renounceOwnership();
+            const tx = context.universalProfile.connect(context.accounts[0]).renounceOwnership();
 
             await expect(tx)
               .to.emit(newContractOwner, 'UniversalReceiver')

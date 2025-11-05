@@ -26,7 +26,7 @@ import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures.js';
 
 describe('LSP9Vault with constructor', () => {
   const buildTestContext = async (initialFunding?: number): Promise<LSP9TestContext> => {
-    const { ethers, networkHelpers } = await network.connect()
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await getNamedAccounts(ethers);
 
     const deployParams = {
@@ -56,7 +56,7 @@ describe('LSP9Vault with constructor', () => {
   const buildLSP14TestContext = async (
     initialFunding?: number | bigint,
   ): Promise<LSP14TestContext> => {
-    const { ethers, networkHelpers } = await network.connect()
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = { owner: accounts[0], initialFunding };
 
@@ -77,7 +77,7 @@ describe('LSP9Vault with constructor', () => {
   };
 
   const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
-    const { ethers } = await network.connect()
+    const { ethers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       owner: accounts[0],
@@ -97,7 +97,9 @@ describe('LSP9Vault with constructor', () => {
         });
 
         it(`should have deployed with the correct funding amount (${testCase.initialFunding})`, async () => {
-          const balance = await context.ethers.provider.getBalance(await context.lsp9Vault.getAddress());
+          const balance = await context.ethers.provider.getBalance(
+            await context.lsp9Vault.getAddress(),
+          );
           expect(balance).to.equal(testCase.initialFunding || 0);
         });
       });

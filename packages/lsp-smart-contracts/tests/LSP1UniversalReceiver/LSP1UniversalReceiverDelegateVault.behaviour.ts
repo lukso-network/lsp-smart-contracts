@@ -147,9 +147,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
           const [resultDelegate, resultTypeID] = abiCoder.decode(['bytes', 'bytes'], decodedResult);
 
-          expect(resultDelegate).to.equal(
-            hexlify(toUtf8Bytes('LSP1: typeId out of scope')),
-          );
+          expect(resultDelegate).to.equal(hexlify(toUtf8Bytes('LSP1: typeId out of scope')));
 
           expect(resultTypeID).to.equal('0x');
         }
@@ -200,9 +198,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
           const [resultDelegate, resultTypeID] = abiCoder.decode(['bytes', 'bytes'], decodedResult);
 
-          expect(resultDelegate).to.equal(
-            hexlify(toUtf8Bytes('LSP1: typeId out of scope')),
-          );
+          expect(resultDelegate).to.equal(hexlify(toUtf8Bytes('LSP1: typeId out of scope')));
 
           expect(resultTypeID).to.equal('0x');
         });
@@ -255,7 +251,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
               ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00'.repeat(16),
               ERC725YDataKeys.LSP5['LSP5ReceivedAssetsMap'] +
-              (await deployedLSP7Token.getAddress()).substring(2),
+                (await deployedLSP7Token.getAddress()).substring(2),
             ],
             ['0x', '0x', '0x'],
           ]);
@@ -418,7 +414,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys: arrayLength 2, no map, no tokenC address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp7TokenC.getAddress()).substring(2),
+              (await lsp7TokenC.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000002',
           ]);
@@ -459,7 +455,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys: arrayLength 1, no map, no tokenA address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp7TokenA.getAddress()).substring(2),
+              (await lsp7TokenA.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000001',
           ]);
@@ -517,7 +513,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys: arrayLength 0, no map, no tokenB address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp7TokenB.getAddress()).substring(2),
+              (await lsp7TokenB.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000000',
           ]);
@@ -598,7 +594,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys: arrayLength 2, no map, no tokenA address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp7TokenA.getAddress()).substring(2),
+              (await lsp7TokenA.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000002',
           ]);
@@ -719,7 +715,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys (no pop and swap as TokenB has the last index): arrayLength 1, no map, no tokenB address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp7TokenB.getAddress()).substring(2),
+              (await lsp7TokenB.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000001',
           ]);
@@ -762,7 +758,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys (no pop and swap as TokenC has the last index): arrayLength 0, no map, no tokenB address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp7TokenB.getAddress()).substring(2),
+              (await lsp7TokenB.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000001',
           ]);
@@ -1377,7 +1373,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys: arrayLength 2, no map, no tokenC address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp8TokenC.getAddress()).substring(2),
+              (await lsp8TokenC.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000002',
           ]);
@@ -1414,7 +1410,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys: arrayLength 1, no map, no tokenA address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp8TokenA.getAddress()).substring(2),
+              (await lsp8TokenA.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000001',
           ]);
@@ -1464,7 +1460,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys: arrayLength 0, no map, no tokenB address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp8TokenB.getAddress()).substring(2),
+              (await lsp8TokenB.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000000',
           ]);
@@ -1554,7 +1550,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys: arrayLength 2, no map, no tokenA address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp8TokenA.getAddress()).substring(2),
+              (await lsp8TokenA.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000002',
           ]);
@@ -1675,7 +1671,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys (no pop and swap as TokenB has the last index): arrayLength 1, no map, no tokenB address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp8TokenB.getAddress()).substring(2),
+              (await lsp8TokenB.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000001',
           ]);
@@ -1718,7 +1714,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
         it('should update lsp5keys (no pop and swap as TokenC has the last index): arrayLength 0, no map, no tokenB address in Vault1', async () => {
           const [mapValue, arrayLength, elementAddress] = await context.lsp9Vault1.getDataBatch([
             ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap +
-            (await lsp8TokenB.getAddress()).substring(2),
+              (await lsp8TokenB.getAddress()).substring(2),
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].length,
             ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index + '00000000000000000000000000000001',
           ]);

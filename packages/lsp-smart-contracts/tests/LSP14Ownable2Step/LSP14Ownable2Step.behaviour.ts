@@ -9,7 +9,7 @@ import {
   toBigInt,
   toUtf8Bytes,
   Wallet,
-  ZeroAddress
+  ZeroAddress,
 } from 'ethers';
 
 import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
@@ -105,14 +105,18 @@ export const shouldBehaveLikeLSP14 = (
         const amount = parseEther('3');
 
         const recipientBalanceBefore = await context.ethers.provider.getBalance(recipient.address);
-        const accountBalanceBefore = await context.ethers.provider.getBalance(await context.contract.getAddress());
+        const accountBalanceBefore = await context.ethers.provider.getBalance(
+          await context.contract.getAddress(),
+        );
 
         await context.contract
           .connect(context.deployParams.owner)
           .execute(OPERATION_TYPES.CALL, recipient.address, amount, '0x');
 
         const recipientBalanceAfter = await context.ethers.provider.getBalance(recipient.address);
-        const accountBalanceAfter = await context.ethers.provider.getBalance(await context.contract.getAddress());
+        const accountBalanceAfter = await context.ethers.provider.getBalance(
+          await context.contract.getAddress(),
+        );
 
         // recipient balance should have gone up
         expect(recipientBalanceAfter).to.be.gt(recipientBalanceBefore);
@@ -309,12 +313,10 @@ export const shouldBehaveLikeLSP14 = (
         //     if (elem.label === '_renounceOwnershipStartedAt') return elem;
         //   })[0].slot,
         // );
-
         // const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
         //   await context.contract.getAddress(),
         //   _renounceOwnershipStartedAtAfterSlotNumber,
         // );
-
         // expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(
         //   renounceOwnershipTx.blockNumber,
         // );
@@ -558,22 +560,17 @@ export const shouldBehaveLikeLSP14 = (
       //     if (elem.label === '_renounceOwnershipStartedAt') return elem;
       //   })[0].slot,
       // );
-
       // const renounceOwnershipTx = await context.contract
       //   .connect(context.deployParams.owner)
       //   .renounceOwnership();
-
       // await renounceOwnershipTx.wait();
-
       // const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
       //   await context.contract.getAddress(),
       //   _renounceOwnershipStartedAtAfterSlotNumber,
       // );
-
       // expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(
       //   renounceOwnershipTx.blockNumber,
       // );
-
       // expect(await context.contract.owner()).to.equal(context.deployParams.owner.address);
     });
   });

@@ -142,7 +142,7 @@ export const shouldBehaveLikeLSP1 = (buildContext: () => Promise<LSP1TestContext
             .connect(context.accounts[0])
             .setData(
               ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-              LSP1_HOOK_PLACEHOLDER.substring(2, 42),
+                LSP1_HOOK_PLACEHOLDER.substring(2, 42),
               await revertableURD.getAddress(),
             );
         });

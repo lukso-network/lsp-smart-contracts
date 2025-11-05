@@ -5,7 +5,10 @@ import { shouldBehaveLikeLSP14 } from '../LSP14Ownable2Step/LSP14Ownable2Step.be
 
 import { type UniversalProfile } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
 import { type LSP6KeyManager } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
-import { type LSP9VaultInit, LSP9VaultInit__factory } from '../../../lsp9-contracts/types/ethers-contracts/index.js';
+import {
+  type LSP9VaultInit,
+  LSP9VaultInit__factory,
+} from '../../../lsp9-contracts/types/ethers-contracts/index.js';
 
 import {
   type LSP9TestContext,
@@ -23,7 +26,7 @@ import { deployProxy, setupProfileWithKeyManagerWithURD } from '../utils/fixture
 
 describe('LSP9VaultInit with proxy', () => {
   const buildTestContext = async (initialFunding?: number | bigint): Promise<LSP9TestContext> => {
-    const { ethers, networkHelpers } = await network.connect()
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await getNamedAccounts(ethers);
     const deployParams = {
       newOwner: accounts.owner.address,
@@ -51,7 +54,7 @@ describe('LSP9VaultInit with proxy', () => {
   };
 
   const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
-    const { ethers } = await network.connect()
+    const { ethers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       owner: accounts[0],
@@ -74,7 +77,7 @@ describe('LSP9VaultInit with proxy', () => {
 
   describe('when deploying the base implementation contract', () => {
     it('`owner()` of the base contract MUST be `address(0)`', async () => {
-      const { ethers } = await network.connect()
+      const { ethers } = await network.connect();
       const accounts = await ethers.getSigners();
 
       const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
@@ -85,7 +88,7 @@ describe('LSP9VaultInit with proxy', () => {
     });
 
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
-      const { ethers } = await network.connect()
+      const { ethers } = await network.connect();
       const accounts = await ethers.getSigners();
 
       const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
