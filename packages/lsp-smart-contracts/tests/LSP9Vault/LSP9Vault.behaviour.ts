@@ -833,7 +833,7 @@ export const shouldBehaveLikeLSP9 = (
 
 export type LSP9InitializeTestContext = {
   lsp9Vault: LSP9Vault;
-  initializeTransaction: ContractTransactionResponse;
+  initializeTransaction: ContractTransactionResponse | null;
   deployParams: LSP9DeployParams;
 };
 

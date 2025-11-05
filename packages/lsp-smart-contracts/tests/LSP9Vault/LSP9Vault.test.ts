@@ -26,7 +26,7 @@ import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures.js';
 
 describe('LSP9Vault with constructor', () => {
   const buildTestContext = async (initialFunding?: number): Promise<LSP9TestContext> => {
-    const { ethers } = await network.connect()
+    const { ethers, networkHelpers } = await network.connect()
     const accounts = await getNamedAccounts(ethers);
 
     const deployParams = {
@@ -44,6 +44,7 @@ describe('LSP9Vault with constructor', () => {
 
     return {
       ethers,
+      networkHelpers,
       accounts,
       lsp9Vault,
       deployParams,

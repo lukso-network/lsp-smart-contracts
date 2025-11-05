@@ -44,7 +44,7 @@ export const shouldBehaveLikeLSP14 = (
     newOwner = context.accounts[1];
   });
 
-  describe.skip('when owner call transferOwnership(...)', () => {
+  describe('when owner call transferOwnership(...)', () => {
     before(async () => {
       await context.contract
         .connect(context.deployParams.owner)
@@ -367,7 +367,7 @@ export const shouldBehaveLikeLSP14 = (
         context = await buildContext(parseEther('20'));
       });
 
-      it.skip('should revert if called in the delay period', async () => {
+      it('should revert if called in the delay period', async () => {
         const renounceOwnershipOnce = await context.contract
           .connect(context.deployParams.owner)
           .renounceOwnership();
