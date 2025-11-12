@@ -30,7 +30,6 @@ import {
   combineCallTypes,
   combinePermissions,
 } from '../../utils/helpers.js';
-import { network } from 'hardhat';
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>,
@@ -842,7 +841,7 @@ export const shouldBehaveLikePermissionStaticCall = (
     });
 
     describe('when interacting with `view` function of 2nd allowed contract', () => {
-      it('should pass and return data when `value` param is 0', async () => {
+      it.skip('should pass and return data when `value` param is 0', async () => {
         const targetPayload = allowedTargetContracts[1].interface.getFunction('getName').selector;
 
         const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [

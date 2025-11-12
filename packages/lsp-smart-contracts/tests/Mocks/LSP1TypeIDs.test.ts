@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { hexlify, keccak256, toUtf8Bytes } from 'ethers';
 import {
-  LSP1TypeIDsTester,
+  type LSP1TypeIDsTester,
   LSP1TypeIDsTester__factory,
 } from '../../types/ethers-contracts/index.js';
 import { LSP1_TYPE_IDS } from '../../constants.js';

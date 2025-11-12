@@ -200,15 +200,14 @@ export const shouldBehaveLikePermissionCall = (
         });
 
         describe('when `to` is in the list of Allowed Calls', () => {
-          // TODO: fix test as it emits `0x44c028fe`. See if something is wrong in the setup
-          it.skip('should pass', async () => {
+          it('should pass', async () => {
             await expect(
               context.universalProfile
                 .connect(addressCanMakeCallWithAllowedCalls)
                 .execute(OPERATION_TYPES.CALL, allowedEOA, 0, '0x'),
             )
               .to.emit(context.keyManager, 'PermissionsVerified')
-              .withArgs(addressCanMakeCallWithAllowedCalls.address, 0, '0x00000000');
+              .withArgs(addressCanMakeCallWithAllowedCalls.address, 0, "0x44c028fe"); // function selector of `execute(uint256,address,uint256,bytes)`
           });
         });
       });

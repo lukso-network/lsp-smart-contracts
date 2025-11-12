@@ -38,19 +38,17 @@ import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { abiCoder } from '../utils/helpers.js';
 
 export type LSP20TestContext = {
+  ethers: HardhatEthers;
+  networkHelpers: NetworkHelpers;
   accounts: HardhatEthersSigner[];
   universalProfile: UniversalProfile | LSP0ERC725Account;
   deployParams: { owner: HardhatEthersSigner };
 };
 
 export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestContext>) => {
-  let networkHelpers: NetworkHelpers;
-  let ethers: HardhatEthers;
   let context: LSP20TestContext;
 
   before(async () => {
-    const { network } = await import('hardhat');
-    ({ ethers, networkHelpers } = await network.connect());
     context = await buildContext();
   });
 
@@ -202,7 +200,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
       describe('when calling `renounceOwnership`', () => {
         it('should pass when the owner is calling', async () => {
-          await networkHelpers.mine(500);
+          await context.networkHelpers.mine(500);
 
           await expect(
             context.universalProfile.connect(context.deployParams.owner).renounceOwnership(),
@@ -210,7 +208,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should revert when the non-owner is calling', async () => {
-          await networkHelpers.mine(100);
+          await context.networkHelpers.mine(100);
 
           await expect(context.universalProfile.connect(context.accounts[3]).renounceOwnership())
             .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
@@ -236,12 +234,10 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
             context = await buildContext();
           });
 
-          // TODO: fix Error: VM Exception while processing transaction: reverted with an unrecognized custom error
-          // (return data: 0x1b08094200000000000000000000000000000000000000000000000000000000000000d3000000000000000000000000000000000000000000000000000000000000019b)
-          it.skip('should renounce ownership of the contract and call the URD of the previous owner', async () => {
+          it('should renounce ownership of the contract and call the URD of the previous owner', async () => {
             await context.universalProfile.connect(context.accounts[0]).renounceOwnership();
 
-            await networkHelpers.mine(199);
+            await context.networkHelpers.mine(199);
 
             const tx = context.universalProfile.connect(context.accounts[0]).renounceOwnership();
 
@@ -327,7 +323,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
           await expect(
             context.universalProfile.setData(dataKey, dataValue),
-          ).to.be.revertedWithoutReason(ethers);
+          ).to.be.revertedWithoutReason(context.ethers);
         });
       });
 
@@ -394,7 +390,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
           await expect(
             context.universalProfile.setData(dataKey, dataValue),
-          ).to.be.revertedWithoutReason(ethers);
+          ).to.be.revertedWithoutReason(context.ethers);
         });
       });
 

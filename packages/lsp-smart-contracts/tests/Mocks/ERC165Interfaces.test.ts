@@ -1,13 +1,12 @@
 import { expect } from 'chai';
-import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import {
-  CalculateLSPInterfaces,
+  type CalculateLSPInterfaces,
   CalculateLSPInterfaces__factory,
-  CalculateERCInterfaces,
+  type CalculateERCInterfaces,
   CalculateERCInterfaces__factory,
 } from '../../types/ethers-contracts/index.js';
 
-// utils
 import { INTERFACE_IDS } from '../../constants.js';
 
 /**

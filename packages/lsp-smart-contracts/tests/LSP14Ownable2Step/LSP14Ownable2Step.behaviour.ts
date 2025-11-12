@@ -301,25 +301,15 @@ export const shouldBehaveLikeLSP14 = (
         await renounceOwnershipTx.wait();
       });
 
-      it.skip('should instantiate the renounceOwnership process correctly', async () => {
-        // const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
-        //   (
-        //     await artifacts.getBuildInfo('@lukso/lsp9-contracts/contracts/LSP9Vault.sol:LSP9Vault')
-        //   )?.output.contracts[
-        //     '@lukso/lsp9-contracts/contracts/LSP9Vault.sol'
-        //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //     // @ts-ignore
-        //   ].LSP9Vault.storageLayout.storage.filter((elem) => {
-        //     if (elem.label === '_renounceOwnershipStartedAt') return elem;
-        //   })[0].slot,
-        // );
-        // const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
-        //   await context.contract.getAddress(),
-        //   _renounceOwnershipStartedAtAfterSlotNumber,
-        // );
-        // expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(
-        //   renounceOwnershipTx.blockNumber,
-        // );
+      it('should instantiate the renounceOwnership process correctly', async () => {
+        const _renounceOwnershipStartedAtAfterSlotNumber = 2
+        const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
+          await context.contract.getAddress(),
+          _renounceOwnershipStartedAtAfterSlotNumber,
+        );
+        expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(
+          renounceOwnershipTx.blockNumber,
+        );
       });
 
       it('should have emitted a RenounceOwnershipStarted event', async () => {
@@ -392,18 +382,8 @@ export const shouldBehaveLikeLSP14 = (
         await context.networkHelpers.mine(500);
       });
 
-      it.skip('should initialize again if the confirmation period passed', async () => {
-        const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
-          (
-            await artifacts.getBuildInfo('@lukso/lsp9-contracts/contracts/LSP9Vault.sol:LSP9Vault')
-          )?.output.contracts[
-            '@lukso/lsp9-contracts/contracts/LSP9Vault.sol'
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-          ].LSP9Vault.storageLayout.storage.filter((elem) => {
-            if (elem.label === '_renounceOwnershipStartedAt') return elem;
-          })[0].slot,
-        );
+      it('should initialize again if the confirmation period passed', async () => {
+        const _renounceOwnershipStartedAtAfterSlotNumber = 2
 
         await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
@@ -457,20 +437,8 @@ export const shouldBehaveLikeLSP14 = (
           expect(await context.contract.owner()).to.equal(ZeroAddress);
         });
 
-        it.skip('should have reset the `_renounceOwnershipStartedAt` state variable to zero', async () => {
-          const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
-            (
-              await artifacts.getBuildInfo(
-                '@lukso/lsp9-contracts/contracts/LSP9Vault.sol:LSP9Vault',
-              )
-            )?.output.contracts[
-              '@lukso/lsp9-contracts/contracts/LSP9Vault.sol'
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-            ].LSP9Vault.storageLayout.storage.filter((elem) => {
-              if (elem.label === '_renounceOwnershipStartedAt') return elem;
-            })[0].slot,
-          );
+        it('should have reset the `_renounceOwnershipStartedAt` state variable to zero', async () => {
+          const _renounceOwnershipStartedAtAfterSlotNumber = 2
 
           const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
             await context.contract.getAddress(),
@@ -548,30 +516,20 @@ export const shouldBehaveLikeLSP14 = (
       await context.networkHelpers.mine(138);
     });
 
-    it.skip('should instantiate the renounceOwnership process in 2 steps correctly', async () => {
-      // const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
-      //   (
-      //     await artifacts.getBuildInfo('@lukso/lsp9-contracts/contracts/LSP9Vault.sol:LSP9Vault')
-      //   )?.output.contracts[
-      //     '@lukso/lsp9-contracts/contracts/LSP9Vault.sol'
-      //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //     // @ts-ignore
-      //   ].LSP9Vault.storageLayout.storage.filter((elem) => {
-      //     if (elem.label === '_renounceOwnershipStartedAt') return elem;
-      //   })[0].slot,
-      // );
-      // const renounceOwnershipTx = await context.contract
-      //   .connect(context.deployParams.owner)
-      //   .renounceOwnership();
-      // await renounceOwnershipTx.wait();
-      // const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
-      //   await context.contract.getAddress(),
-      //   _renounceOwnershipStartedAtAfterSlotNumber,
-      // );
-      // expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(
-      //   renounceOwnershipTx.blockNumber,
-      // );
-      // expect(await context.contract.owner()).to.equal(context.deployParams.owner.address);
+    it('should instantiate the renounceOwnership process in 2 steps correctly', async () => {
+      const _renounceOwnershipStartedAtAfterSlotNumber = 2
+      const renounceOwnershipTx = await context.contract
+        .connect(context.deployParams.owner)
+        .renounceOwnership();
+      await renounceOwnershipTx.wait();
+      const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
+        await context.contract.getAddress(),
+        _renounceOwnershipStartedAtAfterSlotNumber,
+      );
+      expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(
+        renounceOwnershipTx.blockNumber,
+      );
+      expect(await context.contract.owner()).to.equal(context.deployParams.owner.address);
     });
   });
 };

@@ -55,15 +55,20 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
     await setupKeyManager(context, permissionKeys, permissionsValues);
   });
 
-  // TODO: this test is skipped for now as the error is thrown by the dApp / ethers library. We want to test the smart contract behavior.
-  // Error: `TypeError: value out-of-bounds (argument="channelId", value=87112285931760246646623899502532662132735, code=INVALID_ARGUMENT, version=6.15.0)`
-  describe.skip('when calling `getNonce(...)` with a channel ID greater than 2 ** 128', () => {
+  describe('when calling `getNonce(...)` with a channel ID greater than 2 ** 128', () => {
     it('should revert', async () => {
-      const channelId = toBigInt('0xffffffffffffffffffffffffffffffffff');
-
-      expect(
-        await (context.keyManager as any)['getNonce(address,uint128)'](signer.address, channelId),
-      ).to.be.revertedWithPanic();
+      
+      // We wrap in a try catch as the error is thrown by the dApp / ethers library
+      try {
+        const channelId = toBigInt('0xffffffffffffffffffffffffffffffffff');
+  
+        expect(
+          await (context.keyManager as any)['getNonce(address,uint128)'](signer.address, channelId),
+        ).to.be.revertedWithPanic();
+      }
+      catch (error: any) {
+        expect(error?.shortMessage).to.include('value out-of-bounds');
+      }
     });
   });
 

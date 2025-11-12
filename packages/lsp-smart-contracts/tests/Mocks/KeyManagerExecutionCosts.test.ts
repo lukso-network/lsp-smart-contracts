@@ -1,4 +1,6 @@
 import { expect } from 'chai';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { parseEther, toNumber } from 'ethers';
 
 import {
   type UniversalProfile,
@@ -14,8 +16,6 @@ import { type LSP6TestContext } from '../utils/context.js';
 import { combinePermissions, combineAllowedCalls, combineCallTypes } from '../utils/helpers.js';
 
 import { setupKeyManager } from '../utils/fixtures.js';
-import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
-import { parseEther, toNumber } from 'ethers';
 
 describe('Key Manager gas cost interactions', () => {
   describe('when using LSP6KeyManager with constructor', () => {

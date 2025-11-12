@@ -91,12 +91,11 @@ describe('UniversalProfile with constructor', () => {
       deployParams.owner.address,
     );
 
-    // TODO: fix typing here, ensure if we pass `HardhatEthersSigner` or `string`
     return { ethers, accounts, contract, deployParams };
   };
 
   const buildLSP20TestContext = async (): Promise<LSP20TestContext> => {
-    const { ethers } = await network.connect();
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       owner: accounts[0],
@@ -105,7 +104,7 @@ describe('UniversalProfile with constructor', () => {
       deployParams.owner.address,
     );
 
-    return { accounts, universalProfile, deployParams };
+    return { ethers, networkHelpers, accounts, universalProfile, deployParams };
   };
 
   [{ initialFunding: undefined }, { initialFunding: 0 }, { initialFunding: 5 }].forEach(

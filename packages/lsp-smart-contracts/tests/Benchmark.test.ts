@@ -187,12 +187,6 @@ const buildUniversalProfileContext = async (
   return { accounts, mainController, universalProfile };
 };
 
-describe('TEST', () => {
-  it('runs the test', async () => {
-    console.log('🟦');
-  });
-});
-
 describe('⛽📊 Gas Benchmark', () => {
   let gasBenchmark: string;
   type PromiseResolvedType<T> = T extends Promise<infer R> ? R : never;

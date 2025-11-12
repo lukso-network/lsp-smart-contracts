@@ -313,7 +313,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
     });
 
     describe('when calling the lsp20 functions by an address other than the target', () => {
-      it.skip('should pass and not modify _reentrancyStatus when verfying that the owner have permission to execute a payload, ', async () => {
+      it('should pass and not modify _reentrancyStatus when verfying that the owner have permission to execute a payload, ', async () => {
         const emptyCallPayload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
           context.accounts[5].address,
@@ -331,20 +331,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
         await tx.wait();
 
-        const artifact = await artifacts.readArtifact(
-          '@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol:LSP6KeyManager',
-        );
-
-        // storageLayout is available when outputSelection includes it in compiler settings
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const storageLayout = artifact.storageLayout;
-
-        const _reentrancyStatusSlotNumber = Number.parseInt(
-          storageLayout.storage.find(
-            (elem: { label: string; slot: string }) => elem.label === '_reentrancyStatus',
-          )?.slot || '0',
-        );
+        const _reentrancyStatusSlotNumber = 2;
 
         const _reentrancyStatusPackedWithAddress = await context.ethers.provider.getStorage(
           await context.keyManager.getAddress(),

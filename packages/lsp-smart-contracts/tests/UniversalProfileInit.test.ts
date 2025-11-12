@@ -139,6 +139,7 @@ describe('UniversalProfileInit with proxy', () => {
   };
 
   const buildLSP20TestContext = async (): Promise<LSP20TestContext> => {
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       owner: accounts[0],
@@ -155,7 +156,7 @@ describe('UniversalProfileInit with proxy', () => {
       universalProfileProxy,
     ) as UniversalProfileInit;
 
-    return { accounts, universalProfile: universalProfile, deployParams };
+    return { ethers, networkHelpers, accounts, universalProfile: universalProfile, deployParams };
   };
 
   describe('when deploying the base implementation contract', () => {
