@@ -24,10 +24,10 @@ jobs:
           ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
 
-      - name: Use Node.js v22
+      - name: Use Node.js v24
         uses: actions/setup-node@v4
         with:
-          node-version: "22.x"
+          node-version: "24.x"
           cache: "npm"
 
       - name: 📦 Install dependencies
