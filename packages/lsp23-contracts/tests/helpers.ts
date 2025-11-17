@@ -1,5 +1,4 @@
 import { network } from 'hardhat';
-import type { HardhatEthers } from '@nomicfoundation/hardhat-ethers/types';
 import { BytesLike, keccak256, AbiCoder, toBeHex, zeroPadValue, getCreate2Address } from 'ethers';
 
 import {
@@ -69,8 +68,7 @@ export const create16BytesUint = (value: number) => {
 };
 
 export async function deployImplementationContracts() {
-  let ethers: HardhatEthers;
-  ({ ethers } = await network.connect());
+  const { ethers } = await network.connect();
 
   const [deployer] = await ethers.getSigners();
 

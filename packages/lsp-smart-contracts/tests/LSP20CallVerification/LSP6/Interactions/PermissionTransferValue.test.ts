@@ -511,7 +511,6 @@ export const shouldBehaveLikePermissionTransferValue = (
     // UP making the call
     let aliceMainController: HardhatEthersSigner;
     let aliceUP: UniversalProfile;
-    let aliceKeyManager: LSP6KeyManager;
 
     // UP being called
     let bobMainController: HardhatEthersSigner;
@@ -609,7 +608,6 @@ export const shouldBehaveLikePermissionTransferValue = (
 
     it("Alice should be able to send 5 LYX from Bob's UP to her UP", async () => {
       const UniversalProfileInterface = UniversalProfile__factory.createInterface();
-      const LSP6Interface = LSP6KeyManager__factory.createInterface();
 
       const amount = parseEther('5');
 

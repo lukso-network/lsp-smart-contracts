@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { network } from 'hardhat';
 import {
   ContractTransaction,
   getAddress,
@@ -8,8 +7,7 @@ import {
   Wallet,
   ZeroAddress,
 } from 'ethers';
-import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
-import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 // constants

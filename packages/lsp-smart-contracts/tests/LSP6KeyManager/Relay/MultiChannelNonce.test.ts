@@ -57,16 +57,16 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
   describe('when calling `getNonce(...)` with a channel ID greater than 2 ** 128', () => {
     it('should revert', async () => {
-      
       // We wrap in a try catch as the error is thrown by the dApp / ethers library
       try {
         const channelId = toBigInt('0xffffffffffffffffffffffffffffffffff');
-  
+
         expect(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await (context.keyManager as any)['getNonce(address,uint128)'](signer.address, channelId),
         ).to.be.revertedWithPanic();
-      }
-      catch (error: any) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
         expect(error?.shortMessage).to.include('value out-of-bounds');
       }
     });

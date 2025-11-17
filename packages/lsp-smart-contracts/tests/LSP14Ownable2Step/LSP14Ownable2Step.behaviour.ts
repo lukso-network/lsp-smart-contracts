@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { artifacts } from 'hardhat';
 import {
   type ContractTransactionResponse,
   type ContractTransactionReceipt,
@@ -302,7 +301,7 @@ export const shouldBehaveLikeLSP14 = (
       });
 
       it('should instantiate the renounceOwnership process correctly', async () => {
-        const _renounceOwnershipStartedAtAfterSlotNumber = 2
+        const _renounceOwnershipStartedAtAfterSlotNumber = 2;
         const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
           await context.contract.getAddress(),
           _renounceOwnershipStartedAtAfterSlotNumber,
@@ -383,7 +382,7 @@ export const shouldBehaveLikeLSP14 = (
       });
 
       it('should initialize again if the confirmation period passed', async () => {
-        const _renounceOwnershipStartedAtAfterSlotNumber = 2
+        const _renounceOwnershipStartedAtAfterSlotNumber = 2;
 
         await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
@@ -438,7 +437,7 @@ export const shouldBehaveLikeLSP14 = (
         });
 
         it('should have reset the `_renounceOwnershipStartedAt` state variable to zero', async () => {
-          const _renounceOwnershipStartedAtAfterSlotNumber = 2
+          const _renounceOwnershipStartedAtAfterSlotNumber = 2;
 
           const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
             await context.contract.getAddress(),
@@ -517,7 +516,7 @@ export const shouldBehaveLikeLSP14 = (
     });
 
     it('should instantiate the renounceOwnership process in 2 steps correctly', async () => {
-      const _renounceOwnershipStartedAtAfterSlotNumber = 2
+      const _renounceOwnershipStartedAtAfterSlotNumber = 2;
       const renounceOwnershipTx = await context.contract
         .connect(context.deployParams.owner)
         .renounceOwnership();
@@ -526,9 +525,7 @@ export const shouldBehaveLikeLSP14 = (
         await context.contract.getAddress(),
         _renounceOwnershipStartedAtAfterSlotNumber,
       );
-      expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(
-        renounceOwnershipTx.blockNumber,
-      );
+      expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(renounceOwnershipTx.blockNumber);
       expect(await context.contract.owner()).to.equal(context.deployParams.owner.address);
     });
   });

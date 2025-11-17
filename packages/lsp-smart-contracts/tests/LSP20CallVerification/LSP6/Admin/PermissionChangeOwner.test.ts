@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
-import { parseEther, ZeroAddress, Wallet, ContractTransactionResponse, toQuantity } from 'ethers';
+import { parseEther, ZeroAddress, Wallet, ContractTransactionResponse } from 'ethers';
 
 // constants
 import { ERC725YDataKeys } from '../../../../constants.js';

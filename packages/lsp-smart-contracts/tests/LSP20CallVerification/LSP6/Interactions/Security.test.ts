@@ -4,14 +4,11 @@ import {
   hexlify,
   keccak256,
   parseEther,
-  toBigInt,
   toNumber,
   toUtf8Bytes,
   ZeroAddress,
   ZeroHash,
 } from 'ethers';
-
-import { artifacts } from 'hardhat';
 
 import {
   type Reentrancy,

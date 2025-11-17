@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
-import { type BytesLike, type Signer, ZeroAddress, getAddress, parseEther } from 'ethers';
+import { type BytesLike, type Signer, ZeroAddress, parseEther } from 'ethers';
 
 import {
   type MockEntryPoint,

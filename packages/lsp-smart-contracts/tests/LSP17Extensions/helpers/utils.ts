@@ -15,7 +15,6 @@ export function callDataCost(data: string): number {
 }
 
 export async function deployEntryPoint(ethers: HardhatEthers): Promise<MockEntryPoint> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const signer = await ethers.provider.getSigner();
   const create2factory = new Create2Factory(ethers.provider, signer);
   const addr = await create2factory.deploy(

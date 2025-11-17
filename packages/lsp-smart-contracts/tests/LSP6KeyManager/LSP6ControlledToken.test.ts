@@ -68,6 +68,7 @@ const buildContext = async () => {
 const addControllerWithPermission = async (
   context: LSP6ControlledToken,
   account: HardhatEthersSigner,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   arrayLength: any,
   arrayIndex: BytesLike,
   permissions: BytesLike,
@@ -187,9 +188,6 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       const value = keccak256(toUtf8Bytes('SecondRandomString'));
 
       expect(await context.token.owner()).to.equal(newOwner.address);
-
-      const result = await context.token.connect(newOwner).setData(key, value);
-
       expect(await context.token.getData(key)).to.equal(value);
     });
 

@@ -11,10 +11,7 @@ import {
   UniversalProfile__factory,
 } from '../../universalprofile-contracts/types/ethers-contracts/index.js';
 
-import type {
-  KeyManagerWithExtraParams,
-  ILSP23LinkedContractsFactory,
-} from '../types/ethers-contracts/index.js';
+import type { ILSP23LinkedContractsFactory } from '../types/ethers-contracts/index.js';
 
 import { LSP1DataKeys } from '@lukso/lsp1-contracts/constants';
 import { LSP3DataKeys } from '@lukso/lsp3-contracts';
@@ -105,6 +102,7 @@ describe('UniversalProfileDeployer', function () {
 
       const encodedBytes = AbiCoder.defaultAbiCoder().encode(types, [dataKeys, dataValues]);
       // get the address of the UP and the KeyManager contracts
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [upContract, keyManagerContract] =
         await LSP23LinkedContractsFactory.deployContracts.staticCall(
           primaryContractDeployment,
@@ -123,6 +121,7 @@ describe('UniversalProfileDeployer', function () {
           gasLimit: 30_000_000,
         },
       );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [expectedUpAddress, expectedKeyManagerAddress] =
         await LSP23LinkedContractsFactory.computeAddresses(
           primaryContractDeployment,
@@ -393,6 +392,7 @@ describe('UniversalProfileDeployer', function () {
         ],
       ]);
       // get the address of the UP and the KeyManager contracts
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [upContract, keyManagerContract] =
         await LSP23LinkedContractsFactory.deployContracts.staticCall(
           primaryContractDeployment,
@@ -411,6 +411,7 @@ describe('UniversalProfileDeployer', function () {
           gasLimit: 30_000_000,
         },
       );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [expectedUpAddress, expectedKeyManagerAddress] =
         await LSP23LinkedContractsFactory.computeAddresses(
           primaryContractDeployment,

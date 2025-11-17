@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 // constants
 import { ERC725YDataKeys } from '../../../constants.js';

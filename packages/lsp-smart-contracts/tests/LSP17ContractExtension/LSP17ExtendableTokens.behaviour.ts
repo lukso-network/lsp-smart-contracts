@@ -33,7 +33,6 @@ import { ERC725YDataKeys } from '../../constants.js';
 export type LSP17TestContext = {
   ethers: HardhatEthers;
   accounts: HardhatEthersSigner[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   contract: LSP0ERC725Account | LSP9Vault;
   deployParams: { owner: string };
 };

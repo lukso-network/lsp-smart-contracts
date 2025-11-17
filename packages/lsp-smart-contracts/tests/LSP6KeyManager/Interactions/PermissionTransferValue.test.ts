@@ -946,7 +946,6 @@ export const shouldBehaveLikePermissionTransferValue = (
 
       const amount = parseEther('5');
 
-      const bobUPAddress = await bobUP.getAddress();
       const aliceUPAddress = await aliceUP.getAddress();
 
       const finalTransferLyxPayload = bobUP.interface.encodeFunctionData('execute', [

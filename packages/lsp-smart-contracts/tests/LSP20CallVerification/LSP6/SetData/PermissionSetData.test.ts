@@ -596,12 +596,10 @@ export const shouldBehaveLikePermissionSetData = (buildContext: () => Promise<LS
     let context: LSP6TestContext;
 
     const UniversalProfileInterface = UniversalProfile__factory.createInterface();
-    const LSP6Interface = LSP6KeyManager__factory.createInterface();
 
     // UP making the call
     let aliceMainController: HardhatEthersSigner;
     let aliceUP: UniversalProfile;
-    let aliceKeyManager: LSP6KeyManager;
 
     // UP being called
     let bobMainController: HardhatEthersSigner;

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { AbiCoder, id, parseEther, ZeroAddress } from 'ethers';
 import { network } from 'hardhat';
-import { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import {
   MyVotingToken,
   MyVotingToken__factory,

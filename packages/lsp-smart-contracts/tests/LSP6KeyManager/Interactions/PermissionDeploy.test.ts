@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
 import type {
-  HardhatEthers,
   HardhatEthersProvider,
   HardhatEthersSigner,
 } from '@nomicfoundation/hardhat-ethers/types';
@@ -36,7 +35,6 @@ import {
 export const shouldBehaveLikePermissionDeploy = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
-  let ethers: HardhatEthers;
   let provider: HardhatEthersProvider;
   let context: LSP6TestContext;
 

@@ -1,7 +1,7 @@
 import { network } from 'hardhat';
 import { expect } from 'chai';
 
-import { type LSP14TestContext, shouldBehaveLikeLSP14 } from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour.js';
+import { shouldBehaveLikeLSP14 } from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour.js';
 
 import { type UniversalProfile } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
 import { type LSP6KeyManager } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
@@ -50,29 +50,6 @@ describe('LSP9VaultInit with proxy', () => {
       deployParams,
       universalProfile,
       lsp6KeyManager,
-    };
-  };
-
-  const buildLSP14TestContext = async (
-    initialFunding?: number | bigint,
-  ): Promise<LSP14TestContext> => {
-    const { ethers, networkHelpers } = await network.connect();
-    const accounts = await ethers.getSigners();
-    const deployParams = { owner: accounts[0], initialFunding };
-
-    const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
-    const lsp9VaultProxy = await deployProxy(await lsp9VaultInit.getAddress(), accounts[0]);
-    const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy) as LSP9VaultInit;
-
-    const onlyOwnerCustomError = 'Only Owner or reentered Universal Receiver Delegate allowed';
-
-    return {
-      ethers,
-      networkHelpers,
-      accounts,
-      contract: lsp9Vault,
-      deployParams,
-      onlyOwnerCustomError
     };
   };
 
