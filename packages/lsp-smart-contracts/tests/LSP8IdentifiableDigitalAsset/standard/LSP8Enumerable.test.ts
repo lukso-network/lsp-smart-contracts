@@ -1,17 +1,22 @@
-import { LSP8EnumerableTester, LSP8EnumerableTester__factory } from '../../../typechain';
-
-import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
-  shouldBehaveLikeLSP8Enumerable,
-  LSP8EnumerableTestContext,
+  type LSP8EnumerableTester,
+  LSP8EnumerableTester__factory,
+} from '../../../types/ethers-contracts/index.js';
+
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour.js';
+import {
   getNamedAccounts,
-} from '../LSP8Enumerable.behaviour';
+  shouldBehaveLikeLSP8Enumerable,
+  type LSP8EnumerableTestContext,
+} from '../LSP8Enumerable.behaviour.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 describe('LSP8Enumerable with constructor', () => {
   const buildTestContext = async () => {
-    const accounts = await getNamedAccounts();
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
 
     const deployParams = {
       name: 'LSP8 Enumerable - deployed with constructor',
@@ -31,7 +36,7 @@ describe('LSP8Enumerable with constructor', () => {
       deployParams.lsp8TokenIdFormat,
     );
 
-    return { accounts, lsp8Enumerable, deployParams };
+    return { ethers, accounts, lsp8Enumerable, deployParams };
   };
 
   describe('when deploying the contract', () => {
@@ -42,8 +47,9 @@ describe('LSP8Enumerable with constructor', () => {
     });
 
     shouldInitializeLikeLSP8(async () => {
-      const { lsp8Enumerable: lsp8, deployParams } = context;
+      const { ethers, lsp8Enumerable: lsp8, deployParams } = context;
       return {
+        ethers,
         lsp8,
         deployParams,
         initializeTransaction: context.lsp8Enumerable.deploymentTransaction(),

@@ -1,48 +1,53 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 import {
-  LSP7Mintable,
+  type LSP7Mintable,
   LSP7Mintable__factory,
-  SignatureValidator,
+} from '../../../../lsp7-contracts/types/ethers-contracts/index.js';
+import {
+  type SignatureValidator,
   SignatureValidator__factory,
-  TargetContract,
+  type TargetContract,
   TargetContract__factory,
+} from '../../../types/ethers-contracts/index.js';
+import {
   UniversalProfile__factory,
-  UniversalProfile,
-} from '../../../typechain';
+  type UniversalProfile,
+} from '../../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants.js';
 import { OPERATION_TYPES, ERC1271_VALUES } from '@lukso/lsp0-contracts';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 // helpers
 import {
   abiCoder,
-  provider,
   combinePermissions,
   combineAllowedCalls,
   combineCallTypes,
-} from '../../utils/helpers';
+} from '../../utils/helpers.js';
 
 export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP6TestContext>) => {
+  let ethers: HardhatEthers;
   let context: LSP6TestContext;
 
-  let addressCanInteractOnlyWithERC1271: SignerWithAddress,
-    addressCanInteractOnlyWithLSP7: SignerWithAddress;
+  let addressCanInteractOnlyWithERC1271: HardhatEthersSigner,
+    addressCanInteractOnlyWithLSP7: HardhatEthersSigner;
 
   let targetContract: TargetContract,
     signatureValidatorContract: SignatureValidator,
     otherUniversalProfile: UniversalProfile;
 
   before(async () => {
+    ({ ethers } = await network.connect());
     context = await buildContext();
 
     addressCanInteractOnlyWithERC1271 = context.accounts[1];
@@ -192,19 +197,19 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
 
     describe('when trying to interact an ERC725Account (LSP0)', () => {
       it('should allow to transfer LYX', async () => {
-        const initialAccountBalance = await provider.getBalance(otherUniversalProfile.target);
-
+        const amount = ethers.parseEther('1');
         const transferLyxPayload = context.universalProfile.interface.encodeFunctionData(
           'execute',
-          [OPERATION_TYPES.CALL, otherUniversalProfile.target, ethers.parseEther('1'), '0x'],
+          [OPERATION_TYPES.CALL, otherUniversalProfile.target, amount, '0x'],
         );
 
-        await context.keyManager
-          .connect(addressCanInteractOnlyWithERC1271)
-          .execute(transferLyxPayload);
-
-        const newAccountBalance = await provider.getBalance(otherUniversalProfile.target);
-        expect(newAccountBalance).to.be.gt(initialAccountBalance);
+        await expect(
+          context.keyManager.connect(addressCanInteractOnlyWithERC1271).execute(transferLyxPayload),
+        ).to.changeEtherBalances(
+          context.ethers,
+          [context.universalProfile, otherUniversalProfile.target],
+          [`-${amount}`, amount],
+        );
       });
     });
 

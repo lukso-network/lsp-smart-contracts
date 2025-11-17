@@ -1,23 +1,30 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { calculateCreate2 } from 'eth-create2-calculator';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import {
+  getAddress,
+  getCreate2Address,
+  hexlify,
+  keccak256,
+  randomBytes,
+  ZeroAddress,
+  zeroPadValue,
+} from 'ethers';
 
-import { TargetContract__factory } from '../../../../typechain';
+import { TargetContract__factory } from '../../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
+import type { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
-  let addressCanDeploy: SignerWithAddress, addressCannotDeploy: SignerWithAddress;
+  let addressCanDeploy: HardhatEthersSigner, addressCannotDeploy: HardhatEthersSigner;
 
   before(async () => {
     context = await buildContext();
@@ -45,7 +52,7 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
 
       const expectedContractAddress = await context.universalProfile.execute.staticCall(
         OPERATION_TYPES.CREATE, // operation type
-        ethers.ZeroAddress, // recipient
+        ZeroAddress, // recipient
         0, // value
         contractBytecodeToDeploy,
       );
@@ -53,7 +60,7 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
       await expect(
         context.universalProfile.connect(context.mainController).execute(
           OPERATION_TYPES.CREATE, // operation type
-          ethers.ZeroAddress, // recipient
+          ZeroAddress, // recipient
           0, // value
           contractBytecodeToDeploy,
         ),
@@ -61,20 +68,20 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.getAddress(expectedContractAddress),
+          getAddress(expectedContractAddress),
           0,
-          ethers.zeroPadValue('0x00', 32),
+          zeroPadValue('0x00', 32),
         );
     });
 
     it('should be allowed to deploy a contract TargetContract via CREATE2', async () => {
       const contractBytecodeToDeploy = TargetContract__factory.bytecode;
-      const salt = ethers.hexlify(ethers.randomBytes(32));
+      const salt = hexlify(randomBytes(32));
 
-      const preComputedAddress = calculateCreate2(
+      const preComputedAddress = getCreate2Address(
         await context.universalProfile.getAddress(),
         salt,
-        contractBytecodeToDeploy,
+        keccak256(contractBytecodeToDeploy),
       ).toLowerCase();
 
       await expect(
@@ -82,13 +89,13 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
           .connect(context.mainController)
           .execute(
             OPERATION_TYPES.CREATE2,
-            ethers.ZeroAddress,
+            ZeroAddress,
             0,
             contractBytecodeToDeploy + salt.substring(2),
           ),
       )
         .to.emit(context.universalProfile, 'ContractCreated')
-        .withArgs(OPERATION_TYPES.CREATE2, ethers.getAddress(preComputedAddress), 0, salt);
+        .withArgs(OPERATION_TYPES.CREATE2, getAddress(preComputedAddress), 0, salt);
     });
   });
 
@@ -98,24 +105,19 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
 
       const expectedContractAddress = await context.universalProfile
         .connect(addressCanDeploy)
-        .execute.staticCall(
-          OPERATION_TYPES.CREATE,
-          ethers.ZeroAddress,
-          0,
-          contractBytecodeToDeploy,
-        );
+        .execute.staticCall(OPERATION_TYPES.CREATE, ZeroAddress, 0, contractBytecodeToDeploy);
 
       await expect(
         context.universalProfile
           .connect(addressCanDeploy)
-          .execute(OPERATION_TYPES.CREATE, ethers.ZeroAddress, 0, contractBytecodeToDeploy),
+          .execute(OPERATION_TYPES.CREATE, ZeroAddress, 0, contractBytecodeToDeploy),
       )
         .to.emit(context.universalProfile, 'ContractCreated')
         .withArgs(
           OPERATION_TYPES.CREATE,
-          ethers.getAddress(expectedContractAddress),
+          getAddress(expectedContractAddress),
           0,
-          ethers.zeroPadValue('0x00', 32),
+          zeroPadValue('0x00', 32),
         );
     });
 
@@ -123,10 +125,10 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
       const contractBytecodeToDeploy = TargetContract__factory.bytecode;
       const salt = '0xcafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe';
 
-      const preComputedAddress = calculateCreate2(
+      const preComputedAddress = getCreate2Address(
         await context.universalProfile.getAddress(),
         salt,
-        contractBytecodeToDeploy,
+        keccak256(contractBytecodeToDeploy),
       ).toLowerCase();
 
       await expect(
@@ -134,13 +136,13 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
           .connect(addressCanDeploy)
           .execute(
             OPERATION_TYPES.CREATE2,
-            ethers.ZeroAddress,
+            ZeroAddress,
             0,
             contractBytecodeToDeploy + salt.substring(2),
           ),
       )
         .to.emit(context.universalProfile, 'ContractCreated')
-        .withArgs(OPERATION_TYPES.CREATE2, ethers.getAddress(preComputedAddress), 0, salt);
+        .withArgs(OPERATION_TYPES.CREATE2, getAddress(preComputedAddress), 0, salt);
     });
   });
 
@@ -152,7 +154,7 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
         await expect(
           context.universalProfile
             .connect(addressCannotDeploy)
-            .execute(OPERATION_TYPES.CREATE, ethers.ZeroAddress, 0, contractBytecodeToDeploy),
+            .execute(OPERATION_TYPES.CREATE, ZeroAddress, 0, contractBytecodeToDeploy),
         )
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
           .withArgs(addressCannotDeploy.address, 'DEPLOY');
@@ -167,7 +169,7 @@ export const shouldBehaveLikePermissionDeploy = (buildContext: () => Promise<LSP
             .connect(addressCannotDeploy)
             .execute(
               OPERATION_TYPES.CREATE2,
-              ethers.ZeroAddress,
+              ZeroAddress,
               0,
               contractBytecodeToDeploy + salt.substring(2),
             ),

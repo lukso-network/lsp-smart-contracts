@@ -1,27 +1,33 @@
-import { ethers } from 'hardhat';
+import { network } from 'hardhat';
 import { expect } from 'chai';
 
-import { shouldBehaveLikeLSP14 } from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour';
+import { shouldBehaveLikeLSP14 } from '../LSP14Ownable2Step/LSP14Ownable2Step.behaviour.js';
 
-import { UniversalProfile, LSP6KeyManager, LSP9VaultInit__factory } from '../../typechain';
+import { type UniversalProfile } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import { type LSP6KeyManager } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
+import {
+  type LSP9VaultInit,
+  LSP9VaultInit__factory,
+} from '../../../lsp9-contracts/types/ethers-contracts/index.js';
 
 import {
+  type LSP9TestContext,
   getNamedAccounts,
   shouldBehaveLikeLSP9,
   shouldInitializeLikeLSP9,
-  LSP9TestContext,
-} from './LSP9Vault.behaviour';
+} from './LSP9Vault.behaviour.js';
 
 import {
-  LSP17TestContext,
+  type LSP17TestContext,
   shouldBehaveLikeLSP17,
-} from '../LSP17ContractExtension/LSP17Extendable.behaviour';
+} from '../LSP17ContractExtension/LSP17Extendable.behaviour.js';
 
-import { deployProxy, setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
+import { deployProxy, setupProfileWithKeyManagerWithURD } from '../utils/fixtures.js';
 
 describe('LSP9VaultInit with proxy', () => {
   const buildTestContext = async (initialFunding?: number | bigint): Promise<LSP9TestContext> => {
-    const accounts = await getNamedAccounts();
+    const { ethers, networkHelpers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
     const deployParams = {
       newOwner: accounts.owner.address,
       initialFunding,
@@ -37,6 +43,8 @@ describe('LSP9VaultInit with proxy', () => {
     const lsp6KeyManager = KM1 as LSP6KeyManager;
 
     return {
+      ethers,
+      networkHelpers,
       accounts,
       lsp9Vault,
       deployParams,
@@ -46,28 +54,28 @@ describe('LSP9VaultInit with proxy', () => {
   };
 
   const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+    const { ethers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       owner: accounts[0],
     };
 
     const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
-
     const lsp9VaultProxy = await deployProxy(await lsp9VaultInit.getAddress(), accounts[0]);
+    const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy) as LSP9VaultInit;
 
-    const lsp9Vault = lsp9VaultInit.attach(lsp9VaultProxy);
-
-    return { accounts, contract: lsp9Vault, deployParams };
+    return { ethers, accounts, contract: lsp9Vault, deployParams };
   };
 
   const initializeProxy = async (context: LSP9TestContext) => {
-    return context.lsp9Vault['initialize(address)'](context.deployParams.newOwner, {
+    return (context.lsp9Vault as LSP9VaultInit).initialize(context.deployParams.newOwner, {
       value: context.deployParams.initialFunding,
     });
   };
 
   describe('when deploying the base implementation contract', () => {
     it('`owner()` of the base contract MUST be `address(0)`', async () => {
+      const { ethers } = await network.connect();
       const accounts = await ethers.getSigners();
 
       const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
@@ -78,6 +86,7 @@ describe('LSP9VaultInit with proxy', () => {
     });
 
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
+      const { ethers } = await network.connect();
       const accounts = await ethers.getSigners();
 
       const lsp9VaultInit = await new LSP9VaultInit__factory(accounts[0]).deploy();
@@ -130,15 +139,17 @@ describe('LSP9VaultInit with proxy', () => {
 
     shouldBehaveLikeLSP14(async (initialFunding?: number | bigint) => {
       const context = await buildTestContext(initialFunding);
-      const accounts = await ethers.getSigners();
+      const accounts = await context.ethers.getSigners();
       await initializeProxy(context);
 
       const onlyOwnerCustomError = 'Only Owner or reentered Universal Receiver Delegate allowed';
 
       return {
-        accounts: accounts,
         contract: context.lsp9Vault,
-        deployParams: { owner: context.accounts.owner },
+        deployParams: { owner: accounts[0] },
+        ethers: context.ethers,
+        networkHelpers: context.networkHelpers,
+        accounts: accounts,
         onlyOwnerCustomError,
       };
     });

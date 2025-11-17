@@ -1,21 +1,21 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { hexlify, keccak256, randomBytes, toBeHex, toUtf8Bytes, zeroPadValue } from 'ethers';
 
 // constants
-import { ERC725YDataKeys } from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants.js';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
+import type { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 // helpers
 import {
   combinePermissions,
   encodeCompactBytesArray,
   getRandomAddresses,
-} from '../../../utils/helpers';
+} from '../../../utils/helpers.js';
 
 export const shouldBehaveLikePermissionChangeOrAddURD = (
   buildContext: () => Promise<LSP6TestContext>,
@@ -23,46 +23,46 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
   let context: LSP6TestContext;
 
   describe('setting UniversalReceiverDelegate keys (CHANGE vs ADD)', () => {
-    let canAddAndChangeUniversalReceiverDelegate: SignerWithAddress,
-      canOnlyAddUniversalReceiverDelegate: SignerWithAddress,
-      canOnlyChangeUniversalReceiverDelegate: SignerWithAddress,
-      canOnlySuperSetData: SignerWithAddress,
-      canOnlySetData: SignerWithAddress,
-      canOnlyCall;
+    let canAddAndChangeUniversalReceiverDelegate: HardhatEthersSigner,
+      canOnlyAddUniversalReceiverDelegate: HardhatEthersSigner,
+      canOnlyChangeUniversalReceiverDelegate: HardhatEthersSigner,
+      canOnlySuperSetData: HardhatEthersSigner,
+      canOnlySetData: HardhatEthersSigner,
+      canOnlyCall: HardhatEthersSigner;
 
     let permissionArrayKeys: string[] = [];
     let permissionArrayValues: string[] = [];
 
     // Generate few bytes32 LSP1UniversalReceiverDelegate dataKeys
-    let universalReceiverDelegateKey1,
-      universalReceiverDelegateKey2,
-      universalReceiverDelegateKey3,
-      universalReceiverDelegateKey4;
+    let universalReceiverDelegateKey1: string,
+      universalReceiverDelegateKey2: string,
+      universalReceiverDelegateKey3: string,
+      universalReceiverDelegateKey4: string;
 
     // Generate few addresses to be used as dataValue for LSP1 Keys
-    let universalReceiverDelegateA,
-      universalReceiverDelegateB,
-      universalReceiverDelegateC,
-      universalReceiverDelegateD;
+    let universalReceiverDelegateA: string,
+      universalReceiverDelegateB: string,
+      universalReceiverDelegateC: string,
+      universalReceiverDelegateD: string;
 
     before(async () => {
       context = await buildContext();
 
       universalReceiverDelegateKey1 =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-        ethers.hexlify(ethers.randomBytes(32)).substring(2, 42);
+        hexlify(randomBytes(32)).substring(2, 42);
 
       universalReceiverDelegateKey2 =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-        ethers.hexlify(ethers.randomBytes(32)).substring(2, 42);
+        hexlify(randomBytes(32)).substring(2, 42);
 
       universalReceiverDelegateKey3 =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-        ethers.hexlify(ethers.randomBytes(32)).substring(2, 42);
+        hexlify(randomBytes(32)).substring(2, 42);
 
       universalReceiverDelegateKey4 =
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix +
-        ethers.hexlify(ethers.randomBytes(32)).substring(2, 42);
+        hexlify(randomBytes(32)).substring(2, 42);
 
       [
         universalReceiverDelegateA,
@@ -110,9 +110,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           // Adding the LSP1 Keys as AllowedERC725YDataKey to test if it break the behavior
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegatePrefix,
           ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
-          ethers.keccak256(ethers.toUtf8Bytes('MyFirstKey')),
-          ethers.keccak256(ethers.toUtf8Bytes('MySecondKey')),
-          ethers.keccak256(ethers.toUtf8Bytes('MyThirdKey')),
+          keccak256(toUtf8Bytes('MyFirstKey')),
+          keccak256(toUtf8Bytes('MySecondKey')),
+          keccak256(toUtf8Bytes('MyThirdKey')),
         ]),
         PERMISSIONS.CALL,
       ];
@@ -129,7 +129,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
       ];
 
       permissionArrayValues = [
-        ethers.zeroPadValue(ethers.toBeHex(7), 16),
+        zeroPadValue(toBeHex(7), 16),
         context.mainController.address,
         canAddAndChangeUniversalReceiverDelegate.address,
         canOnlyAddUniversalReceiverDelegate.address,
@@ -541,13 +541,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataKeys: [
               ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
               ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
-              ethers.keccak256(ethers.toUtf8Bytes('MyKey')),
+              keccak256(toUtf8Bytes('MyKey')),
             ],
-            dataValues: [
-              universalReceiverDelegateA,
-              ethers.zeroPadValue(ethers.toBeHex(7), 16),
-              '0xaabbccdd',
-            ],
+            dataValues: [universalReceiverDelegateA, zeroPadValue(toBeHex(7), 16), '0xaabbccdd'],
           };
 
           await context.universalProfile
@@ -564,13 +560,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataKeys: [
               ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
               ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
-              ethers.keccak256(ethers.toUtf8Bytes('MySecondKey')),
+              keccak256(toUtf8Bytes('MySecondKey')),
             ],
-            dataValues: [
-              universalReceiverDelegateB,
-              ethers.zeroPadValue(ethers.toBeHex(8), 16),
-              '0xaabb',
-            ],
+            dataValues: [universalReceiverDelegateB, zeroPadValue(toBeHex(8), 16), '0xaabb'],
           };
 
           await context.universalProfile
@@ -587,9 +579,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             dataKeys: [
               ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
               ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
-              ethers.keccak256(ethers.toUtf8Bytes('MySecondKey')),
+              keccak256(toUtf8Bytes('MySecondKey')),
             ],
-            dataValues: ['0x', ethers.zeroPadValue(ethers.toBeHex(7), 16), '0x'],
+            dataValues: ['0x', zeroPadValue(toBeHex(7), 16), '0x'],
           };
 
           await context.universalProfile
@@ -609,13 +601,9 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
               dataKeys: [
                 ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
-                ethers.keccak256(ethers.toUtf8Bytes('MyKey')),
+                keccak256(toUtf8Bytes('MyKey')),
               ],
-              dataValues: [
-                universalReceiverDelegateA,
-                ethers.zeroPadValue(ethers.toBeHex(7), 16),
-                '0xaabbccdd',
-              ],
+              dataValues: [universalReceiverDelegateA, zeroPadValue(toBeHex(7), 16), '0xaabbccdd'],
             };
 
             await expect(
@@ -633,7 +621,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
             const payloadParam = {
               dataKeys: [
                 ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
-                ethers.keccak256(ethers.toUtf8Bytes('MyKey')),
+                keccak256(toUtf8Bytes('MyKey')),
               ],
               dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
             };
@@ -723,10 +711,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
         describe('when adding a UniversalReceiverDelegate and ERC725Y Data Key', () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
-              dataKeys: [
-                universalReceiverDelegateKey4,
-                ethers.keccak256(ethers.toUtf8Bytes('MyKey')),
-              ],
+              dataKeys: [universalReceiverDelegateKey4, keccak256(toUtf8Bytes('MyKey'))],
               dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
             };
 
@@ -776,7 +761,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
                 ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
                 universalReceiverDelegateKey1,
                 universalReceiverDelegateKey2,
-                ethers.keccak256(ethers.toUtf8Bytes('MyKey')),
+                keccak256(toUtf8Bytes('MyKey')),
               ],
               dataValues: [
                 universalReceiverDelegateA,
@@ -873,10 +858,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
         describe('when adding a UniversalReceiverDelegate and ERC725Y Data Key', () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
-              dataKeys: [
-                universalReceiverDelegateKey4,
-                ethers.keccak256(ethers.toUtf8Bytes('MyKey')),
-              ],
+              dataKeys: [universalReceiverDelegateKey4, keccak256(toUtf8Bytes('MyKey'))],
               dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
             };
 
@@ -911,10 +893,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
         describe('when Adding multiple UniversalReceiverDelegate keys with adding ERC725Y Data Key', () => {
           it("should revert because caller don't have ADDUniversalReceiverDelegate permission", async () => {
             const payloadParam = {
-              dataKeys: [
-                universalReceiverDelegateKey4,
-                ethers.keccak256(ethers.toUtf8Bytes('MyKey')),
-              ],
+              dataKeys: [universalReceiverDelegateKey4, keccak256(toUtf8Bytes('MyKey'))],
               dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
             };
 
@@ -953,10 +932,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
         describe('when Adding multiple UniversalReceiverDelegate keys with adding other allowedERC725YDataKey', () => {
           it("should revert because caller don't have ADDUniversalReceiverDelegate permission", async () => {
             const payloadParam = {
-              dataKeys: [
-                universalReceiverDelegateKey4,
-                ethers.keccak256(ethers.toUtf8Bytes('MyKey')),
-              ],
+              dataKeys: [universalReceiverDelegateKey4, keccak256(toUtf8Bytes('MyKey'))],
               dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
             };
 
@@ -989,10 +965,7 @@ export const shouldBehaveLikePermissionChangeOrAddURD = (
           describe('When adding UniversalReceiverDelegate key and one of his allowedERC725Y Data Key', () => {
             it('should pass', async () => {
               const payloadParam = {
-                dataKeys: [
-                  universalReceiverDelegateKey4,
-                  ethers.keccak256(ethers.toUtf8Bytes('MyFirstKey')),
-                ],
+                dataKeys: [universalReceiverDelegateKey4, keccak256(toUtf8Bytes('MyFirstKey'))],
                 dataValues: [universalReceiverDelegateA, '0xaabbccdd'],
               };
 

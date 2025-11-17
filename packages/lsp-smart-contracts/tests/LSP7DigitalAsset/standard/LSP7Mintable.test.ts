@@ -1,17 +1,22 @@
-import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
-import { LSP7Mintable, LSP7Mintable__factory } from '../../../typechain';
+import {
+  type LSP7Mintable,
+  LSP7Mintable__factory,
+} from '../../../../lsp7-contracts/types/ethers-contracts/index.js';
 
-import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
+import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour.js';
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP7Mintable,
-  LSP7MintableTestContext,
-  LSP7MintableDeployParams,
-} from '../LSP7Mintable.behaviour';
+  type LSP7MintableTestContext,
+  type LSP7MintableDeployParams,
+} from '../LSP7Mintable.behaviour.js';
+import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 
 describe('LSP7Mintable with constructor', () => {
   const buildTestContext = async (): Promise<LSP7MintableTestContext> => {
-    const accounts = await getNamedAccounts();
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
 
     const deployParams: LSP7MintableDeployParams = {
       name: 'LSP7Mintable - deployed with constructor',
@@ -31,7 +36,7 @@ describe('LSP7Mintable with constructor', () => {
       deployParams.mintable,
     );
 
-    return { accounts, lsp7Mintable, deployParams };
+    return { ethers, accounts, lsp7Mintable, deployParams };
   };
 
   describe('when deploying the contract', () => {

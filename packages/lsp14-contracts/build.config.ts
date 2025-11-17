@@ -1,7 +1,7 @@
 import { defineBuildConfig } from 'unbuild';
 
 export default defineBuildConfig({
-  entries: ['./constants', './abi'],
+  entries: ['./constants'],
   outDir: 'dist/',
   rollup: {
     emitCJS: true,

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { AbiCoder, id, parseEther, ZeroAddress } from 'ethers';
 import { network } from 'hardhat';
-import { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import {
   MyVotingToken,
   MyVotingToken__factory,
@@ -10,10 +10,9 @@ import {
   MockUniversalReceiver__factory,
   MockUniversalReceiver,
 } from '../types/ethers-contracts/index.js';
-import {} from '@nomicfoundation/hardhat-network-helpers';
 import { LSP7_TYPE_IDS } from '../constants.js';
 
-let ethers: HardhatEthers;
+const { ethers } = await network.connect();
 
 const { networkHelpers } = await network.connect();
 const { time, mine } = networkHelpers;
@@ -34,7 +33,6 @@ describe('Comprehensive Governor and Token Tests', () => {
   const QUORUM_FRACTION = 1; // 1%
 
   beforeEach(async () => {
-    ({ ethers } = await network.connect());
     [owner, proposer, voter1, voter2, voter3, randomEOA] = await ethers.getSigners();
 
     token = await new MyVotingToken__factory(owner).deploy();

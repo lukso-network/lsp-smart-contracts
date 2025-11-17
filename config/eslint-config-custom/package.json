@@ -7,11 +7,13 @@
   },
   "private": true,
   "dependencies": {
+    "@typescript-eslint/tsconfig-utils": "^8.46.0",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-config-turbo": "latest",
-    "eslint-plugin-turbo": "latest",
     "eslint-plugin-prettier": "latest",
+    "eslint-plugin-turbo": "latest",
+    "graphemer": "^1.4.0",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.40.0"
   }

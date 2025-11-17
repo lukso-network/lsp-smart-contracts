@@ -15,6 +15,12 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Use Node.js v24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.x"
+          cache: "npm"
+
       - name: Install Foundry
         uses: onbjerg/foundry-toolchain@v1
         with:

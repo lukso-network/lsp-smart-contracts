@@ -49,7 +49,6 @@
   },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
-    "build:js": "unbuild",
     "build:types": "wagmi generate",
     "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
@@ -68,6 +67,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
-    "hardhat": "^3.0.7"
+    "hardhat": "^3.0.7",
+    "eslint-config-custom": "*"
   }
 }

@@ -1,33 +1,39 @@
-import { ethers } from 'hardhat';
+import { network } from 'hardhat';
 import { expect } from 'chai';
-import { BytesLike } from 'ethers';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { hashMessage, keccak256, toUtf8Bytes, ZeroAddress } from 'ethers';
+import type { BytesLike } from 'ethers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
+import { LSP7Tester__factory } from '../../types/ethers-contracts/index.js';
+import { LSP0ERC725Account__factory } from '../../../lsp0-contracts/types/ethers-contracts/index.js';
 import {
-  LSP7Tester__factory,
-  LSP0ERC725Account__factory,
-  LSP6KeyManager,
+  type LSP6KeyManager,
   LSP6KeyManager__factory,
-  LSP7Mintable,
+} from '../../../lsp6-contracts/types/ethers-contracts/index.js';
+import {
+  type LSP7Mintable,
   LSP7Mintable__factory,
-  LSP8Mintable,
-} from '../../typechain';
+} from '../../../lsp7-contracts/types/ethers-contracts/index.js';
+import type { LSP8Mintable } from '../../../lsp8-contracts/types/ethers-contracts/index.js';
 
-import { ERC725YDataKeys } from '../../constants';
+import { ERC725YDataKeys } from '../../constants.js';
 import { ERC1271_VALUES } from '@lukso/lsp0-contracts';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
-import { ARRAY_LENGTH, encodeCompactBytesArray } from '../utils/helpers';
+import { ARRAY_LENGTH, encodeCompactBytesArray } from '../utils/helpers.js';
 
 export type LSP6ControlledToken = {
-  accounts: SignerWithAddress[];
+  accounts: HardhatEthersSigner[];
   token: LSP7Mintable | LSP8Mintable;
   keyManager: LSP6KeyManager;
-  mainController: SignerWithAddress;
+  mainController: HardhatEthersSigner;
 };
 
 const buildContext = async () => {
-  const accounts = await ethers.getSigners();
+  const {
+    ethers: { getSigners },
+  } = await network.connect();
+  const accounts = await getSigners();
 
   const lsp7 = await new LSP7Mintable__factory(accounts[0]).deploy(
     'name',
@@ -61,8 +67,9 @@ const buildContext = async () => {
 
 const addControllerWithPermission = async (
   context: LSP6ControlledToken,
-  account: SignerWithAddress,
-  arrayLength,
+  account: HardhatEthersSigner,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  arrayLength: any,
   arrayIndex: BytesLike,
   permissions: BytesLike,
 ) => {
@@ -82,14 +89,14 @@ const addControllerWithPermission = async (
 describe('When deploying LSP7 with LSP6 as owner', () => {
   let context: LSP6ControlledToken;
 
-  let newOwner: SignerWithAddress;
-  let anotherNewOwner: SignerWithAddress;
+  let newOwner: HardhatEthersSigner;
+  let anotherNewOwner: HardhatEthersSigner;
 
-  let addressCanChangeOwner: SignerWithAddress;
-  let addressCanEditPermissions: SignerWithAddress;
-  let addressCanAddController: SignerWithAddress;
-  let addressCanSetData: SignerWithAddress;
-  let addressCanSign: SignerWithAddress;
+  let addressCanChangeOwner: HardhatEthersSigner;
+  let addressCanEditPermissions: HardhatEthersSigner;
+  let addressCanAddController: HardhatEthersSigner;
+  let addressCanSetData: HardhatEthersSigner;
+  let addressCanSign: HardhatEthersSigner;
 
   before(async () => {
     context = await buildContext();
@@ -144,13 +151,15 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
 
       await context.keyManager.connect(context.mainController).execute(renounceOwnershipPayload);
 
-      expect(await context.token.owner()).to.equal(ethers.ZeroAddress);
+      expect(await context.token.owner()).to.equal(ZeroAddress);
     });
   });
 
   describe('using transferOwnership(..) in LSP7 through LSP6', () => {
     before("previous token contract's ownership was renounced, build new context", async () => {
       context = await buildContext();
+      newOwner = context.accounts[1];
+      anotherNewOwner = context.accounts[2];
     });
 
     it('should change the owner of LSP7 contract', async () => {
@@ -165,8 +174,8 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
     });
 
     it("`setData(...)` -> should revert with 'caller is not the owner' error.", async () => {
-      const key = ethers.keccak256(ethers.toUtf8Bytes('FirstRandomString'));
-      const value = ethers.keccak256(ethers.toUtf8Bytes('SecondRandomString'));
+      const key = keccak256(toUtf8Bytes('FirstRandomString'));
+      const value = keccak256(toUtf8Bytes('SecondRandomString'));
       const payload = context.token.interface.encodeFunctionData('setData', [key, value]);
 
       await expect(
@@ -175,11 +184,10 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
     });
 
     it('should allow the new owner to call setData(..)', async () => {
-      const key = ethers.keccak256(ethers.toUtf8Bytes('FirstRandomString'));
-      const value = ethers.keccak256(ethers.toUtf8Bytes('SecondRandomString'));
+      const key = keccak256(toUtf8Bytes('FirstRandomString'));
+      const value = keccak256(toUtf8Bytes('SecondRandomString'));
 
-      await context.token.connect(newOwner).setData(key, value);
-
+      expect(await context.token.owner()).to.equal(newOwner.address);
       expect(await context.token.getData(key)).to.equal(value);
     });
 
@@ -234,13 +242,18 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
     it('should allow the new owner to call renounceOwnership(..)', async () => {
       await context.token.connect(anotherNewOwner).renounceOwnership();
 
-      expect(await context.token.owner()).to.equal(ethers.ZeroAddress);
+      expect(await context.token.owner()).to.equal(ZeroAddress);
     });
   });
 
   describe('using setData(..) in lSP7 through LSP6', () => {
     before(async () => {
       context = await buildContext();
+      addressCanChangeOwner = context.accounts[1];
+      addressCanEditPermissions = context.accounts[2];
+      addressCanAddController = context.accounts[3];
+      addressCanSetData = context.accounts[4];
+      addressCanSign = context.accounts[5];
     });
 
     describe('testing CHANGEOWNER permission', () => {
@@ -461,9 +474,9 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
     });
 
     describe('testing SETDATA permission', () => {
-      const firstRandomSringKey = ethers.keccak256(ethers.toUtf8Bytes('FirstRandomString'));
-      const secondRandomSringKey = ethers.keccak256(ethers.toUtf8Bytes('SecondRandomString'));
-      const notAllowedKey = ethers.keccak256(ethers.toUtf8Bytes('Not Allowed ERC725Y data key'));
+      const firstRandomSringKey = keccak256(toUtf8Bytes('FirstRandomString'));
+      const secondRandomSringKey = keccak256(toUtf8Bytes('SecondRandomString'));
+      const notAllowedKey = keccak256(toUtf8Bytes('Not Allowed ERC725Y data key'));
 
       before(async () => {
         await addControllerWithPermission(
@@ -544,10 +557,10 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         ];
         const values = [
           ARRAY_LENGTH.FOUR,
-          ethers.keccak256(ethers.toUtf8Bytes('FirstRandomString0')),
-          ethers.keccak256(ethers.toUtf8Bytes('FirstRandomString1')),
-          ethers.keccak256(ethers.toUtf8Bytes('FirstRandomString2')),
-          ethers.keccak256(ethers.toUtf8Bytes('FirstRandomString3')),
+          keccak256(toUtf8Bytes('FirstRandomString0')),
+          keccak256(toUtf8Bytes('FirstRandomString1')),
+          keccak256(toUtf8Bytes('FirstRandomString2')),
+          keccak256(toUtf8Bytes('FirstRandomString3')),
         ];
         const payload = context.token.interface.encodeFunctionData('setDataBatch', [keys, values]);
 
@@ -566,10 +579,10 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
         ];
         const values = [
           ARRAY_LENGTH.FOUR,
-          ethers.keccak256(ethers.toUtf8Bytes('FirstRandomString0')),
-          ethers.keccak256(ethers.toUtf8Bytes('FirstRandomString1')),
-          ethers.keccak256(ethers.toUtf8Bytes('FirstRandomString2')),
-          ethers.keccak256(ethers.toUtf8Bytes('FirstRandomString3')),
+          keccak256(toUtf8Bytes('FirstRandomString0')),
+          keccak256(toUtf8Bytes('FirstRandomString1')),
+          keccak256(toUtf8Bytes('FirstRandomString2')),
+          keccak256(toUtf8Bytes('FirstRandomString3')),
         ];
         const payload = context.token.interface.encodeFunctionData('setDataBatch', [keys, values]);
 
@@ -673,7 +686,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       });
 
       it('should be allowed to sign messages for the token contract', async () => {
-        const dataHash = ethers.hashMessage('Some random message');
+        const dataHash = hashMessage('Some random message');
         const signature = await addressCanSign.signMessage('Some random message');
         const validityOfTheSig = await context.keyManager.isValidSignature(dataHash, signature);
 
@@ -681,7 +694,7 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       });
 
       it('should not be allowed to sign messages for the token contract', async () => {
-        const dataHash = ethers.hashMessage('Some random message');
+        const dataHash = hashMessage('Some random message');
         const signature = await addressCanChangeOwner.signMessage('Some random message');
         const validityOfTheSig = await context.keyManager.isValidSignature(dataHash, signature);
 

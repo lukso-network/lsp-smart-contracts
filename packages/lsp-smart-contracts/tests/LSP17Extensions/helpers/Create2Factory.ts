@@ -1,7 +1,15 @@
 // from: https://github.com/Arachnid/deterministic-deployment-proxy
-import { BigNumberish, Signer, ethers, toBeHex } from 'ethers';
-import { ethers as hardhatEthers } from 'hardhat';
-import { getBytes, concat, zeroPadValue, keccak256 } from 'ethers';
+import { HardhatEthersProvider, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import {
+  BigNumberish,
+  Signer,
+  ethers,
+  toBeHex,
+  getBytes,
+  concat,
+  zeroPadValue,
+  keccak256,
+} from 'ethers';
 
 import { TransactionRequest } from '@ethersproject/abstract-provider';
 
@@ -19,10 +27,7 @@ export class Create2Factory {
     Create2Factory.deploymentGasPrice * Create2Factory.deploymentGasLimit
   ).toString();
 
-  constructor(
-    readonly provider: typeof hardhatEthers.provider = hardhatEthers.provider,
-    readonly signer = hardhatEthers.provider.getSigner().then(),
-  ) {}
+  constructor(readonly provider: HardhatEthersProvider, readonly signer: HardhatEthersSigner) {}
 
   /**
    * deploy a contract using our deterministic deployer.
@@ -39,7 +44,7 @@ export class Create2Factory {
   ): Promise<string> {
     await this.deployFactory();
     if (typeof initCode !== 'string') {
-      initCode = (initCode as TransactionRequest).data.toString();
+      initCode = initCode.data!.toString();
     }
 
     const addr = Create2Factory.getDeployedAddress(initCode, salt);
@@ -52,7 +57,7 @@ export class Create2Factory {
       data: this.getDeployTransactionCallData(initCode, salt),
     };
     if (gasLimit === 'estimate') {
-      gasLimit = await (await this.signer).estimateGas(deployTx);
+      gasLimit = await this.signer.estimateGas(deployTx);
     }
 
     if (gasLimit === undefined) {
@@ -70,7 +75,7 @@ export class Create2Factory {
       gasLimit = ethers.toBigInt(Math.floor((ethers.toNumber(gasLimit) * 64) / 63));
     }
 
-    const ret = await (await this.signer).sendTransaction({ ...deployTx, gasLimit });
+    const ret = await this.signer.sendTransaction({ ...deployTx, gasLimit });
     await ret.wait();
     if ((await this.provider.getCode(addr).then((code) => code.length)) === 2) {
       throw new Error('failed to deploy');
@@ -105,7 +110,7 @@ export class Create2Factory {
       return;
     }
 
-    const currentSigner = (await signer) ?? (await this.signer);
+    const currentSigner = signer ?? this.signer;
     const tx = await currentSigner.sendTransaction({
       to: Create2Factory.factoryDeployer,
       value: BigInt(Create2Factory.factoryDeploymentFee),

@@ -1,16 +1,17 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { hexlify, keccak256, parseEther, toUtf8Bytes } from 'ethers';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
+import { type LSP6TestContext } from '../../utils/context.js';
 
 // helpers
 import {
   // Types
-  ReentrancyContext,
+  type ReentrancyContext,
+  type RelayCallParams,
   // Test cases
   transferValueTestCases,
   setDataTestCases,
@@ -22,9 +23,7 @@ import {
   generateRelayCall,
   generateExecutePayload,
   loadTestCase,
-  RelayCallParams,
-} from './reentrancyHelpers';
-import { provider } from '../../utils/helpers';
+} from './reentrancyHelpers.js';
 
 export const testSingleExecuteRelayCallToSingleExecute = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
@@ -34,7 +33,7 @@ export const testSingleExecuteRelayCallToSingleExecute = (
   let reentrancyContext: ReentrancyContext;
 
   before(async () => {
-    context = await buildContext(ethers.parseEther('10'));
+    context = await buildContext(parseEther('10'));
     reentrancyContext = await buildReentrancyContext(context);
   });
 
@@ -116,9 +115,9 @@ export const testSingleExecuteRelayCallToSingleExecute = (
         await reentrancyContext.reentrantContract.getAddress(),
       );
 
-      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
-        ethers.parseEther('10'),
-      );
+      expect(
+        await context.ethers.provider.getBalance(await context.universalProfile.getAddress()),
+      ).to.equal(parseEther('10'));
 
       await context.keyManager
         .connect(reentrancyContext.caller)
@@ -129,13 +128,15 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           relayCallParams.payload,
         );
 
-      expect(await provider.getBalance(await context.universalProfile.getAddress())).to.equal(
-        ethers.parseEther('9'),
-      );
+      expect(
+        await context.ethers.provider.getBalance(await context.universalProfile.getAddress()),
+      ).to.equal(parseEther('9'));
 
       expect(
-        await provider.getBalance(await reentrancyContext.reentrantContract.getAddress()),
-      ).to.equal(ethers.parseEther('1'));
+        await context.ethers.provider.getBalance(
+          await reentrancyContext.reentrantContract.getAddress(),
+        ),
+      ).to.equal(parseEther('1'));
     });
   });
 
@@ -226,8 +227,8 @@ export const testSingleExecuteRelayCallToSingleExecute = (
           relayCallParams.payload,
         );
 
-      const hardcodedKey = ethers.keccak256(ethers.toUtf8Bytes('SomeRandomTextUsed'));
-      const hardcodedValue = ethers.hexlify(ethers.toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedKey = keccak256(toUtf8Bytes('SomeRandomTextUsed'));
+      const hardcodedValue = hexlify(toUtf8Bytes('SomeRandomTextUsed'));
 
       expect(await context.universalProfile.getData(hardcodedKey)).to.equal(hardcodedValue);
     });

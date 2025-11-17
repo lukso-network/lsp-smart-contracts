@@ -1,22 +1,24 @@
-import hre from 'hardhat';
-const { ethers } = hre;
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
+import { LSP1UniversalReceiverDelegateUP__factory } from '../../../lsp1delegate-contracts/types/ethers-contracts/index.js';
 import {
-  LSP1UniversalReceiverDelegateUP__factory,
+  type LSP6KeyManager,
   LSP6KeyManager__factory,
+} from '../../../lsp6-contracts/types/ethers-contracts/index.js';
+import {
+  type UniversalProfile,
   UniversalProfile__factory,
-  ERC725XCore__factory,
-} from '../../typechain';
+} from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
 
-import { ERC725YDataKeys } from '../../constants';
+import { ERC725YDataKeys } from '../../constants.js';
 import { PERMISSIONS, ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // helpers
-import { combinePermissions } from './helpers';
-import { LSP6TestContext, LSP6InternalsTestContext } from './context';
+import { combinePermissions } from './helpers.js';
+import type { LSP6TestContext, LSP6InternalsTestContext } from './context.js';
+import { concat, getAddress, parseEther, toBeHex, toBigInt, toNumber, zeroPadValue } from 'ethers';
 
-const ERC725XInterface = ERC725XCore__factory.createInterface();
+const ERC725XInterface = UniversalProfile__factory.createInterface();
 
 /**
  * Deploy a proxy contract, referencing to baseContractAddress via delegateCall
@@ -25,10 +27,7 @@ const ERC725XInterface = ERC725XCore__factory.createInterface();
  * @param deployer
  * @returns
  */
-export async function deployProxy(
-  baseContractAddress: string,
-  deployer: SignerWithAddress,
-): Promise<string> {
+export async function deployProxy(baseContractAddress: string, deployer: HardhatEthersSigner) {
   /**
    * @see https://blog.openzeppelin.com/deep-dive-into-the-minimal-proxy-contract/
    * The first 10 x hex opcodes copy the runtime code into memory and return it.
@@ -45,6 +44,15 @@ export async function deployProxy(
     data: proxyBytecode,
   });
   const receipt = await tx.wait();
+
+  if (
+    !receipt ||
+    receipt.status !== 1 ||
+    receipt.contractAddress === null ||
+    receipt.contractAddress === undefined
+  ) {
+    throw new Error('Failed to deploy proxy contract');
+  }
 
   return receipt.contractAddress;
 }
@@ -105,9 +113,9 @@ export async function setupKeyManagerHelper(
 /**
  * Deploy 1 Profile + 1 KeyManager + 1 URD and set all needed permissions
  */
-export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) {
+export async function setupProfileWithKeyManagerWithURD(EOA: HardhatEthersSigner) {
   const universalProfile = await new UniversalProfile__factory(EOA).deploy(EOA.address, {
-    value: ethers.parseEther('10'),
+    value: parseEther('10'),
   });
 
   const lsp6KeyManager = await new LSP6KeyManager__factory(EOA).deploy(
@@ -133,7 +141,7 @@ export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) 
         ERC725YDataKeys.LSP1.LSP1UniversalReceiverDelegate,
       ],
       [
-        ethers.zeroPadValue(ethers.toBeHex(2), 16),
+        zeroPadValue(toBeHex(2), 16),
         EOA.address,
         await lsp1universalReceiverDelegateUP.getAddress(),
         ALL_PERMISSIONS,
@@ -156,22 +164,19 @@ export async function setupProfileWithKeyManagerWithURD(EOA: SignerWithAddress) 
  * on a `universalProfile` via `lsp6KeyManager`
  */
 export async function grantLSP11PermissionViaKeyManager(
-  EOA: SignerWithAddress,
-  universalProfile,
-  lsp6KeyManager,
-  addressToGrant,
+  EOA: HardhatEthersSigner,
+  universalProfile: UniversalProfile,
+  lsp6KeyManager: LSP6KeyManager,
+  addressToGrant: string,
 ) {
   const rawPermissionArrayLength = await universalProfile.getData(
     ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
   );
 
-  const permissionArrayLength = ethers.toNumber(ethers.toBigInt(rawPermissionArrayLength));
+  const permissionArrayLength = toNumber(toBigInt(rawPermissionArrayLength));
 
   const newPermissionArrayLength = permissionArrayLength + 1;
-  const newRawPermissionArrayLength = ethers.zeroPadValue(
-    ethers.toBeHex(newPermissionArrayLength),
-    16,
-  );
+  const newRawPermissionArrayLength = zeroPadValue(toBeHex(newPermissionArrayLength), 16);
 
   // if the main controller lost access to its UP and don't have any new permission
   // the social recovery contract only needs the permission ADDCONTROLLER
@@ -203,16 +208,16 @@ export function callPayload(to: string, abi: string) {
  */
 export async function getLSP5MapAndArrayKeysValue(account, token) {
   const mapValue = await account.getData(
-    ethers.concat([ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap, await token.getAddress()]),
+    concat([ERC725YDataKeys.LSP5.LSP5ReceivedAssetsMap, await token.getAddress()]),
   );
 
   const indexInHex = '0x' + mapValue.substring(10, mapValue.length);
   const interfaceId = mapValue.substring(0, 10);
 
-  const indexInNumber = ethers.toNumber(ethers.toBigInt(indexInHex === '0x' ? 0 : indexInHex));
-  const rawIndexInArray = ethers.zeroPadValue(ethers.toBeHex(indexInNumber), 16);
+  const indexInNumber = toNumber(toBigInt(indexInHex === '0x' ? 0 : indexInHex));
+  const rawIndexInArray = zeroPadValue(toBeHex(indexInNumber), 16);
 
-  const elementInArrayKey = ethers.concat([
+  const elementInArrayKey = concat([
     ERC725YDataKeys.LSP5['LSP5ReceivedAssets[]'].index,
     rawIndexInArray,
   ]);
@@ -223,7 +228,7 @@ export async function getLSP5MapAndArrayKeysValue(account, token) {
   let elementAddress = _elementAddress;
 
   if (elementAddress != '0x') {
-    elementAddress = ethers.getAddress(elementAddress);
+    elementAddress = getAddress(elementAddress);
   }
   return [indexInNumber, interfaceId, arrayLength, elementAddress];
 }

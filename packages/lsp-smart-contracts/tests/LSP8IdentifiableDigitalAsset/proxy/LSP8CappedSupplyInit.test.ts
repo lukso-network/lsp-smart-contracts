@@ -1,31 +1,34 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { toBigInt } from 'ethers';
+
 import {
-  LSP8CappedSupplyInitTester,
+  type LSP8CappedSupplyInitTester,
   LSP8CappedSupplyInitTester__factory,
-} from '../../../typechain';
+} from '../../../types/ethers-contracts/index.js';
 
-import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour.js';
 import {
-  shouldBehaveLikeLSP8CappedSupply,
-  LSP8CappedSupplyTestContext,
   getNamedAccounts,
-} from '../LSP8CappedSupply.behaviour';
+  shouldBehaveLikeLSP8CappedSupply,
+  type LSP8CappedSupplyTestContext,
+} from '../LSP8CappedSupply.behaviour.js';
 
-import { deployProxy } from '../../utils/fixtures';
+import { deployProxy } from '../../utils/fixtures.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 describe('LSP8CappedSupplyInit with proxy', () => {
   const buildTestContext = async () => {
-    const accounts = await getNamedAccounts();
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
     const deployParams = {
       name: 'LSP8 capped supply - deployed with proxy',
       symbol: 'CAP',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
-      tokenSupplyCap: ethers.toBigInt('2'),
+      tokenSupplyCap: toBigInt('2'),
     };
     const lsp8CappedSupplyInit = await new LSP8CappedSupplyInitTester__factory(
       accounts.owner,
@@ -38,7 +41,7 @@ describe('LSP8CappedSupplyInit with proxy', () => {
       lsp8CappedSupplyProxy,
     ) as LSP8CappedSupplyInitTester;
 
-    return { accounts, lsp8CappedSupply, deployParams };
+    return { ethers, accounts, lsp8CappedSupply, deployParams };
   };
 
   const initializeProxy = async (context: LSP8CappedSupplyTestContext) => {

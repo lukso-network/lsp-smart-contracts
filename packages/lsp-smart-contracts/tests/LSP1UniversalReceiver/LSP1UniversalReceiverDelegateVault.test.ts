@@ -1,22 +1,22 @@
-import { ERC725YDataKeys } from '../../constants';
+import { ERC725YDataKeys } from '../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
-import {
-  LSP1UniversalReceiverDelegateVault__factory,
-  UniversalProfile__factory,
-  LSP9Vault__factory,
-} from '../../typechain';
+import { LSP1UniversalReceiverDelegateVault__factory } from '../../../lsp1delegate-contracts/types/ethers-contracts/index.js';
+import { UniversalProfile__factory } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import { LSP9Vault__factory } from '../../../lsp9-contracts/types/ethers-contracts/index.js';
 
 import {
-  LSP1TestContext,
+  type LSP1TestContext,
   getNamedAccounts,
   shouldBehaveLikeLSP1Delegate,
-} from './LSP1UniversalReceiverDelegateVault.behaviour';
+} from './LSP1UniversalReceiverDelegateVault.behaviour.js';
+import { network } from 'hardhat';
 
 describe('LSP1UniversalReceiverDelegateVault', () => {
   describe('when testing deployed contract', () => {
     const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
-      const accounts = await getNamedAccounts();
+      const { ethers, networkHelpers } = await network.connect();
+      const accounts = await getNamedAccounts(ethers);
 
       // deploying 1 UP, 2 Vaults
 
@@ -51,6 +51,8 @@ describe('LSP1UniversalReceiverDelegateVault', () => {
         .execute(OPERATION_TYPES.CALL, await lsp9Vault2.getAddress(), 0, abi);
 
       return {
+        ethers,
+        networkHelpers,
         accounts,
         universalProfile,
         lsp9Vault1,

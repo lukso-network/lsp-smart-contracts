@@ -1,21 +1,23 @@
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP8CappedSupplyTester } from '../../typechain';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { keccak256, toBeHex, toNumber, toUtf8Bytes, ZeroAddress, type BytesLike } from 'ethers';
 
-import type { BytesLike } from 'ethers';
+import { LSP8CappedSupplyTester } from '../../types/ethers-contracts/index.js';
 
 export type LSP8CappedSupplyTestAccounts = {
-  owner: SignerWithAddress;
-  tokenReceiver: SignerWithAddress;
+  owner: HardhatEthersSigner;
+  tokenReceiver: HardhatEthersSigner;
 };
 
-export const getNamedAccounts = async (): Promise<LSP8CappedSupplyTestAccounts> => {
+export const getNamedAccounts = async (
+  ethers: HardhatEthers,
+): Promise<LSP8CappedSupplyTestAccounts> => {
   const [owner, tokenReceiver] = await ethers.getSigners();
   return { owner, tokenReceiver };
 };
 
 export type LSP8CappedSupplyTestContext = {
+  ethers: HardhatEthers;
   accounts: LSP8CappedSupplyTestAccounts;
   lsp8CappedSupply: LSP8CappedSupplyTester;
   deployParams: {
@@ -37,9 +39,9 @@ export const shouldBehaveLikeLSP8CappedSupply = (
   beforeEach(async () => {
     context = await buildContext();
 
-    mintedTokenIds = Array(ethers.toNumber(context.deployParams.tokenSupplyCap))
+    mintedTokenIds = Array(toNumber(context.deployParams.tokenSupplyCap))
       .fill(null)
-      .map((_, i) => ethers.keccak256(ethers.toBeHex(BigInt(i))));
+      .map((_, i) => keccak256(toBeHex(BigInt(i))));
   });
 
   describe('tokenSupplyCap', () => {
@@ -67,11 +69,11 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
       const postTokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
       const postTotalSupply = await context.lsp8CappedSupply.totalSupply();
-      expect(postTotalSupply - postTokenSupplyCap).to.equal(ethers.ZeroAddress);
+      expect(postTotalSupply - postTokenSupplyCap).to.equal(ZeroAddress);
     });
 
     describe('when cap has been reached', () => {
-      const anotherTokenId = ethers.keccak256(ethers.toUtf8Bytes('VIP token'));
+      const anotherTokenId = keccak256(toUtf8Bytes('VIP token'));
 
       it('should error when minting more than tokenSupplyCapTokens', async () => {
         await Promise.all(
@@ -82,7 +84,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
         const tokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
         const preTotalSupply = await context.lsp8CappedSupply.totalSupply();
-        expect(preTotalSupply - tokenSupplyCap).to.equal(ethers.ZeroAddress);
+        expect(preTotalSupply - tokenSupplyCap).to.equal(ZeroAddress);
 
         await expect(
           context.lsp8CappedSupply.mint(context.accounts.tokenReceiver.address, anotherTokenId),
@@ -101,7 +103,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
 
         const tokenSupplyCap = await context.lsp8CappedSupply.tokenSupplyCap();
         const preBurnTotalSupply = await context.lsp8CappedSupply.totalSupply();
-        expect(preBurnTotalSupply - tokenSupplyCap).to.equal(ethers.ZeroAddress);
+        expect(preBurnTotalSupply - tokenSupplyCap).to.equal(ZeroAddress);
 
         await context.lsp8CappedSupply.burn(mintedTokenIds[0]);
 
@@ -111,7 +113,7 @@ export const shouldBehaveLikeLSP8CappedSupply = (
         await context.lsp8CappedSupply.mint(context.accounts.tokenReceiver.address, anotherTokenId);
 
         const postMintTotalSupply = await context.lsp8CappedSupply.totalSupply();
-        expect(postMintTotalSupply - preBurnTotalSupply).to.equal(ethers.ZeroAddress);
+        expect(postMintTotalSupply - preBurnTotalSupply).to.equal(ZeroAddress);
       });
     });
   });

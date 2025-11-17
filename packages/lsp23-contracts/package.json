@@ -38,24 +38,28 @@
   },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
-    "build:js": "unbuild",
     "build:types": "wagmi generate",
+    "build:package": "hardhat prepare-package",
     "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
-    "build:package": "hardhat prepare-package",
     "verify-balance": "npx hardhat verify-balance",
     "deploy": "npx hardhat deploy",
-    "verify-all": "npx hardhat verify-all"
+    "verify-all": "npx hardhat verify-all",
+    "test": "hardhat test --no-compile tests/*.test.ts"
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/universalprofile-contracts": "~0.15.5"
+    "@lukso/universalprofile-contracts": "~0.15.5",
+    "@lukso/lsp1-contracts": "~0.15.5",
+    "@lukso/lsp3-contracts": "~0.16.6",
+    "@lukso/lsp6-contracts": "~0.15.5"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
-    "hardhat": "^3.0.7"
+    "hardhat": "^3.0.7",
+    "eslint-config-custom": "*"
   }
 }

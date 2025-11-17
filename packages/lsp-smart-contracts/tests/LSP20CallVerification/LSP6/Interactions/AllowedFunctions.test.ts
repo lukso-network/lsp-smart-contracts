@@ -1,35 +1,39 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { hexlify, keccak256, randomBytes, toUtf8Bytes } from 'ethers';
 
 import {
-  TargetContract,
+  type TargetContract,
   TargetContract__factory,
-  LSP7Mintable,
+} from '../../../../types/ethers-contracts/index.js';
+import {
+  type LSP7Mintable,
   LSP7Mintable__factory,
-  LSP8Mintable,
+} from '../../../../../lsp7-contracts/types/ethers-contracts/index.js';
+import {
+  type LSP8Mintable,
   LSP8Mintable__factory,
-} from '../../../../typechain';
+} from '../../../../../lsp8-contracts/types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS } from '../../../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
+import type { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 // helpers
-import { combineAllowedCalls } from '../../../utils/helpers';
+import { combineAllowedCalls } from '../../../utils/helpers.js';
 
 export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
-  let addressWithNoAllowedFunctions: SignerWithAddress,
-    addressCanCallOnlyOneFunction: SignerWithAddress;
+  let addressWithNoAllowedFunctions: HardhatEthersSigner,
+    addressCanCallOnlyOneFunction: HardhatEthersSigner;
 
   let targetContract: TargetContract;
 
@@ -186,8 +190,8 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
   });
 
   describe('allowed to call only `transfer(...)` function on LSP8 contracts', () => {
-    let addressCanCallOnlyTransferOnLSP8: SignerWithAddress;
-    let addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8: SignerWithAddress;
+    let addressCanCallOnlyTransferOnLSP8: HardhatEthersSigner;
+    let addressCanCallAnyLSP7FunctionAndOnlyAuthorizeOperatorOnLSP8: HardhatEthersSigner;
 
     let lsp7Contract: LSP7Mintable;
     let lsp8Contract: LSP8Mintable;
@@ -391,9 +395,9 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         });
 
         it('should pass when calling `setData(...)`', async () => {
-          const key = ethers.keccak256(ethers.toUtf8Bytes('Token Icon'));
+          const key = keccak256(toUtf8Bytes('Token Icon'));
 
-          const value = ethers.hexlify(ethers.toUtf8Bytes(':)'));
+          const value = hexlify(toUtf8Bytes(':)'));
 
           const setDataPayload = lsp7Contract.interface.encodeFunctionData('setData', [key, value]);
 
@@ -446,7 +450,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         });
 
         it('should revert when calling `mint(...)`', async () => {
-          const randomTokenId = ethers.hexlify(ethers.randomBytes(32));
+          const randomTokenId = hexlify(randomBytes(32));
 
           const recipient = context.accounts[4].address;
           const mintPayload = lsp8Contract.interface.encodeFunctionData('mint', [

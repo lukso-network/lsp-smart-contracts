@@ -1,30 +1,35 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS } from '../../../constants.js';
 import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // helpers
-import { combineAllowedCalls } from '../../utils/helpers';
+import { combineAllowedCalls } from '../../utils/helpers.js';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 export const shouldBehaveLikeSettingAllowedCalls = (
   buildContext: () => Promise<LSP6TestContext>,
 ) => {
+  let ethers: HardhatEthers;
   let context: LSP6TestContext;
 
-  describe('deleting AllowedCalls', () => {
-    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
+  before(async () => {
+    ({ ethers } = await network.connect());
+  });
 
-    let beneficiaryWithPermissions: SignerWithAddress,
-      beneficiaryNoPermissions: SignerWithAddress,
-      invalidBytes: SignerWithAddress,
-      noBytes: SignerWithAddress;
+  describe('deleting AllowedCalls', () => {
+    let canOnlyAddController: HardhatEthersSigner, canOnlyEditPermissions: HardhatEthersSigner;
+
+    let beneficiaryWithPermissions: HardhatEthersSigner,
+      beneficiaryNoPermissions: HardhatEthersSigner,
+      invalidBytes: HardhatEthersSigner,
+      noBytes: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -165,12 +170,12 @@ export const shouldBehaveLikeSettingAllowedCalls = (
   });
 
   describe('setting Allowed Calls -> Addresses', () => {
-    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: HardhatEthersSigner, canOnlyEditPermissions: HardhatEthersSigner;
 
-    let beneficiary: SignerWithAddress,
-      invalidBeneficiary: SignerWithAddress,
-      zero32Bytes: SignerWithAddress,
-      zero40Bytes: SignerWithAddress;
+    let beneficiary: HardhatEthersSigner,
+      invalidBeneficiary: HardhatEthersSigner,
+      zero32Bytes: HardhatEthersSigner,
+      zero40Bytes: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -587,12 +592,12 @@ export const shouldBehaveLikeSettingAllowedCalls = (
   });
 
   describe('setting Allowed Calls -> Functions', () => {
-    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: HardhatEthersSigner, canOnlyEditPermissions: HardhatEthersSigner;
 
-    let beneficiary: SignerWithAddress,
-      invalidBeneficiary: SignerWithAddress,
-      zero32Bytes: SignerWithAddress,
-      zero40Bytes: SignerWithAddress;
+    let beneficiary: HardhatEthersSigner,
+      invalidBeneficiary: HardhatEthersSigner,
+      zero32Bytes: HardhatEthersSigner,
+      zero40Bytes: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -1003,12 +1008,12 @@ export const shouldBehaveLikeSettingAllowedCalls = (
   });
 
   describe('setting Allowed Calls -> Standards', () => {
-    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
+    let canOnlyAddController: HardhatEthersSigner, canOnlyEditPermissions: HardhatEthersSigner;
 
-    let beneficiary: SignerWithAddress,
-      invalidBeneficiary: SignerWithAddress,
-      zero32Bytes: SignerWithAddress,
-      zero40Bytes: SignerWithAddress;
+    let beneficiary: HardhatEthersSigner,
+      invalidBeneficiary: HardhatEthersSigner,
+      zero32Bytes: HardhatEthersSigner,
+      zero40Bytes: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();

@@ -1,25 +1,29 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { solidityPacked, toBigInt } from 'ethers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
-import { TargetContract, TargetContract__factory } from '../../../typechain';
+import { TargetContract, TargetContract__factory } from '../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
-import { LOCAL_PRIVATE_KEYS, combineAllowedCalls, combinePermissions } from '../../utils/helpers';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
+import {
+  LOCAL_PRIVATE_KEYS,
+  combineAllowedCalls,
+  combinePermissions,
+} from '../../utils/helpers.js';
 
 export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
-  let signer: SignerWithAddress, relayer: SignerWithAddress;
+  let signer: HardhatEthersSigner, relayer: HardhatEthersSigner;
   let targetContract: TargetContract;
 
   before(async () => {
@@ -53,9 +57,18 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
 
   describe('when calling `getNonce(...)` with a channel ID greater than 2 ** 128', () => {
     it('should revert', async () => {
-      const channelId = ethers.toBigInt('0xffffffffffffffffffffffffffffffffff');
+      // We wrap in a try catch as the error is thrown by the dApp / ethers library
+      try {
+        const channelId = toBigInt('0xffffffffffffffffffffffffffffffffff');
 
-      await expect(context.keyManager.getNonce(signer.address, channelId)).to.be.revertedWithPanic;
+        expect(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (context.keyManager as any)['getNonce(address,uint128)'](signer.address, channelId),
+        ).to.be.revertedWithPanic();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        expect(error?.shortMessage).to.include('value out-of-bounds');
+      }
     });
   });
 
@@ -94,7 +107,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.solidityPacked(
+        const encodedMessage = solidityPacked(
           ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
           [
             LSP25_VERSION,
@@ -109,7 +122,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const eip191Signer = new EIP191Signer();
 
         const { signature } = await eip191Signer.signDataWithIntendedValidator(
-          await context.keyManager.getAddress(),
+          await context.keyManager.getAddress() as `0x${string}`,
           encodedMessage,
           LOCAL_PRIVATE_KEYS.ACCOUNT1
         );
@@ -129,7 +142,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         );
 
         expect(fetchedName).to.equal(newName);
-        expect(nonceAfter).to.equal(latestNonce+ BigInt(1)); // ensure the nonce incremented
+        expect(nonceAfter).to.equal(latestNonce + BigInt(1)); // ensure the nonce incremented
       });
     });
   });
@@ -159,7 +172,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.solidityPacked(
+        const encodedMessage = solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -210,7 +223,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.solidityPacked(
+        const encodedMessage = solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -266,7 +279,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.solidityPacked(
+        const encodedMessage = solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -317,7 +330,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.solidityPacked(
+        const encodedMessage = solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -373,7 +386,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.solidityPacked(
+        const encodedMessage = solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -424,7 +437,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.solidityPacked(
+        const encodedMessage = solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,
@@ -479,7 +492,7 @@ export const shouldBehaveLikeMultiChannelNonce = (buildContext: () => Promise<LS
         const HARDHAT_CHAINID = 31337;
         const valueToSend = 0;
 
-        const encodedMessage = ethers.solidityPacked(
+        const encodedMessage = solidityPacked(
           ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
           [
             LSP25_VERSION,

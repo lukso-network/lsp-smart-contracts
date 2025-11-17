@@ -1,29 +1,34 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { network } from 'hardhat';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // helpers
-import { encodeCompactBytesArray } from '../../utils/helpers';
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import { encodeCompactBytesArray } from '../../utils/helpers.js';
+import { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 export const shouldBehaveLikeSetAllowedERC725YDataKeys = (
   buildContext: () => Promise<LSP6TestContext>,
 ) => {
+  let ethers: HardhatEthers;
   let context: LSP6TestContext;
 
-  describe('setting Allowed ERC725YDataKeys', () => {
-    let canOnlyAddController: SignerWithAddress, canOnlyEditPermissions: SignerWithAddress;
+  before(async () => {
+    ({ ethers } = await network.connect());
+  });
 
-    let beneficiaryWithPermissions: SignerWithAddress,
-      beneficiaryNoPermissions: SignerWithAddress,
-      invalidBeneficiary: SignerWithAddress,
-      zero32Bytes: SignerWithAddress,
-      zero40Bytes: SignerWithAddress;
+  describe('setting Allowed ERC725YDataKeys', () => {
+    let canOnlyAddController: HardhatEthersSigner, canOnlyEditPermissions: HardhatEthersSigner;
+
+    let beneficiaryWithPermissions: HardhatEthersSigner,
+      beneficiaryNoPermissions: HardhatEthersSigner,
+      invalidBeneficiary: HardhatEthersSigner,
+      zero32Bytes: HardhatEthersSigner,
+      zero40Bytes: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();

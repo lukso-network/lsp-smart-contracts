@@ -1,16 +1,19 @@
-import { ethers } from 'hardhat';
-import { LSP1UniversalReceiverDelegateUP, UniversalProfile, LSP6KeyManager } from '../../typechain';
+import type { HardhatEthers } from '@nomicfoundation/hardhat-ethers/types';
+import type { LSP1UniversalReceiverDelegateUP } from '../../../lsp1delegate-contracts/types/ethers-contracts/index.js';
+import type { UniversalProfile } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import type { LSP6KeyManager } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
 
-import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
+import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures.js';
 
 import {
-  LSP1DelegateTestContext,
+  type LSP1TestAccounts,
+  type LSP1DelegateTestContext,
   shouldBehaveLikeLSP1Delegate,
   shouldInitializeLikeLSP1Delegate,
-  LSP1TestAccounts,
-} from './LSP1UniversalReceiverDelegateUP.behaviour';
+} from './LSP1UniversalReceiverDelegateUP.behaviour.js';
+import { network } from 'hardhat';
 
-async function getNamedAccounts(): Promise<LSP1TestAccounts> {
+async function getNamedAccounts(ethers: HardhatEthers): Promise<LSP1TestAccounts> {
   const [owner1, owner2, random, any] = await ethers.getSigners();
   return {
     owner1,
@@ -23,7 +26,8 @@ async function getNamedAccounts(): Promise<LSP1TestAccounts> {
 describe('LSP1UniversalReceiverDelegateUP', () => {
   describe('when testing deployed contract', () => {
     const buildLSP1DelegateTestContext = async (): Promise<LSP1DelegateTestContext> => {
-      const accounts = await getNamedAccounts();
+      const { ethers, networkHelpers } = await network.connect();
+      const accounts = await getNamedAccounts(ethers);
 
       const [UP1, KM1, LSP1_URD_UP] = await setupProfileWithKeyManagerWithURD(accounts.owner1);
 
@@ -37,6 +41,8 @@ describe('LSP1UniversalReceiverDelegateUP', () => {
 
       return {
         accounts,
+        ethers,
+        networkHelpers,
         universalProfile1,
         lsp6KeyManager1,
         universalProfile2,

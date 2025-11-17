@@ -8,22 +8,22 @@ import {
   ZeroAddress,
   ZeroHash,
 } from 'ethers';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { buildReentrancyContext } from './reentrancyHelpers';
+import { type LSP6TestContext } from '../../utils/context.js';
+import { buildReentrancyContext } from './reentrancyHelpers.js';
 
 // tests
-import { testSingleExecuteToSingleExecute } from './SingleExecuteToSingleExecute.test';
-import { testSingleExecuteRelayCallToSingleExecute } from './SingleExecuteRelayCallToSingleExecute.test';
-import { testSingleExecuteToSingleExecuteRelayCall } from './SingleExecuteToSingleExecuteRelayCall.test';
-import { testSingleExecuteRelayCallToSingleExecuteRelayCall } from './SingleExecuteRelayCallToSingleExecuteRelayCall.test';
-import { testSingleExecuteToBatchExecute } from './SingleExecuteToBatchExecute.test';
-import { testSingleExecuteToBatchExecuteRelayCall } from './SingleExecuteToBatchExecuteRelayCall.test';
+import { testSingleExecuteToSingleExecute } from './SingleExecuteToSingleExecute.test.js';
+import { testSingleExecuteRelayCallToSingleExecute } from './SingleExecuteRelayCallToSingleExecute.test.js';
+import { testSingleExecuteToSingleExecuteRelayCall } from './SingleExecuteToSingleExecuteRelayCall.test.js';
+import { testSingleExecuteRelayCallToSingleExecuteRelayCall } from './SingleExecuteRelayCallToSingleExecuteRelayCall.test.js';
+import { testSingleExecuteToBatchExecute } from './SingleExecuteToBatchExecute.test.js';
+import { testSingleExecuteToBatchExecuteRelayCall } from './SingleExecuteToBatchExecuteRelayCall.test.js';
 
-import { ERC725YDataKeys, LSP1_TYPE_IDS } from '../../../constants';
+import { ERC725YDataKeys, LSP1_TYPE_IDS } from '../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS, CALLTYPE, PERMISSIONS } from '@lukso/lsp6-contracts';
 import { LSP25_VERSION } from '@lukso/lsp25-contracts';
@@ -34,8 +34,7 @@ import {
   combinePermissions,
   encodeCompactBytesArray,
   LOCAL_PRIVATE_KEYS,
-  provider,
-} from '../../utils/helpers';
+} from '../../utils/helpers.js';
 
 import {
   Reentrancy,
@@ -45,9 +44,9 @@ import {
   SecondToCallLSP6,
   FirstToCallLSP6,
   UniversalReceiverDelegateDataUpdater__factory,
-} from '../../../typechain';
+} from '../../../types/ethers-contracts/index.js';
 
-import { setupKeyManager } from '../../utils/fixtures';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 export const shouldBehaveLikeLSP6ReentrancyScenarios = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
@@ -55,7 +54,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
   describe('Basic Reentrancy Scenarios', () => {
     let context: LSP6TestContext;
 
-    let signer: SignerWithAddress, relayer: SignerWithAddress, attacker: SignerWithAddress;
+    let signer: HardhatEthersSigner, relayer: HardhatEthersSigner, attacker: HardhatEthersSigner;
 
     let maliciousContract: Reentrancy;
 
@@ -124,10 +123,10 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
         // every time the contract receives LYX
         await maliciousContract.loadPayload(executePayload);
 
-        const initialAccountBalance = await provider.getBalance(
+        const initialAccountBalance = await context.ethers.provider.getBalance(
           await context.universalProfile.getAddress(),
         );
-        const initialAttackerContractBalance = await provider.getBalance(
+        const initialAttackerContractBalance = await context.ethers.provider.getBalance(
           await maliciousContract.getAddress(),
         );
 
@@ -138,10 +137,10 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
           .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
           .withArgs(await maliciousContract.getAddress(), 'REENTRANCY');
 
-        const newAccountBalance = await provider.getBalance(
+        const newAccountBalance = await context.ethers.provider.getBalance(
           await context.universalProfile.getAddress(),
         );
-        const newAttackerContractBalance = await provider.getBalance(
+        const newAttackerContractBalance = await context.ethers.provider.getBalance(
           await maliciousContract.getAddress(),
         );
 
@@ -180,7 +179,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
           const eip191Signer = new EIP191Signer();
 
           const { signature } = await eip191Signer.signDataWithIntendedValidator(
-            await context.keyManager.getAddress(),
+            (await context.keyManager.getAddress()) as `0x${string}`,
             encodedMessage,
             LOCAL_PRIVATE_KEYS.ACCOUNT1,
           );
@@ -267,19 +266,21 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
         await URDDummy.loadPayload(executePayload);
 
-        const initialAccountBalance = await provider.getBalance(
+        const initialAccountBalance = await context.ethers.provider.getBalance(
           await context.universalProfile.getAddress(),
         );
-        const initialAttackerContractBalance = await provider.getBalance(
+        const initialAttackerContractBalance = await context.ethers.provider.getBalance(
           await maliciousContract.getAddress(),
         );
 
         await context.keyManager.connect(context.mainController).execute(transferPayload);
 
-        const newAccountBalance = await provider.getBalance(
+        const newAccountBalance = await context.ethers.provider.getBalance(
           await context.universalProfile.getAddress(),
         );
-        const newAttackerContractBalance = await provider.getBalance(await URDDummy.getAddress());
+        const newAttackerContractBalance = await context.ethers.provider.getBalance(
+          await URDDummy.getAddress(),
+        );
 
         expect(newAccountBalance).to.equal(initialAccountBalance - parseEther('2'));
         expect(newAttackerContractBalance).to.equal(
@@ -413,7 +414,7 @@ export const shouldBehaveLikeLSP6ReentrancyScenarios = (
 
               await context.keyManager.connect(context.mainController).execute(payload);
 
-              const result = await context.universalProfile['getData(bytes32)'](ZeroHash);
+              const result = await context.universalProfile.getData(ZeroHash);
 
               expect(result).to.equal('0xaabbccdd');
             });

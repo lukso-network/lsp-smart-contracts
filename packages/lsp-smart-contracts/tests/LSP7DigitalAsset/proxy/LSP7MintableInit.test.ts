@@ -1,22 +1,28 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP7MintableInit, LSP7MintableInit__factory } from '../../../typechain';
+import type { HardhatEthers } from '@nomicfoundation/hardhat-ethers/types';
 
-import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
+import {
+  type LSP7MintableInit,
+  LSP7MintableInit__factory,
+} from '../../../../lsp7-contracts/types/ethers-contracts/index.js';
+
+import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour.js';
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP7Mintable,
-  LSP7MintableTestContext,
-  LSP7MintableDeployParams,
-} from '../LSP7Mintable.behaviour';
+  type LSP7MintableTestContext,
+  type LSP7MintableDeployParams,
+} from '../LSP7Mintable.behaviour.js';
 
-import { deployProxy } from '../../utils/fixtures';
-import { ERC725YDataKeys } from '../../../constants';
+import { deployProxy } from '../../utils/fixtures.js';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 
 describe('LSP7MintableInit with proxy', () => {
   const buildTestContext = async () => {
-    const accounts = await getNamedAccounts();
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
 
     const deployParams: LSP7MintableDeployParams = {
       name: 'LSP7 Mintable - deployed with proxy',
@@ -39,7 +45,7 @@ describe('LSP7MintableInit with proxy', () => {
       lsp7MintableProxy,
     ) as LSP7MintableInit;
 
-    return { accounts, lsp7Mintable, deployParams };
+    return { ethers, accounts, lsp7Mintable, deployParams };
   };
 
   const initializeProxy = async (context: LSP7MintableTestContext) => {
@@ -54,6 +60,13 @@ describe('LSP7MintableInit with proxy', () => {
   };
 
   describe('when deploying the base implementation contract', () => {
+    let ethers: HardhatEthers;
+
+    before(async () => {
+      const { network } = await import('hardhat');
+      ({ ethers } = await network.connect());
+    });
+
     it('should have initialized the tokenName + tokenSymbol to "" and contract owner to `address(0)`', async () => {
       const accounts = await ethers.getSigners();
 
@@ -75,14 +88,7 @@ describe('LSP7MintableInit with proxy', () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp7MintableInit['initialize(string,string,address,uint256,bool,bool)'](
-          'XXXXXXXXXXX',
-          'XXX',
-          randomCaller.address,
-          12345,
-          false,
-          true,
-        ),
+        lsp7MintableInit.initialize('XXXXXXXXXXX', 'XXX', randomCaller.address, 12345, false, true),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });
   });
