@@ -9,12 +9,6 @@ import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
 // modules
 import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {
-    ERC165Checker
-} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-import {
     LSP4DigitalAssetMetadataInitAbstract,
     ERC725YInitAbstract
 } from "@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadataInitAbstract.sol";
@@ -23,6 +17,12 @@ import {
 } from "@lukso/lsp17contractextension-contracts/contracts/LSP17ExtendableInitAbstract.sol";
 
 // libraries
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    ERC165Checker
+} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
 import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 
