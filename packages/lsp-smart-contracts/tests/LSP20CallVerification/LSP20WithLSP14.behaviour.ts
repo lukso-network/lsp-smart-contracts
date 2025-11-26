@@ -21,7 +21,7 @@ import {
   toBigInt,
   toUtf8Bytes,
   ZeroAddress,
-  Wallet
+  Wallet,
 } from 'ethers';
 
 export type LSP14CombinedWithLSP20TestContext = {
@@ -387,7 +387,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
       });
 
       it('should initialize again if the confirmation period passed', async () => {
-        const _renounceOwnershipStartedAtAfterSlotNumber = 2
+        const _renounceOwnershipStartedAtAfterSlotNumber = 2;
 
         await context.contract.connect(context.deployParams.owner).renounceOwnership();
 

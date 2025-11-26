@@ -7,7 +7,12 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["artifacts/**", "!artifacts/*.json", "typechain/**"],
+      "outputs": [
+        "artifacts/**",
+        "!artifacts/*.json",
+        "typechain/**",
+        "dist/**"
+      ],
       "cache": true
     },
     "build:foundry": {
@@ -26,7 +31,7 @@
     },
     "build:package": {
       "dependsOn": ["^build:package"],
-      "outputs": ["artifacts/*.json"],
+      "outputs": ["artifacts/**"],
       "cache": true
     },
     "lint": {

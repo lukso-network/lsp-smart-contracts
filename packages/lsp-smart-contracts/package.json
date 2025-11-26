@@ -60,11 +60,11 @@
     "build:js": "unbuild",
     "build:types": "wagmi generate",
     "build:docs": "hardhat dodoc && prettier -w ./docs && bash dodoc/postProcessingContracts.sh && dodoc/postProcessingLibraries.sh",
-    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
+    "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
-    "build:package": "hardhat prepare-package",
+    "build:package": "bash scripts/collect-artifacts.sh",
     "test": "hardhat test --no-compile tests/**/*.test.ts tests/LSP7DigitalAsset/**/*.ts tests/LSP8IdentifiableDigitalAsset/**/*.ts",
     "test:foundry": "FOUNDRY_PROFILE=lsp_smart_contracts forge test -vvvv",
     "test:coverage": "hardhat coverage",
@@ -114,9 +114,10 @@
     "@lukso/universalprofile-contracts": "~0.15.5"
   },
   "devDependencies": {
+    "@lukso/hardhat-packager-v3": "*",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "@types/mocha": "^10.0.10",
-    "hardhat": "^3.0.7",
-    "eslint-config-custom": "*"
+    "eslint-config-custom": "*",
+    "hardhat": "^3.0.7"
   }
 }

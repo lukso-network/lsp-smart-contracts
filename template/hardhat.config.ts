@@ -108,9 +108,10 @@ const config: HardhatUserConfig = {
   packager: {
     // What contracts to keep the artifacts and the bindings for.
     contracts: [],
-    // Whether to include the TypeChain factories or not.
-    // If this is enabled, you need to run the TypeChain files through the TypeScript compiler before shipping to the registry.
-    includeFactories: true,
+    // Whether to include the typechain-like factories or not.
+    // If this is enabled, you need to run the typechain-like files through the TypeScript compiler before shipping to the registry.
+    // includeTypes: true,
+    // includeFactories: true,
   },
   paths: {
     artifacts: 'artifacts',

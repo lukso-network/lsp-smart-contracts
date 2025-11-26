@@ -207,7 +207,7 @@ export const shouldBehaveLikePermissionCall = (
                 .execute(OPERATION_TYPES.CALL, allowedEOA, 0, '0x'),
             )
               .to.emit(context.keyManager, 'PermissionsVerified')
-              .withArgs(addressCanMakeCallWithAllowedCalls.address, 0, "0x44c028fe"); // function selector of `execute(uint256,address,uint256,bytes)`
+              .withArgs(addressCanMakeCallWithAllowedCalls.address, 0, '0x44c028fe'); // function selector of `execute(uint256,address,uint256,bytes)`
           });
         });
       });

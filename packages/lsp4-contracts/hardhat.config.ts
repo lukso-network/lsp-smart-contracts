@@ -1,6 +1,7 @@
 import type { HardhatUserConfig } from 'hardhat/config';
+import type { SolidityUserConfig } from 'hardhat/types/config';
 import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
-import { SolidityUserConfig } from 'hardhat/types';
+import hardhatPackager from '@lukso/hardhat-packager-v3';
 
 const DEFAULT_COMPILER_SETTINGS: SolidityUserConfig = {
   version: '0.8.17',
@@ -46,7 +47,14 @@ const VIA_IR_SETTINGS: SolidityUserConfig = {
 };
 
 const config: HardhatUserConfig = {
-  plugins: [hardhatToolboxMochaEthers],
+  plugins: [hardhatToolboxMochaEthers, hardhatPackager],
+  packager: {
+    contracts: ['LSP4DigitalAssetMetadata', 'LSP4DigitalAssetMetadataInitAbstract'],
+    // Whether to include the typechain-like factories or not.
+    // If this is enabled, you need to run the typechain-like files through the TypeScript compiler before shipping to the registry.
+    // includeTypes: true,
+    // includeFactories: true,
+  },
   solidity: {
     compilers: [DEFAULT_COMPILER_SETTINGS],
     overrides: {

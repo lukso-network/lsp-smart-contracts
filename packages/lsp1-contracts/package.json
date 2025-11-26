@@ -50,7 +50,7 @@
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
     "build:types": "wagmi generate",
-    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
+    "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
@@ -60,12 +60,13 @@
     "verify-all": "npx hardhat verify-all"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp2-contracts": "~0.15.4"
+    "@lukso/lsp2-contracts": "~0.15.4",
+    "@openzeppelin/contracts": "^4.9.3"
   },
   "devDependencies": {
+    "@lukso/hardhat-packager-v3": "*",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
-    "hardhat": "^3.0.7",
-    "eslint-config-custom": "*"
+    "eslint-config-custom": "*",
+    "hardhat": "^3.0.7"
   }
 }
