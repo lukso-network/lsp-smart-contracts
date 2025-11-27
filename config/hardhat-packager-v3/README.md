@@ -6,7 +6,7 @@ A Hardhat v3 compatible plugin for preparing smart contract artifacts and typech
 
 - ✅ **Hardhat v3 Compatible** - Built specifically for Hardhat v3
 - 🎯 **Selective Packaging** - Only include the contracts you want
-- 🏭 **Typechain Support** - Filters typechain-like bindings and factories
+- 🏭 **Strongly typed contracts and factories** - Filters _"typechain-like"_ bindings and factories
 - 🧹 **Clean Output** - Automatically removes empty directories
 - 🚀 **Easy to Use** - Simple configuration and task execution
 
