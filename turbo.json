@@ -19,9 +19,9 @@
       "dependsOn": ["^build:foundry"],
       "cache": true
     },
-    "build:js": {
-      "dependsOn": ["build", "^build", "^build:js"],
-      "outputs": ["dist/**"],
+    "build:package": {
+      "dependsOn": ["^build:package"],
+      "outputs": ["artifacts/**"],
       "cache": true
     },
     "build:types": {
@@ -29,9 +29,9 @@
       "outputs": ["./abi.ts"],
       "cache": true
     },
-    "build:package": {
-      "dependsOn": ["^build:package"],
-      "outputs": ["artifacts/**"],
+    "build:js": {
+      "dependsOn": ["build:types", "^build:types", "^build:js"],
+      "outputs": ["dist/**"],
       "cache": true
     },
     "lint": {

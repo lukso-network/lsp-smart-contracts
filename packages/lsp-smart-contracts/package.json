@@ -114,7 +114,6 @@
     "@lukso/universalprofile-contracts": "~0.15.5"
   },
   "devDependencies": {
-    "@lukso/hardhat-packager-v3": "*",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "@types/mocha": "^10.0.10",
     "eslint-config-custom": "*",

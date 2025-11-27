@@ -56,6 +56,7 @@ jobs:
       - name: 🏗️ Build contract artifacts
         run: |
           npm run build
+          npm run build:package 
           npm run build:types
           npm run build:js
 
