@@ -50,24 +50,25 @@
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
     "build:types": "wagmi generate",
-    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
+    "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "build:package": "hardhat prepare-package"
   },
   "dependencies": {
-    "@erc725/smart-contracts": "^7.0.0",
-    "@openzeppelin/contracts": "^4.9.3",
     "@account-abstraction/contracts": "^0.6.0",
-    "@lukso/lsp6-contracts": "~0.15.5",
+    "@erc725/smart-contracts": "^7.0.0",
     "@lukso/lsp14-contracts": "~0.15.5",
     "@lukso/lsp17contractextension-contracts": "~0.16.7",
-    "@lukso/lsp20-contracts": "~0.15.5"
+    "@lukso/lsp20-contracts": "~0.15.5",
+    "@lukso/lsp6-contracts": "~0.15.5",
+    "@openzeppelin/contracts": "^4.9.3"
   },
   "devDependencies": {
+    "@lukso/hardhat-packager-v3": "*",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
-    "hardhat": "^3.0.7",
-    "eslint-config-custom": "*"
+    "eslint-config-custom": "*",
+    "hardhat": "^3.0.7"
   }
 }

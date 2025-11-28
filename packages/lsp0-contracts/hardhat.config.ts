@@ -1,8 +1,12 @@
 import type { HardhatUserConfig } from 'hardhat/config';
 import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
+import hardhatPackager from '../../config/hardhat-packager-v3/dist/index.js';
 
 const config: HardhatUserConfig = {
-  plugins: [hardhatToolboxMochaEthers],
+  plugins: [hardhatToolboxMochaEthers, hardhatPackager],
+  packager: {
+    contracts: ['LSP0ERC725Account', 'LSP0ERC725AccountInit'],
+  },
   solidity: {
     version: '0.8.17',
     settings: {

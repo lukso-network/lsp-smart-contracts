@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { concat, hexlify, keccak256, randomBytes, toBeHex, toUtf8Bytes } from 'ethers';
 
 import {
-  LSP4MetadataTester,
+  type LSP4MetadataTester,
   LSP4MetadataTester__factory,
 } from '../types/ethers-contracts/index.js';
 

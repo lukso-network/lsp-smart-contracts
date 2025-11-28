@@ -7,16 +7,16 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["artifacts/**", "!artifacts/*.json", "typechain/**"],
+      "outputs": ["artifacts/**", "!artifacts/*.json", "types/**", "dist/**"],
       "cache": true
     },
     "build:foundry": {
       "dependsOn": ["^build:foundry"],
       "cache": true
     },
-    "build:js": {
-      "dependsOn": ["build", "^build", "^build:js"],
-      "outputs": ["dist/**"],
+    "build:package": {
+      "dependsOn": ["^build:package"],
+      "outputs": ["artifacts/**"],
       "cache": true
     },
     "build:types": {
@@ -24,9 +24,9 @@
       "outputs": ["./abi.ts"],
       "cache": true
     },
-    "build:package": {
-      "dependsOn": ["^build:package"],
-      "outputs": ["artifacts/*.json"],
+    "build:js": {
+      "dependsOn": ["build:types", "^build:types", "^build:js"],
+      "outputs": ["dist/**"],
       "cache": true
     },
     "lint": {

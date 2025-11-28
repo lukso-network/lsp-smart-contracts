@@ -1,8 +1,12 @@
 import type { HardhatUserConfig } from 'hardhat/config';
 import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
+import hardhatPackager from '@lukso/hardhat-packager-v3';
 
 const config: HardhatUserConfig = {
-  plugins: [hardhatToolboxMochaEthers],
+  plugins: [hardhatToolboxMochaEthers, hardhatPackager],
+  packager: {
+    contracts: ['ILSP20CallVerifier', 'LSP20CallVerification'],
+  },
   solidity: {
     version: '0.8.17',
     settings: {

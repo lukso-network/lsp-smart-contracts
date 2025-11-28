@@ -2,7 +2,6 @@
 artifacts/
 cache/
 types/
-typechain/
 out/
 dist/
 userdocs/
