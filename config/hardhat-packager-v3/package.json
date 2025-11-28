@@ -26,7 +26,7 @@
   ],
   "scripts": {
     "build": "tsc --build .",
-    "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
+    "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ build/ artifacts/ abi.ts",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build"
   },

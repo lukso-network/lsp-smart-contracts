@@ -20,10 +20,6 @@ const config: HardhatUserConfig = {
       'LSP8VotesInitAbstract',
       'LSP8MintableInit',
     ],
-    // Whether to include the typechain-like factories or not.
-    // If this is enabled, you need to run the typechain-like files through the TypeScript compiler before shipping to the registry.
-    // includeTypes: true,
-    // includeFactories: true,
   },
   solidity: {
     version: '0.8.17',

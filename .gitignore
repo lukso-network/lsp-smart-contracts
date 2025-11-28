@@ -113,7 +113,6 @@ node_modules
 # Hardhat folders
 cache
 artifacts
-typechain
 deployments
 
 .idea

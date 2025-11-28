@@ -50,10 +50,6 @@ const config: HardhatUserConfig = {
   plugins: [hardhatToolboxMochaEthers, hardhatPackager],
   packager: {
     contracts: ['LSP4DigitalAssetMetadata', 'LSP4DigitalAssetMetadataInitAbstract'],
-    // Whether to include the typechain-like factories or not.
-    // If this is enabled, you need to run the typechain-like files through the TypeScript compiler before shipping to the registry.
-    // includeTypes: true,
-    // includeFactories: true,
   },
   solidity: {
     compilers: [DEFAULT_COMPILER_SETTINGS],

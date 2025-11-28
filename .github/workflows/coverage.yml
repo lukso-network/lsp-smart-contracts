@@ -32,7 +32,7 @@ jobs:
         if: steps.build-cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      # This will also generate the Typechain types used by the Chai tests
+      # This will also generate the types used by the Chai tests
       - name: Build contract artifacts
         run: npx hardhat compile
 
