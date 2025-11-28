@@ -1,26 +1,26 @@
 import { expect } from 'chai';
 import { network } from 'hardhat';
 import { concat, AbiCoder } from 'ethers';
-import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 import {
-  LSP16UniversalFactory,
+  type LSP16UniversalFactory,
   LSP16UniversalFactory__factory,
-  Account,
+  type Account,
   Account__factory,
-  AccountInit,
+  type AccountInit,
   AccountInit__factory,
-  PayableContract,
+  type PayableContract,
   PayableContract__factory,
-  NonPayableContract__factory,
-  ImplementationTester,
+  type ImplementationTester,
   ImplementationTester__factory,
-  FallbackInitializer,
+  type FallbackInitializer,
   FallbackInitializer__factory,
+  type ContractNoConstructor,
   ContractNoConstructor__factory,
-  ContractNoConstructor,
-  FallbackContract,
+  type FallbackContract,
   FallbackContract__factory,
+  NonPayableContract__factory,
 } from '../types/ethers-contracts/index.js';
 
 const abiCoder = new AbiCoder();
