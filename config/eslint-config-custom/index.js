@@ -16,7 +16,7 @@ export const eslintconfig = [
     },
   },
   {
-    ignores: ['artifacts/', 'cache/', 'dist/', 'types/', 'typechain/', 'contracts.ts', 'abi.ts'],
+    ignores: ['artifacts/', 'cache/', 'dist/', 'types/', 'contracts.ts', 'abi.ts'],
   },
   {
     // Override rules for chai assertions `expect(...).to.be.true;`

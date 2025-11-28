@@ -14,7 +14,6 @@
     "hardhat-v3",
     "ethereum",
     "smart-contracts",
-    "typechain",
     "artifacts",
     "packaging"
   ],
