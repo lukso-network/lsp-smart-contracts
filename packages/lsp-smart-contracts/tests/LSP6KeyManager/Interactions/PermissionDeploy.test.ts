@@ -1,9 +1,5 @@
 import { expect } from 'chai';
-import { network } from 'hardhat';
-import type {
-  HardhatEthersProvider,
-  HardhatEthersSigner,
-} from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import { TargetContract__factory } from '../../../types/ethers-contracts/index.js';
@@ -35,7 +31,6 @@ import {
 export const shouldBehaveLikePermissionDeploy = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
-  let provider: HardhatEthersProvider;
   let context: LSP6TestContext;
 
   let addressCanDeploy: HardhatEthersSigner,
@@ -44,9 +39,6 @@ export const shouldBehaveLikePermissionDeploy = (
     addressCannotDeploy: HardhatEthersSigner;
 
   before(async () => {
-    ({ ethers } = await network.connect());
-    provider = provider;
-
     context = await buildContext(parseEther('100'));
 
     addressCanDeploy = context.accounts[1];

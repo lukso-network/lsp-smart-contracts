@@ -30,10 +30,9 @@ export type LSP6ControlledToken = {
 };
 
 const buildContext = async () => {
-  const {
-    ethers: { getSigners },
-  } = await network.connect();
-  const accounts = await getSigners();
+  const { ethers } = await network.connect();
+
+  const accounts = await ethers.getSigners();
 
   const lsp7 = await new LSP7Mintable__factory(accounts[0]).deploy(
     'name',
@@ -58,6 +57,7 @@ const buildContext = async () => {
   await lsp7.connect(accounts[0]).transferOwnership(await keyManager.getAddress());
 
   return {
+    ethers,
     accounts,
     token: lsp7,
     keyManager,
@@ -188,6 +188,8 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
       const value = keccak256(toUtf8Bytes('SecondRandomString'));
 
       expect(await context.token.owner()).to.equal(newOwner.address);
+
+      await context.token.connect(newOwner).setData(key, value);
       expect(await context.token.getData(key)).to.equal(value);
     });
 
