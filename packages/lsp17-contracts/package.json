@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "@account-abstraction/contracts": "^0.6.0",
+    "@lukso/lsp4-contracts": "~0.16.7",
     "@erc725/smart-contracts": "^7.0.0",
     "@lukso/lsp14-contracts": "~0.15.5",
     "@lukso/lsp17contractextension-contracts": "~0.16.7",
