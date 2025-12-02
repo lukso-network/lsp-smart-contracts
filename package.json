@@ -71,7 +71,7 @@
     "unbuild": "^3.6.1",
     "vite-plugin-checker": "^0.11.0",
     "vite-tsconfig-paths": "^4.0.7",
-    "zx": "^7.2.3"
+    "zx": "^8.8.5"
   },
   "workspaces": [
     "config/*",
