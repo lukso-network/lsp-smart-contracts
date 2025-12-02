@@ -5,24 +5,24 @@ import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types'
 import { Signer } from 'ethers';
 
 import {
-  LSP1UniversalReceiverDelegateUP,
+  type LSP1UniversalReceiverDelegateUP,
   LSP1UniversalReceiverDelegateUP__factory,
 } from '../../lsp1delegate-contracts/types/ethers-contracts/index.js';
 import {
-  UniversalProfileInit,
+  type UniversalProfileInit,
   UniversalProfileInit__factory,
 } from '../../universalprofile-contracts/types/ethers-contracts/index.js';
 import {
-  LSP6KeyManagerInit,
+  type LSP6KeyManagerInit,
   LSP6KeyManagerInit__factory,
 } from '../../lsp6-contracts/types/ethers-contracts/index.js';
 
 import {
-  LSP7MintableInit,
+  type LSP7MintableInit,
   LSP7MintableInit__factory,
 } from '../../lsp7-contracts/types/ethers-contracts/index.js';
 import {
-  LSP8MintableInit,
+  type LSP8MintableInit,
   LSP8MintableInit__factory,
 } from '../../lsp8-contracts/types/ethers-contracts/index.js';
 
