@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFile } from 'fs/promises';
-import { $ } from 'zx';
+import { exec } from 'node:child_process/promises';
 
 const outputs = JSON.parse(await readFile(process.argv[2], 'utf-8'));
 for (const key in outputs) {
@@ -21,8 +21,8 @@ for (const key in outputs) {
 
   const workspace = match[1];
   // log the files and folders include in each package
-  await $`npm pack --workspace=./${workspace}`;
+  await exec(`npm pack --workspace=./${workspace}`);
 
   // publish to npm registry
-  await $`npm publish --workspace=./${workspace} --tag ${tag} --no-git-checks --access public`;
+  await exec(`npm publish --workspace=./${workspace} --tag ${tag} --no-git-checks --access public`);
 }

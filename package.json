@@ -52,19 +52,16 @@
     "@actions/github-script": "github:actions/github-script",
     "@wagmi/cli": "^2.8.0",
     "all-contributors-cli": "^6.26.1",
-    "dotenv": "^17.2.3",
     "eslint": "^9.39.1",
     "ethers": "^6.15.0",
     "husky": "^9.1.7",
-    "pluralize": "^8.0.0",
     "prettier": "^2.8.8",
     "prettier-plugin-solidity": "^1.4.1",
     "solhint": "^5.0.3",
     "ts-node": "^10.9.2",
     "turbo": "latest",
     "typescript": "^5.9.3",
-    "unbuild": "^3.6.1",
-    "zx": "^8.8.5"
+    "unbuild": "^3.6.1"
   },
   "workspaces": [
     "config/*",
