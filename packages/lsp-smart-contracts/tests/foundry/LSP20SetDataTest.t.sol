@@ -142,8 +142,7 @@ contract LSP20SetDataTest is Test {
     /// forge-config: default.fuzz.runs = 200
     function test_RevertWhenListOfAllowedERC725YDataKeyContains0x0000(
         bytes[] memory dynamicAllowedERC725YDataKeys,
-        bytes32 dataKey,
-        bytes memory dataValue
+        bytes32 dataKey
     ) public {
         // we set below the 0x0000 value in the middle of the encoded list at index ii = 2
         // therefore we need at least 3 entries in the list
@@ -253,7 +252,7 @@ contract LSP20SetDataTest is Test {
 
         bytes memory callData = abi.encodeCall(
             IERC725Y.setData,
-            (dataKey, dataValue)
+            (dataKey, hex"deadbeef")
         );
 
         vm.startPrank(malicious);
@@ -276,7 +275,7 @@ contract LSP20SetDataTest is Test {
 
         // CHECK it reverts when calling directly the Universal Profile
         vm.expectRevert(expectedError);
-        account.setData(dataKey, dataValue);
+        account.setData(dataKey, hex"deadbeef");
 
         vm.stopPrank();
     }

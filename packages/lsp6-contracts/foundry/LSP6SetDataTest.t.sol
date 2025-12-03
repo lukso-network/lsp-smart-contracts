@@ -114,8 +114,7 @@ contract LSP6SetDataTest is Test {
     /// forge-config: default.fuzz.runs = 200
     function test_RevertWhenListOfAllowedERC725YDataKeyContains0x0000(
         bytes[] memory dynamicAllowedERC725YDataKeys,
-        bytes32 dataKey,
-        bytes memory dataValue
+        bytes32 dataKey
     ) public {
         // we set below the 0x0000 value in the middle of the encoded list at index ii = 2
         // therefore we need at least 3 entries in the list
@@ -220,7 +219,7 @@ contract LSP6SetDataTest is Test {
         assertEq(account.owner(), address(keyManager));
 
         // Verify malicious address cannot set data for most data keys
-        bytes memory functionArgs = abi.encode(dataKey, dataValue);
+        bytes memory functionArgs = abi.encode(dataKey, hex"deadbeef");
         bytes memory callData = abi.encodeWithSelector(
             IERC725Y.setData.selector,
             functionArgs
