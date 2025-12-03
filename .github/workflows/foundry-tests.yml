@@ -22,9 +22,10 @@ jobs:
           cache: "npm"
 
       - name: Install Foundry
-        uses: onbjerg/foundry-toolchain@v1
-        with:
-          version: nightly
+        uses: "foundry-rs/foundry-toolchain@v1"
+
+      - name: Show foundry version
+        run: forge --version
 
       - name: NPM Install
         run: npm ci

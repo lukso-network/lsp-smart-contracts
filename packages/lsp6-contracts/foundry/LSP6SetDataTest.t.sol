@@ -119,7 +119,10 @@ contract LSP6SetDataTest is Test {
     ) public {
         // we set below the 0x0000 value in the middle of the encoded list at index ii = 2
         // therefore we need at least 3 entries in the list
-        vm.assume(dynamicAllowedERC725YDataKeys.length >= 3);
+        vm.assume(
+            dynamicAllowedERC725YDataKeys.length >= 3 &&
+                dynamicAllowedERC725YDataKeys.length <= 10
+        );
 
         // dataKey cannot be LSP1, LSP6, or LSP17 data key
         vm.assume(bytes16(dataKey) != _LSP6KEY_ADDRESSPERMISSIONS_ARRAY_PREFIX);
