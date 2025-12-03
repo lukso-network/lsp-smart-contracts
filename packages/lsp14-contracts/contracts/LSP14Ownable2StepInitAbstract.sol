@@ -5,7 +5,9 @@ pragma solidity ^0.8.4;
 import {ILSP14Ownable2Step} from "./ILSP14Ownable2Step.sol";
 
 // modules
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {
+    OwnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 // libraries
 import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
@@ -26,11 +28,14 @@ import {
 } from "./LSP14Constants.sol";
 
 /**
- * @title LSP14Ownable2Step
+ * @title LSP14Ownable2StepInitAbstract
  * @author Fabian Vogelsteller <fabian@lukso.network>, Jean Cavallera (CJ42), Yamen Merhi (YamenMerhi), Daniel Afteni (B00ste)
- * @dev This contract is a modified version of the [`Ownable.sol`] implementation, where transferring and renouncing ownership works as a 2-step process. This can be used as a confirmation mechanism to prevent potential mistakes when transferring ownership of the contract, where the control of the contract could be lost forever. (_e.g: providing the wrong address as a parameter to the function, transferring ownership to an EOA for which the user lost its private key, etc..._)
+ * @dev This contract is a modified version of the [`OwnableUpgradeable.sol`] implementation, where transferring and renouncing ownership works as a 2-step process. This can be used as a confirmation mechanism to prevent potential mistakes when transferring ownership of the contract, where the control of the contract could be lost forever. (_e.g: providing the wrong address as a parameter to the function, transferring ownership to an EOA for which the user lost its private key, etc..._)
  */
-abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, Ownable {
+abstract contract LSP14Ownable2StepInitAbstract is
+    ILSP14Ownable2Step,
+    OwnableUpgradeable
+{
     using LSP1Utils for address;
 
     /**
@@ -86,7 +91,12 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, Ownable {
      */
     function transferOwnership(
         address newOwner
-    ) public virtual override(Ownable, ILSP14Ownable2Step) onlyOwner {
+    )
+        public
+        virtual
+        override(OwnableUpgradeable, ILSP14Ownable2Step)
+        onlyOwner
+    {
         // set the transfer ownership lock
         _inTransferOwnership = true;
 
@@ -133,7 +143,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, Ownable {
     function renounceOwnership()
         public
         virtual
-        override(Ownable, ILSP14Ownable2Step)
+        override(OwnableUpgradeable, ILSP14Ownable2Step)
         onlyOwner
     {
         address previousOwner = owner();
@@ -171,7 +181,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, Ownable {
         if (msg.sender != pendingOwner())
             revert LSP14CallerNotPendingOwner(msg.sender);
 
-        _transferOwnership(msg.sender);
+        OwnableUpgradeable._transferOwnership(msg.sender);
         delete _pendingOwner;
         delete _renounceOwnershipStartedAt;
     }
@@ -205,7 +215,7 @@ abstract contract LSP14Ownable2Step is ILSP14Ownable2Step, Ownable {
             );
         }
 
-        Ownable._transferOwnership(address(0));
+        OwnableUpgradeable._transferOwnership(address(0));
         delete _renounceOwnershipStartedAt;
         delete _pendingOwner;
         emit OwnershipRenounced();

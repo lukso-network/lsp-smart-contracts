@@ -57,7 +57,8 @@
     "build:package": "hardhat prepare-package"
   },
   "dependencies": {
-    "@erc725/smart-contracts": "^7.0.0",
+    "@openzeppelin/contracts": "^4.9.6",
+    "@openzeppelin/contracts-upgradeable": "^4.9.6",
     "@lukso/lsp1-contracts": "~0.15.5"
   },
   "devDependencies": {
