@@ -159,6 +159,15 @@ contract LSP20SetDataTest is Test {
         vm.assume(dataKey != _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY);
         vm.assume(bytes12(dataKey) != _LSP17_EXTENSION_PREFIX);
 
+        // Exclude from fuzzer input `dataKey` that is not or does not start with the prefix
+        // from the first and second entry in the Allowed ERC725Y Data Keys list
+        for (uint256 ii = 0; ii < dynamicAllowedERC725YDataKeys.length; ii++) {
+            bytes32 allowedDataKeyPadded = bytes32(
+                dynamicAllowedERC725YDataKeys[ii]
+            );
+            vm.assume((allowedDataKeyPadded & dataKey) != allowedDataKeyPadded);
+        }
+
         // Give owner ability to transfer ownership
         bytes32 ownerDataKey = LSP2Utils.generateMappingWithGroupingKey(
             _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
