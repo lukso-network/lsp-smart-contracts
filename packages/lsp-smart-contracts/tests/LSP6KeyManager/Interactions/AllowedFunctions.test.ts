@@ -29,7 +29,7 @@ import {
 } from '../../../constants.js';
 
 // setup
-import { LSP6TestContext } from '../../utils/context.js';
+import type { LSP6TestContext } from '../../utils/context.js';
 import { setupKeyManager } from '../../utils/fixtures.js';
 
 // helpers

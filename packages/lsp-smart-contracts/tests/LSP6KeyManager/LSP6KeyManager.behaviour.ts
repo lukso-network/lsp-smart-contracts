@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { LSP6TestContext, LSP6InternalsTestContext } from '../utils/context.js';
+import type { LSP6TestContext, LSP6InternalsTestContext } from '../utils/context.js';
 import { INTERFACE_IDS } from '../../constants.js';
 
 import {

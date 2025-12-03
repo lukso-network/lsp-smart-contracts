@@ -2,7 +2,7 @@ import fs from 'fs';
 import { network } from 'hardhat';
 import { expect } from 'chai';
 import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
-import { Signer } from 'ethers';
+import type { Signer } from 'ethers';
 
 import {
   type LSP1UniversalReceiverDelegateUP,
@@ -35,7 +35,7 @@ import {
   CALLTYPE,
   LSP8_TOKEN_ID_FORMAT,
 } from '../constants.js';
-import { LSP6TestContext } from './utils/context.js';
+import type { LSP6TestContext } from './utils/context.js';
 import {
   deployProxy,
   setupKeyManager,

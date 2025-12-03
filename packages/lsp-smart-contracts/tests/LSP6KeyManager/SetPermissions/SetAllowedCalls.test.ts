@@ -10,7 +10,7 @@ import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 import { combineAllowedCalls } from '../../utils/helpers.js';
 
 // setup
-import { LSP6TestContext } from '../../utils/context.js';
+import type { LSP6TestContext } from '../../utils/context.js';
 import { setupKeyManager } from '../../utils/fixtures.js';
 
 export const shouldBehaveLikeSettingAllowedCalls = (

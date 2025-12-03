@@ -8,7 +8,7 @@ import { PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // helpers
 import { encodeCompactBytesArray } from '../../utils/helpers.js';
-import { LSP6TestContext } from '../../utils/context.js';
+import type { LSP6TestContext } from '../../utils/context.js';
 import { setupKeyManager } from '../../utils/fixtures.js';
 
 export const shouldBehaveLikeSetAllowedERC725YDataKeys = (

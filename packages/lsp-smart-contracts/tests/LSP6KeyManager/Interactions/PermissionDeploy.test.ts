@@ -12,7 +12,7 @@ import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../utils/context.js';
+import type { LSP6TestContext } from '../../utils/context.js';
 import { setupKeyManager } from '../../utils/fixtures.js';
 
 import { abiCoder, combinePermissions, LOCAL_PRIVATE_KEYS } from '../../utils/helpers.js';
