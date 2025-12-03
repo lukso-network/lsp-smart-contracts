@@ -114,9 +114,14 @@
     "@lukso/universalprofile-contracts": "~0.15.5"
   },
   "devDependencies": {
+    "@erc725/erc725.js": "0.28.2",
+    "@lukso/eip191-signer.js": "^0.2.5",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "@types/mocha": "^10.0.10",
     "eslint-config-custom": "*",
-    "hardhat": "^3.0.7"
+    "hardhat": "^3.0.7",
+    "markdown-table-ts": "^1.0.3",
+    "dotenv": "^17.2.3",
+    "pluralize": "^8.0.0"
   }
 }

@@ -62,6 +62,7 @@
     "@openzeppelin/contracts": "^4.9.3"
   },
   "devDependencies": {
+    "@lukso/eip191-signer.js": "^0.2.5",
     "@lukso/hardhat-packager-v3": "*",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "eslint-config-custom": "*",
