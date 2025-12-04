@@ -1,9 +1,10 @@
-import type { HardhatUserConfig } from 'hardhat/config';
 import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
+import { task } from 'hardhat/config';
 import type { SolidityUserConfig } from 'hardhat/types/config';
+import type { HardhatUserConfig } from 'hardhat/config';
+import { ArgumentType } from 'hardhat/types/arguments';
 
 // custom built hardhat plugins for CI
-// import './scripts/ci/gas_benchmark';
 // import './scripts/ci/check-deployer-balance';
 // import './scripts/ci/verify-all-contracts';
 
@@ -86,6 +87,28 @@ const config: HardhatUserConfig = {
       '@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
     },
   },
+  tasks: [
+    task(
+      'gas-benchmark',
+      'Benchmark gas usage of the smart contracts based on predefined scenarios',
+    )
+      .addOption({
+        name: 'compare',
+        description:
+          'The `.json` file that contains the gas costs of the currently compiled contracts (e.g: current working branch)',
+        type: ArgumentType.FILE,
+        defaultValue: 'gas_benchmark_after.json',
+      })
+      .addOption({
+        name: 'against',
+        description:
+          'The `.json` file that contains the gas costs to compare against (e.g: the `develop` branch)',
+        type: ArgumentType.FILE,
+        defaultValue: 'gas_benchmark_before.json',
+      })
+      .setAction(() => import('./tasks/gas-benchmark.js'))
+      .build(),
+  ],
 };
 
 export default config;
