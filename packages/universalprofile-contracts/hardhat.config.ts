@@ -1,11 +1,19 @@
 import type { HardhatUserConfig } from 'hardhat/config';
 import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
+import hardhatIgnitionEthers from '@nomicfoundation/hardhat-ignition-ethers';
 import hardhatPackager from '@lukso/hardhat-packager-v3';
 
 const config: HardhatUserConfig = {
-  plugins: [hardhatToolboxMochaEthers, hardhatPackager],
+  plugins: [hardhatToolboxMochaEthers, hardhatIgnitionEthers, hardhatPackager],
   packager: {
     contracts: ['UniversalProfile', 'UniversalProfileInit'],
+  },
+  ignition: {
+    strategyConfig: {
+      create2: {
+        salt: '0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed',
+      },
+    },
   },
   solidity: {
     version: '0.8.17',
