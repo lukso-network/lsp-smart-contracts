@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 import {
@@ -10,17 +9,17 @@ import {
   FallbackRevert__factory,
   TargetContract,
   TargetContract__factory,
-} from '../../../typechain';
+} from '../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { LSP25_VERSION } from '@lukso/lsp25-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { setupKeyManager } from '../../utils/fixtures';
+import type { LSP6TestContext } from '../../utils/context.js';
+import { setupKeyManager } from '../../utils/fixtures.js';
 
 // helpers
 import {
@@ -29,8 +28,8 @@ import {
   combineCallTypes,
   combinePermissions,
   LOCAL_PRIVATE_KEYS,
-  provider,
-} from '../../utils/helpers';
+} from '../../utils/helpers.js';
+import { parseEther, solidityPacked, Wallet } from 'ethers';
 
 export const shouldBehaveLikePermissionCall = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
@@ -38,11 +37,11 @@ export const shouldBehaveLikePermissionCall = (
   let context: LSP6TestContext;
 
   describe('when making an empty call via `ERC25X.execute(...)` -> (`data` = `0x`, `value` = 0)', () => {
-    let addressCanMakeCallNoAllowedCalls: SignerWithAddress,
-      addressCanMakeCallWithAllowedCalls: SignerWithAddress,
-      addressCannotMakeCallNoAllowedCalls: SignerWithAddress,
-      addressCannotMakeCallWithAllowedCalls: SignerWithAddress,
-      addressWithSuperCall: SignerWithAddress;
+    let addressCanMakeCallNoAllowedCalls: HardhatEthersSigner,
+      addressCanMakeCallWithAllowedCalls: HardhatEthersSigner,
+      addressCannotMakeCallNoAllowedCalls: HardhatEthersSigner,
+      addressCannotMakeCallWithAllowedCalls: HardhatEthersSigner,
+      addressWithSuperCall: HardhatEthersSigner;
 
     let allowedEOA: string;
 
@@ -111,7 +110,7 @@ export const shouldBehaveLikePermissionCall = (
 
     describe('when caller does not have permission CALL and no Allowed Calls', () => {
       it('should fail with `NotAuthorised` error when `to` is an EOA', async () => {
-        const targetEOA = ethers.Wallet.createRandom().address;
+        const targetEOA = Wallet.createRandom().address;
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -147,7 +146,7 @@ export const shouldBehaveLikePermissionCall = (
 
     describe('when caller does not have permission CALL but have some Allowed Calls', () => {
       it('should fail with `NotAuthorised` error when `to` is an EOA', async () => {
-        const targetEOA = ethers.Wallet.createRandom().address;
+        const targetEOA = Wallet.createRandom().address;
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -183,7 +182,7 @@ export const shouldBehaveLikePermissionCall = (
 
     describe('when caller has permission CALL, but no Allowed Calls', () => {
       it('should fail with `NoCallsAllowed` error when `to` is an EOA', async () => {
-        const targetEOA = ethers.Wallet.createRandom().address;
+        const targetEOA = Wallet.createRandom().address;
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -217,7 +216,7 @@ export const shouldBehaveLikePermissionCall = (
       describe('when `to` is an EOA', () => {
         describe('when `to` is NOT in the list of Allowed Calls', () => {
           it('should fail with `NotAllowedCall` error', async () => {
-            const targetEOA = ethers.Wallet.createRandom().address;
+            const targetEOA = Wallet.createRandom().address;
 
             const payload = context.universalProfile.interface.encodeFunctionData('execute', [
               OPERATION_TYPES.CALL,
@@ -243,9 +242,14 @@ export const shouldBehaveLikePermissionCall = (
               '0x',
             ]);
 
-            await expect(
-              context.keyManager.connect(addressCanMakeCallWithAllowedCalls).execute(payload),
-            ).to.not.be.reverted;
+            const tx = await context.keyManager
+              .connect(addressCanMakeCallWithAllowedCalls)
+              .execute(payload);
+            const receipt = await tx.wait();
+
+            // CHECK the status of this transaction, indicating success (1) or revert (0)
+            expect(receipt).to.not.be.null;
+            expect(receipt?.status).to.equal(1);
           });
         });
       });
@@ -312,7 +316,7 @@ export const shouldBehaveLikePermissionCall = (
 
     describe('when caller has permission SUPER_CALL', () => {
       it('should pass and allow to call an EOA', async () => {
-        const targetEOA = ethers.Wallet.createRandom().address;
+        const targetEOA = Wallet.createRandom().address;
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -369,9 +373,9 @@ export const shouldBehaveLikePermissionCall = (
   });
 
   describe('when making a ERC25X.execute(...) call with some `data` payload', () => {
-    let addressCanMakeCallNoAllowedCalls: SignerWithAddress,
-      addressCanMakeCallWithAllowedCalls: SignerWithAddress,
-      addressCannotMakeCall: SignerWithAddress;
+    let addressCanMakeCallNoAllowedCalls: HardhatEthersSigner,
+      addressCanMakeCallWithAllowedCalls: HardhatEthersSigner,
+      addressCannotMakeCall: HardhatEthersSigner;
 
     let targetContract: TargetContract;
 
@@ -587,7 +591,7 @@ export const shouldBehaveLikePermissionCall = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.solidityPacked(
+            const encodedMessage = solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -602,7 +606,7 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress(),
+              (await context.keyManager.getAddress()) as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT0,
             );
@@ -644,7 +648,7 @@ export const shouldBehaveLikePermissionCall = (
 
             const eip191Signer = new EIP191Signer();
 
-            const encodedMessage = ethers.solidityPacked(
+            const encodedMessage = solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -660,10 +664,10 @@ export const shouldBehaveLikePermissionCall = (
 
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                await context.keyManager.getAddress(),
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
               ),
-              signature,
+              signature as `0x${string}`,
             );
 
             await expect(
@@ -706,7 +710,7 @@ export const shouldBehaveLikePermissionCall = (
               const HARDHAT_CHAINID = 31337;
               const valueToSend = 0;
 
-              const encodedMessage = ethers.solidityPacked(
+              const encodedMessage = solidityPacked(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   LSP25_VERSION,
@@ -721,7 +725,7 @@ export const shouldBehaveLikePermissionCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                await context.keyManager.getAddress(),
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT2,
               );
@@ -761,7 +765,7 @@ export const shouldBehaveLikePermissionCall = (
               const HARDHAT_CHAINID = 31337;
               const valueToSend = 0;
 
-              const encodedMessage = ethers.solidityPacked(
+              const encodedMessage = solidityPacked(
                 ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
                 [
                   LSP25_VERSION,
@@ -776,7 +780,7 @@ export const shouldBehaveLikePermissionCall = (
               const eip191Signer = new EIP191Signer();
 
               const { signature } = await eip191Signer.signDataWithIntendedValidator(
-                await context.keyManager.getAddress(),
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
                 LOCAL_PRIVATE_KEYS.ACCOUNT1,
               );
@@ -818,7 +822,7 @@ export const shouldBehaveLikePermissionCall = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.solidityPacked(
+            const encodedMessage = solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -835,10 +839,10 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
             const incorrectSignerAddress = eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                await context.keyManager.getAddress(),
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
               ),
-              signature,
+              signature as `0x${string}`,
             );
 
             await expect(
@@ -879,7 +883,7 @@ export const shouldBehaveLikePermissionCall = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.solidityPacked(
+            const encodedMessage = solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -894,7 +898,7 @@ export const shouldBehaveLikePermissionCall = (
             const eip191Signer = new EIP191Signer();
 
             const { signature } = await eip191Signer.signDataWithIntendedValidator(
-              await context.keyManager.getAddress(),
+              (await context.keyManager.getAddress()) as `0x${string}`,
               encodedMessage,
               LOCAL_PRIVATE_KEYS.ACCOUNT3,
             );
@@ -939,7 +943,7 @@ export const shouldBehaveLikePermissionCall = (
             const HARDHAT_CHAINID = 31337;
             const valueToSend = 0;
 
-            const encodedMessage = ethers.solidityPacked(
+            const encodedMessage = solidityPacked(
               ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'bytes'],
               [
                 LSP25_VERSION,
@@ -957,10 +961,10 @@ export const shouldBehaveLikePermissionCall = (
 
             const incorrectSignerAddress = await eip191Signer.recover(
               eip191Signer.hashDataWithIntendedValidator(
-                await context.keyManager.getAddress(),
+                (await context.keyManager.getAddress()) as `0x${string}`,
                 encodedMessage,
               ),
-              ethereumSignature,
+              ethereumSignature as `0x${string}`,
             );
 
             await expect(
@@ -985,7 +989,7 @@ export const shouldBehaveLikePermissionCall = (
 
   describe('`execute(...)` edge cases', async () => {
     let targetContract: TargetContract;
-    let addressWithNoPermissions: SignerWithAddress;
+    let addressWithNoPermissions: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -1046,25 +1050,29 @@ export const shouldBehaveLikePermissionCall = (
     });
 
     describe('when the offset of the `data` payload is not `0x00...80`', () => {
+      before(async () => {
+        addressWithNoPermissions = context.accounts[1];
+      });
+
       describe('if the offset points backwards to the `value` parameter', () => {
         // We add the target in the allowed calls for each of these controller
-        let controllerCanTransferValue;
-        let controllerCanTransferValueAndCall;
-        let controllerCanCall;
+        let controllerCanTransferValue: HardhatEthersSigner;
+        let controllerCanTransferValueAndCall: HardhatEthersSigner;
+        let controllerCanCall: HardhatEthersSigner;
 
-        let controllerCanOnlySign;
+        let controllerCanOnlySign: HardhatEthersSigner;
 
-        let controllerCanSuperCall;
+        let controllerCanSuperCall: HardhatEthersSigner;
         let controllerCanSuperTransferValue;
 
         let targetContract: FallbackInitializer;
 
-        let executePayload;
+        let executePayload: string;
 
         before(async () => {
-          context = await buildContext(ethers.parseEther('50'));
+          context = await buildContext(parseEther('50'));
 
-          const accounts = await ethers.getSigners();
+          const accounts = await context.ethers.getSigners();
 
           controllerCanTransferValue = accounts[1];
           controllerCanTransferValueAndCall = accounts[2];
@@ -1181,7 +1189,9 @@ export const shouldBehaveLikePermissionCall = (
 
           describe('when caller has both permissions CALL + TRANSFERVALUE', () => {
             it('should pass and allow to call the contract', async () => {
-              expect(await provider.getBalance(await targetContract.getAddress())).to.equal(0);
+              expect(
+                await context.ethers.provider.getBalance(await targetContract.getAddress()),
+              ).to.equal(0);
 
               await context.keyManager
                 .connect(controllerCanTransferValueAndCall)
@@ -1190,7 +1200,9 @@ export const shouldBehaveLikePermissionCall = (
               expect(await targetContract.caller()).to.equal(
                 await context.universalProfile.getAddress(),
               );
-              expect(await provider.getBalance(await targetContract.getAddress())).to.equal(36);
+              expect(
+                await context.ethers.provider.getBalance(await targetContract.getAddress()),
+              ).to.equal(36);
             });
           });
         });
@@ -1243,18 +1255,18 @@ export const shouldBehaveLikePermissionCall = (
 
       describe("if the offset points forwards (there are 32 random bytes between the data's offset and the data's length", () => {
         // We add the target in the allowed calls for each of these controller
-        let controllerCanCall;
-        let controllerCanSuperCall;
-        let controllerCanOnlySign;
+        let controllerCanCall: HardhatEthersSigner;
+        let controllerCanSuperCall: HardhatEthersSigner;
+        let controllerCanOnlySign: HardhatEthersSigner;
 
         let targetContract: FallbackInitializer;
 
-        let executePayload;
+        let executePayload: string;
 
         before(async () => {
-          context = await buildContext(ethers.parseEther('50'));
+          context = await buildContext(parseEther('50'));
 
-          const accounts = await ethers.getSigners();
+          const accounts = await context.ethers.getSigners();
 
           controllerCanCall = accounts[1];
           controllerCanSuperCall = accounts[2];

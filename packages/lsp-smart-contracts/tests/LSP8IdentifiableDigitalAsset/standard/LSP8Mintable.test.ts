@@ -1,17 +1,22 @@
+import {
+  type LSP8Mintable,
+  LSP8Mintable__factory,
+} from '../../../../lsp8-contracts/types/ethers-contracts/index.js';
+
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour.js';
+import {
+  type LSP8MintableTestContext,
+  shouldBehaveLikeLSP8Mintable,
+  getNamedAccounts,
+} from '../LSP8Mintable.behaviour.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
-import { LSP8Mintable, LSP8Mintable__factory } from '../../../typechain';
-
-import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
-import {
-  shouldBehaveLikeLSP8Mintable,
-  LSP8MintableTestContext,
-  getNamedAccounts,
-} from '../LSP8Mintable.behaviour';
 
 describe('LSP8Mintable with constructor', () => {
   const buildTestContext = async () => {
-    const accounts = await getNamedAccounts();
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
 
     const deployParams = {
       name: 'LSP8 Mintable - deployed with constructor',
@@ -29,7 +34,7 @@ describe('LSP8Mintable with constructor', () => {
       deployParams.lsp8TokenIdFormat,
     );
 
-    return { accounts, lsp8Mintable, deployParams };
+    return { ethers, accounts, lsp8Mintable, deployParams };
   };
 
   describe('when deploying the contract', () => {

@@ -9,18 +9,13 @@ import {
   concat,
   solidityPacked,
 } from 'ethers';
-import hre from 'hardhat';
-const {
-  ethers: { provider: hreProvider },
-} = hre;
-import { LSP6KeyManager } from '../../types/index.js';
+import type { LSP6KeyManager } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
 
 // constants
-import { LSP25_VERSION } from '@lukso/lsp25-contracts';
+import { LSP25_VERSION } from '../../constants.js';
 import { EIP191Signer } from '@lukso/eip191-signer.js';
 
 export const abiCoder = AbiCoder.defaultAbiCoder();
-export const provider = hreProvider;
 
 export const AddressOffset = '000000000000000000000000';
 export const EMPTY_PAYLOAD = '0x';
@@ -36,7 +31,7 @@ export const LSP1_HOOK_PLACEHOLDER =
  * WARNING! These private keys and their related accounts are publicly known and should never be used in production.
  *          Any funds sent to them on Mainnet or any other live network WILL BE LOST.
  */
-export const LOCAL_PRIVATE_KEYS = {
+export const LOCAL_PRIVATE_KEYS: { [key: string]: `0x${string}` } = {
   ACCOUNT0: '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
   ACCOUNT1: '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d',
   ACCOUNT2: '0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a',
@@ -187,9 +182,9 @@ export async function signLSP6ExecuteRelayCall(
   const eip191Signer = new EIP191Signer();
 
   const { signature } = await eip191Signer.signDataWithIntendedValidator(
-    await _keyManager.getAddress(),
+    (await _keyManager.getAddress()) as `0x${string}`,
     encodedMessage,
-    _signerPrivateKey,
+    _signerPrivateKey as `0x${string}`,
   );
 
   return signature;

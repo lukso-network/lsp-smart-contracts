@@ -1,21 +1,21 @@
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { BytesLike, keccak256, hexlify, toUtf8Bytes, randomBytes } from 'ethers';
 
 // constants
-import { ERC725YDataKeys } from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants.js';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
+import type { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 // helpers
-import { encodeCompactBytesArray, decodeCompactBytes } from '../../../utils/helpers';
-import { BytesLike, keccak256, hexlify, toUtf8Bytes, randomBytes } from 'ethers';
+import { encodeCompactBytesArray, decodeCompactBytes } from '../../../utils/helpers.js';
 
 export type TestCase = {
   datakeyToSet: BytesLike;
-  allowedAccount: SignerWithAddress;
+  allowedAccount: HardhatEthersSigner;
 };
 
 export const shouldBehaveLikeAllowedERC725YDataKeys = (
@@ -24,7 +24,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
   let context: LSP6TestContext;
 
   describe('keyType: Singleton', () => {
-    let controllerCanSetOneKey: SignerWithAddress, controllerCanSetManyKeys: SignerWithAddress;
+    let controllerCanSetOneKey: HardhatEthersSigner, controllerCanSetManyKeys: HardhatEthersSigner;
 
     const customKey1 = keccak256(toUtf8Bytes('CustomKey1'));
     const customKey2 = keccak256(toUtf8Bytes('CustomKey2'));
@@ -661,7 +661,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
   });
 
   describe('keyType: Mapping', () => {
-    let controllerCanSetMappingKeys: SignerWithAddress;
+    let controllerCanSetMappingKeys: HardhatEthersSigner;
 
     // all mapping keys starting with: SupportedStandards:...
     const supportedStandardKey = '0xeafec4d89fa9619884b6b89135626455';
@@ -907,7 +907,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
   });
 
   describe('keyType: Array', () => {
-    let controllerCanSetArrayKeys: SignerWithAddress;
+    let controllerCanSetArrayKeys: HardhatEthersSigner;
 
     const allowedArrayKey = '0x868affce801d08a5948eebc349a5c8ff';
 
@@ -1050,7 +1050,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
   });
 
   describe('Testing bytes32(0) (= zero key) edge cases', () => {
-    let controllerCanSetSomeKeys: SignerWithAddress;
+    let controllerCanSetSomeKeys: HardhatEthersSigner;
 
     const customKey1 = keccak256(toUtf8Bytes('CustomKey1'));
     const customKey2 = keccak256(toUtf8Bytes('CustomKey2'));
@@ -1340,7 +1340,7 @@ export const shouldBehaveLikeAllowedERC725YDataKeys = (
   });
 
   describe('one single byte as an allowed data key (e.g: 0xaa0000...0000', () => {
-    let controllerCanSetSomeKeys: SignerWithAddress;
+    let controllerCanSetSomeKeys: HardhatEthersSigner;
 
     const allowedDataKey = '0xaa';
 

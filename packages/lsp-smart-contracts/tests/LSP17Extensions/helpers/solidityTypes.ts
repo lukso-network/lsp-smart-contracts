@@ -1,4 +1,3 @@
-// define the same export types as used by export typechain/ethers
 import { BigNumberish } from 'ethers';
 import { BytesLike } from '@ethersproject/bytes';
 

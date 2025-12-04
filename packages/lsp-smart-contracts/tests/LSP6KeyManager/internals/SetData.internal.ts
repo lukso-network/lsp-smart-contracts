@@ -1,11 +1,11 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
 
 // setup
-import { LSP6InternalsTestContext } from '../../utils/context';
-import { setupKeyManagerHelper } from '../../utils/fixtures';
-import { ERC725YDataKeys } from '../../../constants';
+import { LSP6InternalsTestContext } from '../../utils/context.js';
+import { setupKeyManagerHelper } from '../../utils/fixtures.js';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
+import { hexlify, randomBytes } from 'ethers';
 
 export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTestContext>) => {
   let context: LSP6InternalsTestContext;
@@ -27,15 +27,12 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
     describe('when providing a `setData(bytes32[],bytes[])` array payload', () => {
       describe('when there is not the same number of dataKeys[] and dataValues[] in each arrays', () => {
         it('should revert with error `...` if the dataValues is < (less than) dataKeys', async () => {
-          const dataKeys = [
-            ethers.hexlify(ethers.randomBytes(32)),
-            ethers.hexlify(ethers.randomBytes(32)),
-          ];
+          const dataKeys = [hexlify(randomBytes(32)), hexlify(randomBytes(32))];
 
           const dataValues = [
-            ethers.hexlify(ethers.randomBytes(10)),
-            ethers.hexlify(ethers.randomBytes(10)),
-            ethers.hexlify(ethers.randomBytes(10)),
+            hexlify(randomBytes(10)),
+            hexlify(randomBytes(10)),
+            hexlify(randomBytes(10)),
           ];
 
           await expect(
@@ -53,15 +50,12 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
 
         it('should revert with error `...` if the dataValues > (greater than) dataKeys', async () => {
           const dataKeys = [
-            ethers.hexlify(ethers.randomBytes(32)),
-            ethers.hexlify(ethers.randomBytes(32)),
-            ethers.hexlify(ethers.randomBytes(32)),
+            hexlify(randomBytes(32)),
+            hexlify(randomBytes(32)),
+            hexlify(randomBytes(32)),
           ];
 
-          const dataValues = [
-            ethers.hexlify(ethers.randomBytes(10)),
-            ethers.hexlify(ethers.randomBytes(10)),
-          ];
+          const dataValues = [hexlify(randomBytes(10)), hexlify(randomBytes(10))];
 
           await expect(
             context.keyManagerInternalTester.verifyCanSetData(
@@ -80,15 +74,15 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
       describe('when there is the same number of dataKeys[] and dataValues[] in each array', () => {
         it('should pass', async () => {
           const dataKeys = [
-            ethers.hexlify(ethers.randomBytes(32)),
-            ethers.hexlify(ethers.randomBytes(32)),
-            ethers.hexlify(ethers.randomBytes(32)),
+            hexlify(randomBytes(32)),
+            hexlify(randomBytes(32)),
+            hexlify(randomBytes(32)),
           ];
 
           const dataValues = [
-            ethers.hexlify(ethers.randomBytes(10)),
-            ethers.hexlify(ethers.randomBytes(10)),
-            ethers.hexlify(ethers.randomBytes(10)),
+            hexlify(randomBytes(10)),
+            hexlify(randomBytes(10)),
+            hexlify(randomBytes(10)),
           ];
 
           await expect(
@@ -98,7 +92,7 @@ export const testSetDataInternals = (buildContext: () => Promise<LSP6InternalsTe
               dataKeys,
               dataValues,
             ),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
       });
     });

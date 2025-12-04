@@ -1,44 +1,63 @@
 import fs from 'fs';
-import { ethers } from 'hardhat';
+import { network } from 'hardhat';
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { Signer } from 'ethers';
 
 import {
-  LSP1UniversalReceiverDelegateUP,
+  type LSP1UniversalReceiverDelegateUP,
   LSP1UniversalReceiverDelegateUP__factory,
-  UniversalProfileInit,
+} from '../../lsp1delegate-contracts/types/ethers-contracts/index.js';
+import {
+  type UniversalProfileInit,
   UniversalProfileInit__factory,
-  LSP6KeyManagerInit,
+} from '../../universalprofile-contracts/types/ethers-contracts/index.js';
+import {
+  type LSP6KeyManagerInit,
   LSP6KeyManagerInit__factory,
-  LSP7MintableInit,
-  LSP7MintableInit__factory,
-  LSP8MintableInit,
-  LSP8MintableInit__factory,
-} from '../typechain';
+} from '../../lsp6-contracts/types/ethers-contracts/index.js';
 
-import { ERC725YDataKeys, INTERFACE_IDS } from '../constants';
-import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
-import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
-import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
-import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
-import { LSP6TestContext } from './utils/context';
-import { deployProxy, setupKeyManager, setupProfileWithKeyManagerWithURD } from './utils/fixtures';
+import {
+  type LSP7MintableInit,
+  LSP7MintableInit__factory,
+} from '../../lsp7-contracts/types/ethers-contracts/index.js';
+import {
+  type LSP8MintableInit,
+  LSP8MintableInit__factory,
+} from '../../lsp8-contracts/types/ethers-contracts/index.js';
+
+import {
+  ERC725YDataKeys,
+  INTERFACE_IDS,
+  OPERATION_TYPES,
+  LSP4_TOKEN_TYPES,
+  PERMISSIONS,
+  CALLTYPE,
+  LSP8_TOKEN_ID_FORMAT,
+} from '../constants.js';
+import type { LSP6TestContext } from './utils/context.js';
+import {
+  deployProxy,
+  setupKeyManager,
+  setupProfileWithKeyManagerWithURD,
+} from './utils/fixtures.js';
 import {
   abiCoder,
   combineAllowedCalls,
   combinePermissions,
   encodeCompactBytesArray,
-} from './utils/helpers';
-import { Signer } from 'ethers';
+} from './utils/helpers.js';
 
 export type UniversalProfileContext = {
-  accounts: SignerWithAddress[];
-  mainController: SignerWithAddress;
+  accounts: HardhatEthersSigner[];
+  mainController: HardhatEthersSigner;
   universalProfile: UniversalProfileInit;
   initialFunding?: bigint;
 };
 
-function generateRandomData(length) {
+const { ethers } = await network.connect();
+
+function generateRandomData(length: number) {
   return ethers.hexlify(ethers.randomBytes(length));
 }
 
@@ -69,7 +88,7 @@ async function deployImplementations() {
 
 async function deployUniversalProfileProxy(
   universalProfileInit: UniversalProfileInit,
-  mainController: SignerWithAddress,
+  mainController: HardhatEthersSigner,
   initialFunding?: bigint,
 ) {
   const universalProfileAddress = await deployProxy(
@@ -91,7 +110,7 @@ async function deployLsp7MintableProxy(
   lsp7MintableInit: LSP7MintableInit,
   tokenName: string,
   tokenSymbol: string,
-  owner: SignerWithAddress,
+  owner: HardhatEthersSigner,
   tokenType: number,
   isNonDivisible: boolean,
   isMintable: boolean,
@@ -114,7 +133,7 @@ async function deployLsp8MintableProxy(
   lsp8MintableInit: LSP8MintableInit,
   tokenName: string,
   tokenSymbol: string,
-  owner: SignerWithAddress,
+  owner: HardhatEthersSigner,
   tokenType: number,
   tokenIdFormat: number,
 ) {
@@ -169,7 +188,7 @@ const buildUniversalProfileContext = async (
 };
 
 describe('⛽📊 Gas Benchmark', () => {
-  let gasBenchmark;
+  let gasBenchmark: string;
   type PromiseResolvedType<T> = T extends Promise<infer R> ? R : never;
   let implementations: PromiseResolvedType<ReturnType<typeof deployImplementations>>;
 
@@ -193,7 +212,7 @@ describe('⛽📊 Gas Benchmark', () => {
 
       const universalProfileInitDeployTransaction = universalProfileInit.deploymentTransaction();
       const universalProfileInitDeploymentReceipt =
-        await universalProfileInitDeployTransaction.wait();
+        await universalProfileInitDeployTransaction?.wait();
 
       gasBenchmark['deployment_costs']['UniversalProfileInit'] = ethers.toNumber(
         universalProfileInitDeploymentReceipt.gasUsed,
@@ -208,7 +227,7 @@ describe('⛽📊 Gas Benchmark', () => {
       const keyManagerInitDeploymentReceipt = await keyManagerInitDeployTransaction?.wait();
 
       gasBenchmark['deployment_costs']['LSP6KeyManagerInit'] = ethers.toNumber(
-        keyManagerInitDeploymentReceipt?.gasUsed,
+        keyManagerInitDeploymentReceipt.gasUsed,
       );
 
       // LSP1 Delegate
@@ -217,7 +236,7 @@ describe('⛽📊 Gas Benchmark', () => {
       ).deploy();
 
       const lsp1DelegateDeployTransaction = lsp1Delegate.deploymentTransaction();
-      const lsp1DelegateDeploymentReceipt = await lsp1DelegateDeployTransaction.wait();
+      const lsp1DelegateDeploymentReceipt = await lsp1DelegateDeployTransaction?.wait();
 
       gasBenchmark['deployment_costs']['LSP1DelegateUP'] = ethers.toNumber(
         lsp1DelegateDeploymentReceipt.gasUsed,
@@ -229,7 +248,7 @@ describe('⛽📊 Gas Benchmark', () => {
       ).deploy();
 
       const lsp7MintableInitDeployTransaction = lsp7MintableInit.deploymentTransaction();
-      const lsp7MintableInitDeploymentReceipt = await lsp7MintableInitDeployTransaction.wait();
+      const lsp7MintableInitDeploymentReceipt = await lsp7MintableInitDeployTransaction?.wait();
 
       gasBenchmark['deployment_costs']['LSP7MintableInit'] = ethers.toNumber(
         lsp7MintableInitDeploymentReceipt.gasUsed,
@@ -241,7 +260,7 @@ describe('⛽📊 Gas Benchmark', () => {
       ).deploy();
 
       const lsp8MintableInitDeployTransaction = lsp8MintableInit.deploymentTransaction();
-      const lsp8MintableInitDeploymentReceipt = await lsp8MintableInitDeployTransaction.wait();
+      const lsp8MintableInitDeploymentReceipt = await lsp8MintableInitDeployTransaction?.wait();
 
       gasBenchmark['deployment_costs']['LSP8MintableInit'] = ethers.toNumber(
         lsp8MintableInitDeploymentReceipt.gasUsed,
@@ -327,7 +346,9 @@ describe('⛽📊 Gas Benchmark', () => {
       });
 
       describe('execute Array', () => {
-        let universalProfile1: UniversalProfileInit, universalProfile2, universalProfile3;
+        let universalProfile1: UniversalProfileInit,
+          universalProfile2: UniversalProfileInit,
+          universalProfile3: UniversalProfileInit;
 
         before(async () => {
           context = await buildUniversalProfileContext(
@@ -634,7 +655,7 @@ describe('⛽📊 Gas Benchmark', () => {
     describe('Tokens', () => {
       let lsp7Token: LSP7MintableInit;
       let lsp8Token: LSP8MintableInit;
-      let universalProfile1;
+      let universalProfile1: UniversalProfileInit;
 
       before(async () => {
         context = await buildUniversalProfileContext(
@@ -778,7 +799,7 @@ describe('⛽📊 Gas Benchmark', () => {
       describe('main controller (this browser extension)', () => {
         let context: LSP6TestContext;
 
-        let recipientEOA: SignerWithAddress;
+        let recipientEOA: HardhatEthersSigner;
         // setup Alice's Universal Profile as a recipient of LYX and tokens transactions
         let aliceUP: UniversalProfileInit;
 
@@ -968,13 +989,13 @@ describe('⛽📊 Gas Benchmark', () => {
       describe('controllers with some restrictions', () => {
         let context: LSP6TestContext;
 
-        let recipientEOA: SignerWithAddress;
+        let recipientEOA: HardhatEthersSigner;
         // setup Alice's Universal Profile as a recipient of LYX and tokens transactions
         let aliceUP: UniversalProfileInit;
 
-        let canTransferValueToOneAddress: SignerWithAddress,
-          canTransferTwoTokens: SignerWithAddress,
-          canTransferTwoNFTs: SignerWithAddress;
+        let canTransferValueToOneAddress: HardhatEthersSigner,
+          canTransferTwoTokens: HardhatEthersSigner,
+          canTransferTwoNFTs: HardhatEthersSigner;
 
         let allowedAddressToTransferValue: string;
 
@@ -1232,7 +1253,7 @@ describe('⛽📊 Gas Benchmark', () => {
     describe('`setData(...)` via Key Manager', () => {
       let context: LSP6TestContext;
 
-      let controllerToAddEditAndRemove: SignerWithAddress;
+      let controllerToAddEditAndRemove: HardhatEthersSigner;
 
       const allowedERC725YDataKeys = [
         ethers.keccak256(ethers.toUtf8Bytes('key1')),
@@ -1575,11 +1596,11 @@ describe('⛽📊 Gas Benchmark', () => {
       });
 
       describe('restricted controllers', () => {
-        let controllercanSetTwoDataKeys: SignerWithAddress,
-          controllerCanAddControllers: SignerWithAddress,
-          controllerCanEditPermissions: SignerWithAddress,
-          controllerCanSetTenDataKeys: SignerWithAddress,
-          controllerCanSetDataAndAddControllers: SignerWithAddress;
+        let controllercanSetTwoDataKeys: HardhatEthersSigner,
+          controllerCanAddControllers: HardhatEthersSigner,
+          controllerCanEditPermissions: HardhatEthersSigner,
+          controllerCanSetTenDataKeys: HardhatEthersSigner,
+          controllerCanSetDataAndAddControllers: HardhatEthersSigner;
 
         before(async () => {
           context = await buildLSP6TestContext(

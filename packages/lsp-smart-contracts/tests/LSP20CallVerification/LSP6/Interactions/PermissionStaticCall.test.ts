@@ -1,28 +1,31 @@
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
-import { TargetContract, TargetContract__factory } from '../../../../typechain';
+import {
+  type TargetContract,
+  TargetContract__factory,
+} from '../../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
+import type { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 // helpers
-import { abiCoder, combineAllowedCalls, combineCallTypes } from '../../../utils/helpers';
+import { abiCoder, combineAllowedCalls, combineCallTypes } from '../../../utils/helpers.js';
 
 export const shouldBehaveLikePermissionStaticCall = (
   buildContext: () => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
-  let addressCanMakeStaticCall: SignerWithAddress,
-    addressCannotMakeStaticCall: SignerWithAddress,
-    addressCanMakeStaticCallNoAllowedCalls: SignerWithAddress;
+  let addressCanMakeStaticCall: HardhatEthersSigner,
+    addressCannotMakeStaticCall: HardhatEthersSigner,
+    addressCanMakeStaticCallNoAllowedCalls: HardhatEthersSigner;
 
   let targetContract: TargetContract;
 
@@ -119,7 +122,7 @@ export const shouldBehaveLikePermissionStaticCall = (
             0,
             targetContractPayload,
           ),
-      ).to.be.reverted;
+      ).to.be.revert(context.ethers);
 
       // ensure state hasn't changed.
       const newValue = await targetContract.getName();
@@ -185,7 +188,7 @@ export const shouldBehaveLikePermissionStaticCall = (
   });
 
   describe('when caller has permission STATICCALL + 2 x allowed addresses', () => {
-    let caller: SignerWithAddress;
+    let caller: HardhatEthersSigner;
     let allowedTargetContracts: [TargetContract, TargetContract];
 
     before(async () => {
@@ -291,7 +294,7 @@ export const shouldBehaveLikePermissionStaticCall = (
               0,
               targetPayload,
             ),
-        ).to.be.reverted;
+        ).to.be.revert(context.ethers);
       });
 
       it('should revert when calling state changing function -> setNumber(uint256)', async () => {
@@ -308,7 +311,7 @@ export const shouldBehaveLikePermissionStaticCall = (
               0,
               targetPayload,
             ),
-        ).to.be.reverted;
+        ).to.be.revert(context.ethers);
       });
     });
 
@@ -363,7 +366,7 @@ export const shouldBehaveLikePermissionStaticCall = (
               0,
               targetPayload,
             ),
-        ).to.be.reverted;
+        ).to.be.revert(context.ethers);
       });
 
       it('should revert when calling state changing function -> setNumber(uint256)', async () => {
@@ -380,13 +383,13 @@ export const shouldBehaveLikePermissionStaticCall = (
               0,
               targetPayload,
             ),
-        ).to.be.reverted;
+        ).to.be.revert(context.ethers);
       });
     });
   });
 
   describe('when caller has permission SUPER_STATICCALL + 2 allowed addresses', () => {
-    let caller: SignerWithAddress;
+    let caller: HardhatEthersSigner;
     let allowedTargetContracts: [TargetContract, TargetContract];
 
     before(async () => {

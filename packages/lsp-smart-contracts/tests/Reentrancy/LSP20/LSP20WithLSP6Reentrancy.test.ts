@@ -1,14 +1,14 @@
 // setup
-import { LSP6TestContext } from '../../utils/context';
-import { buildReentrancyContext } from './reentrancyHelpers';
+import { type LSP6TestContext } from '../../utils/context.js';
+import { buildReentrancyContext } from './reentrancyHelpers.js';
 
 // tests
-import { testERC725XExecuteToERC725XExecute } from './ERC725XExecuteToERC725XExecute.test';
-import { testERC725XExecuteToLSP6ExecuteRelayCall } from './ERC725XExecuteToLSP6ExecuteRelayCall.test';
+import { testERC725XExecuteToERC725XExecute } from './ERC725XExecuteToERC725XExecute.test.js';
+import { testERC725XExecuteToLSP6ExecuteRelayCall } from './ERC725XExecuteToLSP6ExecuteRelayCall.test.js';
 
-import { testERC725XBatchExecuteToERC725XExecute } from './ERC725XBatchExecuteToERC725XExecute.test';
-import { testERC725XExecuteToLSP6BatchExecuteRelayCall } from './ERC725XExecuteToLSP6BatchExecuteRelayCall.test';
-import { testERC725XExecuteToERC725XExecuteBatch } from './ERC725XExecuteToERC725XBatchExecute.test';
+import { testERC725XBatchExecuteToERC725XExecute } from './ERC725XBatchExecuteToERC725XExecute.test.js';
+import { testERC725XExecuteToLSP6BatchExecuteRelayCall } from './ERC725XExecuteToLSP6BatchExecuteRelayCall.test.js';
+import { testERC725XExecuteToERC725XExecuteBatch } from './ERC725XExecuteToERC725XBatchExecute.test.js';
 
 export const shouldBehaveLikeLSP20WithLSP6ReentrancyScenarios = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,

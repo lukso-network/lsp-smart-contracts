@@ -1,18 +1,21 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { hexlify, keccak256, parseEther, randomBytes, toUtf8Bytes } from 'ethers';
 
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner, HardhatEthers } from '@nomicfoundation/hardhat-ethers/types';
 // LSP7 + LSP8
-import { LSP7DigitalAsset, LSP8IdentifiableDigitalAsset, LSP9Vault } from '../../typechain';
+import { LSP7DigitalAsset } from '../../../lsp7-contracts/types/ethers-contracts/index.js';
+import { LSP8IdentifiableDigitalAsset } from '../../../lsp8-contracts/types/ethers-contracts/index.js';
+import { LSP9Vault } from '../../../lsp9-contracts/types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../constants';
-import { abiCoder } from '../utils/helpers';
+import { ERC725YDataKeys } from '../../constants.js';
+import { abiCoder } from '../utils/helpers.js';
 
 export type LS4DigitalAssetMetadataTestContext = {
-  accounts: SignerWithAddress[];
+  ethers: HardhatEthers;
+  accounts: HardhatEthersSigner[];
   contract: LSP7DigitalAsset | LSP8IdentifiableDigitalAsset | LSP9Vault;
-  deployParams: { owner: SignerWithAddress; lsp4TokenType: number };
+  deployParams: { owner: HardhatEthersSigner; lsp4TokenType: number };
 };
 
 export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
@@ -27,9 +30,9 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
   describe('when setting data on ERC725Y storage', () => {
     describe('when sending value while setting data', () => {
       it('should revert with `setData`', async () => {
-        const msgValue = ethers.parseEther('2');
-        const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
-        const value = ethers.hexlify(ethers.randomBytes(256));
+        const msgValue = parseEther('2');
+        const key = keccak256(toUtf8Bytes('My Key'));
+        const value = hexlify(randomBytes(256));
 
         await expect(
           context.contract
@@ -39,9 +42,9 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
       });
 
       it('should revert with `setDataBatch`', async () => {
-        const msgValue = ethers.parseEther('2');
-        const key = [ethers.keccak256(ethers.toUtf8Bytes('My Key'))];
-        const value = [ethers.hexlify(ethers.randomBytes(256))];
+        const msgValue = parseEther('2');
+        const key = [keccak256(toUtf8Bytes('My Key'))];
+        const value = [hexlify(randomBytes(256))];
 
         await expect(
           context.contract
@@ -53,7 +56,7 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
 
     it('should revert when trying to edit Token Name', async () => {
       const key = ERC725YDataKeys.LSP4['LSP4TokenName'];
-      const value = ethers.hexlify(ethers.toUtf8Bytes('Overriden Token Name'));
+      const value = hexlify(toUtf8Bytes('Overriden Token Name'));
 
       expect(
         context.contract.connect(context.deployParams.owner).setData(key, value),
@@ -62,7 +65,7 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
 
     it('should revert when trying to edit Token Symbol', async () => {
       const key = ERC725YDataKeys.LSP4['LSP4TokenSymbol'];
-      const value = ethers.hexlify(ethers.toUtf8Bytes('BAD'));
+      const value = hexlify(toUtf8Bytes('BAD'));
 
       expect(
         context.contract.connect(context.deployParams.owner).setData(key, value),
@@ -80,8 +83,8 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
 
     describe('when setting a data key with a value less than 256 bytes', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
-        const value = ethers.hexlify(ethers.randomBytes(200));
+        const key = keccak256(toUtf8Bytes('My Key'));
+        const value = hexlify(randomBytes(200));
 
         await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
           .to.emit(context.contract, 'DataChanged')
@@ -94,8 +97,8 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
 
     describe('when setting a data key with a value more than 256 bytes', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
-        const value = ethers.hexlify(ethers.randomBytes(500));
+        const key = keccak256(toUtf8Bytes('My Key'));
+        const value = hexlify(randomBytes(500));
 
         await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
           .to.emit(context.contract, 'DataChanged')
@@ -108,8 +111,8 @@ export const shouldBehaveLikeLSP4DigitalAssetMetadata = (
 
     describe('when setting a data key with a value exactly 256 bytes long', () => {
       it('should emit DataChanged event with the whole data value', async () => {
-        const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
-        const value = ethers.hexlify(ethers.randomBytes(256));
+        const key = keccak256(toUtf8Bytes('My Key'));
+        const value = hexlify(randomBytes(256));
 
         await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
           .to.emit(context.contract, 'DataChanged')

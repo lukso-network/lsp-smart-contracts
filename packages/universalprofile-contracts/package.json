@@ -4,6 +4,7 @@
   "description": "Package for Universal Profile, an implementation of LSP0 ERC725 Account & LSP3 Profile Metadata standards combined together.",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -41,15 +42,15 @@
       "require": "./dist/abi.cjs",
       "import": "./dist/abi.mjs"
     },
+    "./contracts/*": "./contracts/*",
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
-    "build:js": "unbuild",
     "build:types": "wagmi generate",
-    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
+    "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
@@ -60,8 +61,14 @@
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
-    "@openzeppelin/contracts": "^4.9.3",
-    "@lukso/lsp0-contracts": "~0.15.0",
-    "@lukso/lsp3-contracts": "~0.15.0"
+    "@lukso/lsp0-contracts": "~0.15.5",
+    "@lukso/lsp3-contracts": "~0.16.6",
+    "@openzeppelin/contracts": "^4.9.3"
+  },
+  "devDependencies": {
+    "@lukso/hardhat-packager-v3": "*",
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "eslint-config-custom": "*",
+    "hardhat": "^3.0.7"
   }
 }

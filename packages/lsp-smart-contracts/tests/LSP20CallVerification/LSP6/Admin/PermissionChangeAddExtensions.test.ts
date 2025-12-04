@@ -1,74 +1,82 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import {
+  hexlify,
+  keccak256,
+  randomBytes,
+  toBeHex,
+  toUtf8Bytes,
+  zeroPadValue,
+  Wallet,
+} from 'ethers';
 
 // constants
-import { ERC725YDataKeys } from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants.js';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
+import type { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 // helpers
 import {
   combinePermissions,
   encodeCompactBytesArray,
   getRandomAddresses,
-} from '../../../utils/helpers';
+} from '../../../utils/helpers.js';
 
-export const shouldBehaveLikePermissionChangeOrAddExtensions = (
+export const shouldBehaveLikePermissionChangeOrAddExtensions = async (
   buildContext: () => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
   describe('setting Extension Handler keys (CHANGE vs ADD)', () => {
-    let canAddAndChangeExtensions: SignerWithAddress,
-      canOnlyAddExtensions: SignerWithAddress,
-      canOnlyChangeExtensions: SignerWithAddress,
-      canOnlySuperSetData: SignerWithAddress,
-      canOnlySetData: SignerWithAddress,
-      canOnlyCall;
+    let canAddAndChangeExtensions: HardhatEthersSigner,
+      canOnlyAddExtensions: HardhatEthersSigner,
+      canOnlyChangeExtensions: HardhatEthersSigner,
+      canOnlySuperSetData: HardhatEthersSigner,
+      canOnlySetData: HardhatEthersSigner,
+      canOnlyCall: HardhatEthersSigner;
 
     let permissionArrayKeys: string[] = [];
     let permissionArrayValues: string[] = [];
 
     // Generate few bytes32 Extension Handler dataKeys
-    let extensionHandlerKey1,
-      extensionHandlerKey2,
-      extensionHandlerKey3,
-      extensionHandlerKey4,
-      extensionHandlerKey5;
+    let extensionHandlerKey1: string,
+      extensionHandlerKey2: string,
+      extensionHandlerKey3: string,
+      extensionHandlerKey4: string,
+      extensionHandlerKey5: string;
 
     // Generate few addresses to be used as dataValue for Extension Handler dataKeys
-    let extensionA, extensionB, extensionC, extensionD;
+    let extensionA: string, extensionB: string, extensionC: string, extensionD: string;
 
     before(async () => {
       context = await buildContext();
 
       extensionHandlerKey1 =
         ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-        ethers.hexlify(ethers.randomBytes(4)).substring(2) + // function selector
+        hexlify(randomBytes(4)).substring(2) + // function selector
         '00000000000000000000000000000000'; // zero padded
 
       extensionHandlerKey2 =
         ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-        ethers.hexlify(ethers.randomBytes(4)).substring(2) + // function selector
+        hexlify(randomBytes(4)).substring(2) + // function selector
         '00000000000000000000000000000000'; // zero padded
 
       extensionHandlerKey3 =
         ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-        ethers.hexlify(ethers.randomBytes(4)).substring(2) + // function selector
+        hexlify(randomBytes(4)).substring(2) + // function selector
         '00000000000000000000000000000000'; // zero padded
 
       extensionHandlerKey4 =
         ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-        ethers.hexlify(ethers.randomBytes(4)).substring(2) + // function selector
+        hexlify(randomBytes(4)).substring(2) + // function selector
         '00000000000000000000000000000000'; // zero padded
 
       extensionHandlerKey5 =
         ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-        ethers.hexlify(ethers.randomBytes(4)).substring(2) + // function selector
+        hexlify(randomBytes(4)).substring(2) + // function selector
         '00000000000000000000000000000000'; // zero padded
 
       [extensionA, extensionB, extensionC, extensionD] = getRandomAddresses(4);
@@ -108,9 +116,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         encodeCompactBytesArray([
           // Adding the Extension Handler Keys as AllowedERC725YDataKey to test if it break the behavior
           ERC725YDataKeys.LSP17.LSP17ExtensionPrefix,
-          ethers.keccak256(ethers.toUtf8Bytes('MyFirstKey')),
-          ethers.keccak256(ethers.toUtf8Bytes('MySecondKey')),
-          ethers.keccak256(ethers.toUtf8Bytes('MyThirdKey')),
+          keccak256(toUtf8Bytes('MyFirstKey')),
+          keccak256(toUtf8Bytes('MySecondKey')),
+          keccak256(toUtf8Bytes('MyThirdKey')),
         ]),
         PERMISSIONS.CALL,
       ];
@@ -127,7 +135,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
       ];
 
       permissionArrayValues = [
-        ethers.zeroPadValue(ethers.toBeHex(7), 16),
+        zeroPadValue(toBeHex(7), 16),
         context.mainController.address,
         canAddAndChangeExtensions.address,
         canOnlyAddExtensions.address,
@@ -527,9 +535,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataKeys: [
               extensionHandlerKey5,
               ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
-              ethers.keccak256(ethers.toUtf8Bytes('MyKey')),
+              keccak256(toUtf8Bytes('MyKey')),
             ],
-            dataValues: [extensionA, ethers.zeroPadValue(ethers.toBeHex(7), 16), '0xaabbccdd'],
+            dataValues: [extensionA, zeroPadValue(toBeHex(7), 16), '0xaabbccdd'],
           };
 
           await context.universalProfile
@@ -546,9 +554,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataKeys: [
               extensionHandlerKey5,
               ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
-              ethers.keccak256(ethers.toUtf8Bytes('MySecondKey')),
+              keccak256(toUtf8Bytes('MySecondKey')),
             ],
-            dataValues: [extensionB, ethers.zeroPadValue(ethers.toBeHex(8), 16), '0xaabb'],
+            dataValues: [extensionB, zeroPadValue(toBeHex(8), 16), '0xaabb'],
           };
 
           await context.universalProfile
@@ -565,9 +573,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
             dataKeys: [
               extensionHandlerKey5,
               ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
-              ethers.keccak256(ethers.toUtf8Bytes('MySecondKey')),
+              keccak256(toUtf8Bytes('MySecondKey')),
             ],
-            dataValues: ['0x', ethers.zeroPadValue(ethers.toBeHex(7), 16), '0x'],
+            dataValues: ['0x', zeroPadValue(toBeHex(7), 16), '0x'],
           };
 
           await context.universalProfile
@@ -587,9 +595,9 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
               dataKeys: [
                 extensionHandlerKey5,
                 ERC725YDataKeys.LSP6['AddressPermissions[]'].length,
-                ethers.keccak256(ethers.toUtf8Bytes('MyKey')),
+                keccak256(toUtf8Bytes('MyKey')),
               ],
-              dataValues: [extensionA, ethers.zeroPadValue(ethers.toBeHex(7), 16), '0xaabbccdd'],
+              dataValues: [extensionA, zeroPadValue(toBeHex(7), 16), '0xaabbccdd'],
             };
 
             await expect(
@@ -605,7 +613,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         describe('when adding a ExtensionHandler and ERC725Y Data Key', () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
-              dataKeys: [extensionHandlerKey5, ethers.keccak256(ethers.toUtf8Bytes('MyKey'))],
+              dataKeys: [extensionHandlerKey5, keccak256(toUtf8Bytes('MyKey'))],
               dataValues: [extensionA, '0xaabbccdd'],
             };
 
@@ -688,7 +696,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         describe('when adding a ExtensionHandler and ERC725Y Data Key', () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
-              dataKeys: [extensionHandlerKey4, ethers.keccak256(ethers.toUtf8Bytes('MyKey'))],
+              dataKeys: [extensionHandlerKey4, keccak256(toUtf8Bytes('MyKey'))],
               dataValues: [extensionA, '0xaabbccdd'],
             };
 
@@ -734,7 +742,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
                 extensionHandlerKey5,
                 extensionHandlerKey1,
                 extensionHandlerKey2,
-                ethers.keccak256(ethers.toUtf8Bytes('MyKey')),
+                keccak256(toUtf8Bytes('MyKey')),
               ],
               dataValues: [extensionA, extensionB, extensionC, '0xaabbccdd'],
             };
@@ -815,7 +823,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         describe('when adding a ExtensionHandler and ERC725Y Data Key', () => {
           it("should revert because of caller don't have SETDATA Permission", async () => {
             const payloadParam = {
-              dataKeys: [extensionHandlerKey4, ethers.keccak256(ethers.toUtf8Bytes('MyKey'))],
+              dataKeys: [extensionHandlerKey4, keccak256(toUtf8Bytes('MyKey'))],
               dataValues: [extensionA, '0xaabbccdd'],
             };
 
@@ -850,7 +858,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         describe('when Adding multiple ExtensionHandler keys with adding ERC725Y Data Key', () => {
           it("should revert because caller don't have ADDExtensions permission", async () => {
             const payloadParam = {
-              dataKeys: [extensionHandlerKey4, ethers.keccak256(ethers.toUtf8Bytes('MyKey'))],
+              dataKeys: [extensionHandlerKey4, keccak256(toUtf8Bytes('MyKey'))],
               dataValues: [extensionA, '0xaabbccdd'],
             };
 
@@ -886,7 +894,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
         describe('when Adding multiple ExtensionHandler keys with adding other allowedERC725YDataKey', () => {
           it("should revert because caller don't have ADDExtensions permission", async () => {
             const payloadParam = {
-              dataKeys: [extensionHandlerKey4, ethers.keccak256(ethers.toUtf8Bytes('MyKey'))],
+              dataKeys: [extensionHandlerKey4, keccak256(toUtf8Bytes('MyKey'))],
               dataValues: [extensionA, '0xaabbccdd'],
             };
 
@@ -917,10 +925,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
           describe('When adding ExtensionHandler key and one of his allowedERC725Y Data Key', () => {
             it('should pass', async () => {
               const payloadParam = {
-                dataKeys: [
-                  extensionHandlerKey4,
-                  ethers.keccak256(ethers.toUtf8Bytes('MyFirstKey')),
-                ],
+                dataKeys: [extensionHandlerKey4, keccak256(toUtf8Bytes('MyFirstKey'))],
                 dataValues: [extensionA, '0xaabbccdd'],
               };
 
@@ -940,9 +945,8 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
     describe('when setting random bytes under the LSP17Extension data key ', () => {
       it('should be allowed to set a 20 bytes long address', async () => {
         const key =
-          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-          ethers.hexlify(ethers.randomBytes(20)).substring(2);
-        const value = ethers.Wallet.createRandom().address.toLowerCase();
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix + hexlify(randomBytes(20)).substring(2);
+        const value = Wallet.createRandom().address.toLowerCase();
 
         await context.universalProfile.connect(context.mainController).setData(key, value);
 
@@ -952,9 +956,8 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
       it('should be allowed to set a 21 bytes long address', async () => {
         const key =
-          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-          ethers.hexlify(ethers.randomBytes(20)).substring(2);
-        const value = ethers.Wallet.createRandom().address.toLowerCase() + '00';
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix + hexlify(randomBytes(20)).substring(2);
+        const value = Wallet.createRandom().address.toLowerCase() + '00';
 
         await context.universalProfile.connect(context.mainController).setData(key, value);
 
@@ -964,8 +967,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
       it('should revert when setting a random 10 bytes value', async () => {
         const key =
-          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-          ethers.hexlify(ethers.randomBytes(20)).substring(2);
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix + hexlify(randomBytes(20)).substring(2);
         const randomValue = '0xcafecafecafecafecafe';
 
         await expect(
@@ -977,8 +979,7 @@ export const shouldBehaveLikePermissionChangeOrAddExtensions = (
 
       it('should revert when setting a random 30 bytes value', async () => {
         const key =
-          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix +
-          ethers.hexlify(ethers.randomBytes(20)).substring(2);
+          ERC725YDataKeys.LSP17.LSP17ExtensionPrefix + hexlify(randomBytes(20)).substring(2);
         const randomValue = '0xbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef';
 
         await expect(

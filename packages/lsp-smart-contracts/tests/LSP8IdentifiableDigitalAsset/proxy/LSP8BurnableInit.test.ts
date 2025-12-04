@@ -1,17 +1,19 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
-import { LSP8BurnableInitTester, LSP8BurnableInitTester__factory } from '../../../typechain';
+import {
+  type LSP8BurnableInitTester,
+  LSP8BurnableInitTester__factory,
+} from '../../../types/ethers-contracts/index.js';
 
-import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour.js';
 
-import { deployProxy } from '../../utils/fixtures';
+import { deployProxy } from '../../utils/fixtures.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 type LSP8BurnableInitTestContext = {
-  accounts: SignerWithAddress[];
+  accounts: HardhatEthersSigner[];
   lsp8Burnable: LSP8BurnableInitTester;
   deployParams: {
     name: string;
@@ -24,6 +26,8 @@ type LSP8BurnableInitTestContext = {
 
 describe('LSP8BurnableInit with proxy', () => {
   const buildTestContext = async () => {
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       name: 'LSP8 Burnable - deployed with constructor',

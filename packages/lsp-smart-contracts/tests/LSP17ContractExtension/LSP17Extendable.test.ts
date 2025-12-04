@@ -1,17 +1,18 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 import {
-  LSP17ExtendableTester,
+  type LSP17ExtendableTester,
   LSP17ExtendableTester__factory,
-  EmitEventExtension,
+  type EmitEventExtension,
   EmitEventExtension__factory,
-  RevertErrorsTestExtension,
+  type RevertErrorsTestExtension,
   RevertErrorsTestExtension__factory,
-} from '../../typechain';
+} from '../../types/ethers-contracts/index.js';
 
 describe('LSP17Extendable - Basic Implementation', () => {
-  let accounts;
+  let ethers: HardhatEthers;
+  let accounts: HardhatEthersSigner[];
 
   let lsp17Implementation: LSP17ExtendableTester;
   let exampleExtension: EmitEventExtension;
@@ -37,6 +38,8 @@ describe('LSP17Extendable - Basic Implementation', () => {
     revertErrorsExtensionInterface.getFunction('revertWithNoErrorData').selector;
 
   before('setup', async () => {
+    const { network } = await import('hardhat');
+    ({ ethers } = await network.connect());
     accounts = await ethers.getSigners();
 
     lsp17Implementation = await new LSP17ExtendableTester__factory(accounts[0]).deploy();
@@ -148,7 +151,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
             to: await lsp17Implementation.getAddress(),
             data: selectorRevertPanicError,
           }),
-        ).to.be.revertedWithPanic('0x11' || 17);
+        ).to.be.revertedWithPanic('0x11');
       });
 
       it('should not bubble up anything with empty error data (`revert()`)', async () => {
@@ -157,7 +160,7 @@ describe('LSP17Extendable - Basic Implementation', () => {
             to: await lsp17Implementation.getAddress(),
             data: selectorRevertNoErrorData,
           }),
-        ).to.be.reverted;
+        ).to.revert(ethers);
       });
     });
   });

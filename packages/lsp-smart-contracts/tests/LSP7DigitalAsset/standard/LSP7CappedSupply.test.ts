@@ -1,24 +1,26 @@
-import { ethers } from 'hardhat';
+import { toBigInt } from 'ethers';
 
-import { LSP7CappedSupplyTester__factory } from '../../../typechain';
+import { LSP7CappedSupplyTester__factory } from '../../../types/ethers-contracts/index.js';
 
-import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour';
+import { shouldInitializeLikeLSP7 } from '../LSP7DigitalAsset.behaviour.js';
 import {
-  shouldBehaveLikeLSP7CappedSupply,
-  LSP7CappedSupplyTestContext,
   getNamedAccounts,
-} from '../LSP7CappedSupply.behaviour';
+  shouldBehaveLikeLSP7CappedSupply,
+  type LSP7CappedSupplyTestContext,
+} from '../LSP7CappedSupply.behaviour.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 
 describe('LSP7CappedSupply with constructor', () => {
   const buildTestContext = async () => {
-    const accounts = await getNamedAccounts();
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
     const deployParams = {
       name: 'LSP7 capped supply - deployed with constructor',
       symbol: 'CAP',
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
-      tokenSupplyCap: ethers.toBigInt('2'),
+      tokenSupplyCap: toBigInt('2'),
     };
 
     const lsp7CappedSupply = await new LSP7CappedSupplyTester__factory(accounts.owner).deploy(
@@ -29,7 +31,7 @@ describe('LSP7CappedSupply with constructor', () => {
       deployParams.tokenSupplyCap,
     );
 
-    return { accounts, lsp7CappedSupply, deployParams };
+    return { ethers, accounts, lsp7CappedSupply, deployParams };
   };
 
   describe('when deploying the contract', () => {
@@ -40,9 +42,10 @@ describe('LSP7CappedSupply with constructor', () => {
     });
 
     shouldInitializeLikeLSP7(async () => {
-      const { lsp7CappedSupply: lsp7, deployParams } = context;
+      const { ethers, lsp7CappedSupply: lsp7, deployParams } = context;
 
       return {
+        ethers,
         lsp7,
         deployParams,
         initializeTransaction: context.lsp7CappedSupply.deploymentTransaction(),

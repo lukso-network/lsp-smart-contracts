@@ -1,43 +1,49 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { network } from 'hardhat';
+import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+
+import { UniversalReceiverTester__factory } from '../types/ethers-contracts/index.js';
 import {
-  UniversalReceiverTester__factory,
+  type UniversalProfileInit,
   UniversalProfileInit__factory,
-  LSP0ERC725Account,
-} from '../../../typechain';
-import { deployProxy } from './utils/fixtures';
+} from '../../universalprofile-contracts/types/ethers-contracts/index.js';
+import type { LSP0ERC725Account } from '../../lsp0-contracts/types/ethers-contracts/LSP0ERC725Account.js';
+import { deployProxy } from './utils/fixtures.js';
 
 import {
-  LSP1TestContext,
+  type LSP1TestContext,
   shouldBehaveLikeLSP1,
-} from './LSP1UniversalReceiver/LSP1UniversalReceiver.behaviour';
+} from './LSP1UniversalReceiver/LSP1UniversalReceiver.behaviour.js';
 
 import {
-  LSP17TestContext,
+  type LSP17TestContext,
   shouldBehaveLikeLSP17,
-} from './LSP17ContractExtension/LSP17Extendable.behaviour';
+} from './LSP17ContractExtension/LSP17Extendable.behaviour.js';
 
 import {
-  LSP20TestContext,
+  type LSP20TestContext,
   shouldBehaveLikeLSP20,
-} from './LSP20CallVerification/LSP20CallVerification.behaviour';
+} from './LSP20CallVerification/LSP20CallVerification.behaviour.js';
 
 import {
-  LSP3TestContext,
+  type LSP3TestContext,
   shouldInitializeLikeLSP3,
   shouldBehaveLikeLSP3,
-} from './UniversalProfile.behaviour';
-import { provider } from './utils/helpers';
+} from './UniversalProfile.behaviour.js';
 import {
-  LSP14CombinedWithLSP20TestContext,
+  type LSP14CombinedWithLSP20TestContext,
   shouldBehaveLikeLSP14WithLSP20,
-} from './LSP20CallVerification/LSP20WithLSP14.behaviour';
+} from './LSP20CallVerification/LSP20WithLSP14.behaviour.js';
 
 describe('UniversalProfileInit with proxy', () => {
-  let universalProfileInit;
-  let accounts;
+  let ethers: HardhatEthers;
+  let networkHelpers: NetworkHelpers;
+  let universalProfileInit: UniversalProfileInit;
+  let accounts: HardhatEthersSigner[];
 
   before(async () => {
+    ({ ethers, networkHelpers } = await network.connect());
     accounts = await ethers.getSigners();
     universalProfileInit = await new UniversalProfileInit__factory(accounts[0]).deploy();
   });
@@ -53,15 +59,20 @@ describe('UniversalProfileInit with proxy', () => {
       accounts[0],
     );
 
-    const universalProfile = universalProfileInit.attach(universalProfileProxy);
+    const universalProfile = universalProfileInit.attach(
+      universalProfileProxy,
+    ) as UniversalProfileInit;
 
-    return { accounts, universalProfile, deployParams };
+    return { ethers, networkHelpers, accounts, universalProfile, deployParams };
   };
 
   const initializeProxy = async (context: LSP3TestContext) => {
-    return context.universalProfile['initialize(address)'](context.deployParams.owner.address, {
-      value: context.deployParams.initialFunding,
-    });
+    return (context.universalProfile as UniversalProfileInit).initialize(
+      context.deployParams.owner.address,
+      {
+        value: context.deployParams.initialFunding,
+      },
+    );
   };
 
   const buildLSP1TestContext = async (): Promise<LSP1TestContext> => {
@@ -70,13 +81,15 @@ describe('UniversalProfileInit with proxy', () => {
       accounts[0],
     );
 
-    const lsp1Implementation = universalProfileInit.attach(universalProfileProxy);
+    const lsp1Implementation = universalProfileInit.attach(
+      universalProfileProxy,
+    ) as UniversalProfileInit;
 
     await lsp1Implementation.initialize(accounts[0].address);
 
     const lsp1Checker = await new UniversalReceiverTester__factory(accounts[0]).deploy();
 
-    return { accounts, lsp1Implementation, lsp1Checker };
+    return { ethers, networkHelpers, accounts, lsp1Implementation, lsp1Checker };
   };
 
   const buildLSP14WithLSP20TestContext = async (
@@ -92,11 +105,15 @@ describe('UniversalProfileInit with proxy', () => {
       accounts[0],
     );
 
-    const universalProfile = universalProfileInit.attach(universalProfileProxy);
+    const universalProfile = universalProfileInit.attach(
+      universalProfileProxy,
+    ) as UniversalProfileInit;
 
     const onlyOwnerCustomError = 'OwnableCallerNotTheOwner';
 
     return {
+      ethers,
+      networkHelpers,
       accounts,
       contract: universalProfile,
       deployParams,
@@ -114,12 +131,15 @@ describe('UniversalProfileInit with proxy', () => {
       accounts[0],
     );
 
-    const universalProfile = universalProfileInit.attach(universalProfileProxy);
+    const universalProfile = universalProfileInit.attach(
+      universalProfileProxy,
+    ) as UniversalProfileInit;
 
-    return { accounts, contract: universalProfile, deployParams };
+    return { ethers, accounts, contract: universalProfile, deployParams };
   };
 
   const buildLSP20TestContext = async (): Promise<LSP20TestContext> => {
+    const { ethers, networkHelpers } = await network.connect();
     const accounts = await ethers.getSigners();
     const deployParams = {
       owner: accounts[0],
@@ -132,9 +152,11 @@ describe('UniversalProfileInit with proxy', () => {
       accounts[0],
     );
 
-    const universalProfile = universalProfileInit.attach(universalProfileProxy);
+    const universalProfile = universalProfileInit.attach(
+      universalProfileProxy,
+    ) as UniversalProfileInit;
 
-    return { accounts, universalProfile: universalProfile as UniversalProfile, deployParams };
+    return { ethers, networkHelpers, accounts, universalProfile: universalProfile, deployParams };
   };
 
   describe('when deploying the base implementation contract', () => {
@@ -158,7 +180,9 @@ describe('UniversalProfileInit with proxy', () => {
         it(`should have initialized with the correct funding amount (${testCase.initialFunding})`, async () => {
           const context = await buildLSP3TestContext(testCase.initialFunding);
           await initializeProxy(context);
-          const balance = await provider.getBalance(await context.universalProfile.getAddress());
+          const balance = await context.ethers.provider.getBalance(
+            await context.universalProfile.getAddress(),
+          );
           expect(balance).to.equal(testCase.initialFunding || 0);
         });
       });
@@ -203,6 +227,8 @@ describe('UniversalProfileInit with proxy', () => {
       const claimOwnershipContext = await buildLSP14WithLSP20TestContext(initialFunding);
 
       await initializeProxy({
+        ethers,
+        networkHelpers,
         accounts: claimOwnershipContext.accounts,
         universalProfile: claimOwnershipContext.contract as LSP0ERC725Account,
         deployParams: claimOwnershipContext.deployParams,
@@ -215,6 +241,8 @@ describe('UniversalProfileInit with proxy', () => {
       const fallbackExtensionContext = await buildLSP17TestContext();
 
       await initializeProxy({
+        ethers,
+        networkHelpers,
         accounts: fallbackExtensionContext.accounts,
         universalProfile: fallbackExtensionContext.contract as LSP0ERC725Account,
         deployParams: fallbackExtensionContext.deployParams,
@@ -227,6 +255,8 @@ describe('UniversalProfileInit with proxy', () => {
       const reverseVerificationContext = await buildLSP20TestContext();
 
       await initializeProxy({
+        ethers,
+        networkHelpers,
         accounts: reverseVerificationContext.accounts,
         universalProfile: reverseVerificationContext.universalProfile,
         deployParams: reverseVerificationContext.deployParams,

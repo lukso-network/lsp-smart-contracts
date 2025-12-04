@@ -1,22 +1,26 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { LSP8MintableInit, LSP8MintableInit__factory } from '../../../typechain';
-
-import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour';
 import {
-  shouldBehaveLikeLSP8Mintable,
-  LSP8MintableTestContext,
-  getNamedAccounts,
-} from '../LSP8Mintable.behaviour';
+  type LSP8MintableInit,
+  LSP8MintableInit__factory,
+} from '../../../../lsp8-contracts/types/ethers-contracts/index.js';
 
-import { deployProxy } from '../../utils/fixtures';
-import { ERC725YDataKeys } from '../../../constants';
+import { shouldInitializeLikeLSP8 } from '../LSP8IdentifiableDigitalAsset.behaviour.js';
+import {
+  getNamedAccounts,
+  shouldBehaveLikeLSP8Mintable,
+  type LSP8MintableTestContext,
+} from '../LSP8Mintable.behaviour.js';
+
+import { deployProxy } from '../../utils/fixtures.js';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
 describe('LSP8MintableInit with proxy', () => {
   const buildTestContext = async () => {
-    const accounts = await getNamedAccounts();
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
     const deployParams = {
       name: 'LSP8 Mintable - deployed with proxy',
       symbol: 'MNTBL',
@@ -37,7 +41,7 @@ describe('LSP8MintableInit with proxy', () => {
       lsp8MintableProxy,
     ) as LSP8MintableInit;
 
-    return { accounts, lsp8Mintable, deployParams };
+    return { ethers, accounts, lsp8Mintable, deployParams };
   };
 
   const initializeProxy = async (context: LSP8MintableTestContext) => {
@@ -52,6 +56,8 @@ describe('LSP8MintableInit with proxy', () => {
 
   describe('when deploying the base implementation contract', () => {
     it('should have initialized the tokenName + tokenSymbol to "" and contract owner to `address(0)`', async () => {
+      const { network } = await import('hardhat');
+      const { ethers } = await network.connect();
       const accounts = await ethers.getSigners();
 
       const lsp8MintableInit = await new LSP8MintableInit__factory(accounts[0]).deploy();
@@ -66,6 +72,8 @@ describe('LSP8MintableInit with proxy', () => {
     });
 
     it('prevent any address from calling the initialize(...) function on the implementation', async () => {
+      const { network } = await import('hardhat');
+      const { ethers } = await network.connect();
       const accounts = await ethers.getSigners();
 
       const lsp8Mintable = await new LSP8MintableInit__factory(accounts[0]).deploy();

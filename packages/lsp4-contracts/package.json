@@ -4,6 +4,7 @@
   "description": "Package for the LSP4 Digital Asset Metadata standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -42,13 +43,14 @@
     },
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./contracts/*": "./contracts/*"
   },
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
     "build:types": "wagmi generate",
-    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
+    "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
@@ -58,6 +60,12 @@
   },
   "dependencies": {
     "@erc725/smart-contracts-v8": "npm:@erc725/smart-contracts@8.0.0",
-    "@lukso/lsp2-contracts": "~0.15.0"
+    "@lukso/lsp2-contracts": "~0.15.4"
+  },
+  "devDependencies": {
+    "@lukso/hardhat-packager-v3": "*",
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "eslint-config-custom": "*",
+    "hardhat": "^3.0.7"
   }
 }

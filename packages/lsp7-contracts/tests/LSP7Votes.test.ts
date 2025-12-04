@@ -1,28 +1,35 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { AbiCoder, id, parseEther, ZeroAddress } from 'ethers';
+import { network } from 'hardhat';
+import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import {
   MyVotingToken,
   MyVotingToken__factory,
   MyGovernor,
   MyGovernor__factory,
-} from '../typechain';
-import { time, mine } from '@nomicfoundation/hardhat-network-helpers';
-import { LSP7_TYPE_IDS } from '../constants';
+  MockUniversalReceiver__factory,
+  MockUniversalReceiver,
+} from '../types/ethers-contracts/index.js';
+import { LSP7_TYPE_IDS } from '../constants.js';
+
+const { ethers } = await network.connect();
+
+const { networkHelpers } = await network.connect();
+const { time, mine } = networkHelpers;
 
 describe('Comprehensive Governor and Token Tests', () => {
   let token: MyVotingToken;
   let governor: MyGovernor;
-  let owner: SignerWithAddress;
-  let proposer: SignerWithAddress;
-  let voter1: SignerWithAddress;
-  let voter2: SignerWithAddress;
-  let voter3: SignerWithAddress;
-  let randomEOA: SignerWithAddress;
+  let owner: HardhatEthersSigner;
+  let proposer: HardhatEthersSigner;
+  let voter1: HardhatEthersSigner;
+  let voter2: HardhatEthersSigner;
+  let voter3: HardhatEthersSigner;
+  let randomEOA: HardhatEthersSigner;
 
   const VOTING_DELAY = 7200; // 1 day in blocks
   const VOTING_PERIOD = 7200; // 1 day in blocks
-  const PROPOSAL_THRESHOLD = ethers.parseEther('1'); // 1 full unit of token
+  const PROPOSAL_THRESHOLD = parseEther('1'); // 1 full unit of token
   const QUORUM_FRACTION = 1; // 1%
 
   beforeEach(async () => {
@@ -33,9 +40,9 @@ describe('Comprehensive Governor and Token Tests', () => {
 
     // Mint initial tokens
     await token.mint(proposer.address, PROPOSAL_THRESHOLD * BigInt(2));
-    await token.mint(voter1.address, ethers.parseEther('10'));
-    await token.mint(voter2.address, ethers.parseEther('20'));
-    await token.mint(voter3.address, ethers.parseEther('30'));
+    await token.mint(voter1.address, parseEther('10'));
+    await token.mint(voter2.address, parseEther('20'));
+    await token.mint(voter3.address, parseEther('30'));
   });
 
   describe('Token and Governor Setup', () => {
@@ -48,9 +55,9 @@ describe('Comprehensive Governor and Token Tests', () => {
 
     it('should have correct initial token distribution', async () => {
       expect(await token.balanceOf(proposer.address)).to.equal(PROPOSAL_THRESHOLD * BigInt(2));
-      expect(await token.balanceOf(voter1.address)).to.equal(ethers.parseEther('10'));
-      expect(await token.balanceOf(voter2.address)).to.equal(ethers.parseEther('20'));
-      expect(await token.balanceOf(voter3.address)).to.equal(ethers.parseEther('30'));
+      expect(await token.balanceOf(voter1.address)).to.equal(parseEther('10'));
+      expect(await token.balanceOf(voter2.address)).to.equal(parseEther('20'));
+      expect(await token.balanceOf(voter3.address)).to.equal(parseEther('30'));
     });
 
     it('should have zero initial voting power for all accounts', async () => {
@@ -94,17 +101,17 @@ describe('Comprehensive Governor and Token Tests', () => {
   describe('Voting Power and Delegation', () => {
     it('should correctly report voting power after delegation', async () => {
       await token.connect(voter1).delegate(voter1.address);
-      expect(await token.getVotes(voter1.address)).to.equal(ethers.parseEther('10'));
+      expect(await token.getVotes(voter1.address)).to.equal(parseEther('10'));
     });
 
     it('should correctly transfer voting power when transferring tokens', async () => {
       await token.connect(voter1).delegate(voter1.address);
       await token
         .connect(voter1)
-        .transfer(voter1.address, voter2.address, ethers.parseEther('5'), true, '0x');
+        .transfer(voter1.address, voter2.address, parseEther('5'), true, '0x');
 
-      expect(await token.getVotes(voter1.address)).to.equal(ethers.parseEther('5'));
-      expect(await token.balanceOf(voter2.address)).to.equal(ethers.parseEther('25'));
+      expect(await token.getVotes(voter1.address)).to.equal(parseEther('5'));
+      expect(await token.balanceOf(voter2.address)).to.equal(parseEther('25'));
     });
 
     it('should correctly report delegates', async () => {
@@ -122,22 +129,21 @@ describe('Comprehensive Governor and Token Tests', () => {
       await token.connect(voter1).delegate(voter1.address);
       await token
         .connect(voter2)
-        .transfer(voter2.address, voter1.address, ethers.parseEther('5'), true, '0x');
-      expect(await token.getVotes(voter1.address)).to.equal(ethers.parseEther('15'));
+        .transfer(voter2.address, voter1.address, parseEther('5'), true, '0x');
+      expect(await token.getVotes(voter1.address)).to.equal(parseEther('15'));
     });
 
     describe('Delegation Notifications', () => {
-      let mockUniversalReceiver;
+      let mockUniversalReceiver: MockUniversalReceiver;
 
       beforeEach(async () => {
-        const MockUniversalReceiver = await ethers.getContractFactory('MockUniversalReceiver');
-        mockUniversalReceiver = await MockUniversalReceiver.deploy();
+        mockUniversalReceiver = await new MockUniversalReceiver__factory(owner).deploy();
       });
 
       it('should notify delegatee with correct data format', async () => {
-        const expectedData = ethers.AbiCoder.defaultAbiCoder().encode(
+        const expectedData = AbiCoder.defaultAbiCoder().encode(
           ['address', 'address', 'uint256'],
-          [voter1.address, voter1.address, ethers.parseEther('10')],
+          [voter1.address, voter1.address, parseEther('10')],
         );
 
         await expect(token.connect(voter1).delegate(await mockUniversalReceiver.getAddress()))
@@ -159,7 +165,7 @@ describe('Comprehensive Governor and Token Tests', () => {
       });
 
       it('should not notify address(0)', async () => {
-        await expect(token.connect(voter1).delegate(ethers.ZeroAddress)).to.not.emit(
+        await expect(token.connect(voter1).delegate(ZeroAddress)).to.not.emit(
           mockUniversalReceiver,
           'UniversalReceiverCalled',
         );
@@ -203,9 +209,9 @@ describe('Comprehensive Governor and Token Tests', () => {
       await governor.connect(voter3).castVote(proposalId, 2); // Abstain
 
       const proposal = await governor.proposalVotes(proposalId);
-      expect(proposal.forVotes).to.equal(ethers.parseEther('10'));
-      expect(proposal.againstVotes).to.equal(ethers.parseEther('20'));
-      expect(proposal.abstainVotes).to.equal(ethers.parseEther('30'));
+      expect(proposal.forVotes).to.equal(parseEther('10'));
+      expect(proposal.againstVotes).to.equal(parseEther('20'));
+      expect(proposal.abstainVotes).to.equal(parseEther('30'));
     });
 
     it('should not allow voting after voting period has ended', async () => {
@@ -230,13 +236,13 @@ describe('Comprehensive Governor and Token Tests', () => {
       await governor.connect(voter3).castVote(proposalId, 1); // Ensure quorum and pass
 
       await expect(
-        governor.execute([randomEOA.address], [0], ['0xaabbccdd'], ethers.id('Proposal #1')),
+        governor.execute([randomEOA.address], [0], ['0xaabbccdd'], id('Proposal #1')),
       ).to.be.revertedWith('Governor: proposal not successful');
 
       await mine(await governor.votingPeriod());
 
       await expect(
-        governor.execute([randomEOA.address], [0], ['0xaabbccdd'], ethers.id('Proposal #1')),
+        governor.execute([randomEOA.address], [0], ['0xaabbccdd'], id('Proposal #1')),
       ).to.emit(governor, 'ProposalExecuted');
     });
 
@@ -255,31 +261,27 @@ describe('Comprehensive Governor and Token Tests', () => {
       await mine(); // Mine a block to record the delegation
 
       const blockNumber1 = await ethers.provider.getBlockNumber();
-      expect(await token.getPastVotes(voter1.address, blockNumber1 - 1)).to.equal(
-        ethers.parseEther('10'),
-      );
+      expect(await token.getPastVotes(voter1.address, blockNumber1 - 1)).to.equal(parseEther('10'));
 
-      await token.mint(voter1.address, ethers.parseEther('10'));
+      await token.mint(voter1.address, parseEther('10'));
       await mine(); // Mine a block to record the mint
 
       const blockNumber2 = await ethers.provider.getBlockNumber();
-      expect(await token.getPastVotes(voter1.address, blockNumber2 - 1)).to.equal(
-        ethers.parseEther('20'),
-      );
+      expect(await token.getPastVotes(voter1.address, blockNumber2 - 1)).to.equal(parseEther('20'));
     });
 
     it('should correctly report past total supply', async () => {
       const initialSupply = await token.totalSupply();
       const blockNumber1 = await ethers.provider.getBlockNumber();
 
-      await token.mint(voter1.address, ethers.parseEther('100'));
+      await token.mint(voter1.address, parseEther('100'));
       await mine(); // Mine a block to record the mint
 
       const blockNumber2 = await ethers.provider.getBlockNumber();
 
       expect(await token.getPastTotalSupply(blockNumber1)).to.equal(initialSupply);
       expect(await token.getPastTotalSupply(blockNumber2 - 1)).to.equal(
-        initialSupply + ethers.parseEther('100'),
+        initialSupply + parseEther('100'),
       );
     });
 

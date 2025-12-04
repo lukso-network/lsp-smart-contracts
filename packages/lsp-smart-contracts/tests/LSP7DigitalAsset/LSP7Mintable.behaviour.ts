@@ -1,29 +1,31 @@
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 import {
+  type UniversalReceiverDelegateTokenReentrant,
   UniversalReceiverDelegateTokenReentrant__factory,
-  LSP7Mintable,
-  UniversalProfileInit,
-  LSP6KeyManagerInit,
-  UniversalReceiverDelegateTokenReentrant,
-} from '../../typechain';
+} from '../../types/ethers-contracts/index.js';
+import { type LSP7Mintable } from '../../../lsp7-contracts/types/ethers-contracts/index.js';
+import { type UniversalProfileInit } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import { type LSP6KeyManagerInit } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
 
-import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
+import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures.js';
 
-import { ERC725YDataKeys } from '../../constants';
+import { ERC725YDataKeys } from '../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
-import { combineAllowedCalls, combinePermissions } from '../utils/helpers';
+import { combineAllowedCalls, combinePermissions } from '../utils/helpers.js';
+import { toBigInt } from 'ethers';
 
 export type LSP7MintableTestAccounts = {
-  owner: SignerWithAddress;
-  tokenReceiver: SignerWithAddress;
-  profileOwner: SignerWithAddress;
+  owner: HardhatEthersSigner;
+  tokenReceiver: HardhatEthersSigner;
+  profileOwner: HardhatEthersSigner;
 };
 
-export const getNamedAccounts = async (): Promise<LSP7MintableTestAccounts> => {
+export const getNamedAccounts = async (
+  ethers: HardhatEthers,
+): Promise<LSP7MintableTestAccounts> => {
   const [owner, tokenReceiver, profileOwner] = await ethers.getSigners();
   return { owner, tokenReceiver, profileOwner };
 };
@@ -38,6 +40,7 @@ export type LSP7MintableDeployParams = {
 };
 
 export type LSP7MintableTestContext = {
+  ethers: HardhatEthers;
   accounts: LSP7MintableTestAccounts;
   lsp7Mintable: LSP7Mintable;
   deployParams: LSP7MintableDeployParams;
@@ -69,7 +72,7 @@ export const shouldBehaveLikeLSP7Mintable = (
     });
 
     it('should increase the tokenReceiver balance', async () => {
-      const amountToMint = ethers.toBigInt('100');
+      const amountToMint = toBigInt('100');
 
       const tokenReceiverBalance = await context.lsp7Mintable.balanceOf(
         context.accounts.tokenReceiver.address,
@@ -81,7 +84,7 @@ export const shouldBehaveLikeLSP7Mintable = (
 
   describe('when non-owner minting tokens', () => {
     it('should revert', async () => {
-      const amountToMint = ethers.toBigInt('100');
+      const amountToMint = toBigInt('100');
 
       // use any other account
       const nonOwner = context.accounts.tokenReceiver;
@@ -93,8 +96,8 @@ export const shouldBehaveLikeLSP7Mintable = (
   });
 
   describe('when owner try to re-enter mint function through the UniversalReceiverDelegate', () => {
-    let universalProfile;
-    let lsp6KeyManager;
+    let universalProfile: UniversalProfileInit;
+    let lsp6KeyManager: LSP6KeyManagerInit;
 
     before(async () => {
       const [UP, KM] = await setupProfileWithKeyManagerWithURD(context.accounts.profileOwner);

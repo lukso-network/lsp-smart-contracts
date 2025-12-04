@@ -1,17 +1,17 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
 // constants
-import { ERC725YDataKeys } from '../../../constants';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { ALL_PERMISSIONS, PERMISSIONS } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6InternalsTestContext } from '../../utils/context';
-import { setupKeyManagerHelper } from '../../utils/fixtures';
+import { LSP6InternalsTestContext } from '../../utils/context.js';
+import { setupKeyManagerHelper } from '../../utils/fixtures.js';
 
 // helpers
-import { abiCoder, combinePermissions } from '../../utils/helpers';
+import { abiCoder, combinePermissions } from '../../utils/helpers.js';
+import { getAddress } from 'ethers';
 
 export const testReadingPermissionsInternals = (
   buildContext: () => Promise<LSP6InternalsTestContext>,
@@ -19,7 +19,7 @@ export const testReadingPermissionsInternals = (
   let context: LSP6InternalsTestContext;
 
   describe('`getPermissionsFor(...)` -> reading permissions', () => {
-    let addressCanSetData: SignerWithAddress, addressCanSetDataAndCall: SignerWithAddress;
+    let addressCanSetData: HardhatEthersSigner, addressCanSetDataAndCall: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -65,9 +65,9 @@ export const testReadingPermissionsInternals = (
   });
 
   describe('`getPermissionsFor(...)` -> reading empty permissions', () => {
-    let moreThan32EmptyBytes: SignerWithAddress,
-      lessThan32EmptyBytes: SignerWithAddress,
-      oneEmptyByte: SignerWithAddress;
+    let moreThan32EmptyBytes: HardhatEthersSigner,
+      lessThan32EmptyBytes: HardhatEthersSigner,
+      oneEmptyByte: HardhatEthersSigner;
 
     const expectedEmptyPermission = abiCoder.encode(
       ['bytes32'],
@@ -119,7 +119,7 @@ export const testReadingPermissionsInternals = (
   });
 
   describe('`includesPermissions(...)`', () => {
-    let addressCanSetData: SignerWithAddress;
+    let addressCanSetData: HardhatEthersSigner;
 
     before(async () => {
       context = await buildContext();
@@ -150,10 +150,10 @@ export const testReadingPermissionsInternals = (
   });
 
   describe('AddressPermissions[]', () => {
-    let firstBeneficiary: SignerWithAddress,
-      secondBeneficiary: SignerWithAddress,
-      thirdBeneficiary: SignerWithAddress,
-      fourthBeneficiary: SignerWithAddress;
+    let firstBeneficiary: HardhatEthersSigner,
+      secondBeneficiary: HardhatEthersSigner,
+      thirdBeneficiary: HardhatEthersSigner,
+      fourthBeneficiary: HardhatEthersSigner;
 
     let permissionArrayKeys: string[] = [];
     let permissionArrayValues: string[] = [];
@@ -225,7 +225,7 @@ export const testReadingPermissionsInternals = (
       it(`Checking address (=value) stored at AddressPermissions[${ii}]'`, async () => {
         let result = await context.universalProfile.getData(permissionArrayKeys[ii]);
         // raw bytes are stored lower case, so we need to checksum the address retrieved
-        result = ethers.getAddress(result);
+        result = getAddress(result);
         expect(result).to.equal(permissionArrayValues[ii]);
       });
     }

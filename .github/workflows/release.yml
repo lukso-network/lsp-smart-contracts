@@ -36,11 +36,11 @@ jobs:
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.releases_created }}
 
-      - name: Use Node.js v22
+      - name: Use Node.js v24
         uses: actions/setup-node@v4
         if: ${{ steps.release.outputs.releases_created }}
         with:
-          node-version: "22.x"
+          node-version: "24.x"
           registry-url: "https://registry.npmjs.org"
           scope: "@lukso"
           cache: "npm"
@@ -59,18 +59,14 @@ jobs:
       #   - errors (`ErrorSelectors`)
       #   - events (`EventSigHashes`)
       #   - state variables (`StateVariables`)
-      # - the typed ABIs that can be exported in ESM / common JS
-      #
-      # We want the `artifacts/` folder to be in the format `artifacts/*.json`. So we need to run `npm run build:package` twice:
-      # - 1st time so that `npm run build:types` generate the typed ABIs consumed from `artifacts/*.json`
-      # - 2nd time to regenerate the `artifacs/*.json` structure as `npm run build:js` cleans the `artifacts/` folder, re-compile the contracts and regenerate artifacts with `artifacts/**/*.json` structure
+      #   - the typed ABIs that can be exported in ESM / common JS
       - name: Prepare artifacts to publish
         if: ${{ steps.release.outputs.releases_created }}
         run: |
+          npm run build
           npm run build:package 
           npm run build:types
           npm run build:js
-          npm run build:package
 
       - name: Publish on NPM
         if: ${{ steps.release.outputs.releases_created }}

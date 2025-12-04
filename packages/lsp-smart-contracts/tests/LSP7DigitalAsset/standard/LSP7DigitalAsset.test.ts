@@ -1,30 +1,33 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { LSP7Tester__factory, LSP7DigitalAsset } from '../../../typechain';
+import { LSP7Tester__factory } from '../../../types/ethers-contracts/index.js';
+import { type LSP7DigitalAsset } from '../../../../lsp7-contracts/types/ethers-contracts/index.js';
 
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP7,
   shouldInitializeLikeLSP7,
-  LSP7TestContext,
-} from '../LSP7DigitalAsset.behaviour';
+  type LSP7TestContext,
+} from '../LSP7DigitalAsset.behaviour.js';
 
 import {
-  LSP17TestContext,
   shouldBehaveLikeLSP17,
-} from '../../LSP17ContractExtension/LSP17ExtendableTokens.behaviour';
+  type LSP17TestContext,
+} from '../../LSP17ContractExtension/LSP17ExtendableTokens.behaviour.js';
 
 import {
-  LS4DigitalAssetMetadataTestContext,
   shouldBehaveLikeLSP4DigitalAssetMetadata,
-} from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
+  type LS4DigitalAssetMetadataTestContext,
+} from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
+import { toBigInt, ZeroAddress } from 'ethers';
 
 describe('LSP7DigitalAsset with constructor', () => {
   const buildTestContext = async (): Promise<LSP7TestContext> => {
-    const accounts = await getNamedAccounts();
-    const initialSupply = ethers.toBigInt('3');
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
+    const initialSupply = toBigInt('3');
     const deployParams = {
       name: 'LSP7 - deployed with constructor',
       symbol: 'Token',
@@ -42,12 +45,12 @@ describe('LSP7DigitalAsset with constructor', () => {
     // mint tokens for the owner
     await lsp7.mint(accounts.owner.address, initialSupply, true, '0x');
 
-    return { accounts, lsp7, deployParams, initialSupply };
+    return { ethers, accounts, lsp7, deployParams, initialSupply };
   };
 
   const buildLSP4DigitalAssetMetadataTestContext =
     async (): Promise<LS4DigitalAssetMetadataTestContext> => {
-      const { lsp7 } = await buildTestContext();
+      const { ethers, lsp7 } = await buildTestContext();
       const accounts = await ethers.getSigners();
 
       const deployParams = {
@@ -56,6 +59,7 @@ describe('LSP7DigitalAsset with constructor', () => {
       };
 
       return {
+        ethers,
         contract: lsp7 as LSP7DigitalAsset,
         accounts,
         deployParams,
@@ -63,6 +67,8 @@ describe('LSP7DigitalAsset with constructor', () => {
     };
 
   const buildLSP17TestContext = async (): Promise<LSP17TestContext> => {
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
     const accounts = await ethers.getSigners();
 
     const deployParams = {
@@ -72,24 +78,26 @@ describe('LSP7DigitalAsset with constructor', () => {
       lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
     };
 
-    const contract = await new LSP7Tester__factory(accounts[0]).deploy(
+    const contract = await new LSP7Tester__factory(deployParams.owner).deploy(
       deployParams.name,
       deployParams.symbol,
       deployParams.owner.address,
       deployParams.lsp4TokenType,
     );
 
-    return { accounts, contract, deployParams };
+    return { ethers, accounts, contract, deployParams: { owner: deployParams.owner.address } };
   };
 
   describe('when deploying the contract', () => {
     it('should revert when deploying with address(0) as owner', async () => {
+      const { network } = await import('hardhat');
+      const { ethers } = await network.connect();
       const accounts = await ethers.getSigners();
 
       const deployParams = {
         name: 'LSP7 - deployed with constructor',
         symbol: 'Token',
-        newOwner: ethers.ZeroAddress,
+        newOwner: ZeroAddress,
         lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
       };
 

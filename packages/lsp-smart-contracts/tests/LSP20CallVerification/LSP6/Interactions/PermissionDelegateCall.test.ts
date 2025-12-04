@@ -1,19 +1,22 @@
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 
-import { ERC725YDelegateCall, ERC725YDelegateCall__factory } from '../../../../typechain';
+import {
+  type ERC725YDelegateCall,
+  ERC725YDelegateCall__factory,
+} from '../../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys } from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
+import type { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 // helpers
-import { combineAllowedCalls } from '../../../utils/helpers';
+import { combineAllowedCalls } from '../../../utils/helpers.js';
 
 export const shouldBehaveLikePermissionDelegateCall = (
   buildContext: () => Promise<LSP6TestContext>,
@@ -21,7 +24,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
   let context: LSP6TestContext;
 
   describe('when trying to make a DELEGATECALL via UP, DELEGATECALL is disallowed', () => {
-    let addressCanDelegateCall: SignerWithAddress, addressCannotDelegateCall: SignerWithAddress;
+    let addressCanDelegateCall: HardhatEthersSigner, addressCannotDelegateCall: HardhatEthersSigner;
 
     let erc725YDelegateCallContract: ERC725YDelegateCall;
 
@@ -135,7 +138,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
   });
 
   describe('when caller has permission SUPER_DELEGATECALL + 2 x allowed addresses', () => {
-    let caller: SignerWithAddress;
+    let caller: HardhatEthersSigner;
 
     let allowedDelegateCallContracts: [ERC725YDelegateCall, ERC725YDelegateCall];
 
@@ -203,7 +206,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
             const key = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
             const value = '0xbbbbbbbbbbbbbbbb';
 
-            const currentStorage = await context.universalProfile['getData(bytes32)'](key);
+            const currentStorage = await context.universalProfile.getData(key);
             expect(currentStorage).to.equal('0x');
 
             // prettier-ignore
@@ -228,7 +231,7 @@ export const shouldBehaveLikePermissionDelegateCall = (
             );
 
             // storage should remain unchanged and not set
-            const newStorage = await context.universalProfile['getData(bytes32)'](key);
+            const newStorage = await context.universalProfile.getData(key);
             expect(newStorage).to.equal('0x');
           });
         }

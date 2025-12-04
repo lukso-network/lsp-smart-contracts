@@ -1,4 +1,17 @@
+/* Based on https://github.com/tsconfig/bases/blob/501da2bcd640cf95c95805783e1012b992338f28/bases/node22.json */
 {
-  "extends": "tsconfig/contracts.json",
-  "include": ["**/*.ts"]
+  "compilerOptions": {
+    "module": "node16",
+    "target": "esnext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node16",
+    "outDir": "dist",
+    "lib": ["es2023", "ES2019", "es2019.array", "ES2021.String"]
+  },
+  "include": ["./tests", "hardhat", "./deploy"],
+  "files": ["./hardhat.config.ts"]
 }

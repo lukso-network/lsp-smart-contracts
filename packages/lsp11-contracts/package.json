@@ -4,6 +4,7 @@
   "description": "Package for the LSP11 Social Recovery standard",
   "license": "Apache-2.0",
   "author": "",
+  "type": "module",
   "keywords": [
     "LUKSO",
     "LSP",
@@ -40,6 +41,7 @@
       "require": "./dist/abi.cjs",
       "import": "./dist/abi.mjs"
     },
+    "./contracts/*": "./contracts/*",
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
@@ -49,7 +51,7 @@
     "build:foundry": "forge build",
     "build:js": "unbuild",
     "build:types": "wagmi generate",
-    "clean": "hardhat clean && rm -Rf dist/ cache/ node_modules/ .turbo/ types/ typechain/ build/ artifacts/ abi.ts",
+    "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
@@ -58,7 +60,13 @@
     "build:package": "hardhat prepare-package"
   },
   "dependencies": {
-    "@lukso/lsp25-contracts": "~0.15.0",
+    "@lukso/lsp25-contracts": "~0.15.5",
     "@openzeppelin/contracts": "^4.9.3"
+  },
+  "devDependencies": {
+    "@lukso/hardhat-packager-v3": "*",
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "eslint-config-custom": "*",
+    "hardhat": "^3.0.7"
   }
 }

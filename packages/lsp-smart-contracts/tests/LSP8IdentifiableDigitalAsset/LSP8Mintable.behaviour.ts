@@ -1,28 +1,30 @@
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { hexlify, randomBytes } from 'ethers';
+
 import {
-  LSP8TransferOwnerChange,
-  UniversalProfile,
-  LSP6KeyManager,
+  LSP8TransferOwnerChange__factory,
   UniversalReceiverDelegateTokenReentrant__factory,
-  LSP8Mintable,
-} from '../../typechain';
+} from '../../types/ethers-contracts/index.js';
+import { type UniversalProfile } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import { type LSP6KeyManager } from '../../../lsp6-contracts/types/ethers-contracts/index.js';
+import { type LSP8Mintable } from '../../../lsp8-contracts/types/ethers-contracts/index.js';
 
-import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures';
-
-import { ERC725YDataKeys } from '../../constants';
+import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures.js';
+import { ERC725YDataKeys } from '../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
-import { combineAllowedCalls, combinePermissions } from '../utils/helpers';
+import { combineAllowedCalls, combinePermissions } from '../utils/helpers.js';
 
 export type LSP8MintableTestAccounts = {
-  owner: SignerWithAddress;
-  tokenReceiver: SignerWithAddress;
-  profileOwner: SignerWithAddress;
+  owner: HardhatEthersSigner;
+  tokenReceiver: HardhatEthersSigner;
+  profileOwner: HardhatEthersSigner;
 };
 
-export const getNamedAccounts = async (): Promise<LSP8MintableTestAccounts> => {
+export const getNamedAccounts = async (
+  ethers: HardhatEthers,
+): Promise<LSP8MintableTestAccounts> => {
   const [owner, tokenReceiver, profileOwner] = await ethers.getSigners();
   return { owner, tokenReceiver, profileOwner };
 };
@@ -36,6 +38,7 @@ export type LSP8MintableDeployParams = {
 };
 
 export type LSP8MintableTestContext = {
+  ethers: HardhatEthers;
   accounts: LSP8MintableTestAccounts;
   lsp8Mintable: LSP8Mintable;
   deployParams: LSP8MintableDeployParams;
@@ -52,7 +55,7 @@ export const shouldBehaveLikeLSP8Mintable = (
 
   describe('when owner minting tokens', () => {
     it('total supply should have increased', async () => {
-      const randomTokenId = ethers.randomBytes(32);
+      const randomTokenId = randomBytes(32);
 
       const preMintTotalSupply = await context.lsp8Mintable.totalSupply();
 
@@ -78,7 +81,7 @@ export const shouldBehaveLikeLSP8Mintable = (
 
   describe('when non-owner minting tokens', () => {
     it('should revert', async () => {
-      const randomTokenId = ethers.randomBytes(32);
+      const randomTokenId = randomBytes(32);
 
       // use any other account
       const nonOwner = context.accounts.tokenReceiver;
@@ -92,8 +95,8 @@ export const shouldBehaveLikeLSP8Mintable = (
   });
 
   describe('when owner try to re-enter function through the UniversalReceiverDelegate', () => {
-    let universalProfile;
-    let lsp6KeyManager;
+    let universalProfile: UniversalProfile;
+    let lsp6KeyManager: LSP6KeyManager;
 
     before(async () => {
       const [UP, KM] = await setupProfileWithKeyManagerWithURD(context.accounts.profileOwner);
@@ -132,8 +135,8 @@ export const shouldBehaveLikeLSP8Mintable = (
       await lsp6KeyManager.connect(context.accounts.profileOwner).execute(setDataPayload);
     });
     it('should pass', async () => {
-      const randomTokenId = ethers.randomBytes(32);
-      const secondRandomTokenId = ethers.randomBytes(32);
+      const randomTokenId = randomBytes(32);
+      const secondRandomTokenId = randomBytes(32);
 
       const reentrantMintPayload = context.lsp8Mintable.interface.encodeFunctionData('mint', [
         universalProfile.target,
@@ -163,23 +166,24 @@ export const shouldBehaveLikeLSP8Mintable = (
       const tokenIdsOfUP = await context.lsp8Mintable.tokenIdsOf(universalProfile.target);
 
       expect(balanceOfUP).to.equal(2);
-      expect(tokenIdsOfUP[0]).to.equal(ethers.hexlify(randomTokenId));
-      expect(tokenIdsOfUP[1]).to.equal(ethers.hexlify(secondRandomTokenId));
+      expect(tokenIdsOfUP[0]).to.equal(hexlify(randomTokenId));
+      expect(tokenIdsOfUP[1]).to.equal(hexlify(secondRandomTokenId));
     });
   });
   describe('when there is an owner change in the _beforeTokenTransfer hook', () => {
     it('should revert', async () => {
       // deploy LSP8TransferOwnerChange contract
-      const LSP8TransferOwnerChange = await ethers.getContractFactory('LSP8TransferOwnerChange');
-      const lsp8TransferOwnerChange = (await LSP8TransferOwnerChange.deploy(
+      const lsp8TransferOwnerChange = await new LSP8TransferOwnerChange__factory(
+        context.accounts.owner,
+      ).deploy(
         'RandomName',
         'RandomSymbol',
         context.accounts.owner.address,
         0, // token type
         0, // token id format
-      )) as unknown as LSP8TransferOwnerChange;
+      );
 
-      const randomTokenId = ethers.hexlify(ethers.randomBytes(32));
+      const randomTokenId = hexlify(randomBytes(32));
 
       // // mint a token tokenReceiver
       await lsp8TransferOwnerChange.connect(context.accounts.owner).mint(

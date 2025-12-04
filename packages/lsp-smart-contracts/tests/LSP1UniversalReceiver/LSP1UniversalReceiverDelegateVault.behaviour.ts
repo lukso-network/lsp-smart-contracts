@@ -1,39 +1,47 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
+import {
+  type BytesLike,
+  type ContractTransactionResponse,
+  hexlify,
+  toBeHex,
+  toUtf8Bytes,
+  zeroPadValue,
+} from 'ethers';
 
 // types
 import {
-  UniversalProfile,
-  LSP7Tester,
+  type LSP7Tester,
   LSP7Tester__factory,
-  LSP8Tester,
+  type LSP8Tester,
   LSP8Tester__factory,
-  LSP9Vault,
-  LSP1UniversalReceiverDelegateVault,
+  type LSP7MintWhenDeployed,
   LSP7MintWhenDeployed__factory,
-  LSP7MintWhenDeployed,
+} from '../../types/ethers-contracts/index.js';
+import {
+  type LSP1UniversalReceiverDelegateVault,
   LSP1UniversalReceiverDelegateVault__factory,
-} from '../../typechain';
-
-import { ARRAY_LENGTH, LSP1_HOOK_PLACEHOLDER, abiCoder } from '../utils/helpers';
+} from '../../../lsp1delegate-contracts/types/ethers-contracts/index.js';
+import type { UniversalProfile } from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import type { LSP9Vault } from '../../../lsp9-contracts/types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS } from '../../constants';
+import { ERC725YDataKeys, INTERFACE_IDS, LSP1_TYPE_IDS } from '../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 import { LSP8_TOKEN_ID_FORMAT } from '@lukso/lsp8-contracts';
 
-import { callPayload, getLSP5MapAndArrayKeysValue } from '../utils/fixtures';
-import { BytesLike, ContractTransaction } from 'ethers';
+import { ARRAY_LENGTH, LSP1_HOOK_PLACEHOLDER, abiCoder } from '../utils/helpers.js';
+import { callPayload, getLSP5MapAndArrayKeysValue } from '../utils/fixtures.js';
 
 export type LSP1TestAccounts = {
-  owner1: SignerWithAddress;
-  random: SignerWithAddress;
-  any: SignerWithAddress;
+  owner1: HardhatEthersSigner;
+  random: HardhatEthersSigner;
+  any: HardhatEthersSigner;
 };
 
-export const getNamedAccounts = async (): Promise<LSP1TestAccounts> => {
+export const getNamedAccounts = async (ethers: HardhatEthers): Promise<LSP1TestAccounts> => {
   const [owner1, random, any] = await ethers.getSigners();
   return {
     owner1,
@@ -56,6 +64,8 @@ export const TOKEN_ID = {
 };
 
 export type LSP1TestContext = {
+  ethers: HardhatEthers;
+  networkHelpers: NetworkHelpers;
   accounts: LSP1TestAccounts;
   universalProfile: UniversalProfile;
   lsp9Vault1: LSP9Vault;
@@ -137,9 +147,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
           const [resultDelegate, resultTypeID] = abiCoder.decode(['bytes', 'bytes'], decodedResult);
 
-          expect(resultDelegate).to.equal(
-            ethers.hexlify(ethers.toUtf8Bytes('LSP1: typeId out of scope')),
-          );
+          expect(resultDelegate).to.equal(hexlify(toUtf8Bytes('LSP1: typeId out of scope')));
 
           expect(resultTypeID).to.equal('0x');
         }
@@ -153,7 +161,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
             context.lsp9Vault1
               .connect(context.accounts.any)
               .universalReceiver(LSP1_HOOK_PLACEHOLDER, '0x'),
-          ).to.not.be.reverted;
+          ).to.not.revert(context.ethers);
         });
 
         it('should revert with custom error `CannotRegisterEOAsAsAssets` if its a typeId of LSP7/LSP8', async () => {
@@ -190,9 +198,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
           const [resultDelegate, resultTypeID] = abiCoder.decode(['bytes', 'bytes'], decodedResult);
 
-          expect(resultDelegate).to.equal(
-            ethers.hexlify(ethers.toUtf8Bytes('LSP1: typeId out of scope')),
-          );
+          expect(resultDelegate).to.equal(hexlify(toUtf8Bytes('LSP1: typeId out of scope')));
 
           expect(resultTypeID).to.equal('0x');
         });
@@ -267,7 +273,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
 
           expect(indexInMap).to.equal(0);
           expect(interfaceId).to.equal(INTERFACE_IDS.LSP7DigitalAsset);
-          expect(arrayLength).to.equal(ethers.zeroPadValue(ethers.toBeHex(1), 16));
+          expect(arrayLength).to.equal(zeroPadValue(toBeHex(1), 16));
           expect(elementAddress).to.equal(await deployedLSP7Token.getAddress());
         });
       });
@@ -905,7 +911,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
     });
 
     describe('when the Map value of LSP5ReceivedAssetsMap is less than 20 bytes', () => {
-      let tokenTransferTx: ContractTransaction;
+      let tokenTransferTx: ContractTransactionResponse;
       let balance: bigint;
 
       before(async () => {
@@ -961,11 +967,11 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
       });
 
       it('should pass', async () => {
-        expect(tokenTransferTx).to.not.be.reverted;
+        expect(tokenTransferTx).to.not.revert(context.ethers);
       });
 
       it('should emit UniversalReceiver event', async () => {
-        const tokensSentBytes32Value = ethers.zeroPadValue(ethers.toBeHex(balance), 32);
+        const tokensSentBytes32Value = zeroPadValue(toBeHex(balance), 32);
 
         const tokenTransferData = abiCoder.encode(
           ['address', 'address', 'address', 'uint256', 'bytes'],
@@ -978,7 +984,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
           ],
         );
 
-        const lsp1ReturnedData = ethers.AbiCoder.defaultAbiCoder().encode(
+        const lsp1ReturnedData = abiCoder.encode(
           ['string', 'bytes'],
           ['LSP5: Error generating data key/value pairs', '0x'],
         );
@@ -1006,7 +1012,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
     });
 
     describe('when the Map value of LSP5ReceivedAssetsMap is bigger than 20 bytes, (valid `(byte4,uint128)` tuple  + extra bytes)', () => {
-      let tokenTransferTx: ContractTransaction;
+      let tokenTransferTx: ContractTransactionResponse;
       let balance: bigint;
 
       before(async () => {
@@ -1062,11 +1068,11 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
       });
 
       it('should pass', async () => {
-        expect(tokenTransferTx).to.not.be.reverted;
+        expect(tokenTransferTx).to.not.revert(context.ethers);
       });
 
       it('should emit UniversalReceiver event', async () => {
-        const tokensSentBytes32Value = ethers.zeroPadValue(ethers.toBeHex(balance), 32);
+        const tokensSentBytes32Value = zeroPadValue(toBeHex(balance), 32);
 
         const tokenTransferData = abiCoder.encode(
           ['address', 'address', 'address', 'uint256', 'bytes'],
@@ -1079,7 +1085,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
           ],
         );
 
-        const lsp1ReturnedData = ethers.AbiCoder.defaultAbiCoder().encode(
+        const lsp1ReturnedData = abiCoder.encode(
           ['string', 'bytes'],
           ['LSP5: Error generating data key/value pairs', '0x'],
         );
@@ -1107,7 +1113,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
     });
 
     describe('when the Map value of LSP5ReceivedAssetsMap is 20 random bytes', () => {
-      let tokenTransferTx: ContractTransaction;
+      let tokenTransferTx: ContractTransactionResponse;
       let balance: bigint;
 
       before(async () => {
@@ -1163,11 +1169,11 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
       });
 
       it('should pass', async () => {
-        expect(tokenTransferTx).to.not.be.reverted;
+        expect(tokenTransferTx).to.not.revert(context.ethers);
       });
 
       it('should emit UniversalReceiver event', async () => {
-        const tokensSentBytes32Value = ethers.zeroPadValue(ethers.toBeHex(balance), 32);
+        const tokensSentBytes32Value = zeroPadValue(toBeHex(balance), 32);
 
         const tokenTransferData = abiCoder.encode(
           ['address', 'address', 'address', 'uint256', 'bytes'],
@@ -1180,7 +1186,7 @@ export const shouldBehaveLikeLSP1Delegate = (buildContext: () => Promise<LSP1Tes
           ],
         );
 
-        const lsp1ReturnedData = ethers.AbiCoder.defaultAbiCoder().encode(
+        const lsp1ReturnedData = abiCoder.encode(
           ['string', 'bytes'],
           ['LSP5: Error generating data key/value pairs', '0x'],
         );

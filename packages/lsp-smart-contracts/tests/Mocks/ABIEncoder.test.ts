@@ -1,27 +1,29 @@
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { ABIEncoder, ABIEncoder__factory } from '../../typechain';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { type ABIEncoder, ABIEncoder__factory } from '../../types/ethers-contracts/index.js';
+import { type BytesLike, hexlify, toNumber, toUtf8Bytes } from 'ethers';
 
 describe('ABI Encoder Contract', () => {
-  let accounts: SignerWithAddress[];
+  let accounts: HardhatEthersSigner[];
   let contract: ABIEncoder;
 
   before(async () => {
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
     accounts = await ethers.getSigners();
     contract = await new ABIEncoder__factory(accounts[0]).deploy();
   });
 
-  const verifyResult = async (txParameterA, txParameterB) => {
+  const verifyResult = async (txParameterA: BytesLike, txParameterB: BytesLike) => {
     const [c] = await contract.encode(txParameterA, txParameterB);
     const [a, b] = await contract.decode(c);
     expect(a).to.equal(txParameterA);
     expect(b).to.equal(txParameterB);
   };
 
-  const checkGasCost = async (txParameterA, txParameterB) => {
+  const checkGasCost = async (txParameterA: BytesLike, txParameterB: BytesLike) => {
     const [, gasUsed] = await contract.encode(txParameterA, txParameterB);
-    return ethers.toNumber(gasUsed);
+    return toNumber(gasUsed);
   };
 
   describe('Checking the encoding works', () => {
@@ -113,7 +115,7 @@ describe('ABI Encoder Contract', () => {
     describe('LSP1 Specific Cases', () => {
       it('Encoding URD response when typeId out of scope with empty bytes', async () => {
         const txParams = {
-          a: ethers.hexlify(ethers.toUtf8Bytes('LSP1: typeId out of scope')),
+          a: hexlify(toUtf8Bytes('LSP1: typeId out of scope')),
           b: '0x',
         };
 
@@ -122,7 +124,7 @@ describe('ABI Encoder Contract', () => {
 
       it('Encoding URD response when owner is not a KM with empty bytes', async () => {
         const txParams = {
-          a: ethers.hexlify(ethers.toUtf8Bytes('LSP1: account owner is not a LSP6KeyManager')),
+          a: hexlify(toUtf8Bytes('LSP1: account owner is not a LSP6KeyManager')),
           b: '0x',
         };
 
@@ -131,7 +133,7 @@ describe('ABI Encoder Contract', () => {
 
       it('Encoding URD response when asset already exist with empty bytes', async () => {
         const txParams = {
-          a: ethers.hexlify(ethers.toUtf8Bytes('LSP1: asset received is already registered')),
+          a: hexlify(toUtf8Bytes('LSP1: asset received is already registered')),
           b: '0x',
         };
 
@@ -140,7 +142,7 @@ describe('ABI Encoder Contract', () => {
 
       it('Encoding URD response when asset is not registered with empty bytes', async () => {
         const txParams = {
-          a: ethers.hexlify(ethers.toUtf8Bytes('LSP1: asset sent is not registered')),
+          a: hexlify(toUtf8Bytes('LSP1: asset sent is not registered')),
           b: '0x',
         };
 
@@ -149,7 +151,7 @@ describe('ABI Encoder Contract', () => {
 
       it('Encoding URD response when full balance was not sent with empty bytes', async () => {
         const txParams = {
-          a: ethers.hexlify(ethers.toUtf8Bytes('LSP1: full balance is not sent')),
+          a: hexlify(toUtf8Bytes('LSP1: full balance is not sent')),
           b: '0x',
         };
 

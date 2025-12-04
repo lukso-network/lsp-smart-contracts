@@ -1,42 +1,50 @@
-import { ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { EntryPoint__factory, EntryPoint } from '@account-abstraction/contracts';
-
-import { BytesLike, Signer, parseEther } from 'ethers';
 import { expect } from 'chai';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { type BytesLike, type Signer, ZeroAddress, parseEther } from 'ethers';
+
 import {
-  LSP6KeyManager,
-  LSP6KeyManager__factory,
-  UniversalProfile,
+  type MockEntryPoint,
+  MockEntryPoint__factory,
+} from '../../../types/ethers-contracts/index.js';
+import {
+  type UniversalProfile,
   UniversalProfile__factory,
-  Extension4337__factory,
-} from '../../../typechain';
-import { deployEntryPoint, getBalance, isDeployed } from '../helpers/utils';
-import { ERC725YDataKeys } from '../../../constants';
+} from '../../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import {
+  type LSP6KeyManager,
+  LSP6KeyManager__factory,
+} from '../../../../lsp6-contracts/types/ethers-contracts/index.js';
+import { Extension4337__factory } from '../../../../lsp17-contracts/types/ethers-contracts/index.js';
+
+import { deployEntryPoint, getBalance, isDeployed } from '../helpers/utils.js';
+import { ERC725YDataKeys } from '../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS } from '@lukso/lsp6-contracts';
-import { combinePermissions } from '../../utils/helpers';
-import { fillAndSign } from '../helpers/UserOp';
+import { combinePermissions } from '../../utils/helpers.js';
+import { fillAndSign } from '../helpers/UserOp.js';
 
 // Deploying NickFactory currently fails with latest Hardhat version. Commenting out temporarily until resolved
 // See following issue: https://github.com/NomicFoundation/hardhat/issues/4939
 describe.skip('4337', function () {
-  let bundler: SignerWithAddress;
+  let ethers: HardhatEthers;
+  let bundler: HardhatEthersSigner;
   let deployer: Signer;
   let universalProfile: UniversalProfile;
   let universalProfileAddress: string;
   let keyManager: LSP6KeyManager;
   let keyManagerAddress: string;
-  let entryPoint: EntryPoint;
-  let controllerWith4337Permission: SignerWithAddress;
-  let controllerWithout4337Permission: SignerWithAddress;
-  let controllerWithOnly4337Permission: SignerWithAddress;
+  let entryPoint: MockEntryPoint;
+  let controllerWith4337Permission: HardhatEthersSigner;
+  let controllerWithout4337Permission: HardhatEthersSigner;
+  let controllerWithOnly4337Permission: HardhatEthersSigner;
   let transferCallData: string;
   const Permission4337: BytesLike =
     '0x0000000000000000000000000000000000000000000000000000000000800000';
   const amountToTransfer = 1;
 
   before('setup', async function () {
+    const { network } = await import('hardhat');
+    ({ ethers } = await network.connect());
     const provider = ethers.provider;
     deployer = await provider.getSigner();
     const deployerAddress = await deployer.getAddress();
@@ -70,8 +78,8 @@ describe.skip('4337', function () {
     expect(await universalProfile.owner()).to.eq(keyManagerAddress);
 
     // deploy entrypoint
-    entryPoint = await deployEntryPoint();
-    expect(await isDeployed(await entryPoint.getAddress())).to.eq(true);
+    entryPoint = await deployEntryPoint(ethers);
+    expect(await isDeployed(ethers, await entryPoint.getAddress())).to.eq(true);
 
     // give all permissions to entrypoint
     const dataKeyEntryPointPermissions =
@@ -126,8 +134,9 @@ describe.skip('4337', function () {
   });
 
   it('should pass', async function () {
-    const addressZeroBalanceBefore = await getBalance(ethers.ZeroAddress);
+    const addressZeroBalanceBefore = await getBalance(ethers, ZeroAddress);
     const userOperation = await fillAndSign(
+      ethers,
       {
         sender: universalProfileAddress,
         callData: transferCallData,
@@ -136,14 +145,15 @@ describe.skip('4337', function () {
       entryPoint,
     );
     await entryPoint.handleOps([userOperation], bundler.address);
-    const addressZeroBalanceAfter = await getBalance(ethers.ZeroAddress);
+    const addressZeroBalanceAfter = await getBalance(ethers, ZeroAddress);
     expect(addressZeroBalanceAfter - addressZeroBalanceBefore).to.eq(amountToTransfer);
   });
 
   it('should fail when calling from wrong entrypoint', async function () {
-    const anotherEntryPoint = await new EntryPoint__factory(deployer).deploy();
+    const anotherEntryPoint = await new MockEntryPoint__factory(deployer).deploy();
 
     const userOperation = await fillAndSign(
+      ethers,
       {
         sender: universalProfileAddress,
         callData: transferCallData,
@@ -160,9 +170,10 @@ describe.skip('4337', function () {
   });
 
   it('should fail when controller does not have 4337 permission', async function () {
-    const anotherEntryPoint = await new EntryPoint__factory(deployer).deploy();
+    const anotherEntryPoint = await new MockEntryPoint__factory(deployer).deploy();
 
     const userOperation = await fillAndSign(
+      ethers,
       {
         sender: universalProfileAddress,
         callData: transferCallData,
@@ -178,6 +189,7 @@ describe.skip('4337', function () {
 
   it('should fail when controller only has 4337 permission', async function () {
     const userOperation = await fillAndSign(
+      ethers,
       {
         sender: universalProfileAddress,
         callData: transferCallData,
@@ -192,6 +204,7 @@ describe.skip('4337', function () {
 
   it('should fail on invalid userop', async function () {
     let op = await fillAndSign(
+      ethers,
       {
         sender: universalProfileAddress,
         callData: transferCallData,
@@ -206,6 +219,7 @@ describe.skip('4337', function () {
       .withArgs(0, 'AA25 invalid account nonce');
 
     op = await fillAndSign(
+      ethers,
       {
         sender: universalProfileAddress,
         callData: transferCallData,

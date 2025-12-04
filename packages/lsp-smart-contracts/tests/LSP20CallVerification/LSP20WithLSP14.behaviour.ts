@@ -1,24 +1,35 @@
 import { expect } from 'chai';
-import { ethers, network, artifacts } from 'hardhat';
 
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import {
   UPWithInstantAcceptOwnership__factory,
   UPWithInstantAcceptOwnership,
-  LSP0ERC725Account,
-} from '../../typechain';
+} from '../../types/ethers-contracts/index.js';
+import { LSP0ERC725Account } from '../../../lsp0-contracts/types/ethers-contracts/index.js';
 
 // constants
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 
 // helpers
-import { provider } from '../utils/helpers';
-import { ContractTransaction, ContractTransactionResponse } from 'ethers';
+import {
+  type ContractTransactionResponse,
+  type ContractTransactionReceipt,
+  hexlify,
+  keccak256,
+  parseEther,
+  toBigInt,
+  toUtf8Bytes,
+  ZeroAddress,
+  Wallet,
+} from 'ethers';
 
 export type LSP14CombinedWithLSP20TestContext = {
-  accounts: SignerWithAddress[];
+  ethers: HardhatEthers;
+  networkHelpers: NetworkHelpers;
+  accounts: HardhatEthersSigner[];
   contract: LSP0ERC725Account;
-  deployParams: { owner: SignerWithAddress };
+  deployParams: { owner: HardhatEthersSigner };
   onlyOwnerCustomError: string;
 };
 
@@ -26,10 +37,10 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
   buildContext: (initialFunding?: number | bigint) => Promise<LSP14CombinedWithLSP20TestContext>,
 ) => {
   let context: LSP14CombinedWithLSP20TestContext;
-  let newOwner: SignerWithAddress;
+  let newOwner: HardhatEthersSigner;
 
   before(async () => {
-    context = await buildContext(ethers.parseEther('50'));
+    context = await buildContext(parseEther('50'));
     newOwner = context.accounts[1];
   });
 
@@ -46,7 +57,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
     });
 
     it('owner should remain the current owner', async () => {
-      const newOwner = ethers.Wallet.createRandom();
+      const newOwner = Wallet.createRandom();
 
       const ownerBefore = await context.contract.owner();
 
@@ -60,7 +71,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
     });
 
     it('should override the pendingOwner when transferOwnership(...) is called twice', async () => {
-      const overridenNewOwner = ethers.Wallet.createRandom();
+      const overridenNewOwner = Wallet.createRandom();
 
       await context.contract
         .connect(context.deployParams.owner)
@@ -91,17 +102,21 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
       it('execute(...) - LYX transfer', async () => {
         const recipient = context.accounts[3];
-        const amount = ethers.parseEther('3');
+        const amount = parseEther('3');
 
-        const recipientBalanceBefore = await provider.getBalance(recipient.address);
-        const accountBalanceBefore = await provider.getBalance(await context.contract.getAddress());
+        const recipientBalanceBefore = await context.ethers.provider.getBalance(recipient.address);
+        const accountBalanceBefore = await context.ethers.provider.getBalance(
+          await context.contract.getAddress(),
+        );
 
         await context.contract
           .connect(context.deployParams.owner)
           .execute(OPERATION_TYPES.CALL, recipient.address, amount, '0x');
 
-        const recipientBalanceAfter = await provider.getBalance(recipient.address);
-        const accountBalanceAfter = await provider.getBalance(await context.contract.getAddress());
+        const recipientBalanceAfter = await context.ethers.provider.getBalance(recipient.address);
+        const accountBalanceAfter = await context.ethers.provider.getBalance(
+          await context.contract.getAddress(),
+        );
 
         // recipient balance should have gone up
         expect(recipientBalanceAfter).to.be.gt(recipientBalanceBefore);
@@ -159,7 +174,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
     describe('when caller is the pending owner', () => {
       let pendingOwner: string;
-      let acceptOwnershipTx: ContractTransaction;
+      let acceptOwnershipTx: ContractTransactionResponse;
 
       before(async () => {
         pendingOwner = await context.contract.pendingOwner();
@@ -173,7 +188,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
       it('should have cleared the pendingOwner after transferring ownership', async () => {
         const newPendingOwner = await context.contract.pendingOwner();
-        expect(newPendingOwner).to.equal(ethers.ZeroAddress);
+        expect(newPendingOwner).to.equal(ZeroAddress);
       });
 
       it('should have emitted a OwnershipTransferred event', async () => {
@@ -185,7 +200,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
     });
 
     describe('after pendingOwner has claimed ownership', () => {
-      let previousOwner: SignerWithAddress;
+      let previousOwner: HardhatEthersSigner;
 
       before(async () => {
         previousOwner = context.deployParams.owner;
@@ -203,7 +218,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
         it('should revert when calling `execute(...)`', async () => {
           const recipient = context.accounts[3];
-          const amount = ethers.parseEther('3');
+          const amount = parseEther('3');
 
           await expect(
             context.contract
@@ -234,13 +249,14 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
         it('execute(...) - LYX transfer', async () => {
           const recipient = context.accounts[3];
-          const amount = ethers.parseEther('3');
+          const amount = parseEther('3');
 
           await expect(() =>
             context.contract
               .connect(newOwner)
               .execute(OPERATION_TYPES.CALL, recipient.address, amount, '0x'),
           ).to.changeEtherBalances(
+            context.ethers,
             [await context.contract.getAddress(), recipient.address],
             [
               `-${amount}`, // account balance should have gone down
@@ -264,13 +280,13 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
     });
 
     describe('when calling renounceOwnership() the first time', () => {
-      let currentOwner: SignerWithAddress;
+      let currentOwner: HardhatEthersSigner;
       let renounceOwnershipTx: ContractTransactionResponse;
 
       let anotherOwner: string;
 
       before(async () => {
-        context = await buildContext(ethers.parseEther('20'));
+        context = await buildContext(parseEther('20'));
 
         currentOwner = context.accounts[0];
 
@@ -280,7 +296,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         await context.contract.connect(currentOwner).transferOwnership(anotherOwner);
 
         // mine 1,000 blocks
-        await network.provider.send('hardhat_mine', [ethers.toQuantity(1000)]);
+        await context.networkHelpers.mine(1000);
 
         renounceOwnershipTx = await context.contract.connect(currentOwner).renounceOwnership();
 
@@ -288,26 +304,14 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
       });
 
       it('should instantiate the renounceOwnership process correctly', async () => {
-        const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
-          (
-            await artifacts.getBuildInfo(
-              '@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol:LSP0ERC725Account',
-            )
-          )?.output.contracts[
-            '@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol'
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-          ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
-            if (elem.label === '_renounceOwnershipStartedAt') return elem;
-          })[0].slot,
-        );
+        const _renounceOwnershipStartedAtAfterSlotNumber = 2;
 
-        const _renounceOwnershipStartedAtAfter = await provider.getStorage(
+        const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
           await context.contract.getAddress(),
           _renounceOwnershipStartedAtAfterSlotNumber,
         );
 
-        expect(ethers.toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(
+        expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(
           renounceOwnershipTx.blockNumber,
         );
       });
@@ -321,13 +325,13 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
       });
 
       it('should reset the pendingOwner', async () => {
-        expect(await context.contract.pendingOwner()).to.equal(ethers.ZeroAddress);
+        expect(await context.contract.pendingOwner()).to.equal(ZeroAddress);
       });
 
       describe('currentOwner should still be able to interact with contract before confirming', () => {
         it('`setData(...)`', async () => {
-          const key = ethers.keccak256(ethers.toUtf8Bytes('Random Key'));
-          const value = ethers.hexlify(ethers.toUtf8Bytes('Random Value'));
+          const key = keccak256(toUtf8Bytes('Random Key'));
+          const value = hexlify(toUtf8Bytes('Random Value'));
 
           await context.contract.connect(currentOwner).setData(key, value);
 
@@ -338,7 +342,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
         it('transfer LYX via `execute(...)`', async () => {
           const recipient = context.accounts[3].address;
-          const amount = ethers.parseEther('3');
+          const amount = parseEther('3');
 
           // verify that balances have been updated
           await expect(() =>
@@ -346,6 +350,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
               .connect(currentOwner)
               .execute(OPERATION_TYPES.CALL, recipient, amount, '0x'),
           ).to.changeEtherBalances(
+            context.ethers,
             [await context.contract.getAddress(), recipient],
             [`-${amount}`, amount],
           );
@@ -355,7 +360,7 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
     describe('when calling renounceOwnership() the second time', () => {
       before(async () => {
-        context = await buildContext(ethers.parseEther('20'));
+        context = await buildContext(parseEther('20'));
       });
 
       it('should revert if called in the delay period', async () => {
@@ -366,63 +371,51 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         const renounceOwnershipOnceReceipt = await renounceOwnershipOnce.wait();
 
         // skip 98 blocks, but not enough to reach the delay period
-        await network.provider.send('hardhat_mine', [ethers.toQuantity(98)]);
+        await context.networkHelpers.mine(98);
 
         await expect(context.contract.connect(context.deployParams.owner).renounceOwnership())
           .to.be.revertedWithCustomError(context.contract, 'LSP14NotInRenounceOwnershipInterval')
           .withArgs(
-            renounceOwnershipOnceReceipt.blockNumber + 200,
-            renounceOwnershipOnceReceipt.blockNumber + 400,
+            (renounceOwnershipOnceReceipt as ContractTransactionReceipt).blockNumber + 200,
+            (renounceOwnershipOnceReceipt as ContractTransactionReceipt).blockNumber + 400,
           );
 
         expect(await context.contract.owner()).to.equal(context.deployParams.owner.address);
 
         // skip 500 blocks for the next test
-        await network.provider.send('hardhat_mine', [ethers.toQuantity(500)]);
+        await context.networkHelpers.mine(500);
       });
 
       it('should initialize again if the confirmation period passed', async () => {
-        const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
-          (
-            await artifacts.getBuildInfo(
-              '@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol:LSP0ERC725Account',
-            )
-          )?.output.contracts[
-            '@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol'
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-          ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
-            if (elem.label === '_renounceOwnershipStartedAt') return elem;
-          })[0].slot,
-        );
+        const _renounceOwnershipStartedAtAfterSlotNumber = 2;
 
         await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
-        await network.provider.send('hardhat_mine', [ethers.toQuantity(400)]); // skip 400 blocks
+        await context.networkHelpers.mine(400);
 
         const tx = await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
         await tx.wait();
 
-        const _renounceOwnershipStartedAtAfter = await provider.getStorage(
+        const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
           await context.contract.getAddress(),
           _renounceOwnershipStartedAtAfterSlotNumber,
         );
 
-        expect(ethers.toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(tx.blockNumber);
+        expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(tx.blockNumber);
       });
 
       describe('when called after the delay and before the confirmation period end', () => {
-        let renounceOwnershipSecondTx: ContractTransaction;
+        let renounceOwnershipSecondTx: ContractTransactionResponse;
 
         before(async () => {
-          context = await buildContext(ethers.parseEther('20'));
+          context = await buildContext(parseEther('20'));
 
           // Call renounceOwnership for the first time
           await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
           // Skip 199 block to reach the time where renouncing ownership can happen
-          await network.provider.send('hardhat_mine', [ethers.toQuantity(199)]);
+          await context.networkHelpers.mine(199);
 
           renounceOwnershipSecondTx = await context.contract
             .connect(context.deployParams.owner)
@@ -432,57 +425,45 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
         it('should have emitted a OwnershipTransferred event', async () => {
           await expect(renounceOwnershipSecondTx)
             .to.emit(context.contract, 'OwnershipTransferred')
-            .withArgs(context.deployParams.owner.address, ethers.ZeroAddress);
+            .withArgs(context.deployParams.owner.address, ZeroAddress);
 
-          expect(await context.contract.owner()).to.equal(ethers.ZeroAddress);
+          expect(await context.contract.owner()).to.equal(ZeroAddress);
         });
 
         it('should have emitted a OwnershipRenounced event', async () => {
           await expect(renounceOwnershipSecondTx).to.emit(context.contract, 'OwnershipRenounced');
 
-          expect(await context.contract.owner()).to.equal(ethers.ZeroAddress);
+          expect(await context.contract.owner()).to.equal(ZeroAddress);
         });
 
         it('owner should now be address(0)', async () => {
-          expect(await context.contract.owner()).to.equal(ethers.ZeroAddress);
+          expect(await context.contract.owner()).to.equal(ZeroAddress);
         });
 
         it('should have reset the `_renounceOwnershipStartedAt` state variable to zero', async () => {
-          const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
-            (
-              await artifacts.getBuildInfo(
-                '@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol:LSP0ERC725Account',
-              )
-            )?.output.contracts[
-              '@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol'
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-            ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
-              if (elem.label === '_renounceOwnershipStartedAt') return elem;
-            })[0].slot,
-          );
+          const _renounceOwnershipStartedAtAfterSlotNumber = 2;
 
-          const _renounceOwnershipStartedAtAfter = await provider.getStorage(
+          const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
             await context.contract.getAddress(),
             _renounceOwnershipStartedAtAfterSlotNumber,
           );
 
-          expect(ethers.toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(0);
+          expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(0);
         });
 
         describe('currentOwner should not be able to interact with contract anymore after confirming', () => {
           it('`setData(...)`', async () => {
-            const key = ethers.keccak256(ethers.toUtf8Bytes('Random Key'));
-            const value = ethers.hexlify(ethers.toUtf8Bytes('Random Value'));
+            const key = keccak256(toUtf8Bytes('Random Key'));
+            const value = hexlify(toUtf8Bytes('Random Value'));
 
             await expect(context.contract.connect(context.deployParams.owner).setData(key, value))
               .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
-              .withArgs(ethers.ZeroAddress);
+              .withArgs(ZeroAddress);
           });
 
           it('transfer LYX via `execute(...)`', async () => {
             const recipient = context.accounts[3].address;
-            const amount = ethers.parseEther('3');
+            const amount = parseEther('3');
 
             await expect(
               context.contract
@@ -490,16 +471,16 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
                 .execute(OPERATION_TYPES.CALL, recipient, amount, '0x'),
             )
               .to.be.revertedWithCustomError(context.contract, 'LSP20EOACannotVerifyCall')
-              .withArgs(ethers.ZeroAddress);
+              .withArgs(ZeroAddress);
           });
         });
       });
 
       describe('if there was a pendingOwner set before confirming `renounceOwnership(...)', () => {
-        let newOwner: SignerWithAddress;
+        let newOwner: HardhatEthersSigner;
 
         before(async () => {
-          context = await buildContext(ethers.parseEther('20'));
+          context = await buildContext(parseEther('20'));
 
           // transferOwnership to a new owner
           newOwner = context.accounts[3];
@@ -512,14 +493,14 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
           await context.contract.connect(context.deployParams.owner).renounceOwnership();
 
           // Skip 199 block to reach the time where renouncing ownership can happen
-          await network.provider.send('hardhat_mine', [ethers.toQuantity(199)]);
+          await context.networkHelpers.mine(199);
 
           // Call renounceOwnership for the second time
           await context.contract.connect(context.deployParams.owner).renounceOwnership();
         });
 
         it('should reset the pendingOwner whenever renounceOwnership(..) is confirmed', async () => {
-          expect(await context.contract.pendingOwner()).to.equal(ethers.ZeroAddress);
+          expect(await context.contract.pendingOwner()).to.equal(ZeroAddress);
         });
 
         it('previous pendingOwner should not be able to call acceptOwnership(...) anymore', async () => {
@@ -538,23 +519,11 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
       // Simulate a scenario where we are at just few hundred blocks after the blockchain started
       // (few hundred blocks after genesis)
-      await network.provider.send('hardhat_mine', [ethers.toQuantity(138)]);
+      await context.networkHelpers.mine(138);
     });
 
     it('should instantiate the renounceOwnership process in 2 steps correctly', async () => {
-      const _renounceOwnershipStartedAtAfterSlotNumber = Number.parseInt(
-        (
-          await artifacts.getBuildInfo(
-            '@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol:LSP0ERC725Account',
-          )
-        )?.output.contracts[
-          '@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol'
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-        ].LSP0ERC725Account.storageLayout.storage.filter((elem) => {
-          if (elem.label === '_renounceOwnershipStartedAt') return elem;
-        })[0].slot,
-      );
+      const _renounceOwnershipStartedAtAfterSlotNumber = 2;
 
       const renounceOwnershipTx = await context.contract
         .connect(context.deployParams.owner)
@@ -562,14 +531,12 @@ export const shouldBehaveLikeLSP14WithLSP20 = (
 
       await renounceOwnershipTx.wait();
 
-      const _renounceOwnershipStartedAtAfter = await provider.getStorage(
+      const _renounceOwnershipStartedAtAfter = await context.ethers.provider.getStorage(
         await context.contract.getAddress(),
         _renounceOwnershipStartedAtAfterSlotNumber,
       );
 
-      expect(ethers.toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(
-        renounceOwnershipTx.blockNumber,
-      );
+      expect(toBigInt(_renounceOwnershipStartedAtAfter)).to.equal(renounceOwnershipTx.blockNumber);
 
       expect(await context.contract.owner()).to.equal(context.deployParams.owner.address);
     });

@@ -1,27 +1,33 @@
-import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { toBigInt, ZeroAddress } from 'ethers';
 
-import { LSP7InitTester__factory, LSP7DigitalAsset, LSP7InitTester } from '../../../typechain';
+import {
+  type LSP7InitTester,
+  LSP7InitTester__factory,
+} from '../../../types/ethers-contracts/index.js';
+import { type LSP7DigitalAsset } from '../../../../lsp7-contracts/types/ethers-contracts/index.js';
 
 import {
   getNamedAccounts,
   shouldBehaveLikeLSP7,
   shouldInitializeLikeLSP7,
-  LSP7TestContext,
-} from '../LSP7DigitalAsset.behaviour';
+  type LSP7TestContext,
+} from '../LSP7DigitalAsset.behaviour.js';
 
 import {
-  LS4DigitalAssetMetadataTestContext,
   shouldBehaveLikeLSP4DigitalAssetMetadata,
-} from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour';
+  type LS4DigitalAssetMetadataTestContext,
+} from '../../LSP4DigitalAssetMetadata/LSP4DigitalAssetMetadata.behaviour.js';
 
-import { deployProxy } from '../../utils/fixtures';
+import { deployProxy } from '../../utils/fixtures.js';
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts';
 
 describe('LSP7DigitalAssetInit with proxy', () => {
   const buildTestContext = async (): Promise<LSP7TestContext> => {
-    const accounts = await getNamedAccounts();
-    const initialSupply = ethers.toBigInt('3');
+    const { network } = await import('hardhat');
+    const { ethers } = await network.connect();
+    const accounts = await getNamedAccounts(ethers);
+    const initialSupply = toBigInt('3');
     const deployParams = {
       name: 'LSP7 - deployed with proxy',
       symbol: 'TKN',
@@ -38,12 +44,12 @@ describe('LSP7DigitalAssetInit with proxy', () => {
     // mint tokens for the owner
     await lsp7.mint(accounts.owner.address, initialSupply, true, '0x');
 
-    return { accounts, lsp7, deployParams, initialSupply };
+    return { ethers, accounts, lsp7, deployParams, initialSupply };
   };
 
   const buildLSP4DigitalAssetMetadataTestContext =
     async (): Promise<LS4DigitalAssetMetadataTestContext> => {
-      const { lsp7 } = await buildTestContext();
+      const { ethers, lsp7 } = await buildTestContext();
       const accounts = await ethers.getSigners();
 
       const deployParams = {
@@ -51,11 +57,7 @@ describe('LSP7DigitalAssetInit with proxy', () => {
         lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
       };
 
-      return {
-        contract: lsp7 as LSP7DigitalAsset,
-        accounts,
-        deployParams,
-      };
+      return { ethers, contract: lsp7 as LSP7DigitalAsset, accounts, deployParams };
     };
 
   const initializeProxy = async (context: LSP7TestContext) => {
@@ -80,7 +82,7 @@ describe('LSP7DigitalAssetInit with proxy', () => {
         context.lsp7['initialize(string,string,address,uint256,bool)'](
           context.deployParams.name,
           context.deployParams.symbol,
-          ethers.ZeroAddress,
+          ZeroAddress,
           12345,
           false,
         ),

@@ -1,28 +1,27 @@
 import { expect } from 'chai';
-import { ethers, network } from 'hardhat';
-import { ContractTransaction } from 'ethers';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { parseEther, ZeroAddress, Wallet, ContractTransactionResponse } from 'ethers';
 
 // constants
-import { ERC725YDataKeys } from '../../../../constants';
+import { ERC725YDataKeys } from '../../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { PERMISSIONS } from '@lukso/lsp6-contracts';
 
-import { LSP6KeyManager, LSP6KeyManager__factory } from '../../../../typechain';
+import {
+  type LSP6KeyManager,
+  LSP6KeyManager__factory,
+} from '../../../../../lsp6-contracts/types/ethers-contracts/index.js';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
-
-// helpers
-import { provider } from '../../../utils/helpers';
+import type { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 export const shouldBehaveLikePermissionChangeOwner = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,
 ) => {
   let context: LSP6TestContext;
 
-  let canChangeOwner: SignerWithAddress, cannotChangeOwner: SignerWithAddress;
+  let canChangeOwner: HardhatEthersSigner, cannotChangeOwner: HardhatEthersSigner;
 
   let newKeyManager: LSP6KeyManager;
 
@@ -30,7 +29,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
   let permissionsValues: string[];
 
   before(async () => {
-    context = await buildContext(ethers.parseEther('10'));
+    context = await buildContext(parseEther('10'));
 
     canChangeOwner = context.accounts[1];
     cannotChangeOwner = context.accounts[2];
@@ -86,7 +85,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       after('reset ownership', async () => {
         await context.universalProfile
           .connect(context.mainController)
-          .transferOwnership(ethers.ZeroAddress);
+          .transferOwnership(ZeroAddress);
       });
 
       it('should have set newKeyManager as pendingOwner', async () => {
@@ -120,32 +119,22 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
         it('execute(...) - LYX transfer', async () => {
           const recipient = context.accounts[8];
-          const amount = ethers.parseEther('3');
+          const amount = parseEther('3');
 
-          const recipientBalanceBefore = await provider.getBalance(recipient.address);
-          const accountBalanceBefore = await provider.getBalance(
-            await context.universalProfile.getAddress(),
-          );
-
-          await context.universalProfile
+          const tx = context.universalProfile
             .connect(context.mainController)
             .execute(OPERATION_TYPES.CALL, recipient.address, amount, '0x');
 
-          const recipientBalanceAfter = await provider.getBalance(recipient.address);
-          const accountBalanceAfter = await provider.getBalance(
-            await context.universalProfile.getAddress(),
+          await expect(tx).to.changeEtherBalances(
+            context.ethers,
+            [recipient, context.universalProfile],
+            [amount, `-${amount}`],
           );
-
-          // recipient balance should have gone up
-          expect(recipientBalanceAfter).to.be.gt(recipientBalanceBefore);
-
-          // account balance should have gone down
-          expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
         });
       });
 
       it('should override the pendingOwner when transferOwnership(...) is called twice', async () => {
-        const overridenPendingOwner = ethers.Wallet.createRandom().address;
+        const overridenPendingOwner = Wallet.createRandom().address;
 
         await context.universalProfile
           .connect(context.mainController)
@@ -166,7 +155,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
       after('reset ownership', async () => {
         await context.universalProfile
           .connect(context.mainController)
-          .transferOwnership(ethers.ZeroAddress);
+          .transferOwnership(ZeroAddress);
       });
 
       it('should have set newKeyManager as pendingOwner', async () => {
@@ -249,7 +238,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       it('should have cleared the pendingOwner after transfering ownership', async () => {
         const newPendingOwner = await context.universalProfile.pendingOwner();
-        expect(newPendingOwner).to.equal(ethers.ZeroAddress);
+        expect(newPendingOwner).to.equal(ZeroAddress);
       });
     });
   });
@@ -278,7 +267,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       it('should revert with error `NoPermissionsSet` when calling `execute(...)`', async () => {
         const recipient = context.accounts[3];
-        const amount = ethers.parseEther('3');
+        const amount = parseEther('3');
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -311,12 +300,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
 
       it('execute(...) - LYX transfer', async () => {
         const recipient = context.accounts[3];
-        const amount = ethers.parseEther('3');
-
-        const recipientBalanceBefore = await provider.getBalance(recipient.address);
-        const accountBalanceBefore = await provider.getBalance(
-          await context.universalProfile.getAddress(),
-        );
+        const amount = parseEther('3');
 
         const payload = context.universalProfile.interface.encodeFunctionData('execute', [
           OPERATION_TYPES.CALL,
@@ -325,26 +309,21 @@ export const shouldBehaveLikePermissionChangeOwner = (
           '0x',
         ]);
 
-        await newKeyManager.connect(context.mainController).execute(payload);
+        const tx = newKeyManager.connect(context.mainController).execute(payload);
 
-        const recipientBalanceAfter = await provider.getBalance(recipient.address);
-        const accountBalanceAfter = await provider.getBalance(
-          await context.universalProfile.getAddress(),
+        await expect(tx).to.changeEtherBalances(
+          context.ethers,
+          [context.universalProfile, recipient],
+          [`-${amount}`, amount],
         );
-
-        // recipient balance should have gone up
-        expect(recipientBalanceAfter).to.be.gt(recipientBalanceBefore);
-
-        // account balance should have gone down
-        expect(accountBalanceAfter).to.be.lt(accountBalanceBefore);
       });
     });
   });
 
   describe('when calling `renounceOwnership(...)`', () => {
     describe('caller has ALL PERMISSIONS`', async () => {
-      let renounceOwnershipFirstTx: ContractTransaction;
-      let renounceOwnershipSecondTx: ContractTransaction;
+      let renounceOwnershipFirstTx: ContractTransactionResponse;
+      let renounceOwnershipSecondTx: ContractTransactionResponse;
 
       before(async () => {
         // 1st call
@@ -353,7 +332,7 @@ export const shouldBehaveLikePermissionChangeOwner = (
           .renounceOwnership();
 
         // mine 200 blocks
-        await network.provider.send('hardhat_mine', [ethers.toQuantity(200)]);
+        await context.networkHelpers.mine(200);
 
         // 2nd call
         renounceOwnershipSecondTx = await context.universalProfile
@@ -376,11 +355,11 @@ export const shouldBehaveLikePermissionChangeOwner = (
       });
 
       it('should clear the `pendingOwner` and set it to `AddressZero`', async () => {
-        expect(await context.universalProfile.pendingOwner()).to.equal(ethers.ZeroAddress);
+        expect(await context.universalProfile.pendingOwner()).to.equal(ZeroAddress);
       });
 
       it('should update the owner to `AddressZero`', async () => {
-        expect(await context.universalProfile.owner()).to.equal(ethers.ZeroAddress);
+        expect(await context.universalProfile.owner()).to.equal(ZeroAddress);
       });
     });
   });

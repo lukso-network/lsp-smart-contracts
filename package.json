@@ -4,6 +4,9 @@
   "private": true,
   "packageManager": "^npm@10.1.0",
   "npmClient": "npm",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
@@ -47,49 +50,21 @@
   },
   "devDependencies": {
     "@actions/github-script": "github:actions/github-script",
-    "@b00ste/hardhat-dodoc": "^0.3.16",
-    "@erc725/erc725.js": "0.23.0",
-    "@lukso/eip191-signer.js": "^0.2.2",
-    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "@turbo/gen": "^1.12.3",
-    "@typechain/ethers-v6": "^0.5.1",
-    "@typechain/hardhat": "9.1.0",
-    "@wagmi/cli": "^2.3.1",
+    "@wagmi/cli": "^2.8.0",
     "all-contributors-cli": "^6.26.1",
-    "dotenv": "^16.5.0",
-    "esbuild": "^0.17.15",
-    "eslint": "^9.37.0",
-    "eslint-config-custom": "*",
-    "eth-create2-calculator": "^1.1.5",
-    "ethers": "^6.11.0",
-    "hardhat": "^2.24.0",
-    "hardhat-contract-sizer": "^2.10.0",
-    "hardhat-deploy": "^0.12.0",
-    "hardhat-deploy-ethers": "^0.4.2",
-    "hardhat-gas-reporter": "^1.0.9",
-    "hardhat-packager": "^1.4.2",
+    "eslint": "^9.39.1",
+    "ethers": "^6.15.0",
     "husky": "^9.1.7",
-    "markdown-table-ts": "^1.0.3",
-    "npm-run-all": "^4.1.5",
-    "pluralize": "^8.0.0",
     "prettier": "^2.8.8",
     "prettier-plugin-solidity": "^1.4.1",
-    "rollup-plugin-esbuild": "^5.0.0",
     "solhint": "^5.0.3",
     "ts-node": "^10.9.2",
     "turbo": "latest",
-    "typechain": "^8.3.2",
-    "typescript": "^5.8.3",
-    "unbuild": "^3.5.0",
-    "vite-plugin-checker": "^0.5.6",
-    "vite-tsconfig-paths": "^4.0.7",
-    "zx": "^7.2.3"
+    "typescript": "^5.9.3",
+    "unbuild": "^3.6.1"
   },
   "workspaces": [
     "config/*",
     "packages/*"
-  ],
-  "resolutions": {
-    "@typechain/hardhat": "9.1.0"
-  }
+  ]
 }

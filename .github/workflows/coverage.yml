@@ -22,17 +22,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js v22.x
+      - name: Use Node.js v24
         uses: actions/setup-node@v4
         with:
-          node-version: "22.x"
+          node-version: "24.x"
           cache: "npm"
 
       - name: Install dependencies
         if: steps.build-cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      # This will also generate the Typechain types used by the Chai tests
+      # This will also generate the types used by the Chai tests
       - name: Build contract artifacts
         run: npx hardhat compile
 

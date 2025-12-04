@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { LSP6TestContext, LSP6InternalsTestContext } from '../utils/context';
-import { INTERFACE_IDS } from '../../constants';
+import type { LSP6TestContext, LSP6InternalsTestContext } from '../utils/context.js';
+import { INTERFACE_IDS } from '../../constants.js';
 
 import {
   // Admin
@@ -43,7 +43,7 @@ import {
   testReadingPermissionsInternals,
   testSetDataInternals,
   testExecuteInternals,
-} from './index';
+} from './index.js';
 
 export const shouldBehaveLikeLSP6 = (
   buildContext: (initialFunding?: bigint) => Promise<LSP6TestContext>,

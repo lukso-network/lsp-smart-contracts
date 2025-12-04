@@ -1,43 +1,48 @@
 import { expect } from 'chai';
-import { ethers, network } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import { hexlify, keccak256, randomBytes, toBigInt, toUtf8Bytes, ZeroAddress } from 'ethers';
 
 // types
 import {
-  NotImplementingVerifyCall,
+  type NotImplementingVerifyCall,
   NotImplementingVerifyCall__factory,
-  ImplementingFallback,
+  type ImplementingFallback,
   ImplementingFallback__factory,
-  FallbackReturnSuccessValue,
+  type FallbackReturnSuccessValue,
   FallbackReturnSuccessValue__factory,
-  LSP0ERC725Account,
-  OwnerWithURD,
+  type OwnerWithURD,
   OwnerWithURD__factory,
+  type FirstCallReturnExpandedInvalidValue,
+  FirstCallReturnExpandedInvalidValue__factory,
+  type FirstCallReturnInvalidValue,
+  FirstCallReturnInvalidValue__factory,
+  type SecondCallReturnFailureValue,
+  SecondCallReturnFailureValue__factory,
+  type FirstCallReturnSuccessValue,
+  FirstCallReturnSuccessValue__factory,
+  type BothCallReturnSuccessValue,
+  BothCallReturnSuccessValue__factory,
+  type SecondCallReturnExpandedSuccessValue,
+  SecondCallReturnExpandedSuccessValue__factory,
+} from '../../types/ethers-contracts/index.js';
+import {
   UniversalProfile,
   UniversalProfile__factory,
-  FirstCallReturnExpandedInvalidValue,
-  FirstCallReturnExpandedInvalidValue__factory,
-  FirstCallReturnInvalidValue,
-  FirstCallReturnInvalidValue__factory,
-  SecondCallReturnFailureValue__factory,
-  SecondCallReturnFailureValue,
-  FirstCallReturnSuccessValue,
-  FirstCallReturnSuccessValue__factory,
-  BothCallReturnSuccessValue,
-  BothCallReturnSuccessValue__factory,
-  SecondCallReturnExpandedSuccessValue,
-  SecondCallReturnExpandedSuccessValue__factory,
-} from '../../typechain';
+} from '../../../universalprofile-contracts/types/ethers-contracts/index.js';
+import { LSP0ERC725Account } from '../../../lsp0-contracts/types/ethers-contracts/index.js';
 
 // constants
-import { LSP1_TYPE_IDS } from '../../constants';
+import { LSP1_TYPE_IDS } from '../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
-import { abiCoder } from '../utils/helpers';
+import { abiCoder } from '../utils/helpers.js';
 
 export type LSP20TestContext = {
-  accounts: SignerWithAddress[];
+  ethers: HardhatEthers;
+  networkHelpers: NetworkHelpers;
+  accounts: HardhatEthersSigner[];
   universalProfile: UniversalProfile | LSP0ERC725Account;
-  deployParams: { owner: SignerWithAddress };
+  deployParams: { owner: HardhatEthersSigner };
 };
 
 export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestContext>) => {
@@ -50,8 +55,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
   describe('when testing lsp20 integration', () => {
     describe('when owner is an EOA', () => {
       describe('when calling `setData(bytes32,bytes)`', () => {
-        const dataKey = ethers.keccak256(ethers.toUtf8Bytes('RandomKey1'));
-        const dataValue = ethers.hexlify(ethers.randomBytes(50));
+        const dataKey = keccak256(toUtf8Bytes('RandomKey1'));
+        const dataValue = hexlify(randomBytes(50));
 
         it('should pass when owner calls', async () => {
           await context.universalProfile
@@ -71,8 +76,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
       });
 
       describe('when calling `setData(bytes32[],bytes[])` array', () => {
-        const dataKey = ethers.keccak256(ethers.toUtf8Bytes('RandomKey2'));
-        const dataValue = ethers.hexlify(ethers.randomBytes(50));
+        const dataKey = keccak256(toUtf8Bytes('RandomKey2'));
+        const dataValue = hexlify(randomBytes(50));
 
         it('should pass when owner calls', async () => {
           await context.universalProfile
@@ -158,7 +163,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         it('should revert when the non-owner is calling', async () => {
           const operationsType = [OPERATION_TYPES.CALL];
           const recipients = [context.accounts[1].address];
-          const values = [ethers.toBigInt('0')];
+          const values = [toBigInt('0')];
           const datas = ['0x'];
 
           await expect(
@@ -195,7 +200,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
 
       describe('when calling `renounceOwnership`', () => {
         it('should pass when the owner is calling', async () => {
-          await network.provider.send('hardhat_mine', [ethers.toQuantity(500)]);
+          await context.networkHelpers.mine(500);
 
           await expect(
             context.universalProfile.connect(context.deployParams.owner).renounceOwnership(),
@@ -203,7 +208,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should revert when the non-owner is calling', async () => {
-          await network.provider.send('hardhat_mine', [ethers.toQuantity(100)]);
+          await context.networkHelpers.mine(100);
 
           await expect(context.universalProfile.connect(context.accounts[3]).renounceOwnership())
             .to.be.revertedWithCustomError(context.universalProfile, 'LSP20EOACannotVerifyCall')
@@ -232,11 +237,9 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
           it('should renounce ownership of the contract and call the URD of the previous owner', async () => {
             await context.universalProfile.connect(context.accounts[0]).renounceOwnership();
 
-            await network.provider.send('hardhat_mine', [ethers.toQuantity(199)]);
+            await context.networkHelpers.mine(199);
 
-            const tx = await context.universalProfile
-              .connect(context.accounts[0])
-              .renounceOwnership();
+            const tx = context.universalProfile.connect(context.accounts[0]).renounceOwnership();
 
             await expect(tx)
               .to.emit(newContractOwner, 'UniversalReceiver')
@@ -246,7 +249,7 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
                 LSP1_TYPE_IDS.LSP0OwnershipTransferred_SenderNotification,
                 abiCoder.encode(
                   ['address', 'address'],
-                  [await newContractOwner.getAddress(), ethers.ZeroAddress],
+                  [await newContractOwner.getAddress(), ZeroAddress],
                 ),
                 '0x',
               );
@@ -282,8 +285,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should revert when calling LSP0 function', async () => {
-          const dataKey = ethers.keccak256(ethers.toUtf8Bytes('RandomKey1'));
-          const dataValue = ethers.hexlify(ethers.randomBytes(50));
+          const dataKey = keccak256(toUtf8Bytes('RandomKey1'));
+          const dataValue = hexlify(randomBytes(50));
 
           await expect(context.universalProfile.setData(dataKey, dataValue))
             .to.be.revertedWithCustomError(context.universalProfile, 'LSP20CallingVerifierFailed')
@@ -315,12 +318,12 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should revert when calling LSP0 function', async () => {
-          const dataKey = ethers.keccak256(ethers.toUtf8Bytes('RandomKey1'));
-          const dataValue = ethers.hexlify(ethers.randomBytes(50));
+          const dataKey = keccak256(toUtf8Bytes('RandomKey1'));
+          const dataValue = hexlify(randomBytes(50));
 
           await expect(
             context.universalProfile.setData(dataKey, dataValue),
-          ).to.be.revertedWithoutReason();
+          ).to.be.revertedWithoutReason(context.ethers);
         });
       });
 
@@ -348,8 +351,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should pass when calling LSP0 function', async () => {
-          const dataKey = ethers.keccak256(ethers.toUtf8Bytes('RandomKey1'));
-          const dataValue = ethers.hexlify(ethers.randomBytes(50));
+          const dataKey = keccak256(toUtf8Bytes('RandomKey1'));
+          const dataValue = hexlify(randomBytes(50));
 
           await expect(context.universalProfile.setData(dataKey, dataValue)).to.emit(
             ownerContract,
@@ -382,12 +385,12 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should revert when calling `setData(bytes32,bytes)`', async () => {
-          const dataKey = ethers.keccak256(ethers.toUtf8Bytes('RandomKey1'));
-          const dataValue = ethers.hexlify(ethers.randomBytes(50));
+          const dataKey = keccak256(toUtf8Bytes('RandomKey1'));
+          const dataValue = hexlify(randomBytes(50));
 
           await expect(
             context.universalProfile.setData(dataKey, dataValue),
-          ).to.be.revertedWithoutReason();
+          ).to.be.revertedWithoutReason(context.ethers);
         });
       });
 
@@ -415,8 +418,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should revert when calling `setData(bytes32,bytes)`', async () => {
-          const dataKey = ethers.keccak256(ethers.toUtf8Bytes('RandomKey1'));
-          const dataValue = ethers.hexlify(ethers.randomBytes(50));
+          const dataKey = keccak256(toUtf8Bytes('RandomKey1'));
+          const dataValue = hexlify(randomBytes(50));
 
           await expect(context.universalProfile.setData(dataKey, dataValue))
             .to.be.revertedWithCustomError(context.universalProfile, 'LSP20CallVerificationFailed')
@@ -439,8 +442,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should pass when calling `setData(bytes32,bytes)`', async () => {
-          const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
-          const value = ethers.hexlify(ethers.randomBytes(500));
+          const key = keccak256(toUtf8Bytes('My Key'));
+          const value = hexlify(randomBytes(500));
 
           await expect(newUniversalProfile.connect(context.accounts[3]).setData(key, value))
             .to.emit(newUniversalProfile, 'DataChanged')
@@ -466,16 +469,14 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should pass when calling `setData(bytes32,bytes)`', async () => {
-          const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
-          const value = ethers.hexlify(ethers.randomBytes(500));
+          const key = keccak256(toUtf8Bytes('My Key'));
+          const value = hexlify(randomBytes(500));
 
-          await expect(
-            newUniversalProfile.connect(context.accounts[3])['setData(bytes32,bytes)'](key, value),
-          )
+          await expect(newUniversalProfile.connect(context.accounts[3]).setData(key, value))
             .to.emit(newUniversalProfile, 'DataChanged')
             .withArgs(key, value);
 
-          const result = await newUniversalProfile['getData(bytes32)'](key);
+          const result = await newUniversalProfile.getData(key);
           expect(result).to.equal(value);
         });
       });
@@ -495,8 +496,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should pass when calling `setData(bytes32,bytes)`', async () => {
-          const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
-          const value = ethers.hexlify(ethers.randomBytes(500));
+          const key = keccak256(toUtf8Bytes('My Key'));
+          const value = hexlify(randomBytes(500));
 
           await expect(newUniversalProfile.connect(context.accounts[3]).setData(key, value))
             .to.emit(newUniversalProfile, 'DataChanged')
@@ -522,16 +523,14 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should pass when calling `setData(bytes32,bytes)`', async () => {
-          const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
-          const value = ethers.hexlify(ethers.randomBytes(500));
+          const key = keccak256(toUtf8Bytes('My Key'));
+          const value = hexlify(randomBytes(500));
 
-          await expect(
-            newUniversalProfile.connect(context.accounts[3])['setData(bytes32,bytes)'](key, value),
-          )
+          await expect(newUniversalProfile.connect(context.accounts[3]).setData(key, value))
             .to.emit(newUniversalProfile, 'DataChanged')
             .withArgs(key, value);
 
-          const result = await newUniversalProfile['getData(bytes32)'](key);
+          const result = await newUniversalProfile.getData(key);
           expect(result).to.equal(value);
         });
       });
@@ -551,8 +550,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should revert when calling `setData(bytes32,bytes)`', async () => {
-          const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
-          const value = ethers.hexlify(ethers.randomBytes(500));
+          const key = keccak256(toUtf8Bytes('My Key'));
+          const value = hexlify(randomBytes(500));
 
           await expect(
             newUniversalProfile.connect(context.accounts[3]).setData(key, value),
@@ -574,8 +573,8 @@ export const shouldBehaveLikeLSP20 = (buildContext: () => Promise<LSP20TestConte
         });
 
         it('should pass when calling `setData(bytes32,bytes)`', async () => {
-          const key = ethers.keccak256(ethers.toUtf8Bytes('My Key'));
-          const value = ethers.hexlify(ethers.randomBytes(500));
+          const key = keccak256(toUtf8Bytes('My Key'));
+          const value = hexlify(randomBytes(500));
 
           await expect(newUniversalProfile.connect(context.accounts[3]).setData(key, value))
             .to.emit(newUniversalProfile, 'DataChanged')

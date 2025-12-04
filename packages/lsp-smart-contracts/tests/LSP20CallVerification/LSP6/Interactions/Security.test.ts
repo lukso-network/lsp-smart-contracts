@@ -1,44 +1,51 @@
 import { expect } from 'chai';
-import { ethers, artifacts } from 'hardhat';
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import {
+  hexlify,
+  keccak256,
+  parseEther,
+  toNumber,
+  toUtf8Bytes,
+  ZeroAddress,
+  ZeroHash,
+} from 'ethers';
 
 import {
-  FirstToCallLSP20,
-  Reentrancy,
+  type Reentrancy,
   Reentrancy__factory,
-  SecondToCallLSP20,
+  type SecondToCallLSP20,
   SecondToCallLSP20__factory,
+  type FirstToCallLSP20,
   FirstToCallLSP20__factory,
-  TargetContract,
+  type TargetContract,
   TargetContract__factory,
   UniversalReceiverDelegateDataUpdater__factory,
-} from '../../../../typechain';
+} from '../../../../types/ethers-contracts/index.js';
 
 // constants
-import { ERC725YDataKeys, LSP1_TYPE_IDS } from '../../../../constants';
+import { ERC725YDataKeys, LSP1_TYPE_IDS } from '../../../../constants.js';
 import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
 import { ALL_PERMISSIONS, PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 
 // setup
-import { LSP6TestContext } from '../../../utils/context';
-import { setupKeyManager } from '../../../utils/fixtures';
+import type { LSP6TestContext } from '../../../utils/context.js';
+import { setupKeyManager } from '../../../utils/fixtures.js';
 
 // helpers
 import {
-  provider,
   combinePermissions,
   EMPTY_PAYLOAD,
   combineAllowedCalls,
   combineCallTypes,
   encodeCompactBytesArray,
-} from '../../../utils/helpers';
+} from '../../../utils/helpers.js';
 
 export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContext>) => {
   let context: LSP6TestContext;
 
-  let signer: SignerWithAddress, addressWithNoPermissions: SignerWithAddress;
+  let signer: HardhatEthersSigner, addressWithNoPermissions: HardhatEthersSigner;
 
-  let attacker: SignerWithAddress;
+  let attacker: HardhatEthersSigner;
 
   let targetContract: TargetContract, maliciousContract: Reentrancy;
 
@@ -72,7 +79,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
           combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
           combineCallTypes(CALLTYPE.VALUE, CALLTYPE.CALL),
         ],
-        [signer.address, ethers.ZeroAddress],
+        [signer.address, ZeroAddress],
         ['0xffffffff', '0xffffffff'],
         ['0xffffffff', '0xffffffff'],
       ),
@@ -83,7 +90,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
     // Fund Universal Profile with some LYXe
     await context.mainController.sendTransaction({
       to: await context.universalProfile.getAddress(),
-      value: ethers.parseEther('10'),
+      value: parseEther('10'),
     });
   });
 
@@ -133,7 +140,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       const transferPayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
         await maliciousContract.getAddress(),
-        ethers.parseEther('1'),
+        parseEther('1'),
         EMPTY_PAYLOAD,
       ]);
 
@@ -144,10 +151,10 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       // every time the contract receives LYX
       await maliciousContract.loadPayload(executePayload);
 
-      const initialAccountBalance = await provider.getBalance(
+      const initialAccountBalance = await context.ethers.provider.getBalance(
         await context.universalProfile.getAddress(),
       );
-      const initialAttackerContractBalance = await provider.getBalance(
+      const initialAttackerContractBalance = await context.ethers.provider.getBalance(
         await maliciousContract.getAddress(),
       );
 
@@ -158,10 +165,10 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
         .to.be.revertedWithCustomError(context.keyManager, 'NotAuthorised')
         .withArgs(await maliciousContract.getAddress(), 'REENTRANCY');
 
-      const newAccountBalance = await provider.getBalance(
+      const newAccountBalance = await context.ethers.provider.getBalance(
         await context.universalProfile.getAddress(),
       );
-      const newAttackerContractBalance = await provider.getBalance(
+      const newAttackerContractBalance = await context.ethers.provider.getBalance(
         await maliciousContract.getAddress(),
       );
 
@@ -175,10 +182,8 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       const universalReceiverDelegateDataUpdater =
         await new UniversalReceiverDelegateDataUpdater__factory(context.mainController).deploy();
 
-      const randomHardcodedKey = ethers.keccak256(ethers.toUtf8Bytes('some random data key'));
-      const randomHardcodedValue = ethers.hexlify(
-        ethers.toUtf8Bytes('some random text for the data value'),
-      );
+      const randomHardcodedKey = keccak256(toUtf8Bytes('some random data key'));
+      const randomHardcodedValue = hexlify(toUtf8Bytes('some random text for the data value'));
 
       const setDataPayload = context.universalProfile.interface.encodeFunctionData('setDataBatch', [
         [
@@ -200,18 +205,13 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
       const universalReceiverDelegatePayload =
         universalReceiverDelegateDataUpdater.interface.encodeFunctionData(
           'universalReceiverDelegate',
-          [
-            ethers.ZeroAddress,
-            0,
-            LSP1_TYPE_IDS.LSP7Tokens_SenderNotification,
-            '0xcafecafecafecafe',
-          ],
+          [ZeroAddress, 0, LSP1_TYPE_IDS.LSP7Tokens_SenderNotification, '0xcafecafecafecafe'],
         );
 
       const executePayload = context.universalProfile.interface.encodeFunctionData('execute', [
         OPERATION_TYPES.CALL,
         await universalReceiverDelegateDataUpdater.getAddress(),
-        ethers.parseEther('0'),
+        parseEther('0'),
         universalReceiverDelegatePayload,
       ]);
 
@@ -301,7 +301,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
                 firstTargetSelector,
               );
 
-            const result = await context.universalProfile.getData(ethers.ZeroHash);
+            const result = await context.universalProfile.getData(ZeroHash);
 
             expect(result).to.equal('0xaabbccdd');
           });
@@ -328,21 +328,9 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
 
         await tx.wait();
 
-        const _reentrancyStatusSlotNumber = ethers.toBigInt(
-          (
-            await artifacts.getBuildInfo(
-              '@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol:LSP6KeyManager',
-            )
-          )?.output.contracts[
-            '@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol'
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-          ].LSP6KeyManager.storageLayout.storage.filter((elem) => {
-            if (elem.label === '_reentrancyStatus') return elem;
-          })[0].slot,
-        );
+        const _reentrancyStatusSlotNumber = 2;
 
-        const _reentrancyStatusPackedWithAddress = await provider.getStorage(
+        const _reentrancyStatusPackedWithAddress = await context.ethers.provider.getStorage(
           await context.keyManager.getAddress(),
           _reentrancyStatusSlotNumber,
         );
@@ -352,7 +340,7 @@ export const testSecurityScenarios = (buildContext: () => Promise<LSP6TestContex
         const _reentrancyStatusHex = _reentrancyStatusPackedWithAddress.slice(10, 12);
 
         // Convert the hexadecimal value to a boolean
-        const _reentrancyStatus = Boolean(ethers.toNumber(_reentrancyStatusHex));
+        const _reentrancyStatus = Boolean(toNumber(_reentrancyStatusHex));
 
         expect(_reentrancyStatus).to.be.false;
       });
