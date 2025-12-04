@@ -64,6 +64,7 @@ import { LSP7_TYPE_IDS } from '@lukso/lsp7-contracts';
 import { LSP8_TYPE_IDS } from '@lukso/lsp8-contracts';
 import { LSP9_TYPE_IDS } from '@lukso/lsp9-contracts';
 import { LSP14_TYPE_IDS } from '@lukso/lsp14-contracts';
+import { LSP26_TYPE_IDS } from '@lukso/lsp26-contracts';
 
 // ERC725Y Data Keys of each LSP
 import { LSP1DataKeys } from '@lukso/lsp1-contracts';
@@ -152,4 +153,5 @@ export const LSP1_TYPE_IDS = {
   ...LSP8_TYPE_IDS,
   ...LSP9_TYPE_IDS,
   ...LSP14_TYPE_IDS,
+  ...LSP26_TYPE_IDS,
 } as const;
