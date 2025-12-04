@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.17.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.16.7...lsp-smart-contracts-v0.17.0) (2025-12-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade solc compiler + EVM version in LSP7 package to optimize runtime cost
+
+### Features
+
+* add LSP26 Type Ids to `LSP1_TYPE_IDS` constant list in `@lukso/lsp-smart-contracts` ([9f5c347](https://github.com/lukso-network/lsp-smart-contracts/commit/9f5c3471b153c10dd67495d1606882f63553aab5))
+* create hardhat-packager plugin ([21ba47c](https://github.com/lukso-network/lsp-smart-contracts/commit/21ba47c0490b36cf3dadc29f174138e247b477f5))
+* upgrade dependencies and Hardhat version to v3 ([32cbc59](https://github.com/lukso-network/lsp-smart-contracts/commit/32cbc5929774bcf58b48414c697325a6ee7c6b39))
+
+
+### Code Refactoring
+
+* upgrade solc compiler + EVM version in LSP7 package to optimize runtime cost ([b0a4c7f](https://github.com/lukso-network/lsp-smart-contracts/commit/b0a4c7fb487f228d9d2b2f5c56a7113d0fe99f24))
+
 ## [0.16.7](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.16.6...lsp-smart-contracts-v0.16.7) (2025-06-19)
 
 

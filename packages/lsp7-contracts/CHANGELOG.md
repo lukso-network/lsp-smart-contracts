@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.17.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.16.8...lsp7-contracts-v0.17.0) (2025-12-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade solc compiler + EVM version in LSP7 package to optimize runtime cost
+
+### Features
+
+* create customizeable token contract ([82d8a33](https://github.com/lukso-network/lsp-smart-contracts/commit/82d8a339defd873990bf2202638c2afd429f3c1f))
+* create hardhat-packager plugin ([21ba47c](https://github.com/lukso-network/lsp-smart-contracts/commit/21ba47c0490b36cf3dadc29f174138e247b477f5))
+* upgrade dependencies and Hardhat version to v3 ([32cbc59](https://github.com/lukso-network/lsp-smart-contracts/commit/32cbc5929774bcf58b48414c697325a6ee7c6b39))
+
+
+### Code Refactoring
+
+* upgrade solc compiler + EVM version in LSP7 package to optimize runtime cost ([b0a4c7f](https://github.com/lukso-network/lsp-smart-contracts/commit/b0a4c7fb487f228d9d2b2f5c56a7113d0fe99f24))
+
 ## [0.16.8](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.16.7...lsp7-contracts-v0.16.8) (2025-06-19)
 
 
