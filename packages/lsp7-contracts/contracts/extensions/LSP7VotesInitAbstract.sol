@@ -1,23 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// interfaces
+import {IERC5805} from "@openzeppelin/contracts/interfaces/IERC5805.sol";
+
+// modules
+import {
+    EIP712Upgradeable
+} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {
     LSP7DigitalAssetInitAbstract
 } from "../LSP7DigitalAssetInitAbstract.sol";
+
+// libraries
+import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
+
+// constants
 import {
     _TYPEID_LSP7_VOTESDELEGATOR,
     _TYPEID_LSP7_VOTESDELEGATEE
 } from "./LSP7VotesConstants.sol";
-
-import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
-import {IERC5805} from "@openzeppelin/contracts/interfaces/IERC5805.sol";
-import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {
-    EIP712Upgradeable
-} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
-import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
  * @dev Extension of LSP7 to support Compound-like voting and delegation. This version is more generic than Compound's,

@@ -14,6 +14,7 @@ import {
     EnumerableSet
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
+// errors
 import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 
 /// @title LSP7CappedBalanceAbstract
