@@ -14,6 +14,6 @@ for (const key in outputs) {
   const workspace = match[1];
 
   await $`npm run verify-balance --workspace=./${workspace} -- --network ${network}`;
-  await $`npm run deploy --workspace=./${workspace} -- --network ${network} --tags $TAGS --write true`;
+  await $`npm run deploy:base --workspace=./${workspace} -- --network ${network}`;
   await $`npm run verify-all --workspace=./${workspace} -- --network ${network}`;
 }

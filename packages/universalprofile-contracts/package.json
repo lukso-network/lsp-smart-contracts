@@ -56,7 +56,8 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "build:package": "hardhat prepare-package",
     "verify-balance": "npx hardhat verify-balance",
-    "deploy": "npx hardhat deploy",
+    "deploy": "npx hardhat ignition deploy",
+    "deploy:base": "npx hardhat ignition deploy ignition/modules/base.ts --strategy create2",
     "verify-all": "npx hardhat verify-all"
   },
   "dependencies": {
@@ -67,6 +68,7 @@
   },
   "devDependencies": {
     "@lukso/hardhat-packager-v3": "*",
+    "@nomicfoundation/hardhat-ignition-ethers": "^3.0.0",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "eslint-config-custom": "*",
     "hardhat": "^3.0.7"

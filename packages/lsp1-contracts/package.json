@@ -54,10 +54,7 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
-    "build:package": "hardhat prepare-package",
-    "verify-balance": "npx hardhat verify-balance",
-    "deploy": "npx hardhat deploy",
-    "verify-all": "npx hardhat verify-all"
+    "build:package": "hardhat prepare-package"
   },
   "dependencies": {
     "@lukso/lsp2-contracts": "~0.15.4",
