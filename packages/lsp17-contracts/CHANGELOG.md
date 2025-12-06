@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.17.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17-contracts-v0.16.7...lsp17-contracts-v0.17.0) (2025-12-04)
+
+
+### Features
+
+* create ERC20 metadata compatibility extension ([bd81578](https://github.com/lukso-network/lsp-smart-contracts/commit/bd815783490995a2c2a9badde80f31ffe8028798))
+* create hardhat-packager plugin ([21ba47c](https://github.com/lukso-network/lsp-smart-contracts/commit/21ba47c0490b36cf3dadc29f174138e247b477f5))
+* upgrade dependencies and Hardhat version to v3 ([32cbc59](https://github.com/lukso-network/lsp-smart-contracts/commit/32cbc5929774bcf58b48414c697325a6ee7c6b39))
+
 ## [0.16.7](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17-contracts-v0.16.6...lsp17-contracts-v0.16.7) (2025-06-19)
 
 
