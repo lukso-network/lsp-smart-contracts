@@ -64,7 +64,7 @@ abstract contract LSP7DigitalAsset is
 
     // --- Storage
 
-    bool internal _isNonDivisible;
+    bool internal immutable _isNonDivisible;
 
     uint256 internal _existingTokens;
 
