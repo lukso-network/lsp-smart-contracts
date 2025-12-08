@@ -64,7 +64,7 @@ abstract contract LSP7DigitalAsset is
 
     // --- Storage
 
-    bool internal immutable _isNonDivisible;
+    bool internal immutable _IS_NON_DIVISIBLE;
 
     uint256 internal _existingTokens;
 
@@ -93,7 +93,7 @@ abstract contract LSP7DigitalAsset is
         uint256 lsp4TokenType_,
         bool isNonDivisible_
     ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_, lsp4TokenType_) {
-        _isNonDivisible = isNonDivisible_;
+        _IS_NON_DIVISIBLE = isNonDivisible_;
     }
 
     // fallback functions
@@ -226,7 +226,7 @@ abstract contract LSP7DigitalAsset is
      * @inheritdoc ILSP7DigitalAsset
      */
     function decimals() public view virtual override returns (uint8) {
-        return _isNonDivisible ? 0 : 18;
+        return _IS_NON_DIVISIBLE ? 0 : 18;
     }
 
     /**
