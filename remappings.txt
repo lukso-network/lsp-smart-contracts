@@ -1,7 +1,8 @@
-@=node_modules/@
-eth-gas-reporter/=node_modules/eth-gas-reporter/
+@account-abstraction/=node_modules/@account-abstraction/
+@erc725/=node_modules/@erc725/
+@lukso/=node_modules/@lukso/
+@openzeppelin/=node_modules/@openzeppelin/
+ds-test/=lib/forge-std/lib/ds-test/src/
 forge-std/=lib/forge-std/src/
-hardhat-deploy/=node_modules/hardhat-deploy/
 hardhat/=node_modules/hardhat/
 solidity-bytes-utils/=node_modules/solidity-bytes-utils/
-ds-test/=lib/forge-std/lib/ds-test/src/
