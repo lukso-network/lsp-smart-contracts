@@ -2,9 +2,7 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 /**
  * @title LSP2 Utility library.
@@ -49,11 +47,16 @@ library LSP2Utils {
         string memory arrayKeyName
     ) internal pure returns (bytes32) {
         bytes memory dataKey = bytes(arrayKeyName);
+
+        // solhint-disable-next-line gas-strict-inequalities,gas-custom-errors
         require(dataKey.length >= 2, "MUST be longer than 2 characters");
+
+        // utf8 chars: 0x5b for "[" and 0x5d for "]"
+        // solhint-disable-next-line gas-strict-inequalities,gas-custom-errors
         require(
-            dataKey[dataKey.length - 2] == 0x5b && // "[" in utf8 encoded
-                dataKey[dataKey.length - 1] == 0x5d, // "]" in utf8
-            "Missing empty square brackets '[]' at the end of the key name"
+            dataKey[dataKey.length - 2] == 0x5b &&
+                dataKey[dataKey.length - 1] == 0x5d,
+            "Key name must end with '[]'"
         );
 
         return keccak256(dataKey);
@@ -310,6 +313,7 @@ library LSP2Utils {
          * Make sure that the last length describes exactly the last bytes value and you do not get out of bounds.
          */
         while (pointer < compactBytesArray.length) {
+            // solhint-disable-next-line gas-strict-inequalities
             if (pointer + 1 >= compactBytesArray.length) return false;
             uint256 elementLength = uint16(
                 bytes2(
@@ -402,7 +406,7 @@ library LSP2Utils {
         dataKeys = new bytes32[](5);
         dataValues = new bytes[](5);
 
-        // store the number of received assets decremented by 1
+        // update the number of received assets (value is assumed to be previous length decremented by 1)
         dataKeys[0] = arrayKey;
         dataValues[0] = abi.encodePacked(newArrayLength);
 
@@ -410,13 +414,11 @@ library LSP2Utils {
         dataKeys[1] = removedElementMapKey;
         dataValues[1] = "";
 
-        // Generate the key of the last element in the array
+        // Get the data value for the data key index of the last element in the array
         bytes32 lastElementIndexKey = LSP2Utils.generateArrayElementKeyAtIndex(
             arrayKey,
             newArrayLength
         );
-
-        // Get the data value from the key of the last element in the array
         bytes20 lastElementIndexValue = bytes20(
             erc725YContract.getData(lastElementIndexKey)
         );
@@ -429,20 +431,16 @@ library LSP2Utils {
         dataKeys[3] = lastElementIndexKey;
         dataValues[3] = "";
 
-        // Generate mapping key for the swapped array element
+        // Update the map value of the swapped array element to the new index
         bytes32 lastElementMapKey = LSP2Utils.generateMappingKey(
             bytes10(removedElementMapKey),
             lastElementIndexValue
         );
 
-        // Generate the mapping value for the swapped array element
-        bytes memory lastElementMapValue = abi.encodePacked(
-            bytes4(erc725YContract.getData(lastElementMapKey)),
+        dataKeys[4] = lastElementMapKey;
+        dataValues[4] = abi.encodePacked(
+            bytes4(erc725YContract.getData(lastElementMapKey)), // casting to get the interface ID (first part of the tuple value)
             removedElementIndex
         );
-
-        // Update the map value of the swapped array element to the new index
-        dataKeys[4] = lastElementMapKey;
-        dataValues[4] = lastElementMapValue;
     }
 }
