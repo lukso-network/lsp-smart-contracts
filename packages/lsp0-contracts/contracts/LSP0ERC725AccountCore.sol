@@ -4,19 +4,13 @@ pragma solidity ^0.8.4;
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ILSP0ERC725Account} from "./ILSP0ERC725Account.sol";
-import {
-    ILSP1UniversalReceiver
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
+import {ILSP1UniversalReceiver} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 
-import {
-    ILSP1UniversalReceiverDelegate as ILSP1Delegate
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
+import {ILSP1UniversalReceiverDelegate as ILSP1Delegate} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // libraries
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {
-    ERC165Checker
-} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
 import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
@@ -24,18 +18,10 @@ import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 // modules
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
-import {
-    OwnableUnset
-} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {
-    LSP14Ownable2Step
-} from "@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol";
-import {
-    LSP17Extendable
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
-import {
-    LSP20CallVerification
-} from "@lukso/lsp20-contracts/contracts/LSP20CallVerification.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {LSP14Ownable2Step} from "@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol";
+import {LSP17Extendable} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
+import {LSP20CallVerification} from "@lukso/lsp20-contracts/contracts/LSP20CallVerification.sol";
 
 // constants
 import {
@@ -54,25 +40,17 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
-import {
-    _INTERFACEID_LSP14
-} from "@lukso/lsp14-contracts/contracts/LSP14Constants.sol";
+import {_INTERFACEID_LSP14} from "@lukso/lsp14-contracts/contracts/LSP14Constants.sol";
 
-import {
-    _LSP17_EXTENSION_PREFIX
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
-import {
-    _INTERFACEID_LSP20_CALL_VERIFICATION
-} from "@lukso/lsp20-contracts/contracts/LSP20Constants.sol";
+import {_LSP17_EXTENSION_PREFIX} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
+import {_INTERFACEID_LSP20_CALL_VERIFICATION} from "@lukso/lsp20-contracts/contracts/LSP20Constants.sol";
 
 // errors
 import {
     ERC725Y_DataKeysValuesLengthMismatch,
     ERC725Y_DataKeysValuesEmptyArray
 } from "@erc725/smart-contracts/contracts/errors.sol";
-import {
-    NoExtensionFoundForFunctionSelector
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Errors.sol";
+import {NoExtensionFoundForFunctionSelector} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Errors.sol";
 
 /**
  * @title The Core Implementation of [LSP-0-ERC725Account] Standard.
@@ -469,6 +447,7 @@ abstract contract LSP0ERC725AccountCore is
         );
         bytes memory resultDefaultDelegate;
 
+        // solhint-disable-next-line gas-strict-inequalities
         if (lsp1DelegateValue.length >= 20) {
             address lsp1Delegate = address(bytes20(lsp1DelegateValue));
 
@@ -498,6 +477,7 @@ abstract contract LSP0ERC725AccountCore is
         bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
         bytes memory resultTypeIdDelegate;
 
+        // solhint-disable-next-line gas-strict-inequalities
         if (lsp1TypeIdDelegateValue.length >= 20) {
             address lsp1Delegate = address(bytes20(lsp1TypeIdDelegateValue));
 
@@ -763,7 +743,7 @@ abstract contract LSP0ERC725AccountCore is
             bool isValid = (success &&
                 result.length == 32 &&
                 abi.decode(result, (bytes32)) ==
-                bytes32(_ERC1271_SUCCESSVALUE));
+                    bytes32(_ERC1271_SUCCESSVALUE));
 
             return isValid ? _ERC1271_SUCCESSVALUE : _ERC1271_FAILVALUE;
         }
