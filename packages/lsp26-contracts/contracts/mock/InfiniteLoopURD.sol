@@ -2,9 +2,7 @@
 pragma solidity ^0.8.17;
 
 // interfaces
-import {
-    ILSP1UniversalReceiver
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
+import {ILSP1UniversalReceiver} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 
 contract InfiniteLoopURD is ILSP1UniversalReceiver {
     uint256 public counter;
@@ -15,7 +13,7 @@ contract InfiniteLoopURD is ILSP1UniversalReceiver {
 
     function universalReceiver(
         bytes32,
-        bytes memory
+        bytes calldata
     ) external payable returns (bytes memory) {
         while (true) {
             ++counter;

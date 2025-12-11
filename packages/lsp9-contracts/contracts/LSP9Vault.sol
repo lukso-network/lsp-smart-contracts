@@ -2,9 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    OwnableUnset
-} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 import {Version} from "./Version.sol";
 import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 

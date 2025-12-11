@@ -2,9 +2,7 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP6KeyManager} from "./ILSP6KeyManager.sol";
 
 // libraries
@@ -134,6 +132,7 @@ library LSP6Utils {
         uint256 pointer = 0;
 
         while (pointer < allowedCallsCompacted.length) {
+            // solhint-disable-next-line gas-strict-inequalities
             if (pointer + 1 >= allowedCallsCompacted.length) return false;
             uint256 elementLength = uint16(
                 bytes2(
@@ -164,6 +163,7 @@ library LSP6Utils {
         uint256 pointer = 0;
 
         while (pointer < allowedERC725YDataKeysCompacted.length) {
+            // solhint-disable-next-line gas-strict-inequalities
             if (pointer + 1 >= allowedERC725YDataKeysCompacted.length)
                 return false;
             uint256 elementLength = uint16(
@@ -213,7 +213,7 @@ library LSP6Utils {
         bytes32[] memory permissions
     ) internal pure returns (bytes32) {
         bytes32 result;
-        for (uint256 i; i < permissions.length; i++) {
+        for (uint256 i; i < permissions.length; ++i) {
             result |= permissions[i];
         }
         return result;

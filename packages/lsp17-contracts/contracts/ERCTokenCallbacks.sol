@@ -11,13 +11,9 @@ import {
     ERC1155Receiver
 } from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
-import {
-    IERC777Recipient
-} from "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
+import {IERC777Recipient} from "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
 
-import {
-    LSP17Extension
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol";
+import {LSP17Extension} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol";
 
 /**
  * @dev LSP17 Extension that can be attached to a LSP17Extendable contract

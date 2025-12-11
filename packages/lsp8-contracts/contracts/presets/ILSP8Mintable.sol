@@ -2,9 +2,7 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    ILSP8IdentifiableDigitalAsset
-} from "../ILSP8IdentifiableDigitalAsset.sol";
+import {ILSP8IdentifiableDigitalAsset} from "../ILSP8IdentifiableDigitalAsset.sol";
 
 /**
  * @dev LSP8 extension, isMintable.

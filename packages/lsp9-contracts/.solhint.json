@@ -1,3 +1,7 @@
 {
-  "extends": ["solhint:recommended", "lsp-solidity-linting-rules"]
+  "extends": ["solhint:recommended", "lsp-solidity-linting-rules"],
+  "rules": {
+    "gas-custom-errors": "off",
+    "gas-small-strings": "off"
+  }
 }

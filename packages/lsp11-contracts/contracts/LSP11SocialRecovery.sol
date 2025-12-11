@@ -5,17 +5,11 @@ pragma solidity ^0.8.9;
 import {ILSP11SocialRecovery} from "./ILSP11SocialRecovery.sol";
 
 // Libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {
-    ILSP25ExecuteRelayCall
-} from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
-import {
-    LSP25MultiChannelNonce
-} from "@lukso/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol";
+import {ILSP25ExecuteRelayCall} from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
+import {LSP25MultiChannelNonce} from "@lukso/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // Constants
@@ -876,6 +870,7 @@ contract LSP11SocialRecovery is
      * @param msgValue The message value.
      * @param calldataToExecute The call data to be executed as part of the recovery.
      */
+    // solhint-disable-next-line function-max-lines
     function _recoverAccess(
         address account,
         uint256 recoveryCounter,
@@ -892,10 +887,8 @@ contract LSP11SocialRecovery is
                 getRecoveryDelayOf(account)
         ) revert CannotRecoverBeforeDelay(account, getRecoveryDelayOf(account));
 
-        // retrieve current secret hash
+        // retrieve current secret hash and guardian threshold
         bytes32 currentSecretHash = _secretHashOf[account];
-
-        // retrieve current guardians threshold
         uint256 guardiansThresholdOfAccount = _guardiansThresholdOf[account];
 
         // if there is no guardians, disallow recovering
@@ -959,6 +952,7 @@ contract LSP11SocialRecovery is
             value: msgValue
         }(calldataToExecute);
 
+        // solhint-disable-next-line gas-small-strings
         Address.verifyCallResult(
             success,
             returnedData,

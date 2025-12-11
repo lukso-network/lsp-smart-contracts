@@ -7,10 +7,8 @@ import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 /**
  * @title Interface of the LSP6 - Key Manager standard, a contract acting as a controller of an ERC725 Account using predefined permissions.
  */
-interface ILSP6KeyManager is
-    IERC1271
+interface ILSP6KeyManager is IERC1271 {
     /* is ERC165 */
-{
     /**
      * @dev Emitted when the LSP6KeyManager contract verified the permissions of the `signer` successfully.
      * @notice Verified the permissions of `signer` for calling function `selector` on the linked account and sending `value` of native token.

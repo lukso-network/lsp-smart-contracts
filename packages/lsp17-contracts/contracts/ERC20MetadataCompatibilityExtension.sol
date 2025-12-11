@@ -2,14 +2,10 @@
 pragma solidity ^0.8.17;
 
 // interfaces
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 // modules
-import {
-    LSP17Extension
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol";
+import {LSP17Extension} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol";
 
 // constants
 import {

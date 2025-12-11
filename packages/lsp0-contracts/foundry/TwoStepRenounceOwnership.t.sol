@@ -3,13 +3,9 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "@erc725/smart-contracts/contracts/constants.sol";
-import {
-    LSP0ERC725Account
-} from "@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol";
+import {LSP0ERC725Account} from "@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol";
 
-import {
-    LSP20EOACannotVerifyCall
-} from "@lukso/lsp20-contracts/contracts/LSP20Errors.sol";
+import {LSP20EOACannotVerifyCall} from "@lukso/lsp20-contracts/contracts/LSP20Errors.sol";
 
 contract Implementation {
     // _pendingOwner is at slot 3 for LSP0ERC725Account

@@ -2,15 +2,9 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {
-    ILSP1UniversalReceiverDelegate
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
-import {
-    ILSP7DigitalAsset
-} from "@lukso/lsp7-contracts/contracts/ILSP7DigitalAsset.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {ILSP1UniversalReceiverDelegate} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
+import {ILSP7DigitalAsset} from "@lukso/lsp7-contracts/contracts/ILSP7DigitalAsset.sol";
 
 // modules
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
@@ -20,9 +14,7 @@ import {Version} from "./Version.sol";
 import {LSP5Utils} from "@lukso/lsp5-contracts/contracts/LSP5Utils.sol";
 
 // constants
-import {
-    _INTERFACEID_LSP1_DELEGATE
-} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {_INTERFACEID_LSP1_DELEGATE} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 import {
     _TYPEID_LSP7_TOKENSSENDER,
     _TYPEID_LSP7_TOKENSRECIPIENT,

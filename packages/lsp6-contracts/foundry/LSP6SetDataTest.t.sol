@@ -4,9 +4,7 @@ pragma solidity ^0.8.4;
 import "forge-std/Test.sol";
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
 import {LSP6KeyManager} from "../contracts/LSP6KeyManager.sol";
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
 import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
@@ -18,9 +16,7 @@ import "../contracts/LSP6Constants.sol";
 import "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 
 // errors
-import {
-    InvalidEncodedAllowedERC725YDataKeys
-} from "../contracts/LSP6Errors.sol";
+import {InvalidEncodedAllowedERC725YDataKeys} from "../contracts/LSP6Errors.sol";
 
 contract LSP6SetDataTest is Test {
     using BytesLib for bytes;

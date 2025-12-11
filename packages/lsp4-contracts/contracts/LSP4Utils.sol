@@ -2,9 +2,7 @@
 pragma solidity ^0.8.4;
 
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {
-    _KECCAK256_BYTES
-} from "@lukso/lsp2-contracts/contracts/LSP2Constants.sol";
+import {_KECCAK256_BYTES} from "@lukso/lsp2-contracts/contracts/LSP2Constants.sol";
 
 struct Link {
     string title;
@@ -72,18 +70,18 @@ library LSP4Utils {
     function toJSON(Link memory link) internal pure returns (string memory) {
         return
             string.concat(
-                '{"title":"',
+                "{'title':'",
                 link.title,
-                '","url":"',
+                "','url':'",
                 link.url,
-                '"}'
+                "'}"
             );
     }
 
     function toJSON(
         Link[] memory links
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < links.length; index++) {
+        for (uint256 index; index < links.length; ++index) {
             object = string.concat(object, toJSON(links[index]));
 
             if (index != links.length - 1) {
@@ -97,20 +95,20 @@ library LSP4Utils {
     ) internal pure returns (string memory) {
         return
             string.concat(
-                '{"key":"',
+                "{'key':'",
                 attribute.key,
-                '","value":"',
+                "','value':'",
                 attribute.value,
-                '","type":"',
+                "','type':'",
                 attribute.valueType,
-                '"}'
+                "'}"
             );
     }
 
     function toJSON(
         Attribute[] memory attributes
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < attributes.length; index++) {
+        for (uint256 index; index < attributes.length; ++index) {
             object = string.concat(object, toJSON(attributes[index]));
 
             if (index != attributes.length - 1) {
@@ -122,24 +120,24 @@ library LSP4Utils {
     function toJSON(Image memory image) internal pure returns (string memory) {
         return
             string.concat(
-                '{"width":',
+                "{'width':",
                 image.width.toString(),
-                ',"height":',
+                ",'height':",
                 image.height.toString(),
-                ',"url":"',
+                ",'url':'",
                 image.url,
-                '","verification":{"method":"',
+                "','verification':{'method':'",
                 image.verification.method,
-                '","data":"',
+                "','data':'",
                 uint256(image.verification.data).toHexString(32),
-                '"}}'
+                "'}}"
             );
     }
 
     function toJSON(
         Image[] memory images
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < images.length; index++) {
+        for (uint256 index; index < images.length; ++index) {
             object = string.concat(object, toJSON(images[index]));
 
             if (index != images.length - 1) {
@@ -151,7 +149,7 @@ library LSP4Utils {
     function toJSON(
         Image[][] memory images
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < images.length; index++) {
+        for (uint256 index; index < images.length; ++index) {
             object = string.concat(object, "[", toJSON(images[index]), "]");
 
             if (index != images.length - 1) {
@@ -163,22 +161,22 @@ library LSP4Utils {
     function toJSON(Asset memory asset) internal pure returns (string memory) {
         return
             string.concat(
-                '{"url":"',
+                "{'url':",
                 asset.url,
-                '","fileType":"',
+                "','fileType':'",
                 asset.fileType,
-                '","verification":{"method":"',
+                "','verification':{'method':'",
                 asset.verification.method,
-                '","data":"',
+                "','data':'",
                 uint256(asset.verification.data).toHexString(32),
-                '"}}'
+                "'}}"
             );
     }
 
     function toJSON(
         Asset[] memory assets
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < assets.length; index++) {
+        for (uint256 index; index < assets.length; ++index) {
             object = string.concat(object, toJSON(assets[index]));
 
             if (index != assets.length - 1) {
@@ -192,16 +190,16 @@ library LSP4Utils {
     ) internal pure returns (string memory) {
         return
             string.concat(
-                '{"address":"',
+                "{'address':'",
                 asset.contractAddress.toHexString(),
-                '"}'
+                "'}"
             );
     }
 
     function toJSON(
         LSP7Asset[] memory assets
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < assets.length; index++) {
+        for (uint256 index; index < assets.length; ++index) {
             object = string.concat(object, toJSON(assets[index]));
 
             if (index != assets.length - 1) {
@@ -213,7 +211,7 @@ library LSP4Utils {
     function toJSON(
         LSP7Asset[][] memory assets
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < assets.length; index++) {
+        for (uint256 index; index < assets.length; ++index) {
             object = string.concat(object, "[", toJSON(assets[index]), "]");
 
             if (index != assets.length - 1) {
@@ -227,18 +225,18 @@ library LSP4Utils {
     ) internal pure returns (string memory) {
         return
             string.concat(
-                '{"address":"',
+                "{'address':'",
                 asset.contractAddress.toHexString(),
-                '","tokenId":"',
+                "','tokenId':'",
                 uint256(asset.tokenId).toHexString(),
-                '"}'
+                "'}"
             );
     }
 
     function toJSON(
         LSP8Asset[] memory assets
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < assets.length; index++) {
+        for (uint256 index; index < assets.length; ++index) {
             object = string.concat(object, toJSON(assets[index]));
 
             if (index != assets.length - 1) {
@@ -250,7 +248,7 @@ library LSP4Utils {
     function toJSON(
         LSP8Asset[][] memory assets
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < assets.length; index++) {
+        for (uint256 index; index < assets.length; ++index) {
             object = string.concat(object, "[", toJSON(assets[index]), "]");
 
             if (index != assets.length - 1) {
@@ -277,7 +275,7 @@ library LSP4Utils {
     function toJSON(
         Images memory images
     ) internal pure returns (string memory object) {
-        for (uint256 index = 0; index < images.imageFields.length; index++) {
+        for (uint256 index = 0; index < images.imageFields.length; ++index) {
             GroupImageField memory image = images.imageFields[index];
             object = string.concat(
                 object,
@@ -328,20 +326,21 @@ library LSP4Utils {
         Assets memory assets
     ) public pure returns (string memory) {
         return
+            // solhint-disable-next-line gas-small-strings
             string.concat(
-                'data:application/json;charset=UTF-8,{"LSP4Metadata":{"name":"',
+                "data:application/json;charset=UTF-8,{'LSP4Metadata':{'name':'",
                 name,
-                '","description":"',
+                "','description':'",
                 description,
-                '","links":[',
+                "','links':[",
                 toJSON(links),
-                '],"attributes":[',
+                "],'attributes':[",
                 toJSON(attributes),
-                '],"icon":[',
+                "],'icon':[",
                 toJSON(icons),
-                '],"images":[',
+                "],'images':[",
                 toJSON(images),
-                '],"assets":[',
+                "],'assets':[",
                 toJSON(assets),
                 "]}}"
             );

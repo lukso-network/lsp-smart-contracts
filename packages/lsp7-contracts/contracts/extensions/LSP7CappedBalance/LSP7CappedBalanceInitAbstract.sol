@@ -2,17 +2,13 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    LSP7AllowlistInitAbstract
-} from "../LSP7Allowlist/LSP7AllowlistInitAbstract.sol";
+import {LSP7AllowlistInitAbstract} from "../LSP7Allowlist/LSP7AllowlistInitAbstract.sol";
 
 // interfaces
 import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
@@ -26,7 +22,7 @@ abstract contract LSP7CappedBalanceInitAbstract is
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @notice The immutable maximum token balance allowed per address.
-    uint256 private _TOKEN_BALANCE_CAP;
+    uint256 private _tokenBalanceCap;
 
     /// @notice Initializes the contract with a token balance cap.
     /// @dev Sets the immutable balance cap and reverts if the cap is zero. Inherits LSP7AllowlistAbstract constructor logic.
@@ -34,12 +30,12 @@ abstract contract LSP7CappedBalanceInitAbstract is
     function _initialize(
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
-        _TOKEN_BALANCE_CAP = tokenBalanceCap_;
+        _tokenBalanceCap = tokenBalanceCap_;
     }
 
     /// @inheritdoc ILSP7CappedBalance
     function tokenBalanceCap() public view virtual override returns (uint256) {
-        return _TOKEN_BALANCE_CAP;
+        return _tokenBalanceCap;
     }
 
     /// @notice Checks if a token transfer complies with the balance cap.

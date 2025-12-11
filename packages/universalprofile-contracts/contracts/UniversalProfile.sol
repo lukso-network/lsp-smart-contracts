@@ -2,9 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    LSP0ERC725Account
-} from "@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol";
+import {LSP0ERC725Account} from "@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol";
 
 // constants
 import {

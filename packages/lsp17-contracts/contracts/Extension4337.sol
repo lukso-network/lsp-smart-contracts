@@ -3,29 +3,19 @@ pragma solidity ^0.8.12;
 
 // interfaces
 import {IAccount} from "@account-abstraction/contracts/interfaces/IAccount.sol";
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {
-    ILSP20CallVerifier
-} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {ILSP20CallVerifier} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
 
 // modules
-import {
-    LSP14Ownable2Step
-} from "@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol";
-import {
-    LSP17Extension
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol";
+import {LSP14Ownable2Step} from "@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol";
+import {LSP17Extension} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extension.sol";
 
 // libraries
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {LSP6Utils} from "@lukso/lsp6-contracts/contracts/LSP6Utils.sol";
 
 // constants
-import {
-    UserOperation
-} from "@account-abstraction/contracts/interfaces/UserOperation.sol";
+import {UserOperation} from "@account-abstraction/contracts/interfaces/UserOperation.sol";
 
 contract Extension4337 is LSP17Extension, IAccount {
     using ECDSA for bytes32;
@@ -77,6 +67,7 @@ contract Extension4337 is LSP17Extension, IAccount {
         bytes32 userOpHash,
         uint256 /* missingAccountFunds */
     ) external returns (uint256) {
+        // solhint-disable-next-line gas-small-strings,gas-custom-errors
         require(
             _extendableMsgSender() == _ENTRY_POINT,
             "Only EntryPoint contract can call this"
