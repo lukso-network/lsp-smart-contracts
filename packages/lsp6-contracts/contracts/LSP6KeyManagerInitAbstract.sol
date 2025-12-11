@@ -2,9 +2,7 @@
 pragma solidity ^0.8.5;
 
 // modules
-import {
-    Initializable
-} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {LSP6KeyManagerCore} from "./LSP6KeyManagerCore.sol";
 import {InvalidLSP6Target} from "./LSP6Errors.sol";
 

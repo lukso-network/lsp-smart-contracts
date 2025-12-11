@@ -31,11 +31,13 @@ contract TargetContract {
     }
 
     function setNamePayableMinimumValue(string memory name) public payable {
+        // solhint-disable-next-line gas-custom-errors,gas-strict-inequalities
         require(msg.value >= 50, "Not enough value provided");
         _name = name;
     }
 
     function revertCall() public pure {
+        // solhint-disable-next-line gas-custom-errors,gas-small-strings
         revert("TargetContract:revertCall: this function has reverted!");
     }
 
