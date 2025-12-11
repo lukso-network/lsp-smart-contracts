@@ -5,23 +5,15 @@ pragma solidity ^0.8.22;
 import "forge-std/Test.sol";
 
 // modules
-import {
-    LSP7CappedBalanceAbstract
-} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
-import {
-    LSP7AllowlistAbstract
-} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {LSP7CappedBalanceAbstract} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
+import {LSP7AllowlistAbstract} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // errors
-import {
-    LSP7CappedBalanceExceeded
-} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
+import {LSP7CappedBalanceExceeded} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
 
 // constants
-import {
-    _LSP4_TOKEN_TYPE_TOKEN
-} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 // Mock contract to test LSP7CappedBalanceAbstract functionality
 contract MockLSP7CappedBalance is LSP7CappedBalanceAbstract {

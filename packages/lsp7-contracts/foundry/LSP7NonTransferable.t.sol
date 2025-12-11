@@ -6,17 +6,11 @@ import "forge-std/Test.sol";
 
 // modules
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
-import {
-    LSP7AllowlistAbstract
-} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
-import {
-    LSP7NonTransferableAbstract
-} from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
+import {LSP7AllowlistAbstract} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {LSP7NonTransferableAbstract} from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
 
 // interfaces
-import {
-    ILSP7NonTransferable
-} from "../contracts/extensions/LSP7NonTransferable/ILSP7NonTransferable.sol";
+import {ILSP7NonTransferable} from "../contracts/extensions/LSP7NonTransferable/ILSP7NonTransferable.sol";
 
 // errors
 import {
@@ -26,9 +20,7 @@ import {
 } from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableErrors.sol";
 
 // constants
-import {
-    _LSP4_TOKEN_TYPE_TOKEN
-} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract MockLSP7NonTransferable is LSP7NonTransferableAbstract {
     constructor(

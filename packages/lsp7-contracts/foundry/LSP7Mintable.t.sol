@@ -5,20 +5,14 @@ pragma solidity ^0.8.22;
 import "forge-std/Test.sol";
 
 // modules
-import {
-    LSP7MintableAbstract
-} from "../contracts/extensions/LSP7Mintable/LSP7MintableAbstract.sol";
+import {LSP7MintableAbstract} from "../contracts/extensions/LSP7Mintable/LSP7MintableAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // errors
-import {
-    LSP7MintDisabled
-} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {LSP7MintDisabled} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
 
 // constants
-import {
-    _LSP4_TOKEN_TYPE_TOKEN
-} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract MockLSP7Mintable is LSP7MintableAbstract {
     constructor(

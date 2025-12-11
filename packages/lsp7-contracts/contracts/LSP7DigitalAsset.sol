@@ -2,9 +2,7 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    ILSP1UniversalReceiver as ILSP1
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
+import {ILSP1UniversalReceiver as ILSP1} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
 // modules
@@ -12,27 +10,17 @@ import {
     LSP4DigitalAssetMetadata,
     ERC725Y
 } from "@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadata.sol";
-import {
-    LSP17Extendable
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
+import {LSP17Extendable} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {
-    ERC165Checker
-} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
 import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 
 // constants
-import {
-    _INTERFACEID_LSP1
-} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
-import {
-    _LSP17_EXTENSION_PREFIX
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
+import {_INTERFACEID_LSP1} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {_LSP17_EXTENSION_PREFIX} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 import {
     _INTERFACEID_LSP7,
     _TYPEID_LSP7_TOKENOPERATOR,

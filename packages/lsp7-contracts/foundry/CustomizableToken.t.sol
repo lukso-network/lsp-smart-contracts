@@ -13,24 +13,16 @@ import {
 } from "../contracts/CustomizableToken.sol";
 
 // errors
-import {
-    LSP7MintDisabled
-} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
-import {
-    LSP7CappedBalanceExceeded
-} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
+import {LSP7MintDisabled} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {LSP7CappedBalanceExceeded} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
 import {
     LSP7TransferDisabled,
     LSP7InvalidTransferLockPeriod
 } from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableErrors.sol";
-import {
-    LSP7CappedSupplyCannotMintOverCap
-} from "../contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
+import {LSP7CappedSupplyCannotMintOverCap} from "../contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
 
 // constants
-import {
-    _LSP4_TOKEN_TYPE_TOKEN
-} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract CustomizableTokenTest is Test {
     string name = "Custom Token";
