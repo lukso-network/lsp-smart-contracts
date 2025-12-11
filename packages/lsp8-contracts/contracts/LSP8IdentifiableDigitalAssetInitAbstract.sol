@@ -2,12 +2,8 @@
 pragma solidity ^0.8.12;
 
 // interfaces
-import {
-    ILSP1UniversalReceiver as ILSP1
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
-import {
-    ILSP8IdentifiableDigitalAsset
-} from "./ILSP8IdentifiableDigitalAsset.sol";
+import {ILSP1UniversalReceiver as ILSP1} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
+import {ILSP8IdentifiableDigitalAsset} from "./ILSP8IdentifiableDigitalAsset.sol";
 
 // modules
 import {
@@ -15,27 +11,17 @@ import {
     ERC725YInitAbstract
 } from "@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadataInitAbstract.sol";
 
-import {
-    LSP17ExtendableInitAbstract
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17ExtendableInitAbstract.sol";
+import {LSP17ExtendableInitAbstract} from "@lukso/lsp17contractextension-contracts/contracts/LSP17ExtendableInitAbstract.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {
-    ERC165Checker
-} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
 import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 
 // constants
-import {
-    _INTERFACEID_LSP1
-} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
-import {
-    _LSP17_EXTENSION_PREFIX
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
+import {_INTERFACEID_LSP1} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {_LSP17_EXTENSION_PREFIX} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 import {
     _INTERFACEID_LSP8,
     _LSP8_TOKENID_FORMAT_KEY,
@@ -45,11 +31,6 @@ import {
 } from "./LSP8Constants.sol";
 
 // errors
-import {
-    NoExtensionFoundForFunctionSelector,
-    InvalidFunctionSelector,
-    InvalidExtensionAddress
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Errors.sol";
 import {
     LSP8TokenContractCannotHoldValue,
     LSP8TokenIdFormatNotEditable,

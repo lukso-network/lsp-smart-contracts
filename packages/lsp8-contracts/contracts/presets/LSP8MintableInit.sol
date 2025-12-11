@@ -26,8 +26,8 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
      * @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
      */
     function initialize(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_
