@@ -2,40 +2,27 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    ILSP1UniversalReceiver
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
+import {ILSP1UniversalReceiver} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 
-import {
-    ILSP1UniversalReceiverDelegate
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
+import {ILSP1UniversalReceiverDelegate} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
 import {ILSP9Vault} from "./ILSP9Vault.sol";
 
 // libraries
-import {
-    ERC165Checker
-} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
 import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 
 // modules
 import {ERC725XCore} from "@erc725/smart-contracts/contracts/ERC725XCore.sol";
 import {ERC725YCore} from "@erc725/smart-contracts/contracts/ERC725YCore.sol";
-import {
-    OwnableUnset
-} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {
-    LSP14Ownable2Step
-} from "@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol";
-import {
-    LSP17Extendable
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {LSP14Ownable2Step} from "@lukso/lsp14-contracts/contracts/LSP14Ownable2Step.sol";
+import {LSP17Extendable} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
 
 // constants
 import {
     ERC725Y_MsgValueDisallowed,
     ERC725Y_DataKeysValuesLengthMismatch,
-    ERC725X_CreateOperationsRequireEmptyRecipientAddress,
     ERC725X_CreateOperationsRequireEmptyRecipientAddress,
     ERC725X_MsgValueDisallowedInStaticCall,
     ERC725X_UnknownOperationType
@@ -53,9 +40,7 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
-import {
-    _LSP6KEY_ADDRESSPERMISSIONS_PREFIX
-} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
+import {_LSP6KEY_ADDRESSPERMISSIONS_PREFIX} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
 import {
     _INTERFACEID_LSP9,
     _TYPEID_LSP9_VALUE_RECEIVED,
@@ -63,19 +48,13 @@ import {
     _TYPEID_LSP9_OwnershipTransferred_SenderNotification,
     _TYPEID_LSP9_OwnershipTransferred_RecipientNotification
 } from "./LSP9Constants.sol";
-import {
-    _INTERFACEID_LSP14
-} from "@lukso/lsp14-contracts/contracts/LSP14Constants.sol";
-import {
-    _LSP17_EXTENSION_PREFIX
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
+import {_INTERFACEID_LSP14} from "@lukso/lsp14-contracts/contracts/LSP14Constants.sol";
+import {_LSP17_EXTENSION_PREFIX} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 
 // errors
 import {LSP1DelegateNotAllowedToSetDataKey} from "./LSP9Errors.sol";
 
-import {
-    NoExtensionFoundForFunctionSelector
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Errors.sol";
+import {NoExtensionFoundForFunctionSelector} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Errors.sol";
 
 /**
  * @title Core Implementation of LSP9Vault built on top of [ERC725], [LSP1UniversalReceiver]
@@ -299,7 +278,7 @@ contract LSP9VaultCore is
             if (isURD) {
                 if (
                     bytes12(dataKeys[i]) ==
-                    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||
+                        _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX ||
                     bytes6(dataKeys[i]) == _LSP6KEY_ADDRESSPERMISSIONS_PREFIX ||
                     bytes12(dataKeys[i]) == _LSP17_EXTENSION_PREFIX
                 ) {
@@ -343,6 +322,7 @@ contract LSP9VaultCore is
      * @custom:events
      * - {UniversalReceiver} event with the function parameters, call options, and the response of the UniversalReceiverDelegates (URD) contract that was called.
      */
+    // solhint-disable-next-line function-max-lines
     function universalReceiver(
         bytes32 typeId,
         bytes memory receivedData
@@ -356,6 +336,7 @@ contract LSP9VaultCore is
         );
         bytes memory resultDefaultDelegate;
 
+        // solhint-disable-next-line gas-strict-inequalities
         if (lsp1DelegateValue.length >= 20) {
             address universalReceiverDelegate = address(
                 bytes20(lsp1DelegateValue)
@@ -386,6 +367,7 @@ contract LSP9VaultCore is
         bytes memory lsp1TypeIdDelegateValue = _getData(lsp1typeIdDelegateKey);
         bytes memory resultTypeIdDelegate;
 
+        // solhint-disable-next-line gas-strict-inequalities
         if (lsp1TypeIdDelegateValue.length >= 20) {
             address universalReceiverDelegate = address(
                 bytes20(lsp1TypeIdDelegateValue)
