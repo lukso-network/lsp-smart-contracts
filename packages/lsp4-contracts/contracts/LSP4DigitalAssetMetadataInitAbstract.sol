@@ -2,9 +2,7 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    ERC725YInitAbstract
-} from "@erc725/smart-contracts-v8/contracts/ERC725YInitAbstract.sol";
+import {ERC725YInitAbstract} from "@erc725/smart-contracts-v8/contracts/ERC725YInitAbstract.sol";
 
 // constants
 import {
