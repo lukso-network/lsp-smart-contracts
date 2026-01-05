@@ -5,9 +5,7 @@ pragma solidity ^0.8.4;
 import {ILSP14Ownable2Step} from "./ILSP14Ownable2Step.sol";
 
 // modules
-import {
-    OwnableUnset
-} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
 
 // libraries
 import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";

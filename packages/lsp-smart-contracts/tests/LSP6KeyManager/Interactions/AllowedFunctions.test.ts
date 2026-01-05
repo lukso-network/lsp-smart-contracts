@@ -269,9 +269,10 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
 
           const validityTimestamps = 0;
 
-          const targetContractPayload = targetContract.interface.encodeFunctionData('setNumber', [
-            2354,
-          ]);
+          const targetContractPayload = targetContract.interface.encodeFunctionData(
+            'setNumber',
+            [2354],
+          );
 
           const executeRelayCallPayload = context.universalProfile.interface.encodeFunctionData(
             'execute',

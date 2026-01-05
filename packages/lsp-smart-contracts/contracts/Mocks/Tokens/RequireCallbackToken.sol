@@ -2,9 +2,7 @@
 
 pragma solidity ^0.8.4;
 
-import {
-    OnERC721ReceivedExtension
-} from "@lukso/lsp17-contracts/contracts/OnERC721ReceivedExtension.sol";
+import {OnERC721ReceivedExtension} from "@lukso/lsp17-contracts/contracts/OnERC721ReceivedExtension.sol";
 
 /**
  * @dev This contract is used only for testing purposes

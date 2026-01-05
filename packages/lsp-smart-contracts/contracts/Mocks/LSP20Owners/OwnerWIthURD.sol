@@ -1,17 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-import {
-    ILSP1UniversalReceiver
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
+import {ILSP1UniversalReceiver} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 
-import {
-    ILSP14Ownable2Step
-} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
+import {ILSP14Ownable2Step} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
 
-import {
-    ILSP20CallVerifier
-} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
+import {ILSP20CallVerifier} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
 import {
     _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION,
     _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE

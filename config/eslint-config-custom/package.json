@@ -2,11 +2,12 @@
   "name": "eslint-config-custom",
   "version": "0.0.0",
   "type": "module",
+  "private": true,
   "exports": {
     ".": "./index.js"
   },
-  "private": true,
   "dependencies": {
+    "@typescript-eslint/project-service": "^8.46.0",
     "@typescript-eslint/tsconfig-utils": "^8.46.0",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",

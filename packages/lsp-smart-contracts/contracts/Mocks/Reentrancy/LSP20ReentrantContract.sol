@@ -2,17 +2,11 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {
-    IERC725X
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
 
 // constants
-import {
-    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
-} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,

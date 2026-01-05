@@ -2,9 +2,7 @@
 pragma solidity ^0.8.4;
 
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {
-    _KECCAK256_BYTES
-} from "@lukso/lsp2-contracts/contracts/LSP2Constants.sol";
+import {_KECCAK256_BYTES} from "@lukso/lsp2-contracts/contracts/LSP2Constants.sol";
 
 struct Link {
     string title;
@@ -64,6 +62,8 @@ struct GroupImageField {
 struct Images {
     GroupImageField[] imageFields;
 }
+
+// solhint-disable quotes
 
 library LSP4Utils {
     using Strings for uint256;
@@ -328,6 +328,7 @@ library LSP4Utils {
         Assets memory assets
     ) public pure returns (string memory) {
         return
+            // solhint-disable-next-line gas-small-strings
             string.concat(
                 'data:application/json;charset=UTF-8,{"LSP4Metadata":{"name":"',
                 name,

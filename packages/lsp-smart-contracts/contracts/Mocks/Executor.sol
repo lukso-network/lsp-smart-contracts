@@ -2,28 +2,16 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    IERC725X
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {
-    ILSP6KeyManager
-} from "@lukso/lsp6-contracts/contracts/ILSP6KeyManager.sol";
+import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {ILSP6KeyManager} from "@lukso/lsp6-contracts/contracts/ILSP6KeyManager.sol";
 
 // modules
-import {
-    UniversalProfile
-} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
-import {
-    LSP6KeyManager
-} from "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
+import {UniversalProfile} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
+import {LSP6KeyManager} from "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
 
 // constants
-import {
-    OPERATION_0_CALL
-} from "@erc725/smart-contracts/contracts/constants.sol";
+import {OPERATION_0_CALL} from "@erc725/smart-contracts/contracts/constants.sol";
 
 contract Executor {
     address internal constant _DUMMY_RECIPIENT =

@@ -3,12 +3,8 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    LSP7DigitalAssetInitAbstract
-} from "../LSP7DigitalAssetInitAbstract.sol";
-import {
-    LSP7CappedSupplyInitAbstract
-} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
+import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
+import {LSP7CappedSupplyInitAbstract} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
 
 contract LSP7CappedSupplyInit is LSP7CappedSupplyInitAbstract {
     /// @dev initialize (= lock) base implementation contract on deployment

@@ -5,12 +5,8 @@ pragma solidity ^0.8.0;
 import {IERC5805} from "@openzeppelin/contracts/interfaces/IERC5805.sol";
 
 // modules
-import {
-    EIP712Upgradeable
-} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
-import {
-    LSP7DigitalAssetInitAbstract
-} from "../LSP7DigitalAssetInitAbstract.sol";
+import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
+import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
 
 // libraries
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";

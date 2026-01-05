@@ -2,9 +2,7 @@
 pragma solidity ^0.8.5;
 
 // interfaces
-import {
-    ILSP20CallVerifier as ILSP20
-} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
+import {ILSP20CallVerifier as ILSP20} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
@@ -33,14 +31,10 @@ import {
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX,
     _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
 } from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
-import {
-    _LSP17_EXTENSION_PREFIX
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
+import {_LSP17_EXTENSION_PREFIX} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 
 // errors
-import {
-    ERC725Y_DataKeysValuesLengthMismatch
-} from "@erc725/smart-contracts/contracts/errors.sol";
+import {ERC725Y_DataKeysValuesLengthMismatch} from "@erc725/smart-contracts/contracts/errors.sol";
 import {
     NotRecognisedPermissionKey,
     InvalidEncodedAllowedCalls,
@@ -637,8 +631,7 @@ abstract contract LSP6SetDataModule {
             mask =
                 bytes32(
                     0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-                ) <<
-                (8 * (32 - length));
+                ) << (8 * (32 - length));
 
             /*
              * transform the allowed data key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value.
@@ -758,8 +751,7 @@ abstract contract LSP6SetDataModule {
             mask =
                 bytes32(
                     0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-                ) <<
-                (8 * (32 - length));
+                ) << (8 * (32 - length));
 
             /*
              * transform the allowed data key situated from `pointer + 1` until `pointer + 1 + length` to a bytes32 value.

@@ -3,18 +3,10 @@ pragma solidity ^0.8.4;
 
 // Testing utilities
 import "forge-std/Test.sol";
-import {
-    UniversalProfile
-} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
-import {
-    LSP6KeyManager
-} from "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {
-    ILSP14Ownable2Step as ILSP14
-} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
+import {UniversalProfile} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
+import {LSP6KeyManager} from "@lukso/lsp6-contracts/contracts/LSP6KeyManager.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {ILSP14Ownable2Step as ILSP14} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -27,9 +19,7 @@ import "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
 import "@lukso/lsp17contractextension-contracts/contracts/LSP17Constants.sol";
 
 // errors
-import {
-    InvalidEncodedAllowedERC725YDataKeys
-} from "@lukso/lsp6-contracts/contracts/LSP6Errors.sol";
+import {InvalidEncodedAllowedERC725YDataKeys} from "@lukso/lsp6-contracts/contracts/LSP6Errors.sol";
 
 /// @dev Fuzzing tests to ensure that the expect revert errors from the Key Manager
 /// are also caught via the `LSP20` verification functions

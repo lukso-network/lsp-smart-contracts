@@ -1,9 +1,7 @@
 pragma solidity ^0.8.13;
 
 import "../LSP6s/LSP6SetDataUC.sol";
-import {
-    LSP0ERC725Account
-} from "@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol";
+import {LSP0ERC725Account} from "@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol";
 import "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,

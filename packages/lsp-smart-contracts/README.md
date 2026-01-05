@@ -20,7 +20,7 @@ import LSP0ERC725Account from "@lukso/lsp-smart-contracts/artifacts/LSP0ERC725Ac
 const myContract = new web3.eth.Contract(
   LSP0ERC725Account.abi,
   "",
-  defaultOptions
+  defaultOptions,
 );
 ```
 

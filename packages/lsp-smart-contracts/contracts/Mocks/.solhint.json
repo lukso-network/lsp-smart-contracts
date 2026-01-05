@@ -1,0 +1,13 @@
+{
+  "extends": ["solhint:recommended", "lsp-solidity-linting-rules"],
+  "rules": {
+    "no-global-import": "error",
+    "function-max-lines": "off",
+    "no-empty-blocks": "off",
+    "reason-string": "off",
+    "gas-custom-errors": "off",
+    "gas-small-strings": "off",
+    "gas-indexed-events": "off",
+    "gas-calldata-parameters": "off"
+  }
+}

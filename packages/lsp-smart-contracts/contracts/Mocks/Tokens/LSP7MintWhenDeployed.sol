@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-import {
-    LSP7DigitalAsset
-} from "@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol";
+import {LSP7DigitalAsset} from "@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol";
 
 contract LSP7MintWhenDeployed is LSP7DigitalAsset {
     constructor(

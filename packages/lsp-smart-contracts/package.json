@@ -119,7 +119,7 @@
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "@types/mocha": "^10.0.10",
     "eslint-config-custom": "*",
-    "hardhat": "^3.0.7",
+    "hardhat": "^3.1.2",
     "markdown-table-ts": "^1.0.3",
     "dotenv": "^17.2.3",
     "pluralize": "^8.0.0"

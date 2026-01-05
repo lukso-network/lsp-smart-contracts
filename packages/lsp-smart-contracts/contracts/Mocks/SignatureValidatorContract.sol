@@ -5,9 +5,7 @@ pragma solidity ^0.8.4;
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 
 // modules
-import {
-    ERC165Storage
-} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 /**
  * @dev sample contract that implements ERC1271 (Standard Signature Validation Method for Contracts)

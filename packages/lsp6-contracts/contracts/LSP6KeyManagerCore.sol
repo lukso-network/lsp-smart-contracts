@@ -3,35 +3,21 @@ pragma solidity ^0.8.5;
 
 // interfaces
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
-import {
-    IERC725X
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 import {ILSP6KeyManager as ILSP6} from "./ILSP6KeyManager.sol";
-import {
-    ILSP20CallVerifier as ILSP20
-} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
-import {
-    ILSP25ExecuteRelayCall as ILSP25
-} from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
+import {ILSP20CallVerifier as ILSP20} from "@lukso/lsp20-contracts/contracts/ILSP20CallVerifier.sol";
+import {ILSP25ExecuteRelayCall as ILSP25} from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
 
 // modules
-import {
-    ILSP14Ownable2Step
-} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
+import {ILSP14Ownable2Step} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {LSP6SetDataModule} from "./LSP6Modules/LSP6SetDataModule.sol";
 import {LSP6ExecuteModule} from "./LSP6Modules/LSP6ExecuteModule.sol";
-import {
-    LSP6ExecuteRelayCallModule
-} from "./LSP6Modules/LSP6ExecuteRelayCallModule.sol";
+import {LSP6ExecuteRelayCallModule} from "./LSP6Modules/LSP6ExecuteRelayCallModule.sol";
 import {LSP6OwnershipModule} from "./LSP6Modules/LSP6OwnershipModule.sol";
-import {
-    LSP25MultiChannelNonce
-} from "@lukso/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol";
+import {LSP25MultiChannelNonce} from "@lukso/lsp25-contracts/contracts/LSP25MultiChannelNonce.sol";
 
 // libraries
 import {BytesLib} from "solidity-bytes-utils/contracts/BytesLib.sol";
@@ -71,9 +57,7 @@ import {
     _LSP20_VERIFY_CALL_SUCCESS_VALUE_WITH_POST_VERIFICATION,
     _LSP20_VERIFY_CALL_RESULT_SUCCESS_VALUE
 } from "@lukso/lsp20-contracts/contracts/LSP20Constants.sol";
-import {
-    _INTERFACEID_LSP25
-} from "@lukso/lsp25-contracts/contracts/LSP25Constants.sol";
+import {_INTERFACEID_LSP25} from "@lukso/lsp25-contracts/contracts/LSP25Constants.sol";
 
 /**
  * @title Core implementation of the LSP6 Key Manager standard.

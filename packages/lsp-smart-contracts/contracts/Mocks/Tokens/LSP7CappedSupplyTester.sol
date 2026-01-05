@@ -3,12 +3,8 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    LSP7DigitalAsset
-} from "@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol";
-import {
-    LSP7CappedSupplyAbstract
-} from "@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
+import {LSP7DigitalAsset} from "@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol";
+import {LSP7CappedSupplyAbstract} from "@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
 
 contract LSP7CappedSupplyTester is LSP7CappedSupplyAbstract {
     constructor(

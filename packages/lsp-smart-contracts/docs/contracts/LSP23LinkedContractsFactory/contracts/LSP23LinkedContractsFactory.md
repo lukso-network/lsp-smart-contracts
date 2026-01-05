@@ -369,8 +369,8 @@ Reverts when the deployment & initialization of the contract has failed.
 
 #### Parameters
 
-| Name        |  Type   | Description                                                                   |
-| ----------- | :-----: | ----------------------------------------------------------------------------- |
+| Name        |  Type   | Description                                                                    |
+| ----------- | :-----: | ------------------------------------------------------------------------------ |
 | `errorData` | `bytes` | Potentially information about why the deployment & initialization have failed. |
 
 <br/>
@@ -396,8 +396,8 @@ Reverts when the deployment & initialization of the secondary contract has faile
 
 #### Parameters
 
-| Name        |  Type   | Description                                                                   |
-| ----------- | :-----: | ----------------------------------------------------------------------------- |
+| Name        |  Type   | Description                                                                    |
+| ----------- | :-----: | ------------------------------------------------------------------------------ |
 | `errorData` | `bytes` | Potentially information about why the deployment & initialization have failed. |
 
 <br/>

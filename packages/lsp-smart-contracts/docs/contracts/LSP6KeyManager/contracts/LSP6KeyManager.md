@@ -399,8 +399,8 @@ function lsp20VerifyCall(
 
 #### Returns
 
-| Name |   Type   | Description                                                                                                                                                                                                                                                                                                                                     |
-| ---- | :------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Name |   Type   | Description                                                                                                                                                                                                                                                                                                                                       |
+| ---- | :------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `0`  | `bytes4` | MUST return the first 3 bytes of `lsp20VerifyCall(address,uint256,bytes)` function selector if the call to the function is allowed, concatenated with a byte that determines if the lsp20VerifyCallResult function should be called after the original function call. The byte that invoke the lsp20VerifyCallResult function is strictly `0x01`. |
 
 <br/>

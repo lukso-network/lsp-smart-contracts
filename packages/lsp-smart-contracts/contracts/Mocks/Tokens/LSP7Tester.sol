@@ -2,12 +2,8 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    LSP7DigitalAsset
-} from "@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol";
-import {
-    LSP7Burnable
-} from "@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable.sol";
+import {LSP7DigitalAsset} from "@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol";
+import {LSP7Burnable} from "@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable.sol";
 
 contract LSP7Tester is LSP7DigitalAsset, LSP7Burnable {
     constructor(

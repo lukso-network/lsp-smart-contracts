@@ -3,15 +3,9 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    LSP7DigitalAssetInitAbstract
-} from "../LSP7DigitalAssetInitAbstract.sol";
-import {
-    LSP7CappedBalanceInitAbstract
-} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
-import {
-    LSP7AllowlistInitAbstract
-} from "../extensions/LSP7Allowlist/LSP7AllowlistInitAbstract.sol";
+import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
+import {LSP7CappedBalanceInitAbstract} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
+import {LSP7AllowlistInitAbstract} from "../extensions/LSP7Allowlist/LSP7AllowlistInitAbstract.sol";
 
 contract LSP7CappedBalanceInit is LSP7CappedBalanceInitAbstract {
     /// @dev initialize (= lock) base implementation contract on deployment

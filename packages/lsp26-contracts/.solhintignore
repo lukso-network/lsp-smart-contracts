@@ -1,0 +1,4 @@
+contracts/LSP26FollowerSystem.sol
+contracts/ILSP26FollowerSystem.sol
+contracts/LSP26Constants.sol
+contracts/LSP26Errors.sol

@@ -47,42 +47,37 @@ export const testAllowedCallsInternals = (
           ['0xffffffff'],
         );
 
-        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-          allowedCalls,
-        );
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(allowedCalls);
 
         expect(result).to.be.true;
       });
 
       it('should return `false` if element is not 28 bytes long', async () => {
         const allowedCalls = hexlify(randomBytes(27));
-        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-          allowedCalls,
-        );
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(allowedCalls);
         expect(result).to.be.false;
       });
 
       it('should return `false` if element is 0x0000 (zero length elements not allowed)', async () => {
         const allowedCalls = '0x0000';
-        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-          allowedCalls,
-        );
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(allowedCalls);
         expect(result).to.be.false;
       });
 
       it('should return `false` if there are just 2 x length bytes but not followed by the value (the allowed calls)', async () => {
         const allowedCalls = '0x0020';
-        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-          allowedCalls,
-        );
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(allowedCalls);
         expect(result).to.be.false;
       });
 
       it('should return `false` if there are just 2 x length bytes equal to `0x0002`', async () => {
         const allowedCalls = '0x0002';
-        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-          allowedCalls,
-        );
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(allowedCalls);
         expect(result).to.be.false;
       });
     });
@@ -96,9 +91,8 @@ export const testAllowedCallsInternals = (
           ['0xffffffff', '0xffffffff', '0xffffffff'],
         );
 
-        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-          allowedCalls,
-        );
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(allowedCalls);
 
         expect(result).to.be.true;
       });
@@ -111,9 +105,8 @@ export const testAllowedCallsInternals = (
           ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff'],
         );
 
-        const result = await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(
-          allowedCalls,
-        );
+        const result =
+          await context.keyManagerInternalTester.isCompactBytesArrayOfAllowedCalls(allowedCalls);
         expect(result).to.be.false;
       });
     });
