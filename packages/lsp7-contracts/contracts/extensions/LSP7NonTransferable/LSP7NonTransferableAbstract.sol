@@ -2,17 +2,13 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    LSP7AllowlistAbstract
-} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {LSP7AllowlistAbstract} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {

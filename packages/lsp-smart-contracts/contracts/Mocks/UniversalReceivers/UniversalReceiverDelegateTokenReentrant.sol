@@ -2,35 +2,21 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    IERC725X
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
-import {
-    ILSP6KeyManager
-} from "@lukso/lsp6-contracts/contracts/ILSP6KeyManager.sol";
+import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {ILSP6KeyManager} from "@lukso/lsp6-contracts/contracts/ILSP6KeyManager.sol";
 
-import {
-    ILSP1UniversalReceiverDelegate
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
+import {ILSP1UniversalReceiverDelegate} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
 import {ERC725Y} from "@erc725/smart-contracts/contracts/ERC725Y.sol";
-import {
-    ERC165Storage
-} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
-import {
-    _TYPEID_LSP7_TOKENSRECIPIENT
-} from "@lukso/lsp7-contracts/contracts/LSP7Constants.sol";
+import {_TYPEID_LSP7_TOKENSRECIPIENT} from "@lukso/lsp7-contracts/contracts/LSP7Constants.sol";
 
-import {
-    _TYPEID_LSP8_TOKENSRECIPIENT
-} from "@lukso/lsp8-contracts/contracts/LSP8Constants.sol";
+import {_TYPEID_LSP8_TOKENSRECIPIENT} from "@lukso/lsp8-contracts/contracts/LSP8Constants.sol";
 
-import {
-    _INTERFACEID_LSP1_DELEGATE
-} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {_INTERFACEID_LSP1_DELEGATE} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes

@@ -2,19 +2,13 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    ILSP1UniversalReceiver
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
+import {ILSP1UniversalReceiver} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 
 // modules
-import {
-    ERC165Storage
-} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
-import {
-    _INTERFACEID_LSP1
-} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {_INTERFACEID_LSP1} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
 contract TokenReceiverWithLSP1 is ERC165Storage, ILSP1UniversalReceiver {
     constructor() {

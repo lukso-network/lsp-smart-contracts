@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-import {
-    ILSP14Ownable2Step
-} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
+import {ILSP14Ownable2Step} from "@lukso/lsp14-contracts/contracts/ILSP14Ownable2Step.sol";
 
 /**
  * @title sample contract used for testing

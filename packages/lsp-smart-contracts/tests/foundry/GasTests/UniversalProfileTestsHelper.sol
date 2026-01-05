@@ -4,15 +4,11 @@ pragma solidity ^0.8.13;
 import "forge-std/Test.sol";
 
 import "@lukso/lsp0-contracts/contracts/LSP0ERC725Account.sol";
-import {
-    LSP1UniversalReceiverDelegateUP
-} from "@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol";
+import {LSP1UniversalReceiverDelegateUP} from "@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol";
 import "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 import "../../../contracts/Mocks/Tokens/LSP7Tester.sol";
 import "../../../contracts/Mocks/Tokens/LSP8Tester.sol";
-import {
-    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY
-} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_KEY} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 import {
     _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX,
     _LSP6KEY_ADDRESSPERMISSIONS_ALLOWEDCALLS_PREFIX,

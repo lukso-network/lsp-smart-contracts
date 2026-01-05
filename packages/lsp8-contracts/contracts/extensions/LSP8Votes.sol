@@ -2,9 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import {
-    LSP8IdentifiableDigitalAsset
-} from "../LSP8IdentifiableDigitalAsset.sol";
+import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
 import {Votes} from "@openzeppelin/contracts/governance/utils/Votes.sol";
 import {
     _TYPEID_LSP8_VOTESDELEGATOR,

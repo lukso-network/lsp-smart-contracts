@@ -8,9 +8,7 @@ import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
 import {ILSP7Allowlist} from "./ILSP7Allowlist.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /// @title LSP7AllowlistAbstract
 /// @dev Abstract contract implementing an allowlist for LSP7 tokens, allowing specific addresses to bypass restrictions such as transfer locks. Inherits from LSP7DigitalAsset to integrate with token functionality.

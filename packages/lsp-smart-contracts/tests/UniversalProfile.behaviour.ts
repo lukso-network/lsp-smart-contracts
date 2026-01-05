@@ -635,9 +635,8 @@ export const shouldBehaveLikeLSP3 = (
 
         expect(tx).to.emit(context.universalProfile, 'UniversalReceiver');
 
-        const result = await universalReceiverDelegateLYX.lastValueReceived(
-          universalProfileAddress,
-        );
+        const result =
+          await universalReceiverDelegateLYX.lastValueReceived(universalProfileAddress);
 
         expect(result).to.equal(5);
       });
@@ -651,9 +650,8 @@ export const shouldBehaveLikeLSP3 = (
 
         expect(tx).to.not.emit(context.universalProfile, 'UniversalReceiver');
 
-        const result = await universalReceiverDelegateLYX.lastValueReceived(
-          universalProfileAddress,
-        );
+        const result =
+          await universalReceiverDelegateLYX.lastValueReceived(universalProfileAddress);
 
         expect(result).to.equal(5);
       });
@@ -669,9 +667,8 @@ export const shouldBehaveLikeLSP3 = (
 
         expect(tx).to.emit(context.universalProfile, 'UniversalReceiver');
 
-        const result = await universalReceiverDelegateLYX.lastValueReceived(
-          universalProfileAddress,
-        );
+        const result =
+          await universalReceiverDelegateLYX.lastValueReceived(universalProfileAddress);
 
         expect(result).to.equal(7);
       });
@@ -706,9 +703,8 @@ export const shouldBehaveLikeLSP3 = (
         expect(tx).to.emit(context.universalProfile, 'UniversalReceiver');
         expect(tx).to.emit(emitEventExtension, 'EventEmittedInExtension');
 
-        const result = await universalReceiverDelegateLYX.lastValueReceived(
-          universalProfileAddress,
-        );
+        const result =
+          await universalReceiverDelegateLYX.lastValueReceived(universalProfileAddress);
 
         expect(result).to.equal(10);
       });
@@ -744,9 +740,8 @@ export const shouldBehaveLikeLSP3 = (
         //     abiCoder.encode(['bytes', 'bytes'], ['0x', '0x']),
         //   );
 
-        const result = await universalReceiverDelegateLYX.lastValueReceived(
-          universalProfileAddress,
-        );
+        const result =
+          await universalReceiverDelegateLYX.lastValueReceived(universalProfileAddress);
 
         expect(result).to.equal(15);
       });

@@ -2,17 +2,13 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    LSP7DigitalAssetInitAbstract
-} from "../../LSP7DigitalAssetInitAbstract.sol";
+import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAssetInitAbstract.sol";
 
 // interfaces
 import {ILSP7Allowlist} from "./ILSP7Allowlist.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /// @title LSP7AllowlistInitAbstract
 /// @dev Abstract contract implementing an _allowlist for LSP7 tokens, allowing specific addresses to bypass restrictions such as transfer locks. Inherits from LSP7DigitalAsset to integrate with token functionality.

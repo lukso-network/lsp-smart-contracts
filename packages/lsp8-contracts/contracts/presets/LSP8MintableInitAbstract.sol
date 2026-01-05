@@ -4,9 +4,7 @@ pragma solidity ^0.8.12;
 // interfaces
 import {ILSP8Mintable} from "./ILSP8Mintable.sol";
 // modules
-import {
-    LSP8IdentifiableDigitalAssetInitAbstract
-} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {LSP8IdentifiableDigitalAssetInitAbstract} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 
 /**
  * @dev LSP8IdentifiableDigitalAsset deployable preset contract (inheritable proxy version) with a public {mint} function callable only by the contract {owner}.

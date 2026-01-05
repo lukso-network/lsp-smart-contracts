@@ -3,27 +3,15 @@ pragma solidity ^0.8.4;
 
 // modules
 import {LSP7DigitalAsset} from "./LSP7DigitalAsset.sol";
-import {
-    LSP7CappedSupplyAbstract
-} from "./extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
+import {LSP7CappedSupplyAbstract} from "./extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
 import {LSP7Burnable} from "./extensions/LSP7Burnable.sol";
-import {
-    LSP7CappedBalanceAbstract
-} from "./extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
-import {
-    LSP7MintableAbstract
-} from "./extensions/LSP7Mintable/LSP7MintableAbstract.sol";
-import {
-    LSP7NonTransferableAbstract
-} from "./extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
-import {
-    LSP7AllowlistAbstract
-} from "./extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {LSP7CappedBalanceAbstract} from "./extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
+import {LSP7MintableAbstract} from "./extensions/LSP7Mintable/LSP7MintableAbstract.sol";
+import {LSP7NonTransferableAbstract} from "./extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
+import {LSP7AllowlistAbstract} from "./extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
 
 // errors
-import {
-    LSP7MintDisabled
-} from "./extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {LSP7MintDisabled} from "./extensions/LSP7Mintable/LSP7MintableErrors.sol";
 
 /// @dev Deployment configuration for minting feature.
 /// @param mintable True to enable minting after deployment, false to disable it forever.

@@ -19,10 +19,9 @@ module.exports = {
     'reason-string': ['warn', { maxLength: 120 }],
     'avoid-low-level-calls': 'off',
     'no-empty-blocks': 'error',
-    quotes: 'off',
-    // disabled temporarily
-    'gas-custom-errors': 'off',
-    'use-natspec': 'off',
     'import-path-check': ['off'],
+    'function-max-lines': ['warn', 80],
+    // disabled temporarily
+    'use-natspec': 'off',
   },
 };

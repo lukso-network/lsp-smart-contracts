@@ -35,7 +35,7 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.0",
     "@types/node": "^20.0.0",
-    "hardhat": "^3.0.7",
+    "hardhat": "^3.1.2",
     "typescript": "~5.8.0"
   },
   "dependencies": {

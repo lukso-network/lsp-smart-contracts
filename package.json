@@ -7,6 +7,14 @@
   "engines": {
     "node": ">=22.0.0"
   },
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
@@ -29,7 +37,6 @@
     "Universal Profiles"
   ],
   "scripts": {
-    "preinstall": "npx --yes force-resolutions",
     "build": "turbo build",
     "build:foundry": "turbo build:foundry",
     "build:js": "turbo build:js",

@@ -2,12 +2,8 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    OwnableUnset
-} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
-import {
-    Initializable
-} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {OwnableUnset} from "@erc725/smart-contracts/contracts/custom/OwnableUnset.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {LSP9VaultCore} from "./LSP9VaultCore.sol";
 
 // libraries

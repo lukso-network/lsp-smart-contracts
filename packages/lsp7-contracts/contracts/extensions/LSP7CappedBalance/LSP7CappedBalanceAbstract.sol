@@ -2,17 +2,13 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    LSP7AllowlistAbstract
-} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {LSP7AllowlistAbstract} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";

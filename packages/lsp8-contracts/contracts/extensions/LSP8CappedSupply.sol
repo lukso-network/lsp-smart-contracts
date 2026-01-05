@@ -2,9 +2,7 @@
 pragma solidity ^0.8.12;
 
 // modules
-import {
-    LSP8IdentifiableDigitalAsset
-} from "../LSP8IdentifiableDigitalAsset.sol";
+import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
 
 /**
  * @dev LSP8 token extension to add a max token supply cap.

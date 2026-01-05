@@ -9,9 +9,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {LSP11SocialRecovery} from "../contracts/LSP11SocialRecovery.sol";
 import {ILSP11SocialRecovery} from "../contracts/ILSP11SocialRecovery.sol";
-import {
-    ILSP25ExecuteRelayCall
-} from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
+import {ILSP25ExecuteRelayCall} from "@lukso/lsp25-contracts/contracts/ILSP25ExecuteRelayCall.sol";
 import "../contracts/LSP11Errors.sol";
 import {_INTERFACEID_LSP11} from "../contracts/LSP11Constants.sol";
 

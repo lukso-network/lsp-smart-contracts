@@ -7,9 +7,7 @@ import {LSP2Utils} from "@lukso/lsp2-contracts/contracts/LSP2Utils.sol";
 
 // modules
 import {ERC725} from "@erc725/smart-contracts/contracts/ERC725.sol";
-import {
-    KeyManagerInternalTester
-} from "../contracts/Mocks/KeyManagerInternalsTester.sol";
+import {KeyManagerInternalTester} from "../contracts/Mocks/KeyManagerInternalsTester.sol";
 
 // constants
 import {

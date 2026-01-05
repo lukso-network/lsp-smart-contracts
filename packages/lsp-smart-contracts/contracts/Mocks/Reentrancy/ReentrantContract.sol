@@ -2,18 +2,12 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    ILSP6KeyManager
-} from "@lukso/lsp6-contracts/contracts/ILSP6KeyManager.sol";
+import {ILSP6KeyManager} from "@lukso/lsp6-contracts/contracts/ILSP6KeyManager.sol";
 
 // constants
-import {
-    _LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX
-} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {_LSP1_UNIVERSAL_RECEIVER_DELEGATE_PREFIX} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
-import {
-    _LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX
-} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
+import {_LSP6KEY_ADDRESSPERMISSIONS_PERMISSIONS_PREFIX} from "@lukso/lsp6-contracts/contracts/LSP6Constants.sol";
 
 contract ReentrantContract {
     event ValueReceived(uint256);
@@ -89,7 +83,7 @@ contract ReentrantContract {
     function callThatReenters(
         address keyManagerAddress,
         string memory payloadType
-    ) external returns (bytes memory) {
+    ) external virtual returns (bytes memory) {
         return
             ILSP6KeyManager(keyManagerAddress).execute(_payloads[payloadType]);
     }

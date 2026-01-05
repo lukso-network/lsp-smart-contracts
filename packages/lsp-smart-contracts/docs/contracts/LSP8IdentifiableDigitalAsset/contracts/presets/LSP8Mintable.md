@@ -40,7 +40,7 @@ constructor(
 );
 ```
 
-_Deploying a `LSP8Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and address `newOwner_` as the token contract owner._
+_Deploying a `LSP8Mintable` token contract with: token name = `name_`, token symbol = `symbol*`, and address `newOwner*` as the token contract owner.\_
 
 #### Parameters
 
@@ -830,13 +830,13 @@ Transfer a given `tokenId` token from the `from` address to the `to` address. If
 
 #### Parameters
 
-| Name      |   Type    | Description                                                                                                                                                         |
-| --------- | :-------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from`    | `address` | The address that owns the given `tokenId`.                                                                                                                          |
-| `to`      | `address` | The address that will receive the `tokenId`.                                                                                                                        |
-| `tokenId` | `bytes32` | The token ID to transfer.                                                                                                                                           |
+| Name      |   Type    | Description                                                                                                                                                          |
+| --------- | :-------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `from`    | `address` | The address that owns the given `tokenId`.                                                                                                                           |
+| `to`      | `address` | The address that will receive the `tokenId`.                                                                                                                         |
+| `tokenId` | `bytes32` | The token ID to transfer.                                                                                                                                            |
 | `force`   |  `bool`   | When set to `true`, the `to` address CAN be any address. When set to `false`, the `to` address MUST be a contract that supports the LSP1 UniversalReceiver standard. |
-| `data`    |  `bytes`  | Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.                                         |
+| `data`    |  `bytes`  | Any additional data the caller wants included in the emitted event, and sent in the hooks of the `from` and `to` addresses.                                          |
 
 <br/>
 

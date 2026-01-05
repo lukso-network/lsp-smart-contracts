@@ -5,7 +5,6 @@ This folder contains modules related to the deployment of LSP23 Linked Contracts
 ## Modules
 
 - **UniversalProfileInitPostDeploymentModule**: This module is responsible for the initial setup after the deployment of a Universal Profile Init contract.
-
   - **Standardized Address**: `0x000000000066093407b6704B89793beFfD0D8F00`
   - **Standardized Salt**: `0x12a6712f113536d8b01d99f72ce168c7e10901240d73e80eeb821d01aa4c2b1a`
   - [More Details](./deployment-UP-init-module.md)
