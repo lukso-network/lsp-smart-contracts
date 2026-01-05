@@ -937,7 +937,7 @@ Spend `amountToSpend` from the `operator`'s authorized on behalf of the `tokenOw
 | --------------- | :-------: | ------------------------------------------------------------------- |
 | `operator`      | `address` | The address of the operator to decrease the allowance of.           |
 | `tokenOwner`    | `address` | The address that granted an allowance on its balance to `operator`. |
-| `amountToSpend` | `uint256` | The amount of tokens to subtract in allowance of `operator`.       |
+| `amountToSpend` | `uint256` | The amount of tokens to subtract in allowance of `operator`.        |
 
 <br/>
 

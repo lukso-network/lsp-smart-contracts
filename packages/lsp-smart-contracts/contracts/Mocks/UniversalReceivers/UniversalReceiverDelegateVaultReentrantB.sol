@@ -2,22 +2,14 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
-import {
-    ILSP1UniversalReceiverDelegate
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {ILSP1UniversalReceiverDelegate} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiverDelegate.sol";
 
 // modules
-import {
-    ERC165Storage
-} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import {ERC165Storage} from "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 
 // constants
-import {
-    _INTERFACEID_LSP1_DELEGATE
-} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {_INTERFACEID_LSP1_DELEGATE} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
 /**
  * @dev This contract is used only for testing purposes

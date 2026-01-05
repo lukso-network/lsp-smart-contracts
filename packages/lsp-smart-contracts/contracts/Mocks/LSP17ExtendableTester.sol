@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-import {
-    LSP17Extendable
-} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
+import {LSP17Extendable} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
 
 /**
  * @dev This contract is used only for testing purposes

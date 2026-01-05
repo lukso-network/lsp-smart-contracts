@@ -27,7 +27,10 @@ export class Create2Factory {
     Create2Factory.deploymentGasPrice * Create2Factory.deploymentGasLimit
   ).toString();
 
-  constructor(readonly provider: HardhatEthersProvider, readonly signer: HardhatEthersSigner) {}
+  constructor(
+    readonly provider: HardhatEthersProvider,
+    readonly signer: HardhatEthersSigner,
+  ) {}
 
   /**
    * deploy a contract using our deterministic deployer.

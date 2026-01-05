@@ -152,9 +152,8 @@ export const shouldBehaveLikeAllowedStandards = (buildContext: () => Promise<LSP
     describe('when interacting with a contract that implements + register ERC1271 interface', () => {
       it('should pass', async () => {
         const sampleHash = keccak256(toUtf8Bytes('Sample Message'));
-        const sampleSignature = await addressCanInteractOnlyWithERC1271.signMessage(
-          'Sample Message',
-        );
+        const sampleSignature =
+          await addressCanInteractOnlyWithERC1271.signMessage('Sample Message');
 
         const payload = signatureValidatorContract.interface.encodeFunctionData(
           'isValidSignature',

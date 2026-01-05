@@ -2,22 +2,14 @@
 pragma solidity ^0.8.4;
 
 // interfaces
-import {
-    IERC725X
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
-import {
-    IERC725Y
-} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
+import {IERC725X} from "@erc725/smart-contracts/contracts/interfaces/IERC725X.sol";
+import {IERC725Y} from "@erc725/smart-contracts/contracts/interfaces/IERC725Y.sol";
 
 // modules
-import {
-    UniversalProfile
-} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
+import {UniversalProfile} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
 
 // constants
-import {
-    OPERATION_0_CALL
-} from "@erc725/smart-contracts/contracts/constants.sol";
+import {OPERATION_0_CALL} from "@erc725/smart-contracts/contracts/constants.sol";
 
 contract ExecutorLSP20 {
     address internal constant _DUMMY_RECIPIENT =
