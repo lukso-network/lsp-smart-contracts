@@ -48,6 +48,9 @@
     "@erc725/smart-contracts": "^7.0.0",
     "@lukso/lsp2-contracts": "~0.15.4"
   },
+  "resolutions": {
+    "solidity-bytes-utils": "0.8.4"
+  },
   "devDependencies": {
     "@lukso/hardhat-packager-v3": "*",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",

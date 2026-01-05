@@ -59,8 +59,11 @@
     "build:package": "hardhat prepare-package"
   },
   "dependencies": {
-    "@erc725/smart-contracts-v8": "npm:@erc725/smart-contracts@8.0.0",
+    "@erc725/smart-contracts-v8": "npm:@erc725/smart-contracts@8.0.1",
     "@lukso/lsp2-contracts": "~0.15.4"
+  },
+  "resolutions": {
+    "solidity-bytes-utils": "0.8.4"
   },
   "devDependencies": {
     "@lukso/hardhat-packager-v3": "*",

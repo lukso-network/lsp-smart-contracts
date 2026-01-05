@@ -54,6 +54,9 @@
     "@openzeppelin/contracts": "^4.9.2",
     "@openzeppelin/contracts-upgradeable": "^4.9.2"
   },
+  "resolutions": {
+    "solidity-bytes-utils": "0.8.4"
+  },
   "devDependencies": {
     "@lukso/hardhat-packager-v3": "*",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
