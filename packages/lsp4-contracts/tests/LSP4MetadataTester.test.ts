@@ -102,9 +102,8 @@ describe('testing LSP4MetadataTester', () => {
       },
     };
 
-    const result = await lspMetadataTester['toJSON((uint256,uint256,string,(string,bytes32)))'](
-      image,
-    );
+    const result =
+      await lspMetadataTester['toJSON((uint256,uint256,string,(string,bytes32)))'](image);
 
     expect(result).to.equal(JSON.stringify(image));
   });
@@ -130,9 +129,8 @@ describe('testing LSP4MetadataTester', () => {
     };
     const images = [firstImage, secondImage];
 
-    const result = await lspMetadataTester['toJSON((uint256,uint256,string,(string,bytes32))[])'](
-      images,
-    );
+    const result =
+      await lspMetadataTester['toJSON((uint256,uint256,string,(string,bytes32))[])'](images);
 
     expect(result).to.equal(`${JSON.stringify(firstImage)},${JSON.stringify(secondImage)}`);
   });
@@ -180,9 +178,8 @@ describe('testing LSP4MetadataTester', () => {
     ];
     const images = [firstImagesGroup, secondImagesGroup];
 
-    const result = await lspMetadataTester['toJSON((uint256,uint256,string,(string,bytes32))[][])'](
-      images,
-    );
+    const result =
+      await lspMetadataTester['toJSON((uint256,uint256,string,(string,bytes32))[][])'](images);
 
     expect(result).to.equal(
       `${JSON.stringify(firstImagesGroup)},${JSON.stringify(secondImagesGroup)}`,
