@@ -60,6 +60,9 @@
     "@lukso/lsp2-contracts": "~0.15.4",
     "@openzeppelin/contracts": "^4.9.3"
   },
+  "resolutions": {
+    "solidity-bytes-utils": "0.8.4"
+  },
   "devDependencies": {
     "@lukso/hardhat-packager-v3": "*",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",

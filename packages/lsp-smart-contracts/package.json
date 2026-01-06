@@ -113,6 +113,9 @@
     "@lukso/lsp9-contracts": "~0.15.5",
     "@lukso/universalprofile-contracts": "~0.15.5"
   },
+  "resolutions": {
+    "solidity-bytes-utils": "0.8.4"
+  },
   "devDependencies": {
     "@erc725/erc725.js": "0.28.2",
     "@lukso/eip191-signer.js": "^0.2.5",

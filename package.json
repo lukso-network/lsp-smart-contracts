@@ -53,7 +53,10 @@
     "test:benchmark": "turbo test:benchmark"
   },
   "dependencies": {
-    "@erc725/smart-contracts-v8": "npm:@erc725/smart-contracts@8.0.0"
+    "@erc725/smart-contracts-v8": "npm:@erc725/smart-contracts@8.0.1"
+  },
+  "resolutions": {
+    "solidity-bytes-utils": "0.8.4"
   },
   "devDependencies": {
     "@actions/github-script": "github:actions/github-script",

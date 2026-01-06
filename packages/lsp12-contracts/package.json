@@ -46,6 +46,9 @@
   "dependencies": {
     "@lukso/lsp2-contracts": "~0.15.4"
   },
+  "resolutions": {
+    "solidity-bytes-utils": "0.8.4"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "hardhat": "^3.1.2",
