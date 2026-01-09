@@ -37,6 +37,6 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
             lsp4TokenType_,
             isNonDivisible_
         );
-        LSP7MintableInitAbstract._initialize(mintable_);
+        __LSP7Mintable_init(mintable_);
     }
 }

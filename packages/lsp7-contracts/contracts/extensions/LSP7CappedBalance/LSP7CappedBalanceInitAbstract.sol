@@ -27,7 +27,7 @@ abstract contract LSP7CappedBalanceInitAbstract is
     /// @notice Initializes the contract with a token balance cap.
     /// @dev Sets the immutable balance cap and reverts if the cap is zero. Inherits LSP7AllowlistAbstract constructor logic.
     /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
-    function _initialize(
+    function __LSP7CappedBalance_init(
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
         _tokenBalanceCap = tokenBalanceCap_;

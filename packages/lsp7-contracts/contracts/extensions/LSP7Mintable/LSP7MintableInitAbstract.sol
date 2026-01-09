@@ -23,7 +23,9 @@ abstract contract LSP7MintableInitAbstract is
     /// @dev Sets the initial minting status. Inherits LSP7DigitalAsset constructor logic.
     /// @param mintable_ True to enable minting after deployment, false to disable it forever.
     /// @custom:info If `mintable_` is set to `true` then it can be disabled using `disableMinting()` function later on.
-    function _initialize(bool mintable_) internal virtual onlyInitializing {
+    function __LSP7Mintable_init(
+        bool mintable_
+    ) internal virtual onlyInitializing {
         isMintable = mintable_;
     }
 

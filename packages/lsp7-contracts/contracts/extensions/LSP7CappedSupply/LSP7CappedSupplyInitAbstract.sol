@@ -17,7 +17,7 @@ abstract contract LSP7CappedSupplyInitAbstract is LSP7DigitalAssetInitAbstract {
     /// @notice Deploying a `LSP7CappedSupply` token contract with max token supply cap set to `tokenSupplyCap_`.
     /// @dev Deploy a `LSP7CappedSupply` token contract and set the maximum token supply token cap up to which it is not possible to mint more tokens.
     /// @param tokenSupplyCap_ The maximum total supply in wei, 0 to disable.
-    function _initialize(
+    function __LSP7CappedSupply_init(
         uint256 tokenSupplyCap_
     ) internal virtual onlyInitializing {
         _tokenSupplyCap = tokenSupplyCap_;
