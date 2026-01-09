@@ -75,8 +75,7 @@ contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
      */
     function deployERC1167Proxies(
         PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,
-        SecondaryContractDeploymentInit
-            calldata secondaryContractDeploymentInit,
+        SecondaryContractDeploymentInit calldata secondaryContractDeploymentInit,
         address postDeploymentModule,
         bytes calldata postDeploymentModuleCalldata
     )
@@ -183,8 +182,7 @@ contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
      */
     function computeERC1167Addresses(
         PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,
-        SecondaryContractDeploymentInit
-            calldata secondaryContractDeploymentInit,
+        SecondaryContractDeploymentInit calldata secondaryContractDeploymentInit,
         address postDeploymentModule,
         bytes calldata postDeploymentModuleCalldata
     )
@@ -264,8 +262,7 @@ contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
 
     function _deployAndInitializePrimaryContractProxy(
         PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,
-        SecondaryContractDeploymentInit
-            calldata secondaryContractDeploymentInit,
+        SecondaryContractDeploymentInit calldata secondaryContractDeploymentInit,
         address postDeploymentModule,
         bytes calldata postDeploymentModuleCalldata
     ) internal returns (address primaryContractAddress) {
@@ -292,8 +289,7 @@ contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
     }
 
     function _deployAndInitializeSecondaryContractProxy(
-        SecondaryContractDeploymentInit
-            calldata secondaryContractDeploymentInit,
+        SecondaryContractDeploymentInit calldata secondaryContractDeploymentInit,
         address primaryContractAddress
     ) internal returns (address secondaryContractAddress) {
         /* deploy the secondary contract proxy with the primaryContractGeneratedSalt */
@@ -359,8 +355,7 @@ contract LSP23LinkedContractsFactory is ILSP23LinkedContractsFactory {
 
     function _generatePrimaryContractProxySalt(
         PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,
-        SecondaryContractDeploymentInit
-            calldata secondaryContractDeploymentInit,
+        SecondaryContractDeploymentInit calldata secondaryContractDeploymentInit,
         address postDeploymentModule,
         bytes calldata postDeploymentModuleCalldata
     )

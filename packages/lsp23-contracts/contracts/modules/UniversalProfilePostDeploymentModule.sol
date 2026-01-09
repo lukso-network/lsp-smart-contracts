@@ -1,13 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.4;
 
-import {
-    OPERATION_4_DELEGATECALL
-} from "@erc725/smart-contracts/contracts/constants.sol";
+import {OPERATION_4_DELEGATECALL} from "@erc725/smart-contracts/contracts/constants.sol";
 
-import {
-    UniversalProfile
-} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
+import {UniversalProfile} from "@lukso/universalprofile-contracts/contracts/UniversalProfile.sol";
 
 contract UniversalProfilePostDeploymentModule is UniversalProfile {
     constructor() UniversalProfile(address(0)) {}
