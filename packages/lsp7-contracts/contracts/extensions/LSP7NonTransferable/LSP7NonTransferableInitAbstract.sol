@@ -39,7 +39,7 @@ abstract contract LSP7NonTransferableInitAbstract is
     /// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `nonTransferableFrom_` and `nonTransferableUntil_`.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
-    function _initialize(
+    function __LSP7NonTransferable_init(
         bool transferable_,
         uint256 transferLockStart_,
         uint256 transferLockEnd_

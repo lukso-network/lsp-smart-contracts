@@ -129,8 +129,7 @@ interface ILSP23LinkedContractsFactory {
      */
     function deployERC1167Proxies(
         PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,
-        SecondaryContractDeploymentInit
-            calldata secondaryContractDeploymentInit,
+        SecondaryContractDeploymentInit calldata secondaryContractDeploymentInit,
         address postDeploymentModule,
         bytes calldata postDeploymentModuleCalldata
     )
@@ -178,8 +177,7 @@ interface ILSP23LinkedContractsFactory {
      */
     function computeERC1167Addresses(
         PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,
-        SecondaryContractDeploymentInit
-            calldata secondaryContractDeploymentInit,
+        SecondaryContractDeploymentInit calldata secondaryContractDeploymentInit,
         address postDeploymentModule,
         bytes calldata postDeploymentModuleCalldata
     )
