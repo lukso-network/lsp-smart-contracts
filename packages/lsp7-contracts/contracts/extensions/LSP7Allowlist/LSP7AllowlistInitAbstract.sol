@@ -24,11 +24,9 @@ abstract contract LSP7AllowlistInitAbstract is
     /// @notice Initializes the _allowlist with the contract owner and the zero address.
     /// @dev Adds the contract owner and `address(0)` to the _allowlist to enable specific behaviors like minting and burning.
     /// @param newOwner_ The address to set as the initial owner and add to the _allowlist.
-    function _initialize(
+    function __LSP7Allowlist_init(
         address newOwner_
-    ) internal virtual override onlyInitializing {
-        super._initialize(newOwner_);
-
+    ) internal virtual onlyInitializing {
         _allowlist.add(newOwner_);
         _allowlist.add(address(0));
     }
