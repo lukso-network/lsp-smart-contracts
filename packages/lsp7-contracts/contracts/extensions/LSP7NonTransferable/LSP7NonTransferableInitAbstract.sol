@@ -78,9 +78,12 @@ abstract contract LSP7NonTransferableInitAbstract is
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) internal virtual onlyInitializing {
-        if (transferLockEnd_ != 0 && transferLockEnd_ < transferLockStart_) {
-            revert LSP7InvalidTransferLockPeriod();
-        }
+        // TODO: add test for if `transferLockEnd_` is exactly the same as `transferLockStart_`
+        // Should we allow this behaviour?
+        require(
+            transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_,
+            LSP7InvalidTransferLockPeriod()
+        );
         transferable = transferable_;
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
@@ -132,19 +135,21 @@ abstract contract LSP7NonTransferableInitAbstract is
     ) public virtual override onlyOwner {
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
-        if (
-            newTransferLockEnd != 0 && newTransferLockEnd < newTransferLockStart
-        ) {
-            revert LSP7InvalidTransferLockPeriod();
-        }
+        require(
+            newTransferLockEnd == 0 ||
+                newTransferLockEnd >= newTransferLockStart,
+            LSP7InvalidTransferLockPeriod()
+        );
 
-        if (newTransferLockStart != 0 && block.timestamp >= transferLockStart) {
-            revert LSP7CannotUpdateTransferLockPeriod();
-        }
+        require(
+            newTransferLockStart == 0 || block.timestamp < transferLockStart,
+            LSP7CannotUpdateTransferLockPeriod()
+        );
 
-        if (newTransferLockEnd != 0 && block.timestamp >= transferLockEnd) {
-            revert LSP7CannotUpdateTransferLockPeriod();
-        }
+        require(
+            newTransferLockEnd == 0 || block.timestamp < transferLockEnd,
+            LSP7CannotUpdateTransferLockPeriod()
+        );
 
         transferLockStart = newTransferLockStart;
         transferLockEnd = newTransferLockEnd;
@@ -165,11 +170,8 @@ abstract contract LSP7NonTransferableInitAbstract is
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        // Allow burning
-        if (to == address(0)) return;
-        if (isTransferable()) return;
-
-        revert LSP7TransferDisabled();
+        // Allow burning or transferring tokens only if the transferability status is enabled
+        require(to == address(0) || isTransferable(), LSP7TransferDisabled());
     }
 
     /// @notice Hook called before a token transfer to enforce transfer restrictions.

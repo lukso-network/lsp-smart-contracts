@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP7AllowlistAbstract} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
@@ -47,16 +47,18 @@ abstract contract LSP7CappedBalanceAbstract is
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        // Allow burning
+        // Do not check for balance cap if we are burning tokens
         if (to == address(0)) return;
-        if (tokenBalanceCap() == 0) return;
-        if (balanceOf(to) + amount <= tokenBalanceCap()) return;
 
-        revert LSP7CappedBalanceExceeded(
-            to,
-            amount,
-            balanceOf(to),
-            tokenBalanceCap()
+        require(
+            tokenBalanceCap() == 0 ||
+                (balanceOf(to) + amount) <= tokenBalanceCap(),
+            LSP7CappedBalanceExceeded(
+                to,
+                amount,
+                balanceOf(to),
+                tokenBalanceCap()
+            )
         );
     }
 
