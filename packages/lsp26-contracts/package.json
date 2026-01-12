@@ -58,8 +58,7 @@
     "test:coverage": "hardhat coverage",
     "build:package": "hardhat prepare-package",
     "verify-balance": "npx hardhat verify-balance",
-    "deploy": "npx hardhat ignition deploy",
-    "verify-all": "npx hardhat verify-all"
+    "deploy": "npx hardhat ignition deploy --verify"
   },
   "dependencies": {
     "@lukso/lsp1-contracts": "~0.15.5",
@@ -70,6 +69,7 @@
   },
   "devDependencies": {
     "@lukso/hardhat-packager-v3": "*",
+    "@lukso/hardhat-verify-balance": "*",
     "@lukso/lsp0-contracts": "~0.15.5",
     "@nomicfoundation/hardhat-ignition-ethers": "^3.0.0",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",

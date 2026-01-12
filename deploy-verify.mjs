@@ -15,5 +15,4 @@ for (const key in outputs) {
 
   await $`npm run verify-balance --workspace=./${workspace} -- --network ${network}`;
   await $`npm run deploy:base --workspace=./${workspace} -- --network ${network}`;
-  await $`npm run verify-all --workspace=./${workspace} -- --network ${network}`;
 }

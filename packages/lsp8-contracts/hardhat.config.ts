@@ -1,10 +1,17 @@
+import 'dotenv/config';
 import type { HardhatUserConfig } from 'hardhat/config';
 import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
 import hardhatIgnitionEthers from '@nomicfoundation/hardhat-ignition-ethers';
 import hardhatPackager from '@lukso/hardhat-packager-v3';
+import hardhatVerifyBalance from '@lukso/hardhat-verify-balance';
 
 const config: HardhatUserConfig = {
-  plugins: [hardhatToolboxMochaEthers, hardhatIgnitionEthers, hardhatPackager],
+  plugins: [
+    hardhatToolboxMochaEthers,
+    hardhatIgnitionEthers,
+    hardhatPackager,
+    hardhatVerifyBalance,
+  ],
   packager: {
     contracts: [
       'ILSP8IdentifiableDigitalAsset',
@@ -44,6 +51,33 @@ const config: HardhatUserConfig = {
     strategyConfig: {
       create2: {
         salt: '0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed',
+      },
+    },
+  },
+  verify: {
+    etherscan: {
+      apiKey: 'no-api-key-needed',
+    },
+  },
+  chainDescriptors: {
+    4201: {
+      name: 'luksoTestnet',
+      blockExplorers: {
+        etherscan: {
+          name: 'LUKSO Testnet Explorer',
+          url: 'https://explorer.execution.testnet.lukso.network',
+          apiUrl: 'https://api.explorer.execution.testnet.lukso.network/api',
+        },
+      },
+    },
+    42: {
+      name: 'luksoMainnet',
+      blockExplorers: {
+        etherscan: {
+          name: 'LUKSO Mainnet Explorer',
+          url: 'https://explorer.execution.mainnet.lukso.network',
+          apiUrl: 'https://api.explorer.execution.mainnet.lukso.network/api',
+        },
       },
     },
   },
