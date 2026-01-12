@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.27;
 
 // interfaces
 import {IERC5805} from "@openzeppelin/contracts/interfaces/IERC5805.sol";
@@ -20,6 +20,15 @@ import {
     _TYPEID_LSP7_VOTESDELEGATOR,
     _TYPEID_LSP7_VOTESDELEGATEE
 } from "./LSP7VotesConstants.sol";
+
+// errors
+import {
+    LSP7VotesBrokenClockMode,
+    LSP7VotesFutureLookup,
+    LSP7VotesSignatureExpired,
+    LSP7VotesInvalidNonce,
+    LSP7VotesExceededSafeSupply
+} from "./LSP7VotesErrors.sol";
 
 /**
  * @dev Extension of LSP7 to support Compound-like voting and delegation. This version is more generic than Compound's,
@@ -88,7 +97,7 @@ abstract contract LSP7VotesInitAbstract is
     // solhint-disable-next-line func-name-mixedcase
     function CLOCK_MODE() public view virtual override returns (string memory) {
         // Check that the clock was not modified
-        require(clock() == block.number, "LSP7Votes: broken clock mode");
+        require(clock() == block.number, LSP7VotesBrokenClockMode());
         return "mode=blocknumber&from=default";
     }
 
@@ -147,7 +156,7 @@ abstract contract LSP7VotesInitAbstract is
         address account,
         uint256 timepoint
     ) public view virtual override returns (uint256) {
-        require(timepoint < clock(), "LSP7Votes: future lookup");
+        require(timepoint < clock(), LSP7VotesFutureLookup());
         return _checkpointsLookup(_checkpoints[account], timepoint);
     }
 
@@ -161,7 +170,7 @@ abstract contract LSP7VotesInitAbstract is
     function getPastTotalSupply(
         uint256 timepoint
     ) public view virtual override returns (uint256) {
-        require(timepoint < clock(), "LSP7Votes: future lookup");
+        require(timepoint < clock(), LSP7VotesFutureLookup());
         return _checkpointsLookup(_totalSupplyCheckpoints, timepoint);
     }
 
@@ -231,7 +240,7 @@ abstract contract LSP7VotesInitAbstract is
         bytes32 s
     ) public virtual override {
         // solhint-disable-next-line not-rely-on-time
-        require(block.timestamp <= expiry, "LSP7Votes: signature expired");
+        require(block.timestamp <= expiry, LSP7VotesSignatureExpired(expiry));
         address signer = ECDSA.recover(
             _hashTypedDataV4(
                 keccak256(
@@ -242,7 +251,10 @@ abstract contract LSP7VotesInitAbstract is
             r,
             s
         );
-        require(nonce == _useNonce(signer), "LSP7Votes: invalid nonce");
+        require(
+            nonce == _useNonce(signer),
+            LSP7VotesInvalidNonce(signer, nonce)
+        );
         _delegate(signer, delegatee);
     }
 
@@ -289,10 +301,7 @@ abstract contract LSP7VotesInitAbstract is
         if (from == address(0)) {
             uint256 supply = totalSupply();
             uint256 cap = _maxSupply();
-            require(
-                supply <= cap,
-                "LSP7Votes: total supply risks overflowing votes"
-            );
+            require(supply <= cap, LSP7VotesExceededSafeSupply(supply, cap));
         }
         _transferVotingUnits(from, to, value);
     }
