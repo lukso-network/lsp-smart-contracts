@@ -83,7 +83,7 @@ library LSP4Utils {
     function toJSON(
         Link[] memory links
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < links.length; index++) {
+        for (uint256 index; index < links.length; ++index) {
             object = string.concat(object, toJSON(links[index]));
 
             if (index != links.length - 1) {
@@ -110,7 +110,7 @@ library LSP4Utils {
     function toJSON(
         Attribute[] memory attributes
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < attributes.length; index++) {
+        for (uint256 index; index < attributes.length; ++index) {
             object = string.concat(object, toJSON(attributes[index]));
 
             if (index != attributes.length - 1) {
@@ -139,7 +139,7 @@ library LSP4Utils {
     function toJSON(
         Image[] memory images
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < images.length; index++) {
+        for (uint256 index; index < images.length; ++index) {
             object = string.concat(object, toJSON(images[index]));
 
             if (index != images.length - 1) {
@@ -151,7 +151,7 @@ library LSP4Utils {
     function toJSON(
         Image[][] memory images
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < images.length; index++) {
+        for (uint256 index; index < images.length; ++index) {
             object = string.concat(object, "[", toJSON(images[index]), "]");
 
             if (index != images.length - 1) {
@@ -178,7 +178,7 @@ library LSP4Utils {
     function toJSON(
         Asset[] memory assets
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < assets.length; index++) {
+        for (uint256 index; index < assets.length; ++index) {
             object = string.concat(object, toJSON(assets[index]));
 
             if (index != assets.length - 1) {
@@ -201,7 +201,7 @@ library LSP4Utils {
     function toJSON(
         LSP7Asset[] memory assets
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < assets.length; index++) {
+        for (uint256 index; index < assets.length; ++index) {
             object = string.concat(object, toJSON(assets[index]));
 
             if (index != assets.length - 1) {
@@ -213,7 +213,7 @@ library LSP4Utils {
     function toJSON(
         LSP7Asset[][] memory assets
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < assets.length; index++) {
+        for (uint256 index; index < assets.length; ++index) {
             object = string.concat(object, "[", toJSON(assets[index]), "]");
 
             if (index != assets.length - 1) {
@@ -238,7 +238,7 @@ library LSP4Utils {
     function toJSON(
         LSP8Asset[] memory assets
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < assets.length; index++) {
+        for (uint256 index; index < assets.length; ++index) {
             object = string.concat(object, toJSON(assets[index]));
 
             if (index != assets.length - 1) {
@@ -250,7 +250,7 @@ library LSP4Utils {
     function toJSON(
         LSP8Asset[][] memory assets
     ) internal pure returns (string memory object) {
-        for (uint256 index; index < assets.length; index++) {
+        for (uint256 index; index < assets.length; ++index) {
             object = string.concat(object, "[", toJSON(assets[index]), "]");
 
             if (index != assets.length - 1) {
@@ -277,7 +277,7 @@ library LSP4Utils {
     function toJSON(
         Images memory images
     ) internal pure returns (string memory object) {
-        for (uint256 index = 0; index < images.imageFields.length; index++) {
+        for (uint256 index = 0; index < images.imageFields.length; ++index) {
             GroupImageField memory image = images.imageFields[index];
             object = string.concat(
                 object,
