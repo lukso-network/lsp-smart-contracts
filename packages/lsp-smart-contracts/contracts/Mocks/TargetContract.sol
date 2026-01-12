@@ -31,6 +31,7 @@ contract TargetContract {
     }
 
     function setNamePayableMinimumValue(string memory name) public payable {
+        // solhint-disable-next-line gas-strict-inequalities
         require(msg.value >= 50, "Not enough value provided");
         _name = name;
     }
