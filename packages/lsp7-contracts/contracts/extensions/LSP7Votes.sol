@@ -134,7 +134,7 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
         address account,
         uint256 timepoint
     ) public view virtual override returns (uint256) {
-        require(timepoint < clock(), LSP7VotesFutureLookup());
+        require(timepoint < clock(), LSP7VotesFutureLookup(timepoint));
         return _checkpointsLookup(_checkpoints[account], timepoint);
     }
 
@@ -148,7 +148,7 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
     function getPastTotalSupply(
         uint256 timepoint
     ) public view virtual override returns (uint256) {
-        require(timepoint < clock(), LSP7VotesFutureLookup());
+        require(timepoint < clock(), LSP7VotesFutureLookup(timepoint));
         return _checkpointsLookup(_totalSupplyCheckpoints, timepoint);
     }
 

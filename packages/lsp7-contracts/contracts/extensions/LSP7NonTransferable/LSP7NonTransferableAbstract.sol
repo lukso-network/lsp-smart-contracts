@@ -44,8 +44,6 @@ abstract contract LSP7NonTransferableAbstract is
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) {
-        // TODO: add test for if `transferLockEnd_` is exactly the same as `transferLockStart_`
-        // Should we allow this behaviour?
         require(
             transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_,
             LSP7InvalidTransferLockPeriod()

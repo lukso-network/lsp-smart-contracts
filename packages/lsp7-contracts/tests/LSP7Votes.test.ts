@@ -1,14 +1,14 @@
 import { expect } from 'chai';
 import { AbiCoder, id, parseEther, ZeroAddress } from 'ethers';
 import { network } from 'hardhat';
-import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import {
-  MyVotingToken,
+  type MyVotingToken,
   MyVotingToken__factory,
-  MyGovernor,
+  type MyGovernor,
   MyGovernor__factory,
+  type MockUniversalReceiver,
   MockUniversalReceiver__factory,
-  MockUniversalReceiver,
 } from '../types/ethers-contracts/index.js';
 import { LSP7_TYPE_IDS } from '../constants.js';
 
@@ -289,12 +289,12 @@ describe('Comprehensive Governor and Token Tests', () => {
       const currentBlock = await ethers.provider.getBlockNumber();
       const futureBlock = currentBlock + 1000;
 
-      await expect(token.getPastVotes(voter1.address, futureBlock)).to.be.revertedWith(
-        'LSP7Votes: future lookup',
-      );
-      await expect(token.getPastTotalSupply(futureBlock)).to.be.revertedWith(
-        'LSP7Votes: future lookup',
-      );
+      await expect(token.getPastVotes(voter1.address, futureBlock))
+        .to.be.revertedWithCustomError(token, 'LSP7VotesFutureLookup')
+        .withArgs(futureBlock);
+      await expect(token.getPastTotalSupply(futureBlock))
+        .to.be.revertedWithCustomError(token, 'LSP7VotesFutureLookup')
+        .withArgs(futureBlock);
     });
   });
 });

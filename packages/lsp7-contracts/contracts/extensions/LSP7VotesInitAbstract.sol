@@ -156,7 +156,7 @@ abstract contract LSP7VotesInitAbstract is
         address account,
         uint256 timepoint
     ) public view virtual override returns (uint256) {
-        require(timepoint < clock(), LSP7VotesFutureLookup());
+        require(timepoint < clock(), LSP7VotesFutureLookup(timepoint));
         return _checkpointsLookup(_checkpoints[account], timepoint);
     }
 
@@ -170,7 +170,7 @@ abstract contract LSP7VotesInitAbstract is
     function getPastTotalSupply(
         uint256 timepoint
     ) public view virtual override returns (uint256) {
-        require(timepoint < clock(), LSP7VotesFutureLookup());
+        require(timepoint < clock(), LSP7VotesFutureLookup(timepoint));
         return _checkpointsLookup(_totalSupplyCheckpoints, timepoint);
     }
 

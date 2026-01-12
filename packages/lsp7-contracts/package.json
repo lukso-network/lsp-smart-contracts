@@ -56,6 +56,7 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
+    "test": "hardhat test --no-compile tests/*.test.ts",
     "test:foundry": "FOUNDRY_PROFILE=lsp7 forge test -vvvv",
     "build:package": "hardhat prepare-package",
     "verify-balance": "npx hardhat verify-balance",

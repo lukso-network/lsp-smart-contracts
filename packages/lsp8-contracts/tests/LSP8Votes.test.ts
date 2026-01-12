@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import { id } from 'ethers';
 import { network } from 'hardhat';
-import { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
 import {
-  MyVotingNFT,
+  type MyVotingNFT,
   MyVotingNFT__factory,
-  MyGovernor,
+  type MyGovernor,
   MyGovernor__factory,
-  MockUniversalReceiver,
+  type MockUniversalReceiver,
   MockUniversalReceiver__factory,
 } from '../types/ethers-contracts/index.js';
 import { LSP8_TYPE_IDS } from '../constants.js';
