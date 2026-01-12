@@ -46,6 +46,7 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
     }
 
     bytes32 internal constant _DELEGATION_TYPEHASH =
+        // solhint-disable-next-line gas-small-strings
         keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
 
     mapping(address => address) private _delegates;

@@ -50,6 +50,7 @@ abstract contract LSP7VotesInitAbstract is
     }
 
     bytes32 internal constant _DELEGATION_TYPEHASH =
+        // solhint-disable-next-line gas-small-strings
         keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
 
     mapping(address => address) private _delegates;

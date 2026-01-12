@@ -21,8 +21,8 @@ contract LSP7CappedBalanceInit is LSP7CappedBalanceInitAbstract {
     /// @param isNonDivisible_ Specify if the LSP7 token is a fungible or non-fungible token.
     /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
     function initialize(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
