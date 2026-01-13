@@ -24,10 +24,36 @@ abstract contract LSP7CappedBalanceInitAbstract is
     /// @notice The immutable maximum token balance allowed per address.
     uint256 private _tokenBalanceCap;
 
-    /// @notice Initializes the contract with a token balance cap.
-    /// @dev Sets the immutable balance cap and reverts if the cap is zero. Inherits LSP7AllowlistAbstract constructor logic.
+    /// @notice Initializes the LSP7CappedBalance contract with base token params, allowlist, and balance cap.
+    /// @dev Initializes the LSP7Allowlist (which initializes LSP7DigitalAsset) and sets the balance cap.
+    /// @param name_ The name of the token.
+    /// @param symbol_ The symbol of the token.
+    /// @param newOwner_ The owner of the contract, added to the allowlist.
+    /// @param lsp4TokenType_ The token type (see LSP4).
+    /// @param isNonDivisible_ Whether the token is non-divisible.
     /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
     function __LSP7CappedBalance_init(
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        bool isNonDivisible_,
+        uint256 tokenBalanceCap_
+    ) internal virtual onlyInitializing {
+        __LSP7Allowlist_init(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
+        __LSP7CappedBalance_init_unchained(tokenBalanceCap_);
+    }
+
+    /// @notice Unchained initializer for the token balance cap.
+    /// @dev Sets the balance cap value.
+    /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
+    function __LSP7CappedBalance_init_unchained(
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
         _tokenBalanceCap = tokenBalanceCap_;

@@ -21,10 +21,34 @@ abstract contract LSP7AllowlistInitAbstract is
     /// @notice The set of addresses allowed to bypass certain restrictions (e.g., transfer locks).
     EnumerableSet.AddressSet internal _allowlist;
 
-    /// @notice Initializes the _allowlist with the contract owner and the zero address.
+    /// @notice Initializes the LSP7Allowlist contract with base token params and allowlist.
+    /// @dev Initializes the LSP7DigitalAsset base and adds the owner and `address(0)` to the allowlist.
+    /// @param name_ The name of the token.
+    /// @param symbol_ The symbol of the token.
+    /// @param newOwner_ The owner of the contract, added to the allowlist.
+    /// @param lsp4TokenType_ The token type (see LSP4).
+    /// @param isNonDivisible_ Whether the token is non-divisible.
+    function __LSP7Allowlist_init(
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        bool isNonDivisible_
+    ) internal virtual onlyInitializing {
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
+        __LSP7Allowlist_init_unchained(newOwner_);
+    }
+
+    /// @notice Unchained initializer for the _allowlist.
     /// @dev Adds the contract owner and `address(0)` to the _allowlist to enable specific behaviors like minting and burning.
     /// @param newOwner_ The address to set as the initial owner and add to the _allowlist.
-    function __LSP7Allowlist_init(
+    function __LSP7Allowlist_init_unchained(
         address newOwner_
     ) internal virtual onlyInitializing {
         _allowlist.add(newOwner_);

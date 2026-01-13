@@ -14,10 +14,36 @@ import {LSP7CappedSupplyCannotMintOverCap} from "./LSP7CappedSupplyErrors.sol";
 abstract contract LSP7CappedSupplyInitAbstract is LSP7DigitalAssetInitAbstract {
     uint256 private _tokenSupplyCap;
 
-    /// @notice Deploying a `LSP7CappedSupply` token contract with max token supply cap set to `tokenSupplyCap_`.
-    /// @dev Deploy a `LSP7CappedSupply` token contract and set the maximum token supply token cap up to which it is not possible to mint more tokens.
+    /// @notice Initializes the LSP7CappedSupply contract with base token params and supply cap.
+    /// @dev Initializes the LSP7DigitalAsset base and sets the maximum token supply cap.
+    /// @param name_ The name of the token.
+    /// @param symbol_ The symbol of the token.
+    /// @param newOwner_ The owner of the contract.
+    /// @param lsp4TokenType_ The token type (see LSP4).
+    /// @param isNonDivisible_ Whether the token is non-divisible.
     /// @param tokenSupplyCap_ The maximum total supply in wei, 0 to disable.
     function __LSP7CappedSupply_init(
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        bool isNonDivisible_,
+        uint256 tokenSupplyCap_
+    ) internal virtual onlyInitializing {
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
+        __LSP7CappedSupply_init_unchained(tokenSupplyCap_);
+    }
+
+    /// @notice Unchained initializer for the token supply cap.
+    /// @dev Sets the maximum token supply cap.
+    /// @param tokenSupplyCap_ The maximum total supply in wei, 0 to disable.
+    function __LSP7CappedSupply_init_unchained(
         uint256 tokenSupplyCap_
     ) internal virtual onlyInitializing {
         _tokenSupplyCap = tokenSupplyCap_;

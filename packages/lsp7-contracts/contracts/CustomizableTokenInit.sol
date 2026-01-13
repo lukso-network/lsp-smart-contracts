@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP7DigitalAssetInitAbstract} from "./LSP7DigitalAssetInitAbstract.sol";
@@ -18,19 +18,19 @@ import {
 import {LSP7MintDisabled} from "./extensions/LSP7Mintable/LSP7MintableErrors.sol";
 
 /// @dev Deployment configuration for minting feature.
-/// @param mintable True to enable minting after deployment, false to disable it forever.
+/// @param isMintable True to enable minting after deployment, false to disable it forever.
 /// @param initialMintAmount The amount of tokens to mint to `newOwner_` on deployment in wei.
 struct MintableParams {
-    bool mintable;
+    bool isMintable;
     uint256 initialMintAmount;
 }
 
 /// @dev Deployment configuration for non-transferable feature.
-/// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `nonTransferableFrom_` and `nonTransferableUntil_`.
-/// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
+/// @param isTransferable True to enable transfers, false to prevent transfers, or defined via `transferLockStart` and `transferLockEnd`.
+/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
 struct NonTransferableParams {
-    bool transferable;
+    bool isTransferable;
     uint256 transferLockStart;
     uint256 transferLockEnd;
 }
@@ -88,6 +88,7 @@ contract CustomizableTokenInit is
     /// @param lsp4TokenType_ The LSP4 token type (e.g., 0 for token).
     /// @param isNonDivisible_ True if the token is non-divisible (e.g., for NDTs).
     /// @param mintableParams Deployment configuration for minting feature (see above).
+    /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
     function __CustomizableToken_init(
         string memory name_,
@@ -106,21 +107,24 @@ contract CustomizableTokenInit is
             lsp4TokenType_,
             isNonDivisible_
         );
-        __LSP7Allowlist_init(newOwner_);
-        __LSP7Mintable_init(mintableParams.mintable);
-        __LSP7NonTransferable_init(
-            nonTransferableParams.transferable,
+        __LSP7Allowlist_init_unchained(newOwner_);
+        __LSP7Mintable_init_unchained(mintableParams.isMintable);
+        __LSP7NonTransferable_init_unchained(
+            nonTransferableParams.isTransferable,
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         );
-        __LSP7CappedBalance_init(cappedParams.tokenBalanceCap);
-        __LSP7CappedSupply_init(cappedParams.tokenSupplyCap);
+        __LSP7CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
+        __LSP7CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
         if (mintableParams.initialMintAmount > 0) {
             _mint(newOwner_, mintableParams.initialMintAmount, true, "");
         }
     }
 
     /// @inheritdoc LSP7CappedSupplyInitAbstract
+    /// @notice Returns the token supply cap.
+    /// @dev If minting is enabled, returns the configured supply cap defining the maximum tokens that can be minted.
+    /// If minting is disabled, returns the current total supply as the effective cap (no more tokens can be created).
     function tokenSupplyCap() public view virtual override returns (uint256) {
         return isMintable ? super.tokenSupplyCap() : totalSupply();
     }
@@ -141,9 +145,7 @@ contract CustomizableTokenInit is
             LSP7CappedSupplyInitAbstract
         )
     {
-        if (!isMintable) {
-            revert LSP7MintDisabled();
-        }
+        require(isMintable, LSP7MintDisabled());
 
         _tokenSupplyCapCheck(to, amount, force, data);
 

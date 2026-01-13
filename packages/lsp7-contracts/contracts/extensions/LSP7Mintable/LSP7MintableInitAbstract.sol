@@ -19,11 +19,37 @@ abstract contract LSP7MintableInitAbstract is
     /// @notice Indicates whether minting is currently enabled.
     bool public isMintable;
 
-    /// @notice Initializes the contract with the minting status.
-    /// @dev Sets the initial minting status. Inherits LSP7DigitalAsset constructor logic.
+    /// @notice Initializes the LSP7Mintable contract with base token params and minting status.
+    /// @dev Initializes the LSP7DigitalAsset base and sets the minting status.
+    /// @param name_ The name of the token.
+    /// @param symbol_ The symbol of the token.
+    /// @param newOwner_ The owner of the contract.
+    /// @param lsp4TokenType_ The token type (see LSP4).
+    /// @param isNonDivisible_ Whether the token is non-divisible.
     /// @param mintable_ True to enable minting after deployment, false to disable it forever.
     /// @custom:info If `mintable_` is set to `true` then it can be disabled using `disableMinting()` function later on.
     function __LSP7Mintable_init(
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        bool isNonDivisible_,
+        bool mintable_
+    ) internal virtual onlyInitializing {
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
+        __LSP7Mintable_init_unchained(mintable_);
+    }
+
+    /// @notice Unchained initializer for the minting status.
+    /// @dev Sets the initial minting status.
+    /// @param mintable_ True to enable minting after deployment, false to disable it forever.
+    function __LSP7Mintable_init_unchained(
         bool mintable_
     ) internal virtual onlyInitializing {
         isMintable = mintable_;
