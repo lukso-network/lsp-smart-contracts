@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { id } from 'ethers';
 import { network } from 'hardhat';
 import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
 import {
   type MyVotingNFT,
   MyVotingNFT__factory,
@@ -12,12 +13,10 @@ import {
 } from '../types/ethers-contracts/index.js';
 import { LSP8_TYPE_IDS } from '../constants.js';
 
-let ethers: HardhatEthers;
-
-const { networkHelpers } = await network.connect();
-const { time, mine } = networkHelpers;
-
 describe('Comprehensive Governor and NFT Tests', () => {
+  let ethers: HardhatEthers;
+  let networkHelpers: NetworkHelpers;
+
   let nft: MyVotingNFT;
   let governor: MyGovernor;
   let owner: HardhatEthersSigner;
@@ -32,8 +31,11 @@ describe('Comprehensive Governor and NFT Tests', () => {
   const PROPOSAL_THRESHOLD = 1; // 1 NFT
   const QUORUM_FRACTION = 1; // 1%
 
+  before(async () => {
+    ({ ethers, networkHelpers } = await network.connect());
+  });
+
   beforeEach(async () => {
-    ({ ethers } = await network.connect());
     [owner, proposer, voter1, voter2, voter3, randomEOA] = await ethers.getSigners();
 
     nft = await new MyVotingNFT__factory(owner).deploy();
@@ -135,7 +137,7 @@ describe('Comprehensive Governor and NFT Tests', () => {
     });
 
     it('should correctly count votes and update quorum', async () => {
-      await mine(VOTING_DELAY + 1);
+      await networkHelpers.mine(VOTING_DELAY + 1);
       await governor.connect(voter1).castVote(proposalId, 1); // Yes vote
       await governor.connect(voter2).castVote(proposalId, 0); // No vote
       await governor.connect(voter3).castVote(proposalId, 2); // Abstain
@@ -150,23 +152,25 @@ describe('Comprehensive Governor and NFT Tests', () => {
       const totalSupply = await nft.totalSupply();
       const quorumRequired = (totalSupply * BigInt(QUORUM_FRACTION)) / BigInt(100);
 
-      await mine(VOTING_DELAY + 1);
+      await networkHelpers.mine(VOTING_DELAY + 1);
       await governor.connect(voter3).castVote(proposalId, 1); // This should meet quorum
 
-      expect(await governor.quorum((await time.latestBlock()) - 1)).to.be.gte(quorumRequired);
+      expect(await governor.quorum((await networkHelpers.time.latestBlock()) - 1)).to.be.gte(
+        quorumRequired,
+      );
     });
   });
 
   describe('Advanced Voting Power Scenarios', () => {
     it('should correctly calculate voting power at past timepoints', async () => {
       await nft.connect(voter1).delegate(voter1.address);
-      await mine(); // Mine a block to record the delegation
+      await networkHelpers.mine(); // Mine a block to record the delegation
 
       const blockNumber1 = await ethers.provider.getBlockNumber();
       expect(await nft.getPastVotes(voter1.address, blockNumber1 - 1)).to.equal(1);
 
       await nft.mint(voter1.address, id('9'));
-      await mine(); // Mine a block to record the mint
+      await networkHelpers.mine(); // Mine a block to record the mint
 
       const blockNumber2 = await ethers.provider.getBlockNumber();
       expect(await nft.getPastVotes(voter1.address, blockNumber2 - 1)).to.equal(2);
@@ -177,7 +181,7 @@ describe('Comprehensive Governor and NFT Tests', () => {
       const blockNumber1 = await ethers.provider.getBlockNumber();
 
       await nft.mint(voter1.address, id('10'));
-      await mine(); // Mine a block to record the mint
+      await networkHelpers.mine(); // Mine a block to record the mint
 
       const blockNumber2 = await ethers.provider.getBlockNumber();
 

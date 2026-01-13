@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import { AbiCoder, id, parseEther, ZeroAddress } from 'ethers';
 import { network } from 'hardhat';
-import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { HardhatEthers, HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/types';
+import type { NetworkHelpers } from '@nomicfoundation/hardhat-network-helpers/types';
 import {
   type MyVotingToken,
   MyVotingToken__factory,
@@ -12,12 +13,10 @@ import {
 } from '../types/ethers-contracts/index.js';
 import { LSP7_TYPE_IDS } from '../constants.js';
 
-const { ethers } = await network.connect();
-
-const { networkHelpers } = await network.connect();
-const { time, mine } = networkHelpers;
-
 describe('Comprehensive Governor and Token Tests', () => {
+  let ethers: HardhatEthers;
+  let networkHelpers: NetworkHelpers;
+
   let token: MyVotingToken;
   let governor: MyGovernor;
   let owner: HardhatEthersSigner;
@@ -31,6 +30,10 @@ describe('Comprehensive Governor and Token Tests', () => {
   const VOTING_PERIOD = 7200; // 1 day in blocks
   const PROPOSAL_THRESHOLD = parseEther('1'); // 1 full unit of token
   const QUORUM_FRACTION = 1; // 1%
+
+  before(async () => {
+    ({ ethers, networkHelpers } = await network.connect());
+  });
 
   beforeEach(async () => {
     [owner, proposer, voter1, voter2, voter3, randomEOA] = await ethers.getSigners();
@@ -198,12 +201,12 @@ describe('Comprehensive Governor and Token Tests', () => {
     });
 
     it('should allow voting after voting delay has passed', async () => {
-      await mine(VOTING_DELAY + 1);
+      await networkHelpers.mine(VOTING_DELAY + 1);
       await expect(governor.connect(voter1).castVote(proposalId, 1)).to.emit(governor, 'VoteCast');
     });
 
     it('should correctly count votes and update quorum', async () => {
-      await mine(VOTING_DELAY + 1);
+      await networkHelpers.mine(VOTING_DELAY + 1);
       await governor.connect(voter1).castVote(proposalId, 1); // Yes vote
       await governor.connect(voter2).castVote(proposalId, 0); // No vote
       await governor.connect(voter3).castVote(proposalId, 2); // Abstain
@@ -215,7 +218,7 @@ describe('Comprehensive Governor and Token Tests', () => {
     });
 
     it('should not allow voting after voting period has ended', async () => {
-      await mine(VOTING_DELAY + VOTING_PERIOD + 1);
+      await networkHelpers.mine(VOTING_DELAY + VOTING_PERIOD + 1);
       await expect(governor.connect(voter1).castVote(proposalId, 1)).to.be.revertedWith(
         'Governor: vote not currently active',
       );
@@ -225,21 +228,23 @@ describe('Comprehensive Governor and Token Tests', () => {
       const totalSupply = await token.totalSupply();
       const quorumRequired = (totalSupply * BigInt(QUORUM_FRACTION)) / BigInt(100);
 
-      await mine(VOTING_DELAY + 1);
+      await networkHelpers.mine(VOTING_DELAY + 1);
       await governor.connect(voter3).castVote(proposalId, 1); // This should meet quorum
 
-      expect(await governor.quorum((await time.latestBlock()) - 1)).to.be.lte(quorumRequired);
+      expect(await governor.quorum((await networkHelpers.time.latestBlock()) - 1)).to.be.lte(
+        quorumRequired,
+      );
     });
 
     it('should allow proposal execution only after voting period and timelock', async () => {
-      await mine(VOTING_DELAY + 1);
+      await networkHelpers.mine(VOTING_DELAY + 1);
       await governor.connect(voter3).castVote(proposalId, 1); // Ensure quorum and pass
 
       await expect(
         governor.execute([randomEOA.address], [0], ['0xaabbccdd'], id('Proposal #1')),
       ).to.be.revertedWith('Governor: proposal not successful');
 
-      await mine(await governor.votingPeriod());
+      await networkHelpers.mine(await governor.votingPeriod());
 
       await expect(
         governor.execute([randomEOA.address], [0], ['0xaabbccdd'], id('Proposal #1')),
@@ -247,7 +252,7 @@ describe('Comprehensive Governor and Token Tests', () => {
     });
 
     it('should not allow double voting', async () => {
-      await mine(VOTING_DELAY + 1);
+      await networkHelpers.mine(VOTING_DELAY + 1);
       await governor.connect(voter1).castVote(proposalId, 1);
       await expect(governor.connect(voter1).castVote(proposalId, 1)).to.be.revertedWith(
         'GovernorVotingSimple: vote already cast',
@@ -258,13 +263,13 @@ describe('Comprehensive Governor and Token Tests', () => {
   describe('Advanced Voting Power Scenarios', () => {
     it('should correctly calculate voting power at past timepoints', async () => {
       await token.connect(voter1).delegate(voter1.address);
-      await mine(); // Mine a block to record the delegation
+      await networkHelpers.mine(); // Mine a block to record the delegation
 
       const blockNumber1 = await ethers.provider.getBlockNumber();
       expect(await token.getPastVotes(voter1.address, blockNumber1 - 1)).to.equal(parseEther('10'));
 
       await token.mint(voter1.address, parseEther('10'));
-      await mine(); // Mine a block to record the mint
+      await networkHelpers.mine(); // Mine a block to record the mint
 
       const blockNumber2 = await ethers.provider.getBlockNumber();
       expect(await token.getPastVotes(voter1.address, blockNumber2 - 1)).to.equal(parseEther('20'));
@@ -275,7 +280,7 @@ describe('Comprehensive Governor and Token Tests', () => {
       const blockNumber1 = await ethers.provider.getBlockNumber();
 
       await token.mint(voter1.address, parseEther('100'));
-      await mine(); // Mine a block to record the mint
+      await networkHelpers.mine(); // Mine a block to record the mint
 
       const blockNumber2 = await ethers.provider.getBlockNumber();
 
