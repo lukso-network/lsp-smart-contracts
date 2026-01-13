@@ -23,8 +23,8 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
     /// @param isNonDivisible_ Specify if the LSP7 token is a fungible or non-fungible token.
     /// @param mintable_ True to enable minting initially, false to disable it.
     function initialize(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,

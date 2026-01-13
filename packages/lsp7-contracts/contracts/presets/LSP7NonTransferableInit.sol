@@ -23,8 +23,8 @@ contract LSP7NonTransferableInit is LSP7NonTransferableInitAbstract {
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
     function initialize(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
