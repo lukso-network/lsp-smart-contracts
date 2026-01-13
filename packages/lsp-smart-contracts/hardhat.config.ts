@@ -4,6 +4,9 @@ import type { SolidityUserConfig } from 'hardhat/types/config';
 import type { HardhatUserConfig } from 'hardhat/config';
 import { ArgumentType } from 'hardhat/types/arguments';
 
+// Workflow temporarily disabled
+// import './scripts/ci/docs-generate';
+
 const DEFAULT_COMPILER_SETTINGS: SolidityUserConfig = {
   version: '0.8.17',
   settings: {

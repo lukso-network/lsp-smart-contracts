@@ -1,6 +1,6 @@
 # Deployment
 
-You can find a deployment utility with Hardhat Ignition to easily deploy the smart contracts locally or on the LUKSO networks. If you don't have some LYX test token visit [LUKSO Testnet Faucet](https://faucet.testnet.lukso.network).
+You can find a deployment utility with Hardhat Ignition to easily deploy the smart contracts locally or on the LUKSO networks. If you don't have some LYXt test token visit [LUKSO Testnet Faucet](https://faucet.testnet.lukso.network).
 
 > **Note:** all the deployment scripts for `base` contracts initialize the contract after deployment to the zero address for security.
 
@@ -11,10 +11,18 @@ You can find a deployment utility with Hardhat Ignition to easily deploy the sma
 1. Set your private key as an environment variable:
 
 ```bash
+# for testnet
 export CONTRACT_DEPLOYER_TESTNET_PK="0x..."
+
+# for mainnet
+export CONTRACT_DEPLOYER_MAINNET_PK="0x..."
 ```
 
-Or add it to a `.env` file in your package directory.
+Or add it to a `.env` file in your package directory and export the `.env` file to your shell.
+
+```bash
+source .env
+```
 
 &nbsp;
 
@@ -22,7 +30,7 @@ Or add it to a `.env` file in your package directory.
 
 ```bash
 # Deploy and verify base contracts with CREATE2 for deterministic addresses
-npx hardhat ignition deploy ignition/modules/base.ts --strategy create2 --network luksoTestnet --verify
+npx hardhat ignition deploy ignition/modules/base.ts --strategy create2 --network "luksoTestnet | luksoMainnet" --verify
 ```
 
 Each package has its own Ignition modules under `ignition/modules/`. Available modules vary by package - check the `ignition/modules/` directory for available options.

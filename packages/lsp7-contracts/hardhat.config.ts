@@ -78,6 +78,8 @@ const config: HardhatUserConfig = {
   },
   verify: {
     etherscan: {
+      // Even if Blockscout API for LUKSO networks does not require an API key,
+      // we need this config to be able to verify contracts after deployment.
       apiKey: 'no-api-key-needed',
     },
   },
@@ -85,6 +87,10 @@ const config: HardhatUserConfig = {
     4201: {
       name: 'luksoTestnet',
       blockExplorers: {
+        // This is a workaround for automatic contract verification after deployment.
+        // Block explorer for LUKSO networks is Blockscout. But etherscan is mentioned here
+        // to allow automatic contract verification after deployment
+        // (Hardhat Ignition only verifies automatically for etherscan explorers).
         etherscan: {
           name: 'LUKSO Testnet Explorer',
           url: 'https://explorer.execution.testnet.lukso.network',
@@ -95,6 +101,10 @@ const config: HardhatUserConfig = {
     42: {
       name: 'luksoMainnet',
       blockExplorers: {
+        // This is a workaround for automatic contract verification after deployment.
+        // Block explorer for LUKSO networks is Blockscout. But etherscan is mentioned here
+        // to allow automatic contract verification after deployment
+        // (Hardhat Ignition only verifies automatically for etherscan explorers).
         etherscan: {
           name: 'LUKSO Mainnet Explorer',
           url: 'https://explorer.execution.mainnet.lukso.network',

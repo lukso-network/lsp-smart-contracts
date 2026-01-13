@@ -3,7 +3,7 @@ import type { HardhatRuntimeEnvironment } from 'hardhat/types/hre';
 import { config as dotenvConfig } from 'dotenv';
 import { resolve, dirname } from 'path';
 import { existsSync } from 'fs';
-import { ethers } from 'ethers';
+import { Wallet, parseUnits, formatEther } from 'ethers';
 
 function findEnvFile(): string | null {
   let dir = process.cwd();
@@ -36,7 +36,7 @@ export default async function (_taskArguments: TaskArguments, hre: HardhatRuntim
     throw new Error(`Missing private key for network ${networkName}`);
   }
 
-  const deployer = new ethers.Wallet(privateKey);
+  const deployer = new Wallet(privateKey);
   const deployerBalance: string = await connection.provider.request({
     method: 'eth_getBalance',
     params: [deployer.address, 'latest'],
@@ -46,20 +46,20 @@ export default async function (_taskArguments: TaskArguments, hre: HardhatRuntim
 
   // The CI deploys all the contracts, so we need to make sure that the deployer has enough balance
   // Each contract to deploy costs around 0.02 - 0.03 LYXe
-  const MINIMUM_DEPLOYER_BALANCE = ethers.parseUnits('0.1', 'ether');
+  const MINIMUM_DEPLOYER_BALANCE = parseUnits('0.1', 'ether');
 
   if (deployerBalanceBigInt < MINIMUM_DEPLOYER_BALANCE) {
     throw new Error(
       [
         'Deployer balance too low. Expected: >0.1 LYXe.',
-        `Got: ${ethers.formatEther(deployerBalanceBigInt)} LYXe.`,
+        `Got: ${formatEther(deployerBalanceBigInt)} LYXe.`,
         `Please fund ${deployer.address}.`,
       ].join(' '),
     );
   }
 
   console.log(
-    `Deployer balance OK: ${ethers.formatEther(deployerBalanceBigInt)} LYXe (${deployer.address})`,
+    `Deployer balance OK: ${formatEther(deployerBalanceBigInt)} LYXe (${deployer.address})`,
   );
   await connection.close();
 }
