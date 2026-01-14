@@ -78,8 +78,6 @@ abstract contract LSP7NonTransferableInitAbstract is
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) internal virtual onlyInitializing {
-        // TODO: add test for if `transferLockEnd_` is exactly the same as `transferLockStart_`
-        // Should we allow this behaviour?
         require(
             transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_,
             LSP7InvalidTransferLockPeriod()
