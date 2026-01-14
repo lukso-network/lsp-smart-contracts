@@ -3,26 +3,18 @@ pragma solidity ^0.8.17;
 
 // interfaces
 import {ILSP26FollowerSystem} from "./ILSP26FollowerSystem.sol";
-import {
-    ILSP1UniversalReceiver
-} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
+import {ILSP1UniversalReceiver} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {
-    ERC165Checker
-} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 // constants
 import {
     _TYPEID_LSP26_FOLLOW,
     _TYPEID_LSP26_UNFOLLOW
 } from "./LSP26Constants.sol";
-import {
-    _INTERFACEID_LSP1
-} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
+import {_INTERFACEID_LSP1} from "@lukso/lsp1-contracts/contracts/LSP1Constants.sol";
 
 // errors
 import {

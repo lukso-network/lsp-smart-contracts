@@ -45,10 +45,9 @@
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "verify-balance": "npx hardhat verify-balance",
-    "deploy": "npx hardhat ignition deploy",
-    "deploy:all": "npx hardhat ignition deploy ignition/modules/all.ts",
-    "deploy:all:standardized": "npx hardhat ignition deploy ignition/modules/standardized/all.ts",
-    "verify-all": "npx hardhat verify-all",
+    "deploy": "npx hardhat ignition deploy --verify",
+    "deploy:all": "npx hardhat ignition deploy ignition/modules/all.ts --verify",
+    "deploy:all:standardized": "npx hardhat ignition deploy ignition/modules/standardized/all.ts --verify",
     "test": "hardhat test --no-compile tests/*.test.ts"
   },
   "dependencies": {
@@ -64,6 +63,7 @@
   },
   "devDependencies": {
     "@lukso/hardhat-packager-v3": "*",
+    "@lukso/hardhat-verify-balance": "*",
     "@nomicfoundation/hardhat-ignition-ethers": "^3.0.0",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "eslint-config-custom": "*",

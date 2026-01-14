@@ -1,0 +1,44 @@
+{
+  "name": "@lukso/hardhat-verify-balance",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hardhat v3 plugin to verify deployer balance before deployment",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "author": "LUKSO",
+  "license": "Apache-2.0",
+  "keywords": [
+    "hardhat",
+    "hardhat-plugin",
+    "hardhat-v3",
+    "ethereum",
+    "smart-contracts",
+    "deployment",
+    "balance"
+  ],
+  "files": [
+    "dist/",
+    "src/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc --build .",
+    "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "hardhat": "^3.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "ethers": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "hardhat": "^3.1.2",
+    "typescript": "~5.8.0"
+  }
+}

@@ -4,10 +4,6 @@ import type { SolidityUserConfig } from 'hardhat/types/config';
 import type { HardhatUserConfig } from 'hardhat/config';
 import { ArgumentType } from 'hardhat/types/arguments';
 
-// custom built hardhat plugins for CI
-// import './scripts/ci/check-deployer-balance';
-// import './scripts/ci/verify-all-contracts';
-
 // Workflow temporarily disabled
 // import './scripts/ci/docs-generate';
 
