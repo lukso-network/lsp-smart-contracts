@@ -21,7 +21,7 @@ contract LSP7CappedSupplyInitTester is LSP7CappedSupplyInitAbstract {
             lsp4TokenType_,
             true
         );
-        LSP7CappedSupplyInitAbstract._initialize(tokenSupplyCap_);
+        __LSP7CappedSupply_init_unchained(tokenSupplyCap_);
     }
 
     function mint(address to, uint256 amount) public {

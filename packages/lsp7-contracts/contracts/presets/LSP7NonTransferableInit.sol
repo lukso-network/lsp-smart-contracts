@@ -39,11 +39,11 @@ contract LSP7NonTransferableInit is LSP7NonTransferableInitAbstract {
             lsp4TokenType_,
             isNonDivisible_
         );
-        LSP7NonTransferableInitAbstract._initialize(
+        __LSP7NonTransferable_init_unchained(
             transferable_,
             transferLockStart_,
             transferLockEnd_
         );
-        LSP7AllowlistInitAbstract._initialize(newOwner_);
+        __LSP7Allowlist_init_unchained(newOwner_);
     }
 }
