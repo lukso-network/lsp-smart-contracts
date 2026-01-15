@@ -35,7 +35,7 @@ contract LSP7CappedBalanceInit is LSP7CappedBalanceInitAbstract {
             lsp4TokenType_,
             isNonDivisible_
         );
-        __LSP7CappedBalance_init(tokenBalanceCap_);
-        __LSP7Allowlist_init(newOwner_);
+        __LSP7CappedBalance_init_unchained(tokenBalanceCap_);
+        __LSP7Allowlist_init_unchained(newOwner_);
     }
 }

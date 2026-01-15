@@ -34,6 +34,6 @@ contract LSP7CappedSupplyInit is LSP7CappedSupplyInitAbstract {
             lsp4TokenType_,
             isNonDivisible_
         );
-        __LSP7CappedSupply_init(tokenSupplyCap_);
+        __LSP7CappedSupply_init_unchained(tokenSupplyCap_);
     }
 }
