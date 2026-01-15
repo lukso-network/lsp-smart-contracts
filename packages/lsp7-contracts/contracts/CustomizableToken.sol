@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP7DigitalAsset} from "./LSP7DigitalAsset.sol";
@@ -116,12 +116,9 @@ contract CustomizableToken is
             LSP7CappedSupplyAbstract
         )
     {
-        if (!isMintable) {
-            revert LSP7MintDisabled();
-        }
+        require(isMintable, LSP7MintDisabled());
 
         _tokenSupplyCapCheck(to, amount, force, data);
-
         super._mint(to, amount, force, data);
     }
 
