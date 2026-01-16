@@ -24,15 +24,35 @@ abstract contract LSP8CappedBalanceInitAbstract is
     /// @notice The maximum number of NFTs allowed per address.
     uint256 private _tokenBalanceCap;
 
-    /// @notice Initializes the contract with a token balance cap.
-    /// @dev Sets the balance cap.
+    /// @notice Initializes the LSP8CappedBalance contract with base token params and balance cap.
+    /// @dev Initializes the LSP8Allowlist (which initializes LSP8IdentifiableDigitalAsset) and sets the balance cap.
+    /// @param name_ The name of the token.
+    /// @param symbol_ The symbol of the token.
+    /// @param newOwner_ The owner of the contract, added to the allowlist.
+    /// @param lsp4TokenType_ The token type (see LSP4).
+    /// @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
     /// @param tokenBalanceCap_ The maximum number of NFTs per address, 0 to disable.
     function __LSP8CappedBalance_init(
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdFormat_,
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
+        __LSP8Allowlist_init(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        );
         __LSP8CappedBalance_init_unchained(tokenBalanceCap_);
     }
 
+    /// @notice Unchained initializer for the balance cap.
+    /// @dev Sets the balance cap.
+    /// @param tokenBalanceCap_ The maximum number of NFTs per address, 0 to disable.
     function __LSP8CappedBalance_init_unchained(
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {

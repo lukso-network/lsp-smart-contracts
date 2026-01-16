@@ -35,15 +35,33 @@ abstract contract LSP8NonTransferableInitAbstract is
     /// @notice The end timestamp of the transfer lock period.
     uint256 public transferLockEnd;
 
-    /// @notice Initializes the contract with transferability status and lock period.
-    /// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `nonTransferableFrom_` and `nonTransferableUntil_`.
+    /// @notice Initializes the LSP8NonTransferable contract with base token params, allowlist, and transfer settings.
+    /// @dev Initializes the LSP8Allowlist (which initializes LSP8IdentifiableDigitalAsset) and sets transfer settings.
+    /// @param name_ The name of the token.
+    /// @param symbol_ The symbol of the token.
+    /// @param newOwner_ The owner of the contract, added to the allowlist.
+    /// @param lsp4TokenType_ The token type (see LSP4).
+    /// @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
+    /// @param transferable_ True to enable transfers, false to prevent transfers.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
     function __LSP8NonTransferable_init(
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdFormat_,
         bool transferable_,
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) internal virtual onlyInitializing {
+        __LSP8Allowlist_init(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        );
         __LSP8NonTransferable_init_unchained(
             transferable_,
             transferLockStart_,
@@ -51,6 +69,11 @@ abstract contract LSP8NonTransferableInitAbstract is
         );
     }
 
+    /// @notice Unchained initializer for the transfer settings.
+    /// @dev Sets transferability status and lock period.
+    /// @param transferable_ True to enable transfers, false to prevent transfers.
+    /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
+    /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
     function __LSP8NonTransferable_init_unchained(
         bool transferable_,
         uint256 transferLockStart_,
