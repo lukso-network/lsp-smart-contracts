@@ -25,6 +25,8 @@ interface ILSP7NonTransferable {
     function makeTransferable() external;
 
     /// @notice Updates the transfer lock period with new start and end timestamps.
+    /// When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart).
+    /// When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd).
     /// @dev Can only be called by the contract owner. Reverts if the current lock period has already started or ended.
     /// @custom:emits {TransferLockPeriodChanged} event.
     /// @param newTransferLockStart The new start timestamp for the transfer lock period.

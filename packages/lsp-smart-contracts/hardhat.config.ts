@@ -78,9 +78,66 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [DEFAULT_COMPILER_SETTINGS],
     overrides: {
+      // dependencies
       '@lukso/lsp4-contracts/contracts/LSP4Utils.sol': VIA_IR_SETTINGS,
-      'contracts/LSP4DigitalAssetMetadata/LSP4Utils.sol': VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7MintableInit.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7CappedBalance.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7CappedBalanceInit.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7CappedSupply.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7CappedSupplyInit.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7NonTransferable.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7NonTransferableInit.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Mintable/LSP7MintableAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Mintable/LSP7MintableInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7VotesInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
+      // imports into lsp-smart-contracts package
+      'contracts/LSP4DigitalAssetMetadata/LSP4Utils.sol': VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/presets/LSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/presets/LSP7MintableInit.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/presets/LSP7CappedBalance.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/presets/LSP7CappedBalanceInit.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/presets/LSP7CappedSupply.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/presets/LSP7CappedSupplyInit.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/presets/LSP7NonTransferable.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/presets/LSP7NonTransferableInit.sol': LSP7_VIA_IR_SETTINGS,
+      LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Mintable/LSP7MintableAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Mintable/LSP7MintableInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7VotesInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
+      // Mock contracts for testing
+      'contracts/Mocks/Tokens/LSP7CappedSupplyTester.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP7CappedSupplyInitTester.sol': LSP7_VIA_IR_SETTINGS,
     },
   },
   tasks: [

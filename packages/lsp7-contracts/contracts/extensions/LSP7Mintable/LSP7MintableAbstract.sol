@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
@@ -13,7 +13,7 @@ import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 /// @title LSP7MintableAbstract
 /// @dev Abstract contract implementing a isMintable LSP7 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP7DigitalAsset to provide core token functionality.
 abstract contract LSP7MintableAbstract is ILSP7Mintable, LSP7DigitalAsset {
-    /// @notice Indicates whether minting is currently enabled.
+    /// @notice Indicates whether minting is currently enabled or not.
     bool public isMintable;
 
     /// @notice Initializes the contract with the minting status.
@@ -51,10 +51,7 @@ abstract contract LSP7MintableAbstract is ILSP7Mintable, LSP7DigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (!isMintable) {
-            revert LSP7MintDisabled();
-        }
-
+        require(isMintable, LSP7MintDisabled());
         super._mint(to, amount, force, data);
     }
 }

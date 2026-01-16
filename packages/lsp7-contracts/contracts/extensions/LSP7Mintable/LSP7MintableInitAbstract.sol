@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAssetInitAbstract.sol";
@@ -16,7 +16,7 @@ abstract contract LSP7MintableInitAbstract is
     ILSP7Mintable,
     LSP7DigitalAssetInitAbstract
 {
-    /// @notice Indicates whether minting is currently enabled.
+    /// @notice Indicates whether minting is currently enabled or not.
     bool public isMintable;
 
     /// @notice Initializes the LSP7Mintable contract with base token params and minting status.
@@ -82,10 +82,7 @@ abstract contract LSP7MintableInitAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (!isMintable) {
-            revert LSP7MintDisabled();
-        }
-
+        require(isMintable, LSP7MintDisabled());
         super._mint(to, amount, force, data);
     }
 }

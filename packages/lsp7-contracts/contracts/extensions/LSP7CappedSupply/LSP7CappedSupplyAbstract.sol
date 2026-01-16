@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
@@ -34,10 +33,11 @@ abstract contract LSP7CappedSupplyAbstract is LSP7DigitalAsset {
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        if (tokenSupplyCap() == 0) return;
-        if (totalSupply() + amount <= tokenSupplyCap()) return;
-
-        revert LSP7CappedSupplyCannotMintOverCap();
+        require(
+            tokenSupplyCap() == 0 ||
+                (totalSupply() + amount) <= tokenSupplyCap(),
+            LSP7CappedSupplyCannotMintOverCap()
+        );
     }
 
     /// @dev Same as {_mint} but allows to mint only if the {totalSupply} does not exceed the {tokenSupplyCap} after `amount` of tokens have been minted.

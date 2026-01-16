@@ -38,6 +38,7 @@ out = 'packages/lsp7-contracts/contracts/foundry_artifacts'
 optimizer = true
 optimizer_runs = 1000
 via_ir = true
+solc = "0.8.27"
 
 [profile.lsp11]
 src = 'packages/lsp11-contracts/contracts'
@@ -53,4 +54,4 @@ out = 'packages/lsp16-contracts/contracts/foundry_artifacts'
 src = 'packages/lsp-smart-contracts/contracts'
 test = 'packages/lsp-smart-contracts/tests/foundry'
 out = 'packages/lsp-smart-contracts/contracts/foundry_artifacts'
-solc = "0.8.24"
+solc = "0.8.27"

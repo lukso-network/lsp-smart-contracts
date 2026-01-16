@@ -266,6 +266,84 @@ contract LSP7NonTransferableTest is Test {
         assertEq(lsp7TransferableWithLockPeriod.balanceOf(recipient), 10);
     }
 
+    function test_TransferWhenLockStartsAndEndIsTheSameBlockCannotTransferatSpecificBlock()
+        public
+    {
+        address tokenSender = vm.addr(100);
+        address tokenRecipient = vm.addr(101);
+
+        uint256 transferLockStartBlock = block.timestamp + 100;
+        uint256 transferLockEndBlock = transferLockStart;
+
+        MockLSP7NonTransferable lsp7NonTransferableToken = new MockLSP7NonTransferable(
+                "Test Non Transferable Token",
+                "TNTT",
+                msg.sender,
+                _LSP4_TOKEN_TYPE_TOKEN,
+                false, // isNonDivisible
+                true, // transferable
+                transferLockStartBlock,
+                transferLockEndBlock
+            );
+
+        lsp7NonTransferableToken.mint(tokenSender, 100, true, "");
+        assertEq(lsp7NonTransferableToken.balanceOf(tokenSender), 100);
+
+        // CHECK we can transfer before the lock start block
+        vm.warp(block.timestamp + 50);
+        vm.prank(tokenSender);
+        lsp7NonTransferableToken.transfer(
+            tokenSender,
+            tokenRecipient,
+            10,
+            true,
+            ""
+        );
+        assertEq(lsp7NonTransferableToken.balanceOf(tokenSender), 90);
+        assertEq(lsp7NonTransferableToken.balanceOf(tokenRecipient), 10);
+
+        // CHECK we cannot transfer at the lock start block
+        vm.warp(transferLockStartBlock);
+        vm.prank(tokenSender);
+        vm.expectRevert(LSP7TransferDisabled.selector);
+        lsp7NonTransferableToken.transfer(
+            tokenSender,
+            tokenRecipient,
+            10,
+            true,
+            ""
+        );
+        assertEq(lsp7NonTransferableToken.balanceOf(tokenSender), 90);
+        assertEq(lsp7NonTransferableToken.balanceOf(tokenRecipient), 10);
+
+        // CHECK we cannot transfer at the lock end block
+        vm.warp(transferLockEndBlock);
+        vm.prank(tokenSender);
+        vm.expectRevert(LSP7TransferDisabled.selector);
+        lsp7NonTransferableToken.transfer(
+            tokenSender,
+            tokenRecipient,
+            10,
+            true,
+            ""
+        );
+        assertEq(lsp7NonTransferableToken.balanceOf(tokenSender), 90);
+        assertEq(lsp7NonTransferableToken.balanceOf(tokenRecipient), 10);
+
+        // CHECK we can transfer after the lock end block
+        vm.warp(transferLockEndBlock + 1);
+        vm.prank(tokenSender);
+        lsp7NonTransferableToken.transfer(
+            tokenSender,
+            tokenRecipient,
+            10,
+            true,
+            ""
+        );
+        assertEq(lsp7NonTransferableToken.balanceOf(tokenSender), 80);
+        assertEq(lsp7NonTransferableToken.balanceOf(tokenRecipient), 20);
+    }
+
     // Allowlist Behavior
     function test_AllowlistedAddressCanTransferDuringLockPeriod() public {
         vm.warp(transferLockStart + 50); // Inside lock period
