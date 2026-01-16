@@ -19,15 +19,35 @@ abstract contract LSP8CappedSupplyInitAbstract is
     /// @notice The maximum token supply.
     uint256 private _tokenSupplyCap;
 
-    /// @notice Initializes the contract with the token supply cap.
-    /// @dev Sets the maximum token supply.
+    /// @notice Initializes the LSP8CappedSupply contract with base token params and supply cap.
+    /// @dev Initializes the LSP8IdentifiableDigitalAsset base and sets the maximum token supply cap.
+    /// @param name_ The name of the token.
+    /// @param symbol_ The symbol of the token.
+    /// @param newOwner_ The owner of the contract.
+    /// @param lsp4TokenType_ The token type (see LSP4).
+    /// @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
     /// @param tokenSupplyCap_ The maximum total supply, 0 to disable.
     function __LSP8CappedSupply_init(
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdFormat_,
         uint256 tokenSupplyCap_
     ) internal virtual onlyInitializing {
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        );
         __LSP8CappedSupply_init_unchained(tokenSupplyCap_);
     }
 
+    /// @notice Unchained initializer for the token supply cap.
+    /// @dev Sets the maximum token supply cap.
+    /// @param tokenSupplyCap_ The maximum total supply, 0 to disable.
     function __LSP8CappedSupply_init_unchained(
         uint256 tokenSupplyCap_
     ) internal virtual onlyInitializing {

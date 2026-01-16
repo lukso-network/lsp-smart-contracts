@@ -19,16 +19,36 @@ abstract contract LSP8MintableInitAbstract is
     /// @notice Indicates whether minting is currently enabled.
     bool public isMintable;
 
-    /// @notice Initializes the contract with the minting status.
-    /// @dev Sets the initial minting status.
+    /// @notice Initializes the LSP8Mintable contract with base token params and minting status.
+    /// @dev Initializes the LSP8IdentifiableDigitalAsset base and sets the initial minting status.
+    /// @param name_ The name of the token.
+    /// @param symbol_ The symbol of the token.
+    /// @param newOwner_ The owner of the contract.
+    /// @param lsp4TokenType_ The token type (see LSP4).
+    /// @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
     /// @param mintable_ True to enable minting after deployment, false to disable it forever.
     /// @custom:info If `mintable_` is set to `true` then it can be disabled using `disableMinting()` function later on.
     function __LSP8Mintable_init(
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdFormat_,
         bool mintable_
     ) internal virtual onlyInitializing {
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        );
         __LSP8Mintable_init_unchained(mintable_);
     }
 
+    /// @notice Unchained initializer for the minting status.
+    /// @dev Sets the initial minting status.
+    /// @param mintable_ True to enable minting after deployment, false to disable it forever.
     function __LSP8Mintable_init_unchained(
         bool mintable_
     ) internal virtual onlyInitializing {

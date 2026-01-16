@@ -21,15 +21,33 @@ abstract contract LSP8AllowlistInitAbstract is
     /// @notice The set of addresses allowed to bypass certain restrictions (e.g., transfer locks).
     EnumerableSet.AddressSet internal _allowlist;
 
-    /// @notice Initializes the allowlist with the contract owner and the zero address.
-    /// @dev Adds the contract owner and `address(0)` to the allowlist to enable specific behaviors like minting and burning.
-    /// @param newOwner_ The address to set as the initial owner and add to the allowlist.
+    /// @notice Initializes the LSP8Allowlist contract with base token params and allowlist.
+    /// @dev Initializes the LSP8IdentifiableDigitalAsset base and sets up the allowlist with owner and zero address.
+    /// @param name_ The name of the token.
+    /// @param symbol_ The symbol of the token.
+    /// @param newOwner_ The owner of the contract, added to the allowlist.
+    /// @param lsp4TokenType_ The token type (see LSP4).
+    /// @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
     function __LSP8Allowlist_init(
-        address newOwner_
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        uint256 lsp8TokenIdFormat_
     ) internal virtual onlyInitializing {
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        );
         __LSP8Allowlist_init_unchained(newOwner_);
     }
 
+    /// @notice Unchained initializer for the allowlist.
+    /// @dev Adds the contract owner and `address(0)` to the allowlist.
+    /// @param newOwner_ The address to add to the allowlist.
     function __LSP8Allowlist_init_unchained(
         address newOwner_
     ) internal virtual onlyInitializing {
