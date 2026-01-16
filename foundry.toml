@@ -40,6 +40,14 @@ optimizer_runs = 1000
 via_ir = true
 solc = "0.8.27"
 
+[profile.lsp8]
+src = 'packages/lsp8-contracts/contracts'
+test = 'packages/lsp8-contracts/foundry'
+out = 'packages/lsp8-contracts/contracts/foundry_artifacts'
+optimizer = true
+optimizer_runs = 1000
+via_ir = true
+
 [profile.lsp11]
 src = 'packages/lsp11-contracts/contracts'
 test = 'packages/lsp11-contracts/foundry'
