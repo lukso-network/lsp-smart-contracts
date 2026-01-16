@@ -80,6 +80,8 @@ const config: HardhatUserConfig = {
     overrides: {
       // dependencies
       '@lukso/lsp4-contracts/contracts/LSP4Utils.sol': VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/LSP7DigitalAssetInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7MintableInit.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7CappedBalance.sol': LSP7_VIA_IR_SETTINGS,
@@ -88,6 +90,13 @@ const config: HardhatUserConfig = {
       '@lukso/lsp7-contracts/contracts/presets/LSP7CappedSupplyInit.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7NonTransferable.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7NonTransferableInit.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7BurnableInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7AllowlistAbstract.sol': LSP7_VIA_IR_SETTINGS,
+      LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol':
@@ -108,6 +117,8 @@ const config: HardhatUserConfig = {
       '@lukso/lsp7-contracts/contracts/extensions/LSP7VotesInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
       // imports into lsp-smart-contracts package
       'contracts/LSP4DigitalAssetMetadata/LSP4Utils.sol': VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/presets/LSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/presets/LSP7MintableInit.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/presets/LSP7CappedBalance.sol': LSP7_VIA_IR_SETTINGS,
@@ -116,7 +127,12 @@ const config: HardhatUserConfig = {
       'contracts/LSP7DigitalAsset/presets/LSP7CappedSupplyInit.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/presets/LSP7NonTransferable.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/presets/LSP7NonTransferableInit.sol': LSP7_VIA_IR_SETTINGS,
-      LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7BurnableInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Allowlist/LSP7AllowlistInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol':
@@ -138,6 +154,9 @@ const config: HardhatUserConfig = {
       // Mock contracts for testing
       'contracts/Mocks/Tokens/LSP7CappedSupplyTester.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/Mocks/Tokens/LSP7CappedSupplyInitTester.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP7Tester.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP7InitTester.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP7MintWhenDeployed.sol': LSP7_VIA_IR_SETTINGS,
     },
   },
   tasks: [

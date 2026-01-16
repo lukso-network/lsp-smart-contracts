@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";

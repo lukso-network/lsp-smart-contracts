@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 // interfaces
 import {ILSP1UniversalReceiver as ILSP1} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
@@ -127,9 +127,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
-        if (msg.data.length < 4) {
-            revert InvalidFunctionSelector(callData);
-        }
+        require(msg.data.length >= 4, InvalidFunctionSelector(callData));
         return _fallbackLSP17Extendable(callData);
     }
 
@@ -169,8 +167,10 @@ abstract contract LSP7DigitalAssetInitAbstract is
         (address extension, ) = _getExtensionAndForwardValue(msg.sig);
 
         // if no extension was found, revert
-        if (extension == address(0))
-            revert NoExtensionFoundForFunctionSelector(msg.sig);
+        require(
+            extension != address(0),
+            NoExtensionFoundForFunctionSelector(msg.sig)
+        );
 
         (bool success, bytes memory result) = extension.call{value: msg.value}(
             abi.encodePacked(callData, msg.sender, msg.value)
@@ -209,8 +209,10 @@ abstract contract LSP7DigitalAssetInitAbstract is
         bytes memory extensionAddress = ERC725YInitAbstract._getData(
             mappedExtensionDataKey
         );
-        if (extensionAddress.length != 20 && extensionAddress.length != 0)
-            revert InvalidExtensionAddress(extensionAddress);
+        require(
+            extensionAddress.length == 20 || extensionAddress.length == 0,
+            InvalidExtensionAddress(extensionAddress)
+        );
 
         return (address(bytes20(extensionAddress)), true);
     }
@@ -344,13 +346,10 @@ abstract contract LSP7DigitalAssetInitAbstract is
         bool notify,
         bytes memory operatorNotificationData
     ) public virtual override {
-        if (msg.sender != tokenOwner && msg.sender != operator) {
-            revert LSP7RevokeOperatorNotAuthorized(
-                msg.sender,
-                tokenOwner,
-                operator
-            );
-        }
+        require(
+            msg.sender == tokenOwner || msg.sender == operator,
+            LSP7RevokeOperatorNotAuthorized(msg.sender, tokenOwner, operator)
+        );
 
         _updateOperator(
             tokenOwner,
@@ -403,8 +402,10 @@ abstract contract LSP7DigitalAssetInitAbstract is
         bytes memory operatorNotificationData
     ) public virtual override {
         uint256 oldAllowance = authorizedAmountFor(operator, msg.sender);
-        if (oldAllowance == 0)
-            revert OperatorAllowanceCannotBeIncreasedFromZero(operator);
+        require(
+            oldAllowance > 0,
+            OperatorAllowanceCannotBeIncreasedFromZero(operator)
+        );
 
         uint256 newAllowance = oldAllowance + addedAmount;
 
@@ -434,13 +435,10 @@ abstract contract LSP7DigitalAssetInitAbstract is
         uint256 subtractedAmount,
         bytes memory operatorNotificationData
     ) public virtual override {
-        if (msg.sender != tokenOwner && msg.sender != operator) {
-            revert LSP7DecreaseAllowanceNotAuthorized(
-                msg.sender,
-                tokenOwner,
-                operator
-            );
-        }
+        require(
+            msg.sender == tokenOwner || msg.sender == operator,
+            LSP7DecreaseAllowanceNotAuthorized(msg.sender, tokenOwner, operator)
+        );
 
         uint256 currentAllowance = authorizedAmountFor(operator, tokenOwner);
         if (currentAllowance < subtractedAmount) {
@@ -502,14 +500,13 @@ abstract contract LSP7DigitalAssetInitAbstract is
         bytes[] memory data
     ) public virtual override {
         uint256 fromLength = from.length;
-        if (
-            fromLength != to.length ||
-            fromLength != amount.length ||
-            fromLength != force.length ||
-            fromLength != data.length
-        ) {
-            revert LSP7InvalidTransferBatch();
-        }
+        require(
+            fromLength == to.length &&
+                fromLength == amount.length &&
+                fromLength == force.length &&
+                fromLength == data.length,
+            LSP7InvalidTransferBatch()
+        );
 
         for (uint256 i; i < fromLength; ) {
             // using the public transfer function to handle updates to operator authorized amounts
@@ -547,13 +544,8 @@ abstract contract LSP7DigitalAssetInitAbstract is
         bool notified,
         bytes memory operatorNotificationData
     ) internal virtual {
-        if (operator == address(0)) {
-            revert LSP7CannotUseAddressZeroAsOperator();
-        }
-
-        if (operator == tokenOwner) {
-            revert LSP7TokenOwnerCannotBeOperator();
-        }
+        require(operator != address(0), LSP7CannotUseAddressZeroAsOperator());
+        require(operator != tokenOwner, LSP7TokenOwnerCannotBeOperator());
 
         _operatorAuthorizedAmount[tokenOwner][operator] = allowance;
 
@@ -599,9 +591,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
         bool force,
         bytes memory data
     ) internal virtual {
-        if (to == address(0)) {
-            revert LSP7CannotSendWithAddressZero();
-        }
+        require(to != address(0), LSP7CannotSendWithAddressZero());
 
         _beforeTokenTransfer(address(0), to, amount, force, data);
 
@@ -649,9 +639,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
         uint256 amount,
         bytes memory data
     ) internal virtual {
-        if (from == address(0)) {
-            revert LSP7CannotSendWithAddressZero();
-        }
+        require(from != address(0), LSP7CannotSendWithAddressZero());
 
         _beforeTokenTransfer(from, address(0), amount, false, data);
 
@@ -744,9 +732,10 @@ abstract contract LSP7DigitalAssetInitAbstract is
         bool force,
         bytes memory data
     ) internal virtual {
-        if (from == address(0) || to == address(0)) {
-            revert LSP7CannotSendWithAddressZero();
-        }
+        require(
+            from != address(0) && to != address(0),
+            LSP7CannotSendWithAddressZero()
+        );
 
         _beforeTokenTransfer(from, to, amount, force, data);
 
@@ -781,9 +770,10 @@ abstract contract LSP7DigitalAssetInitAbstract is
         } else {
             uint256 fromBalance = _tokenOwnerBalances[from];
 
-            if (fromBalance < amount) {
-                revert LSP7AmountExceedsBalance(fromBalance, from, amount);
-            }
+            require(
+                fromBalance >= amount,
+                LSP7AmountExceedsBalance(fromBalance, from, amount)
+            );
 
             unchecked {
                 // Overflow not possible: amount <= fromBalance <= totalSupply.
