@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.27;
 
 import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
 
@@ -20,9 +20,7 @@ abstract contract LSP8Burnable is LSP8IdentifiableDigitalAsset {
      * @param data Any extra data to be sent alongside burning the tokenId.
      */
     function burn(bytes32 tokenId, bytes memory data) public virtual {
-        if (!_isOperatorOrOwner(msg.sender, tokenId)) {
-            revert LSP8NotTokenOperator(tokenId, msg.sender);
-        }
+        require(_isOperatorOrOwner(msg.sender, tokenId), LSP8NotTokenOperator(tokenId, msg.sender));
         _burn(tokenId, data);
     }
 }
