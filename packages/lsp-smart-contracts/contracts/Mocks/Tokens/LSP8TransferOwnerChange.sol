@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP8IdentifiableDigitalAsset} from "@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol";

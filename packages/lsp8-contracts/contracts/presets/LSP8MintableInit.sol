@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP8MintableInitAbstract} from "./LSP8MintableInitAbstract.sol";

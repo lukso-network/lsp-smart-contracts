@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP8IdentifiableDigitalAssetInitAbstract} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
@@ -39,9 +39,7 @@ abstract contract LSP8CappedSupplyInitAbstract is
     function _initialize(
         uint256 tokenSupplyCap_
     ) internal virtual onlyInitializing {
-        if (tokenSupplyCap_ == 0) {
-            revert LSP8CappedSupplyRequired();
-        }
+        require(tokenSupplyCap_ != 0, LSP8CappedSupplyRequired());
 
         _tokenSupplyCap = tokenSupplyCap_;
     }
@@ -77,9 +75,7 @@ abstract contract LSP8CappedSupplyInitAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (totalSupply() + 1 > tokenSupplyCap()) {
-            revert LSP8CappedSupplyCannotMintOverCap();
-        }
+        require(totalSupply() + 1 <= tokenSupplyCap(), LSP8CappedSupplyCannotMintOverCap());
 
         super._mint(to, tokenId, force, data);
     }

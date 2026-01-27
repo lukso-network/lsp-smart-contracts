@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.27;
 
 // interfaces
 import {ILSP1UniversalReceiver as ILSP1} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
@@ -148,9 +148,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
     fallback(
         bytes calldata callData
     ) external payable virtual returns (bytes memory) {
-        if (msg.data.length < 4) {
-            revert InvalidFunctionSelector(callData);
-        }
+        require(msg.data.length >= 4, InvalidFunctionSelector(callData));
         return _fallbackLSP17Extendable(callData);
     }
 
@@ -191,8 +189,10 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         (address extension, ) = _getExtensionAndForwardValue(msg.sig);
 
         // if no extension was found, revert
-        if (extension == address(0))
-            revert NoExtensionFoundForFunctionSelector(msg.sig);
+        require(
+            extension != address(0),
+            NoExtensionFoundForFunctionSelector(msg.sig)
+        );
 
         (bool success, bytes memory result) = extension.call{value: msg.value}(
             abi.encodePacked(callData, msg.sender, msg.value)
@@ -228,8 +228,10 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
 
         // Check if there is an extension stored under the generated data key
         bytes memory extensionAddress = _getData(mappedExtensionDataKey);
-        if (extensionAddress.length != 20 && extensionAddress.length != 0)
-            revert InvalidExtensionAddress(extensionAddress);
+        require(
+            extensionAddress.length == 20 || extensionAddress.length == 0,
+            InvalidExtensionAddress(extensionAddress)
+        );
 
         return (address(bytes20(extensionAddress)), true);
     }
@@ -296,10 +298,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         bytes32 tokenId
     ) public view virtual override returns (address) {
         address tokenOwner = _tokenOwners[tokenId];
-
-        if (tokenOwner == address(0)) {
-            revert LSP8NonExistentTokenId(tokenId);
-        }
+        require(tokenOwner != address(0), LSP8NonExistentTokenId(tokenId));
 
         return tokenOwner;
     }
@@ -332,9 +331,10 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         bytes32[] memory tokenIds,
         bytes32[] memory dataKeys
     ) public view virtual override returns (bytes[] memory dataValues) {
-        if (tokenIds.length != dataKeys.length) {
-            revert LSP8TokenIdsDataLengthMismatch();
-        }
+        require(
+            tokenIds.length == dataKeys.length,
+            LSP8TokenIdsDataLengthMismatch()
+        );
 
         dataValues = new bytes[](tokenIds.length);
 
@@ -369,16 +369,13 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         bytes32[] memory dataKeys,
         bytes[] memory dataValues
     ) public virtual override onlyOwner {
-        if (
-            tokenIds.length != dataKeys.length ||
-            dataKeys.length != dataValues.length
-        ) {
-            revert LSP8TokenIdsDataLengthMismatch();
-        }
+        require(
+            tokenIds.length == dataKeys.length &&
+                dataKeys.length == dataValues.length,
+            LSP8TokenIdsDataLengthMismatch()
+        );
 
-        if (tokenIds.length == 0) {
-            revert LSP8TokenIdsDataEmptyArray();
-        }
+        require(tokenIds.length != 0, LSP8TokenIdsDataEmptyArray());
 
         for (uint256 i; i < tokenIds.length; ) {
             _setDataForTokenId(tokenIds[i], dataKeys[i], dataValues[i]);
@@ -441,20 +438,15 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
     ) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
 
-        if (tokenOwner != msg.sender) {
-            revert LSP8NotTokenOwner(tokenOwner, tokenId, msg.sender);
-        }
-
-        if (operator == address(0)) {
-            revert LSP8CannotUseAddressZeroAsOperator();
-        }
-
-        if (tokenOwner == operator) {
-            revert LSP8TokenOwnerCannotBeOperator();
-        }
+        require(
+            msg.sender == tokenOwner,
+            LSP8NotTokenOwner(tokenOwner, tokenId, msg.sender)
+        );
+        require(operator != address(0), LSP8CannotUseAddressZeroAsOperator());
+        require(operator != tokenOwner, LSP8TokenOwnerCannotBeOperator());
 
         bool isAdded = _operators[tokenId].add(operator);
-        if (!isAdded) revert LSP8OperatorAlreadyAuthorized(operator, tokenId);
+        require(isAdded, LSP8OperatorAlreadyAuthorized(operator, tokenId));
 
         emit OperatorAuthorizationChanged(
             operator,
@@ -485,22 +477,14 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         address tokenOwner = tokenOwnerOf(tokenId);
 
         if (msg.sender != tokenOwner) {
-            if (operator != msg.sender) {
-                revert LSP8RevokeOperatorNotAuthorized(
-                    msg.sender,
-                    tokenOwner,
-                    tokenId
-                );
-            }
+            require(
+                msg.sender == operator,
+                LSP8RevokeOperatorNotAuthorized(msg.sender, tokenOwner, tokenId)
+            );
         }
 
-        if (operator == address(0)) {
-            revert LSP8CannotUseAddressZeroAsOperator();
-        }
-
-        if (tokenOwner == operator) {
-            revert LSP8TokenOwnerCannotBeOperator();
-        }
+        require(operator != address(0), LSP8CannotUseAddressZeroAsOperator());
+        require(operator != tokenOwner, LSP8TokenOwnerCannotBeOperator());
 
         _revokeOperator(
             operator,
@@ -567,9 +551,10 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         bool force,
         bytes memory data
     ) public virtual override {
-        if (!_isOperatorOrOwner(msg.sender, tokenId)) {
-            revert LSP8NotTokenOperator(tokenId, msg.sender);
-        }
+        require(
+            _isOperatorOrOwner(msg.sender, tokenId),
+            LSP8NotTokenOperator(tokenId, msg.sender)
+        );
 
         _transfer(from, to, tokenId, force, data);
     }
@@ -585,14 +570,13 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         bytes[] memory data
     ) public virtual override {
         uint256 fromLength = from.length;
-        if (
-            fromLength != to.length ||
-            fromLength != tokenId.length ||
-            fromLength != force.length ||
-            fromLength != data.length
-        ) {
-            revert LSP8InvalidTransferBatch();
-        }
+        require(
+            fromLength == to.length &&
+                fromLength == tokenId.length &&
+                fromLength == force.length &&
+                fromLength == data.length,
+            LSP8InvalidTransferBatch()
+        );
 
         for (uint256 i; i < fromLength; ) {
             transfer(from[i], to[i], tokenId[i], force[i], data[i]);
@@ -614,7 +598,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         bytes memory operatorNotificationData
     ) internal virtual {
         bool isRemoved = _operators[tokenId].remove(operator);
-        if (!isRemoved) revert LSP8NonExistingOperator(operator, tokenId);
+        require(isRemoved, LSP8NonExistingOperator(operator, tokenId));
 
         emit OperatorRevoked(
             operator,
@@ -671,9 +655,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      * @dev When `tokenId` does not exist then revert with an error.
      */
     function _existsOrError(bytes32 tokenId) internal view virtual {
-        if (!_exists(tokenId)) {
-            revert LSP8NonExistentTokenId(tokenId);
-        }
+        require(_exists(tokenId), LSP8NonExistentTokenId(tokenId));
     }
 
     /**
@@ -700,21 +682,15 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         bool force,
         bytes memory data
     ) internal virtual {
-        if (to == address(0)) {
-            revert LSP8CannotSendToAddressZero();
-        }
+        require(to != address(0), LSP8CannotSendToAddressZero());
 
         // Check that `tokenId` is not already minted
-        if (_exists(tokenId)) {
-            revert LSP8TokenIdAlreadyMinted(tokenId);
-        }
+        require(!_exists(tokenId), LSP8TokenIdAlreadyMinted(tokenId));
 
         _beforeTokenTransfer(address(0), to, tokenId, force, data);
 
         // Check that `tokenId` was not minted inside the `_beforeTokenTransfer` hook
-        if (_exists(tokenId)) {
-            revert LSP8TokenIdAlreadyMinted(tokenId);
-        }
+        require(!_exists(tokenId), LSP8TokenIdAlreadyMinted(tokenId));
 
         // token being minted
         ++_existingTokens;
@@ -825,25 +801,21 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
         bytes memory data
     ) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
-        if (tokenOwner != from) {
-            revert LSP8NotTokenOwner(tokenOwner, tokenId, from);
-        }
+        require(
+            from == tokenOwner,
+            LSP8NotTokenOwner(tokenOwner, tokenId, from)
+        );
 
-        if (to == address(0)) {
-            revert LSP8CannotSendToAddressZero();
-        }
+        require(to != address(0), LSP8CannotSendToAddressZero());
 
         _beforeTokenTransfer(from, to, tokenId, force, data);
 
         // Check that `tokenId`'s owner was not changed inside the `_beforeTokenTransfer` hook
         address currentTokenOwner = tokenOwnerOf(tokenId);
-        if (tokenOwner != currentTokenOwner) {
-            revert LSP8TokenOwnerChanged(
-                tokenId,
-                tokenOwner,
-                currentTokenOwner
-            );
-        }
+        require(
+            currentTokenOwner == tokenOwner,
+            LSP8TokenOwnerChanged(tokenId, tokenOwner, currentTokenOwner)
+        );
 
         _clearOperators(from, tokenId);
 
