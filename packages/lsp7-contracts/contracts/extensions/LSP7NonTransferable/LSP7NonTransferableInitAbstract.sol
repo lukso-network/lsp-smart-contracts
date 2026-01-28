@@ -29,10 +29,12 @@ abstract contract LSP7NonTransferableInitAbstract is
     /// @notice Indicates whether the token is currently transferable.
     bool public transferable;
 
-    /// @notice The start timestamp of the transfer lock period.
+    /// @notice The timestamp at which point in time the token is not transferrable.
+    /// @dev `transferLockStart` can be disabled by setting it to 0. It means no start time is set (transfers locked up until `transferLockEnd`).
     uint256 public transferLockStart;
 
-    /// @notice The end timestamp of the transfer lock period.
+    /// @notice The timestamp at which point in time the non-transferability of the token ends and the token is transferrable again.
+    /// @dev `transferLockEnd` can be disabled by setting it to 0. It means no end time is set (transfers locked indefinitely).
     uint256 public transferLockEnd;
 
     /// @notice Initializes the LSP7NonTransferable contract with base token params, allowlist, and transfer settings.
