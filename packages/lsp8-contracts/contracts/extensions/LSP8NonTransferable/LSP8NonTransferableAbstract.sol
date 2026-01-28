@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP8AllowlistAbstract} from "../LSP8Allowlist/LSP8AllowlistAbstract.sol";
@@ -44,9 +44,10 @@ abstract contract LSP8NonTransferableAbstract is
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) {
-        if (transferLockEnd_ != 0 && transferLockEnd_ < transferLockStart_) {
-            revert LSP8InvalidTransferLockPeriod();
-        }
+        require(
+            transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_,
+            LSP8InvalidTransferLockPeriod()
+        );
         transferable = transferable_;
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
@@ -98,19 +99,21 @@ abstract contract LSP8NonTransferableAbstract is
     ) public virtual override onlyOwner {
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
-        if (
-            newTransferLockEnd != 0 && newTransferLockEnd < newTransferLockStart
-        ) {
-            revert LSP8InvalidTransferLockPeriod();
-        }
+        require(
+            newTransferLockEnd == 0 ||
+                newTransferLockEnd >= newTransferLockStart,
+            LSP8InvalidTransferLockPeriod()
+        );
 
-        if (newTransferLockStart != 0 && block.timestamp >= transferLockStart) {
-            revert LSP8CannotUpdateTransferLockPeriod();
-        }
+        require(
+            newTransferLockStart == 0 || block.timestamp < transferLockStart,
+            LSP8CannotUpdateTransferLockPeriod()
+        );
 
-        if (newTransferLockEnd != 0 && block.timestamp >= transferLockEnd) {
-            revert LSP8CannotUpdateTransferLockPeriod();
-        }
+        require(
+            newTransferLockEnd == 0 || block.timestamp < transferLockEnd,
+            LSP8CannotUpdateTransferLockPeriod()
+        );
 
         transferLockStart = newTransferLockStart;
         transferLockEnd = newTransferLockEnd;
@@ -131,11 +134,7 @@ abstract contract LSP8NonTransferableAbstract is
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        // Allow burning
-        if (to == address(0)) return;
-        if (isTransferable()) return;
-
-        revert LSP8TransferDisabled();
+        require(to == address(0) || isTransferable(), LSP8TransferDisabled());
     }
 
     /// @notice Hook called before a token transfer to enforce transfer restrictions.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP8AllowlistInitAbstract} from "../LSP8Allowlist/LSP8AllowlistInitAbstract.sol";
@@ -74,13 +74,12 @@ abstract contract LSP8CappedBalanceInitAbstract is
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        // Allow burning
-        if (to == address(0)) return;
-        if (tokenBalanceCap() == 0) return;
-        // For LSP8, each transfer is always 1 NFT
-        if (balanceOf(to) + 1 <= tokenBalanceCap()) return;
-
-        revert LSP8CappedBalanceExceeded(to, balanceOf(to), tokenBalanceCap());
+        require(
+            to == address(0) ||
+                tokenBalanceCap() == 0 ||
+                balanceOf(to) + 1 <= tokenBalanceCap(),
+            LSP8CappedBalanceExceeded(to, balanceOf(to), tokenBalanceCap())
+        );
     }
 
     /// @notice Hook called before a token transfer to enforce balance cap restrictions.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP8IdentifiableDigitalAsset} from "../../LSP8IdentifiableDigitalAsset.sol";
@@ -54,9 +54,7 @@ abstract contract LSP8MintableAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (!isMintable) {
-            revert LSP8MintDisabled();
-        }
+        require(isMintable, LSP8MintDisabled());
 
         super._mint(to, tokenId, force, data);
     }

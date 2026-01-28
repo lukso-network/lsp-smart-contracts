@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.27;
 
 // modules
 import {LSP8IdentifiableDigitalAsset} from "../../LSP8IdentifiableDigitalAsset.sol";
@@ -38,11 +38,10 @@ abstract contract LSP8CappedSupplyAbstract is
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        if (tokenSupplyCap() == 0) return;
-        // For LSP8, each mint is always 1 NFT
-        if (totalSupply() + 1 <= tokenSupplyCap()) return;
-
-        revert LSP8CappedSupplyCannotMintOverCap();
+        require(
+            tokenSupplyCap() == 0 || totalSupply() + 1 <= tokenSupplyCap(),
+            LSP8CappedSupplyCannotMintOverCap()
+        );
     }
 
     /// @dev Same as {_mint} but allows to mint only if the {totalSupply} does not exceed the {tokenSupplyCap} after the token has been minted.
