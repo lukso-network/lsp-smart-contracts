@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.27;
 
 /// @title ILSP8NonTransferable
 /// @dev Interface for a non-transferable LSP8 token, enabling control over transferability, lock periods, and allowlist exemptions.

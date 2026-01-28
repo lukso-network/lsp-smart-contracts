@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.27;
 
 /// @title ILSP8Mintable
 /// @dev Interface for a mintable LSP8 token extension, allowing the owner to mint new tokens and disable minting.
 interface ILSP8Mintable {
+    /// @dev Emitted when minting is permanently disabled.
+    event MintingDisabled();
+
     /// @notice Disables minting of new tokens permanently.
     /// @dev Can only be called by the contract owner. Prevents further calls to mint after invocation.
+    /// @custom:events {MintingDisabled} event.
     function disableMinting() external;
 
     /// @notice Mints a new token with the specified tokenId to a given address.

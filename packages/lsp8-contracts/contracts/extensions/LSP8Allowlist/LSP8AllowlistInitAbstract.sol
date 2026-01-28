@@ -10,6 +10,9 @@ import {ILSP8Allowlist} from "./ILSP8Allowlist.sol";
 // libraries
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
+// errors
+import {LSP8InvalidAllowlistIndexRange} from "./LSP8AllowlistErrors.sol";
+
 /// @title LSP8AllowlistInitAbstract
 /// @dev Abstract contract implementing an allowlist for LSP8 tokens, allowing specific addresses to bypass restrictions such as transfer locks. Inherits from LSP8IdentifiableDigitalAssetInitAbstract to integrate with token functionality.
 abstract contract LSP8AllowlistInitAbstract is
@@ -57,8 +60,10 @@ abstract contract LSP8AllowlistInitAbstract is
 
     /// @inheritdoc ILSP8Allowlist
     function addToAllowlist(address _address) public override onlyOwner {
-        _allowlist.add(_address);
-        emit AllowlistChanged(_address, true);
+        bool added = _allowlist.add(_address);
+        if (added) {
+            emit AllowlistChanged(_address, true);
+        }
     }
 
     /// @inheritdoc ILSP8Allowlist
@@ -84,6 +89,12 @@ abstract contract LSP8AllowlistInitAbstract is
         uint256 startIndex,
         uint256 endIndex
     ) public view returns (address[] memory) {
+        uint256 len = _allowlist.length();
+        require(
+            startIndex < endIndex && endIndex <= len,
+            LSP8InvalidAllowlistIndexRange(startIndex, endIndex, len)
+        );
+
         uint256 sliceLength = endIndex - startIndex;
 
         address[] memory allowlistedAddresses = new address[](sliceLength);

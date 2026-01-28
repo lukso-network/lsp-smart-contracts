@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.27;
 
 /// @title ILSP8CappedBalance
 /// @dev Interface for an LSP8 token extension that enforces a per-address NFT count cap, with exemptions for allowlisted addresses.

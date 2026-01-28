@@ -10,6 +10,9 @@ import {ILSP7Allowlist} from "./ILSP7Allowlist.sol";
 // libraries
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
+// errors
+import {LSP7InvalidAllowlistIndexRange} from "./LSP7AllowlistErrors.sol";
+
 /// @title LSP7AllowlistAbstract
 /// @dev Abstract contract implementing an allowlist for LSP7 tokens, allowing specific addresses to bypass restrictions such as transfer locks. Inherits from LSP7DigitalAsset to integrate with token functionality.
 abstract contract LSP7AllowlistAbstract is ILSP7Allowlist, LSP7DigitalAsset {
@@ -28,8 +31,10 @@ abstract contract LSP7AllowlistAbstract is ILSP7Allowlist, LSP7DigitalAsset {
 
     /// @inheritdoc ILSP7Allowlist
     function addToAllowlist(address _address) public override onlyOwner {
-        _allowlist.add(_address);
-        emit AllowlistChanged(_address, true);
+        bool added = _allowlist.add(_address);
+        if (added) {
+            emit AllowlistChanged(_address, true);
+        }
     }
 
     /// @inheritdoc ILSP7Allowlist
@@ -55,6 +60,12 @@ abstract contract LSP7AllowlistAbstract is ILSP7Allowlist, LSP7DigitalAsset {
         uint256 startIndex,
         uint256 endIndex
     ) public view returns (address[] memory) {
+        uint256 len = _allowlist.length();
+        require(
+            startIndex < endIndex && endIndex <= len,
+            LSP7InvalidAllowlistIndexRange(startIndex, endIndex, len)
+        );
+
         uint256 sliceLength = endIndex - startIndex;
 
         address[] memory allowlistedAddresses = new address[](sliceLength);
