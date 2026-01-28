@@ -98,21 +98,25 @@ abstract contract LSP7NonTransferableInitAbstract is
             return false;
         }
 
-        bool isTransferLockStartDisabled = transferLockStart == 0;
-        bool isTransferLockEndDisabled = transferLockEnd == 0;
+        bool isTransferLockStartEnabled = transferLockStart != 0;
+        bool isTransferLockEndEnabled = transferLockEnd != 0;
 
-        if (isTransferLockStartDisabled && isTransferLockEndDisabled) {
+        // If both lock periods are disabled, the token is transferable
+        if (!isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return true;
         }
 
-        if (isTransferLockStartDisabled && !isTransferLockEndDisabled) {
+        // If the token is non-transferable up to a certain point in time, check if we have passed this period
+        if (!isTransferLockStartEnabled && isTransferLockEndEnabled) {
             return transferLockEnd < block.timestamp;
         }
 
-        if (!isTransferLockStartDisabled && isTransferLockEndDisabled) {
+        // If the token becomes non-transferable starting at a specific point in time, check if we have reach this lock starting period
+        if (isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return transferLockStart > block.timestamp;
         }
 
+        // The last case is when the non-transferable feature is enabled is enabled within a certain time period
         return
             transferLockStart > block.timestamp ||
             transferLockEnd < block.timestamp;

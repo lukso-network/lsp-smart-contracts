@@ -64,21 +64,25 @@ abstract contract LSP7NonTransferableAbstract is
             return false;
         }
 
-        bool isTransferLockStartDisabled = transferLockStart == 0;
-        bool isTransferLockEndDisabled = transferLockEnd == 0;
+        bool isTransferLockStartEnabled = transferLockStart != 0;
+        bool isTransferLockEndEnabled = transferLockEnd != 0;
 
-        if (isTransferLockStartDisabled && isTransferLockEndDisabled) {
+        // If both lock periods are disabled, the token is transferable
+        if (!isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return true;
         }
 
-        if (isTransferLockStartDisabled && !isTransferLockEndDisabled) {
+        // If the token is non-transferable up to a certain point in time, check if we have passed this period
+        if (!isTransferLockStartEnabled && isTransferLockEndEnabled) {
             return transferLockEnd < block.timestamp;
         }
 
-        if (!isTransferLockStartDisabled && isTransferLockEndDisabled) {
+        // If the token becomes non-transferable starting at a specific point in time, check if we have reach this lock starting period
+        if (isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return transferLockStart > block.timestamp;
         }
 
+        // The last case is when the non-transferable feature is enabled is enabled within a certain time period
         return
             transferLockStart > block.timestamp ||
             transferLockEnd < block.timestamp;
@@ -86,6 +90,12 @@ abstract contract LSP7NonTransferableAbstract is
 
     /// @inheritdoc ILSP7NonTransferable
     function makeTransferable() public virtual override onlyOwner {
+        // 1. Check if `isTransferable()` is set to `false`. If it is, set `_transferable` to `true` and emit the `TransferabilityChanged` event.
+
+        // 2. Check if `transferLockStart` is not 0 OR `transferLockEnd` is not 0. If they are not, we change the state variables and emit the `TransferLockPeriodChanged` event.
+
+        // 3. We should be able to call this function only once
+
         _transferable = true;
         transferLockStart = 0;
         transferLockEnd = 0;
