@@ -27,7 +27,7 @@ abstract contract LSP7NonTransferableInitAbstract is
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @notice Indicates whether the token is currently transferable.
-    bool public transferable;
+    bool internal _transferable;
 
     /// @notice The timestamp at which point in time the token is not transferrable.
     /// @dev `transferLockStart` can be disabled by setting it to 0. It means no start time is set (transfers locked up until `transferLockEnd`).
@@ -84,7 +84,7 @@ abstract contract LSP7NonTransferableInitAbstract is
             transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_,
             LSP7InvalidTransferLockPeriod()
         );
-        transferable = transferable_;
+        _transferable = transferable_;
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
 
@@ -94,7 +94,7 @@ abstract contract LSP7NonTransferableInitAbstract is
 
     /// @inheritdoc ILSP7NonTransferable
     function isTransferable() public view virtual override returns (bool) {
-        if (!transferable) {
+        if (!_transferable) {
             return false;
         }
 
@@ -120,7 +120,7 @@ abstract contract LSP7NonTransferableInitAbstract is
 
     /// @inheritdoc ILSP7NonTransferable
     function makeTransferable() public virtual override onlyOwner {
-        transferable = true;
+        _transferable = true;
         transferLockStart = 0;
         transferLockEnd = 0;
 
