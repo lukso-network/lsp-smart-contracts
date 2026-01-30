@@ -38,7 +38,7 @@ struct CappedParams {
     uint256 tokenSupplyCap;
 }
 
-/// @title CustomizableLSP7TokenInit
+/// @title LSP7CustomizableTokenInit
 /// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and allowlist exemptions.
 /// Implements {LSP7MintableInitAbstract} to allow minting.
 /// Implements {LSP7BurnableInitAbstract} to allow burning
@@ -46,7 +46,7 @@ struct CappedParams {
 /// Implements {LSP7CappedSupplyInitAbstract} to set balance caps.
 /// Implements {LSP7BurnableInitAbstract} to set total supply cap.
 /// Implements {LSP7AllowlistInitAbstract} to create allowlist exemptions
-contract CustomizableLSP7TokenInit is
+contract LSP7CustomizableTokenInit is
     LSP7MintableInitAbstract,
     LSP7NonTransferableInitAbstract,
     LSP7CappedBalanceInitAbstract,
@@ -63,7 +63,7 @@ contract CustomizableLSP7TokenInit is
         NonTransferableParams memory nonTransferableParams,
         CappedParams memory cappedParams
     ) external virtual initializer {
-        __CustomizableLSP7Token_init(
+        __LSP7CustomizableToken_init(
             name_,
             symbol_,
             newOwner_,
@@ -85,7 +85,7 @@ contract CustomizableLSP7TokenInit is
     /// @param mintableParams Deployment configuration for minting feature (see above).
     /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
-    function __CustomizableLSP7Token_init(
+    function __LSP7CustomizableToken_init(
         string memory name_,
         string memory symbol_,
         address newOwner_,

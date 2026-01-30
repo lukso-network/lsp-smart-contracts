@@ -6,11 +6,11 @@ import "forge-std/Test.sol";
 
 // modules
 import {
-    CustomizableLSP7Token,
+    LSP7CustomizableToken,
     MintableParams,
     NonTransferableParams,
     CappedParams
-} from "../contracts/CustomizableLSP7Token.sol";
+} from "../contracts/LSP7CustomizableToken.sol";
 
 // errors
 import {LSP7MintDisabled} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
@@ -24,7 +24,7 @@ import {LSP7CappedSupplyCannotMintOverCap} from "../contracts/extensions/LSP7Cap
 // constants
 import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
-contract CustomizableLSP7TokenTest is Test {
+contract LSP7CustomizableTokenTest is Test {
     string name = "Custom Token";
     string symbol = "CT";
     uint256 tokenType = _LSP4_TOKEN_TYPE_TOKEN;
@@ -43,7 +43,7 @@ contract CustomizableLSP7TokenTest is Test {
     address user2 = vm.addr(102);
     address zeroAddress = address(0);
 
-    CustomizableLSP7Token token;
+    LSP7CustomizableToken token;
 
     function setUp() public {
         MintableParams memory mintableParams = MintableParams(
@@ -63,7 +63,7 @@ contract CustomizableLSP7TokenTest is Test {
             tokenSupplyCap
         );
 
-        token = new CustomizableLSP7Token(
+        token = new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -135,7 +135,7 @@ contract CustomizableLSP7TokenTest is Test {
         );
 
         vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
-        new CustomizableLSP7Token(
+        new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -162,7 +162,7 @@ contract CustomizableLSP7TokenTest is Test {
             tokenSupplyCap
         );
 
-        CustomizableLSP7Token zeroMintToken = new CustomizableLSP7Token(
+        LSP7CustomizableToken zeroMintToken = new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -199,7 +199,7 @@ contract CustomizableLSP7TokenTest is Test {
         );
 
         vm.expectRevert(LSP7InvalidTransferLockPeriod.selector);
-        new CustomizableLSP7Token(
+        new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -263,7 +263,7 @@ contract CustomizableLSP7TokenTest is Test {
 
         CappedParams memory cappedParams = CappedParams(tokenBalanceCap, 0);
 
-        CustomizableLSP7Token unlimitedToken = new CustomizableLSP7Token(
+        LSP7CustomizableToken unlimitedToken = new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -297,7 +297,7 @@ contract CustomizableLSP7TokenTest is Test {
             0 // tokenSupplyCap = 0 (disabled)
         );
 
-        CustomizableLSP7Token tokenWithBalanceCap = new CustomizableLSP7Token(
+        LSP7CustomizableToken tokenWithBalanceCap = new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -343,7 +343,7 @@ contract CustomizableLSP7TokenTest is Test {
             0 // tokenSupplyCap = 0 (disabled)
         );
 
-        CustomizableLSP7Token tokenWithoutBalanceCap = new CustomizableLSP7Token(
+        LSP7CustomizableToken tokenWithoutBalanceCap = new LSP7CustomizableToken(
                 name,
                 symbol,
                 owner,

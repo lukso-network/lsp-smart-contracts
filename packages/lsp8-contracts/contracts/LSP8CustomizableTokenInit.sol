@@ -38,7 +38,7 @@ struct CappedParamsInit {
     uint256 tokenSupplyCap;
 }
 
-/// @title CustomizableLSP8TokenInit
+/// @title LSP8CustomizableTokenInit
 /// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and allowlist exemptions. This is the proxy-deployable version.
 /// Implements {LSP8Mintable} to allow minting.
 /// Implements {LSP8Burnable} to allow burning
@@ -46,7 +46,7 @@ struct CappedParamsInit {
 /// Implements {LSP8NonTransferable} to restrict transfers.
 /// Implements {LSP8CappedSupply} to set total supply cap.
 /// Implements {LSP8Allowlist} to create allowlist exemptions
-contract CustomizableLSP8TokenInit is
+contract LSP8CustomizableTokenInit is
     LSP8MintableInitAbstract,
     LSP8NonTransferableInitAbstract,
     LSP8CappedBalanceInitAbstract,
@@ -78,7 +78,7 @@ contract CustomizableLSP8TokenInit is
         NonTransferableParamsInit memory nonTransferableParams,
         CappedParamsInit memory cappedParams
     ) external virtual initializer {
-        __CustomizableLSP8Token_init(
+        __LSP8CustomizableToken_init(
             name_,
             symbol_,
             newOwner_,
@@ -91,7 +91,7 @@ contract CustomizableLSP8TokenInit is
     }
 
     /// @dev Internal initialization function.
-    function __CustomizableLSP8Token_init(
+    function __LSP8CustomizableToken_init(
         string memory name_,
         string memory symbol_,
         address newOwner_,
