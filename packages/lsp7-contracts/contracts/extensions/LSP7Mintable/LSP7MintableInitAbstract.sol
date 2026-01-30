@@ -8,10 +8,7 @@ import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAssetInitAbstract.s
 import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 
 // errors
-import {
-    LSP7MintDisabled,
-    LSP7MintingAlreadyDisabled
-} from "./LSP7MintableErrors.sol";
+import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 
 /// @title LSP7MintableInitAbstract
 /// @dev Abstract contract implementing a isMintable LSP7 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP7DigitalAsset to provide core token functionality.
@@ -60,7 +57,7 @@ abstract contract LSP7MintableInitAbstract is
 
     /// @inheritdoc ILSP7Mintable
     function disableMinting() public virtual override onlyOwner {
-        require(isMintable, LSP7MintingAlreadyDisabled());
+        require(isMintable, LSP7MintDisabled());
         isMintable = false;
         emit MintingDisabled();
     }

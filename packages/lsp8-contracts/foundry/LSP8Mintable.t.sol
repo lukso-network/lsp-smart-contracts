@@ -172,12 +172,13 @@ contract LSP8MintableTest is Test {
         lsp8NonMintable.mint(user1, tokenId1, true, "");
     }
 
-    // Test calling disableMinting multiple times
+    // Test calling disableMinting multiple times reverts on second call
     function test_DisableMintingMultipleTimes() public {
         lsp8Mintable.disableMinting();
         assertFalse(lsp8Mintable.isMintable());
 
-        // Calling again should not revert
+        // Calling again should revert since minting is already disabled
+        vm.expectRevert(LSP8MintDisabled.selector);
         lsp8Mintable.disableMinting();
         assertFalse(lsp8Mintable.isMintable());
     }

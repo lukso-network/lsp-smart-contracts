@@ -39,7 +39,7 @@ struct CappedParams {
     uint256 tokenSupplyCap;
 }
 
-/// @title CustomizableToken
+/// @title CustomizableLSP8Token
 /// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and allowlist exemptions.
 /// Implements {LSP8Mintable} to allow minting.
 /// Implements {LSP8Burnable} to allow burning
@@ -47,7 +47,7 @@ struct CappedParams {
 /// Implements {LSP8NonTransferable} to restrict transfers.
 /// Implements {LSP8CappedSupply} to set total supply cap.
 /// Implements {LSP8Allowlist} to create allowlist exemptions
-contract CustomizableToken is
+contract CustomizableLSP8Token is
     LSP8MintableAbstract,
     LSP8NonTransferableAbstract,
     LSP8CappedBalanceAbstract,
@@ -122,9 +122,7 @@ contract CustomizableToken is
             LSP8CappedSupplyAbstract
         )
     {
-        if (!isMintable) {
-            revert LSP8MintDisabled();
-        }
+        require(isMintable, LSP8MintDisabled());
 
         _tokenSupplyCapCheck(to, tokenId, force, data);
 

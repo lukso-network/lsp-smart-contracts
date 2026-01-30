@@ -11,6 +11,9 @@ import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigital
 // interfaces
 import {ILSP8Allowlist} from "../contracts/extensions/LSP8Allowlist/ILSP8Allowlist.sol";
 
+// errors
+import {LSP8InvalidAllowlistIndexRange} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistErrors.sol";
+
 // constants
 import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
@@ -102,10 +105,11 @@ contract LSP8AllowlistTest is Test {
             lsp8Allowlist.isAllowlisted(user1),
             "User1 should be allowlisted"
         );
-        // Adding again should not revert
-        vm.expectEmit(true, true, false, false, address(lsp8Allowlist));
-        emit ILSP8Allowlist.AllowlistChanged(user1, true);
+        // Adding again should not revert, but should not emit since address is already in the set
+        vm.recordLogs();
         lsp8Allowlist.addToAllowlist(user1);
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+        assertEq(entries.length, 0, "No event should be emitted for duplicate add");
         assertTrue(
             lsp8Allowlist.isAllowlisted(user1),
             "User1 should still be allowlisted"
@@ -256,17 +260,25 @@ contract LSP8AllowlistTest is Test {
     }
 
     function test_GetAllowlistedAddressesByIndexEmptySlice() public {
-        address[] memory addresses = lsp8Allowlist
-            .getAllowlistedAddressesByIndex(0, 0);
-        assertEq(addresses.length, 0, "Should return empty array");
+        // (0, 0) is an invalid range since the contract requires startIndex < endIndex
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8InvalidAllowlistIndexRange.selector,
+                0,
+                0,
+                2
+            )
+        );
+        lsp8Allowlist.getAllowlistedAddressesByIndex(0, 0);
     }
 
     // Edge cases
     function test_AddZeroAddressToAllowlist() public {
-        // Zero address is already allowlisted in constructor
-        vm.expectEmit(true, true, false, false, address(lsp8Allowlist));
-        emit ILSP8Allowlist.AllowlistChanged(zeroAddress, true);
+        // Zero address is already allowlisted in constructor, so re-adding should not emit
+        vm.recordLogs();
         lsp8Allowlist.addToAllowlist(zeroAddress);
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+        assertEq(entries.length, 0, "No event should be emitted for duplicate add");
         assertTrue(
             lsp8Allowlist.isAllowlisted(zeroAddress),
             "Zero address should remain allowlisted"

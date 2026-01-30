@@ -8,10 +8,7 @@ import {LSP8IdentifiableDigitalAssetInitAbstract} from "../../LSP8IdentifiableDi
 import {ILSP8Mintable} from "./ILSP8Mintable.sol";
 
 // errors
-import {
-    LSP8MintDisabled,
-    LSP8MintingAlreadyDisabled
-} from "./LSP8MintableErrors.sol";
+import {LSP8MintDisabled} from "./LSP8MintableErrors.sol";
 
 /// @title LSP8MintableInitAbstract
 /// @dev Abstract contract implementing a mintable LSP8 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP8IdentifiableDigitalAssetInitAbstract to provide core token functionality.
@@ -60,7 +57,7 @@ abstract contract LSP8MintableInitAbstract is
 
     /// @inheritdoc ILSP8Mintable
     function disableMinting() public virtual override onlyOwner {
-        require(isMintable, LSP8MintingAlreadyDisabled());
+        require(isMintable, LSP8MintDisabled());
         isMintable = false;
         emit MintingDisabled();
     }

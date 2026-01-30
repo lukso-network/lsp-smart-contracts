@@ -8,7 +8,6 @@ import {LSP8BurnableInitAbstract} from "./extensions/LSP8BurnableInitAbstract.so
 import {LSP8CappedBalanceInitAbstract} from "./extensions/LSP8CappedBalance/LSP8CappedBalanceInitAbstract.sol";
 import {LSP8MintableInitAbstract} from "./extensions/LSP8Mintable/LSP8MintableInitAbstract.sol";
 import {LSP8NonTransferableInitAbstract} from "./extensions/LSP8NonTransferable/LSP8NonTransferableInitAbstract.sol";
-import {LSP8AllowlistInitAbstract} from "./extensions/LSP8Allowlist/LSP8AllowlistInitAbstract.sol";
 
 // errors
 import {LSP8MintDisabled} from "./extensions/LSP8Mintable/LSP8MintableErrors.sol";
@@ -39,7 +38,7 @@ struct CappedParamsInit {
     uint256 tokenSupplyCap;
 }
 
-/// @title CustomizableTokenInit
+/// @title CustomizableLSP8TokenInit
 /// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and allowlist exemptions. This is the proxy-deployable version.
 /// Implements {LSP8Mintable} to allow minting.
 /// Implements {LSP8Burnable} to allow burning
@@ -47,7 +46,7 @@ struct CappedParamsInit {
 /// Implements {LSP8NonTransferable} to restrict transfers.
 /// Implements {LSP8CappedSupply} to set total supply cap.
 /// Implements {LSP8Allowlist} to create allowlist exemptions
-contract CustomizableTokenInit is
+contract CustomizableLSP8TokenInit is
     LSP8MintableInitAbstract,
     LSP8NonTransferableInitAbstract,
     LSP8CappedBalanceInitAbstract,
@@ -79,7 +78,7 @@ contract CustomizableTokenInit is
         NonTransferableParamsInit memory nonTransferableParams,
         CappedParamsInit memory cappedParams
     ) external virtual initializer {
-        __CustomizableToken_init(
+        __CustomizableLSP8Token_init(
             name_,
             symbol_,
             newOwner_,
@@ -92,7 +91,7 @@ contract CustomizableTokenInit is
     }
 
     /// @dev Internal initialization function.
-    function __CustomizableToken_init(
+    function __CustomizableLSP8Token_init(
         string memory name_,
         string memory symbol_,
         address newOwner_,
@@ -150,9 +149,7 @@ contract CustomizableTokenInit is
             LSP8CappedSupplyInitAbstract
         )
     {
-        if (!isMintable) {
-            revert LSP8MintDisabled();
-        }
+        require(isMintable, LSP8MintDisabled());
 
         _tokenSupplyCapCheck(to, tokenId, force, data);
 

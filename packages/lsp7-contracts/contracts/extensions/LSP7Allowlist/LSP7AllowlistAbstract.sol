@@ -32,9 +32,7 @@ abstract contract LSP7AllowlistAbstract is ILSP7Allowlist, LSP7DigitalAsset {
     /// @inheritdoc ILSP7Allowlist
     function addToAllowlist(address _address) public override onlyOwner {
         bool added = _allowlist.add(_address);
-        if (added) {
-            emit AllowlistChanged(_address, true);
-        }
+        if (added) emit AllowlistChanged(_address, true);
     }
 
     /// @inheritdoc ILSP7Allowlist
@@ -60,10 +58,14 @@ abstract contract LSP7AllowlistAbstract is ILSP7Allowlist, LSP7DigitalAsset {
         uint256 startIndex,
         uint256 endIndex
     ) public view returns (address[] memory) {
-        uint256 len = _allowlist.length();
+        uint256 allowedAddressesCount = _allowlist.length();
         require(
-            startIndex < endIndex && endIndex <= len,
-            LSP7InvalidAllowlistIndexRange(startIndex, endIndex, len)
+            startIndex < endIndex && endIndex <= allowedAddressesCount,
+            LSP7InvalidAllowlistIndexRange(
+                startIndex,
+                endIndex,
+                allowedAddressesCount
+            )
         );
 
         uint256 sliceLength = endIndex - startIndex;

@@ -35,9 +35,7 @@ abstract contract LSP8AllowlistAbstract is
     /// @inheritdoc ILSP8Allowlist
     function addToAllowlist(address _address) public override onlyOwner {
         bool added = _allowlist.add(_address);
-        if (added) {
-            emit AllowlistChanged(_address, true);
-        }
+        if (added) emit AllowlistChanged(_address, true);
     }
 
     /// @inheritdoc ILSP8Allowlist
@@ -63,10 +61,14 @@ abstract contract LSP8AllowlistAbstract is
         uint256 startIndex,
         uint256 endIndex
     ) public view returns (address[] memory) {
-        uint256 len = _allowlist.length();
+        uint256 allowedAddressesCount = _allowlist.length();
         require(
-            startIndex < endIndex && endIndex <= len,
-            LSP8InvalidAllowlistIndexRange(startIndex, endIndex, len)
+            startIndex < endIndex && endIndex <= allowedAddressesCount,
+            LSP8InvalidAllowlistIndexRange(
+                startIndex,
+                endIndex,
+                allowedAddressesCount
+            )
         );
 
         uint256 sliceLength = endIndex - startIndex;

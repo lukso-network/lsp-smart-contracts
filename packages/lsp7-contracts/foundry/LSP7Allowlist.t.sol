@@ -101,10 +101,11 @@ contract LSP7AllowlistTest is Test {
             lsp7Allowlist.isAllowlisted(user1),
             "User1 should be allowlisted"
         );
-        // Adding again should not revert or emit another event
-        vm.expectEmit(true, true, false, false, address(lsp7Allowlist));
-        emit ILSP7Allowlist.AllowlistChanged(user1, true);
+        // Adding again should not revert, but should not emit since address is already in the set
+        vm.recordLogs();
         lsp7Allowlist.addToAllowlist(user1);
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+        assertEq(entries.length, 0, "No event should be emitted for duplicate add");
         assertTrue(
             lsp7Allowlist.isAllowlisted(user1),
             "User1 should still be allowlisted"
@@ -191,10 +192,11 @@ contract LSP7AllowlistTest is Test {
 
     // Edge cases
     function test_AddZeroAddressToAllowlist() public {
-        // Zero address is already allowlisted in constructor
-        vm.expectEmit(true, true, false, false, address(lsp7Allowlist));
-        emit ILSP7Allowlist.AllowlistChanged(zeroAddress, true);
+        // Zero address is already allowlisted in constructor, so re-adding should not emit
+        vm.recordLogs();
         lsp7Allowlist.addToAllowlist(zeroAddress);
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+        assertEq(entries.length, 0, "No event should be emitted for duplicate add");
         assertTrue(
             lsp7Allowlist.isAllowlisted(zeroAddress),
             "Zero address should remain allowlisted"

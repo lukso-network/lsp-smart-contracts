@@ -6,11 +6,11 @@ import "forge-std/Test.sol";
 
 // modules
 import {
-    CustomizableToken,
+    CustomizableLSP8Token,
     MintableParams,
     NonTransferableParams,
     CappedParams
-} from "../contracts/CustomizableToken.sol";
+} from "../contracts/CustomizableLSP8Token.sol";
 
 // errors
 import {LSP8MintDisabled} from "../contracts/extensions/LSP8Mintable/LSP8MintableErrors.sol";
@@ -24,7 +24,7 @@ import {LSP8CappedSupplyCannotMintOverCap} from "../contracts/extensions/LSP8Cap
 // constants
 import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
-contract CustomizableTokenTest is Test {
+contract CustomizableLSP8TokenTest is Test {
     string name = "Custom NFT";
     string symbol = "CNFT";
     uint256 tokenType = _LSP4_TOKEN_TYPE_NFT;
@@ -45,7 +45,7 @@ contract CustomizableTokenTest is Test {
     // Initial token IDs to mint
     bytes32[] initialTokenIds;
 
-    CustomizableToken token;
+    CustomizableLSP8Token token;
 
     function setUp() public {
         // Prepare initial token IDs
@@ -71,7 +71,7 @@ contract CustomizableTokenTest is Test {
             tokenSupplyCap
         );
 
-        token = new CustomizableToken(
+        token = new CustomizableLSP8Token(
             name,
             symbol,
             owner,
@@ -149,7 +149,7 @@ contract CustomizableTokenTest is Test {
         );
 
         vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
-        new CustomizableToken(
+        new CustomizableLSP8Token(
             name,
             symbol,
             owner,
@@ -180,7 +180,7 @@ contract CustomizableTokenTest is Test {
             tokenSupplyCap
         );
 
-        CustomizableToken zeroMintToken = new CustomizableToken(
+        CustomizableLSP8Token zeroMintToken = new CustomizableLSP8Token(
             name,
             symbol,
             owner,
@@ -217,7 +217,7 @@ contract CustomizableTokenTest is Test {
         );
 
         vm.expectRevert(LSP8InvalidTransferLockPeriod.selector);
-        new CustomizableToken(
+        new CustomizableLSP8Token(
             name,
             symbol,
             owner,
@@ -287,7 +287,7 @@ contract CustomizableTokenTest is Test {
 
         CappedParams memory cappedParams = CappedParams(0, 0); // Both caps disabled
 
-        CustomizableToken unlimitedToken = new CustomizableToken(
+        CustomizableLSP8Token unlimitedToken = new CustomizableLSP8Token(
             name,
             symbol,
             owner,
@@ -360,16 +360,16 @@ contract CustomizableTokenTest is Test {
             0 // tokenSupplyCap = 0 (disabled)
         );
 
-        CustomizableToken tokenWithoutBalanceCap = new CustomizableToken(
-            name,
-            symbol,
-            owner,
-            tokenType,
-            tokenIdFormat,
-            mintableParams,
-            nonTransferableParams,
-            cappedParams
-        );
+        CustomizableLSP8Token tokenWithoutBalanceCap = new CustomizableLSP8Token(
+                name,
+                symbol,
+                owner,
+                tokenType,
+                tokenIdFormat,
+                mintableParams,
+                nonTransferableParams,
+                cappedParams
+            );
 
         // Should be able to hold many NFTs when balance cap is disabled
         for (uint256 i = 1; i <= 100; i++) {
@@ -422,7 +422,7 @@ contract CustomizableTokenTest is Test {
 
         CappedParams memory cappedParams = CappedParams(0, 0);
 
-        CustomizableToken nonTransferableToken = new CustomizableToken(
+        CustomizableLSP8Token nonTransferableToken = new CustomizableLSP8Token(
             name,
             symbol,
             owner,
@@ -464,7 +464,7 @@ contract CustomizableTokenTest is Test {
 
         CappedParams memory cappedParams = CappedParams(0, 0);
 
-        CustomizableToken nonTransferableToken = new CustomizableToken(
+        CustomizableLSP8Token nonTransferableToken = new CustomizableLSP8Token(
             name,
             symbol,
             owner,
@@ -517,7 +517,7 @@ contract CustomizableTokenTest is Test {
 
         CappedParams memory cappedParams = CappedParams(0, 0);
 
-        CustomizableToken nonTransferableToken = new CustomizableToken(
+        CustomizableLSP8Token nonTransferableToken = new CustomizableLSP8Token(
             name,
             symbol,
             owner,
