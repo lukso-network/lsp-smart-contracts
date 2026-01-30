@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 // --- ERC165 interface ids
 bytes4 constant _INTERFACEID_LSP8 = 0x3a271706;

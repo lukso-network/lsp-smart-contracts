@@ -14,7 +14,10 @@ abstract contract LSP8BurnableInitAbstract is
     LSP8IdentifiableDigitalAssetInitAbstract
 {
     function burn(bytes32 tokenId, bytes memory data) public virtual {
-        require(_isOperatorOrOwner(msg.sender, tokenId), LSP8NotTokenOperator(tokenId, msg.sender));
+        require(
+            _isOperatorOrOwner(msg.sender, tokenId),
+            LSP8NotTokenOperator(tokenId, msg.sender)
+        );
         _burn(tokenId, data);
     }
 }

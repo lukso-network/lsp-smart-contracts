@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 /// @title ILSP7Mintable
 /// @dev Interface for a isMintable LSP7 token extension, allowing the owner to mint new tokens and disable minting.
 interface ILSP7Mintable {
+    /// @dev Emitted when minting is permanently disabled.
+    event MintingDisabled();
+
     /// @notice Disables minting of new tokens permanently.
     /// @dev Can only be called by the contract owner. Prevents further calls to mint after invocation.
+    /// @custom:events {MintingDisabled} event.
     function disableMinting() external;
 
     /// @notice Mints new tokens to a specified address.

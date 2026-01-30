@@ -26,7 +26,9 @@ abstract contract LSP7MintableAbstract is ILSP7Mintable, LSP7DigitalAsset {
 
     /// @inheritdoc ILSP7Mintable
     function disableMinting() public virtual override onlyOwner {
+        require(isMintable, LSP7MintDisabled());
         isMintable = false;
+        emit MintingDisabled();
     }
 
     /// @inheritdoc ILSP7Mintable

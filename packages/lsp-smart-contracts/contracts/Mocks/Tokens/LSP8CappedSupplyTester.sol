@@ -3,9 +3,9 @@ pragma solidity ^0.8.27;
 
 // modules
 import {LSP8IdentifiableDigitalAsset} from "@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol";
-import {LSP8CappedSupply} from "@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply.sol";
+import {LSP8CappedSupplyAbstract} from "@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol";
 
-contract LSP8CappedSupplyTester is LSP8CappedSupply {
+contract LSP8CappedSupplyTester is LSP8CappedSupplyAbstract {
     constructor(
         string memory name_,
         string memory symbol_,
@@ -21,7 +21,7 @@ contract LSP8CappedSupplyTester is LSP8CappedSupply {
             lsp4TokenType_,
             lsp8TokenIdFormat_
         )
-        LSP8CappedSupply(tokenSupplyCap_)
+        LSP8CappedSupplyAbstract(tokenSupplyCap_)
     {}
 
     function mint(address to, bytes32 tokenId) public {

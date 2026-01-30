@@ -6,11 +6,11 @@ import "forge-std/Test.sol";
 
 // modules
 import {
-    CustomizableToken,
+    LSP7CustomizableToken,
     MintableParams,
     NonTransferableParams,
     CappedParams
-} from "../contracts/CustomizableToken.sol";
+} from "../contracts/LSP7CustomizableToken.sol";
 
 // errors
 import {LSP7MintDisabled} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
@@ -24,7 +24,7 @@ import {LSP7CappedSupplyCannotMintOverCap} from "../contracts/extensions/LSP7Cap
 // constants
 import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
-contract CustomizableTokenTest is Test {
+contract LSP7CustomizableTokenTest is Test {
     string name = "Custom Token";
     string symbol = "CT";
     uint256 tokenType = _LSP4_TOKEN_TYPE_TOKEN;
@@ -43,7 +43,7 @@ contract CustomizableTokenTest is Test {
     address user2 = vm.addr(102);
     address zeroAddress = address(0);
 
-    CustomizableToken token;
+    LSP7CustomizableToken token;
 
     function setUp() public {
         MintableParams memory mintableParams = MintableParams(
@@ -63,7 +63,7 @@ contract CustomizableTokenTest is Test {
             tokenSupplyCap
         );
 
-        token = new CustomizableToken(
+        token = new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -135,7 +135,7 @@ contract CustomizableTokenTest is Test {
         );
 
         vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
-        new CustomizableToken(
+        new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -162,7 +162,7 @@ contract CustomizableTokenTest is Test {
             tokenSupplyCap
         );
 
-        CustomizableToken zeroMintToken = new CustomizableToken(
+        LSP7CustomizableToken zeroMintToken = new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -199,7 +199,7 @@ contract CustomizableTokenTest is Test {
         );
 
         vm.expectRevert(LSP7InvalidTransferLockPeriod.selector);
-        new CustomizableToken(
+        new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -263,7 +263,7 @@ contract CustomizableTokenTest is Test {
 
         CappedParams memory cappedParams = CappedParams(tokenBalanceCap, 0);
 
-        CustomizableToken unlimitedToken = new CustomizableToken(
+        LSP7CustomizableToken unlimitedToken = new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -297,7 +297,7 @@ contract CustomizableTokenTest is Test {
             0 // tokenSupplyCap = 0 (disabled)
         );
 
-        CustomizableToken tokenWithBalanceCap = new CustomizableToken(
+        LSP7CustomizableToken tokenWithBalanceCap = new LSP7CustomizableToken(
             name,
             symbol,
             owner,
@@ -343,16 +343,16 @@ contract CustomizableTokenTest is Test {
             0 // tokenSupplyCap = 0 (disabled)
         );
 
-        CustomizableToken tokenWithoutBalanceCap = new CustomizableToken(
-            name,
-            symbol,
-            owner,
-            tokenType,
-            isNonDivisible,
-            mintableParams,
-            nonTransferableParams,
-            cappedParams
-        );
+        LSP7CustomizableToken tokenWithoutBalanceCap = new LSP7CustomizableToken(
+                name,
+                symbol,
+                owner,
+                tokenType,
+                isNonDivisible,
+                mintableParams,
+                nonTransferableParams,
+                cappedParams
+            );
 
         // Should be able to transfer any amount when balance cap is disabled
         tokenWithoutBalanceCap.transfer(owner, user1, 1000000, true, "");

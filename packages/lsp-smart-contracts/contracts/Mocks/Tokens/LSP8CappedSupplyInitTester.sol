@@ -2,8 +2,7 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8IdentifiableDigitalAssetInitAbstract} from "@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAssetInitAbstract.sol";
-import {LSP8CappedSupplyInitAbstract} from "@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupplyInitAbstract.sol";
+import {LSP8CappedSupplyInitAbstract} from "@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyInitAbstract.sol";
 
 contract LSP8CappedSupplyInitTester is LSP8CappedSupplyInitAbstract {
     function initialize(
@@ -14,14 +13,14 @@ contract LSP8CappedSupplyInitTester is LSP8CappedSupplyInitAbstract {
         uint256 lsp8TokenIdFormat_,
         uint256 tokenSupplyCap_
     ) public virtual initializer {
-        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
+        __LSP8CappedSupply_init(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
-            lsp8TokenIdFormat_
+            lsp8TokenIdFormat_,
+            tokenSupplyCap_
         );
-        LSP8CappedSupplyInitAbstract._initialize(tokenSupplyCap_);
     }
 
     function mint(address to, bytes32 tokenId) public {
