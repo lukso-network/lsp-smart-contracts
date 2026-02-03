@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.27;
 
 /// @title ILSP7CappedSupply
 /// @dev Interface for an LSP7 token extension that enforces a max token supply cap.
