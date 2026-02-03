@@ -11,7 +11,7 @@ import {ILSP8Allowlist} from "./ILSP8Allowlist.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
-import {LSP8InvalidAllowlistIndexRange} from "./LSP8AllowlistErrors.sol";
+import {LSP8InvalidAllowlistIndexRange, LSP8CannotRemoveProtectedAddress} from "./LSP8AllowlistErrors.sol";
 
 /// @title LSP8AllowlistAbstract
 /// @dev Abstract contract implementing an allowlist for LSP8 tokens, allowing specific addresses to bypass restrictions such as transfer locks. Inherits from LSP8IdentifiableDigitalAsset to integrate with token functionality.
@@ -24,12 +24,16 @@ abstract contract LSP8AllowlistAbstract is
     /// @notice The set of addresses allowed to bypass certain restrictions (e.g., transfer locks).
     EnumerableSet.AddressSet internal _allowlist;
 
-    /// @notice Initializes the allowlist with the contract owner and the zero address.
-    /// @dev Adds the contract owner and `address(0)` to the allowlist to enable specific behaviors like minting and burning.
+    /// @notice The dead address used for burning tokens (alternative to address(0)).
+    address internal constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
+
+    /// @notice Initializes the allowlist with the contract owner, zero address, and dead address.
+    /// @dev Adds the contract owner, `address(0)`, and the dead address to the allowlist to enable specific behaviors like minting and burning.
     /// @param newOwner_ The address to set as the initial owner and add to the allowlist.
     constructor(address newOwner_) {
         _allowlist.add(newOwner_);
         _allowlist.add(address(0));
+        _allowlist.add(DEAD_ADDRESS);
     }
 
     /// @inheritdoc ILSP8Allowlist
@@ -40,6 +44,10 @@ abstract contract LSP8AllowlistAbstract is
 
     /// @inheritdoc ILSP8Allowlist
     function removeFromAllowlist(address _address) public override onlyOwner {
+        require(
+            _address != address(0) && _address != DEAD_ADDRESS,
+            LSP8CannotRemoveProtectedAddress(_address)
+        );
         _allowlist.remove(_address);
         emit AllowlistChanged(_address, false);
     }

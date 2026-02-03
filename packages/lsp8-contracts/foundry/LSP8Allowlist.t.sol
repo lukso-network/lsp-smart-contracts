@@ -12,7 +12,7 @@ import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigital
 import {ILSP8Allowlist} from "../contracts/extensions/LSP8Allowlist/ILSP8Allowlist.sol";
 
 // errors
-import {LSP8InvalidAllowlistIndexRange} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistErrors.sol";
+import {LSP8InvalidAllowlistIndexRange, LSP8CannotRemoveProtectedAddress} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistErrors.sol";
 
 // constants
 import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
@@ -59,6 +59,7 @@ contract LSP8AllowlistTest is Test {
     address user1 = vm.addr(101);
     address user2 = vm.addr(102);
     address zeroAddress = address(0);
+    address deadAddress = 0x000000000000000000000000000000000000dEaD;
 
     MockLSP8Allowlist lsp8Allowlist;
 
@@ -81,6 +82,10 @@ contract LSP8AllowlistTest is Test {
         assertTrue(
             lsp8Allowlist.isAllowlisted(zeroAddress),
             "Zero address should be allowlisted"
+        );
+        assertTrue(
+            lsp8Allowlist.isAllowlisted(deadAddress),
+            "Dead address should be allowlisted"
         );
         assertFalse(
             lsp8Allowlist.isAllowlisted(user1),
@@ -196,32 +201,32 @@ contract LSP8AllowlistTest is Test {
 
     // Test getAllowlistedAddressesLength
     function test_GetAllowlistedAddressesLength() public {
-        // Initially owner and address(0) are allowlisted
+        // Initially owner, address(0), and dead address are allowlisted
         assertEq(
             lsp8Allowlist.getAllowlistedAddressesLength(),
-            2,
-            "Initial allowlist should have 2 entries"
+            3,
+            "Initial allowlist should have 3 entries"
         );
 
         lsp8Allowlist.addToAllowlist(user1);
         assertEq(
             lsp8Allowlist.getAllowlistedAddressesLength(),
-            3,
-            "Allowlist should have 3 entries after adding user1"
+            4,
+            "Allowlist should have 4 entries after adding user1"
         );
 
         lsp8Allowlist.addToAllowlist(user2);
         assertEq(
             lsp8Allowlist.getAllowlistedAddressesLength(),
-            4,
-            "Allowlist should have 4 entries after adding user2"
+            5,
+            "Allowlist should have 5 entries after adding user2"
         );
 
         lsp8Allowlist.removeFromAllowlist(user1);
         assertEq(
             lsp8Allowlist.getAllowlistedAddressesLength(),
-            3,
-            "Allowlist should have 3 entries after removing user1"
+            4,
+            "Allowlist should have 4 entries after removing user1"
         );
     }
 
@@ -231,8 +236,8 @@ contract LSP8AllowlistTest is Test {
         lsp8Allowlist.addToAllowlist(user2);
 
         address[] memory addresses = lsp8Allowlist
-            .getAllowlistedAddressesByIndex(0, 4);
-        assertEq(addresses.length, 4, "Should return 4 addresses");
+            .getAllowlistedAddressesByIndex(0, 5);
+        assertEq(addresses.length, 5, "Should return 5 addresses");
         // Verify actual addresses in the returned array
         assertEq(addresses[0], owner, "First address should be owner");
         assertEq(
@@ -240,13 +245,18 @@ contract LSP8AllowlistTest is Test {
             zeroAddress,
             "Second address should be zero address"
         );
-        assertEq(addresses[2], user1, "Third address should be user1");
-        assertEq(addresses[3], user2, "Fourth address should be user2");
+        assertEq(
+            addresses[2],
+            deadAddress,
+            "Third address should be dead address"
+        );
+        assertEq(addresses[3], user1, "Fourth address should be user1");
+        assertEq(addresses[4], user2, "Fifth address should be user2");
 
         // Get partial slice
         address[] memory partialAddresses = lsp8Allowlist
-            .getAllowlistedAddressesByIndex(1, 3);
-        assertEq(partialAddresses.length, 2, "Should return 2 addresses");
+            .getAllowlistedAddressesByIndex(1, 4);
+        assertEq(partialAddresses.length, 3, "Should return 3 addresses");
         assertEq(
             partialAddresses[0],
             zeroAddress,
@@ -254,6 +264,11 @@ contract LSP8AllowlistTest is Test {
         );
         assertEq(
             partialAddresses[1],
+            deadAddress,
+            "Partial slice should include dead address"
+        );
+        assertEq(
+            partialAddresses[2],
             user1,
             "Partial slice should include user1"
         );
@@ -266,7 +281,7 @@ contract LSP8AllowlistTest is Test {
                 LSP8InvalidAllowlistIndexRange.selector,
                 0,
                 0,
-                2
+                3
             )
         );
         lsp8Allowlist.getAllowlistedAddressesByIndex(0, 0);
@@ -285,17 +300,39 @@ contract LSP8AllowlistTest is Test {
         );
     }
 
-    function test_RemoveZeroAddressFromAllowlist() public {
+    function test_CannotRemoveZeroAddressFromAllowlist() public {
         assertTrue(
             lsp8Allowlist.isAllowlisted(zeroAddress),
             "Zero address should be allowlisted initially"
         );
-        vm.expectEmit(true, true, false, true, address(lsp8Allowlist));
-        emit ILSP8Allowlist.AllowlistChanged(zeroAddress, false);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8CannotRemoveProtectedAddress.selector,
+                zeroAddress
+            )
+        );
         lsp8Allowlist.removeFromAllowlist(zeroAddress);
-        assertFalse(
+        assertTrue(
             lsp8Allowlist.isAllowlisted(zeroAddress),
-            "Zero address should not be allowlisted"
+            "Zero address should still be allowlisted"
+        );
+    }
+
+    function test_CannotRemoveDeadAddressFromAllowlist() public {
+        assertTrue(
+            lsp8Allowlist.isAllowlisted(deadAddress),
+            "Dead address should be allowlisted initially"
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8CannotRemoveProtectedAddress.selector,
+                deadAddress
+            )
+        );
+        lsp8Allowlist.removeFromAllowlist(deadAddress);
+        assertTrue(
+            lsp8Allowlist.isAllowlisted(deadAddress),
+            "Dead address should still be allowlisted"
         );
     }
 
@@ -325,6 +362,7 @@ contract LSP8AllowlistTest is Test {
 
     function testFuzz_AllowlistManagement(address addr, bool add) public {
         vm.assume(addr != address(0));
+        vm.assume(addr != deadAddress); // Exclude dead address (protected)
         vm.assume(addr != owner); // Exclude owner to test new addresses
 
         if (add) {

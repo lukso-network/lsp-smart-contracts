@@ -10,3 +10,7 @@ error LSP7InvalidAllowlistIndexRange(
     uint256 endIndex,
     uint256 length
 );
+
+/// @dev Error thrown when attempting to remove a protected address from the allowlist.
+/// @param protectedAddress The address that cannot be removed (e.g., address(0) or dead address).
+error LSP7CannotRemoveProtectedAddress(address protectedAddress);
