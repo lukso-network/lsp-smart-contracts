@@ -5,12 +5,12 @@ pragma solidity ^0.8.27;
 /// @param startIndex The start index provided.
 /// @param endIndex The end index provided.
 /// @param length The current length of the allowlist.
-error LSP7InvalidAllowlistIndexRange(
+error LSP7AllowListInvalidIndexRange(
     uint256 startIndex,
     uint256 endIndex,
     uint256 length
 );
 
-/// @dev Error thrown when attempting to remove a protected address from the allowlist.
-/// @param protectedAddress The address that cannot be removed (e.g., address(0) or dead address).
-error LSP7CannotRemoveProtectedAddress(address protectedAddress);
+/// @dev Error thrown when attempting to remove a reserved address from the allowlist.
+/// @param reservedAddress The address that cannot be removed (e.g., address(0) or dead address).
+error LSP7AllowListCannotRemoveReservedAddress(address reservedAddress);

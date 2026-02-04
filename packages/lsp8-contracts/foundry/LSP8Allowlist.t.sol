@@ -12,7 +12,7 @@ import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigital
 import {ILSP8Allowlist} from "../contracts/extensions/LSP8Allowlist/ILSP8Allowlist.sol";
 
 // errors
-import {LSP8InvalidAllowlistIndexRange, LSP8CannotRemoveProtectedAddress} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistErrors.sol";
+import {LSP8AllowListInvalidIndexRange, LSP8AllowListCannotRemoveReservedAddress} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistErrors.sol";
 
 // constants
 import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
@@ -278,7 +278,7 @@ contract LSP8AllowlistTest is Test {
         // (0, 0) is an invalid range since the contract requires startIndex < endIndex
         vm.expectRevert(
             abi.encodeWithSelector(
-                LSP8InvalidAllowlistIndexRange.selector,
+                LSP8AllowListInvalidIndexRange.selector,
                 0,
                 0,
                 3
@@ -307,7 +307,7 @@ contract LSP8AllowlistTest is Test {
         );
         vm.expectRevert(
             abi.encodeWithSelector(
-                LSP8CannotRemoveProtectedAddress.selector,
+                LSP8AllowListCannotRemoveReservedAddress.selector,
                 zeroAddress
             )
         );
@@ -325,7 +325,7 @@ contract LSP8AllowlistTest is Test {
         );
         vm.expectRevert(
             abi.encodeWithSelector(
-                LSP8CannotRemoveProtectedAddress.selector,
+                LSP8AllowListCannotRemoveReservedAddress.selector,
                 deadAddress
             )
         );

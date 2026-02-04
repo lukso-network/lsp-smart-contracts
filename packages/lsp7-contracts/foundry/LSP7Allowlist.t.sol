@@ -15,7 +15,7 @@ import {ILSP7Allowlist} from "../contracts/extensions/LSP7Allowlist/ILSP7Allowli
 import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 // errors
-import {LSP7CannotRemoveProtectedAddress} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistErrors.sol";
+import {LSP7AllowListCannotRemoveReservedAddress} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistErrors.sol";
 
 // Mock contract to test LSP7AllowlistAbstract functionality
 contract MockLSP7Allowlist is LSP7AllowlistAbstract {
@@ -218,7 +218,7 @@ contract LSP7AllowlistTest is Test {
         );
         vm.expectRevert(
             abi.encodeWithSelector(
-                LSP7CannotRemoveProtectedAddress.selector,
+                LSP7AllowListCannotRemoveReservedAddress.selector,
                 zeroAddress
             )
         );
@@ -236,7 +236,7 @@ contract LSP7AllowlistTest is Test {
         );
         vm.expectRevert(
             abi.encodeWithSelector(
-                LSP7CannotRemoveProtectedAddress.selector,
+                LSP7AllowListCannotRemoveReservedAddress.selector,
                 deadAddress
             )
         );

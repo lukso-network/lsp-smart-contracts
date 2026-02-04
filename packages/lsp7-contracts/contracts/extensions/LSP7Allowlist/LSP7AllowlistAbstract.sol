@@ -11,7 +11,7 @@ import {ILSP7Allowlist} from "./ILSP7Allowlist.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
-import {LSP7InvalidAllowlistIndexRange, LSP7CannotRemoveProtectedAddress} from "./LSP7AllowlistErrors.sol";
+import {LSP7AllowListInvalidIndexRange, LSP7AllowListCannotRemoveReservedAddress} from "./LSP7AllowlistErrors.sol";
 
 /// @title LSP7AllowlistAbstract
 /// @dev Abstract contract implementing an allowlist for LSP7 tokens, allowing specific addresses to bypass restrictions such as transfer locks. Inherits from LSP7DigitalAsset to integrate with token functionality.
@@ -21,8 +21,8 @@ abstract contract LSP7AllowlistAbstract is ILSP7Allowlist, LSP7DigitalAsset {
     /// @notice The set of addresses allowed to bypass certain restrictions (e.g., transfer locks).
     EnumerableSet.AddressSet internal _allowlist;
 
-    /// @notice The dead address used for burning tokens (alternative to address(0)).
-    address internal constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
+    /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
+    address internal constant _DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 
     /// @notice Initializes the allowlist with the contract owner, zero address, and dead address.
     /// @dev Adds the contract owner, `address(0)`, and the dead address to the allowlist to enable specific behaviors like minting and burning.
@@ -30,7 +30,7 @@ abstract contract LSP7AllowlistAbstract is ILSP7Allowlist, LSP7DigitalAsset {
     constructor(address newOwner_) {
         _allowlist.add(newOwner_);
         _allowlist.add(address(0));
-        _allowlist.add(DEAD_ADDRESS);
+        _allowlist.add(_DEAD_ADDRESS);
     }
 
     /// @inheritdoc ILSP7Allowlist
@@ -42,8 +42,8 @@ abstract contract LSP7AllowlistAbstract is ILSP7Allowlist, LSP7DigitalAsset {
     /// @inheritdoc ILSP7Allowlist
     function removeFromAllowlist(address _address) public override onlyOwner {
         require(
-            _address != address(0) && _address != DEAD_ADDRESS,
-            LSP7CannotRemoveProtectedAddress(_address)
+            _address != address(0) && _address != _DEAD_ADDRESS,
+            LSP7AllowListCannotRemoveReservedAddress(_address)
         );
         _allowlist.remove(_address);
         emit AllowlistChanged(_address, false);
@@ -69,7 +69,7 @@ abstract contract LSP7AllowlistAbstract is ILSP7Allowlist, LSP7DigitalAsset {
         uint256 allowedAddressesCount = _allowlist.length();
         require(
             startIndex < endIndex && endIndex <= allowedAddressesCount,
-            LSP7InvalidAllowlistIndexRange(
+            LSP7AllowListInvalidIndexRange(
                 startIndex,
                 endIndex,
                 allowedAddressesCount
