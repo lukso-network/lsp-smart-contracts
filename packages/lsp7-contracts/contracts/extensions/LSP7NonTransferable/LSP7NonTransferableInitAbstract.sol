@@ -14,7 +14,8 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
 import {
     LSP7TransferDisabled,
     LSP7InvalidTransferLockPeriod,
-    LSP7CannotUpdateTransferLockPeriod
+    LSP7CannotUpdateTransferLockPeriod,
+    LSP7TokenAlreadyTransferable
 } from "./LSP7NonTransferableErrors.sol";
 
 /// @title LSP7NonTransferableInitAbstract
@@ -94,6 +95,8 @@ abstract contract LSP7NonTransferableInitAbstract is ILSP7NonTransferable, LSP7A
 
     /// @inheritdoc ILSP7NonTransferable
     function makeTransferable() public virtual override onlyOwner {
+        require(transferLockStart != 0 || transferLockEnd != 0, LSP7TokenAlreadyTransferable());
+
         transferLockStart = 0;
         transferLockEnd = 0;
 

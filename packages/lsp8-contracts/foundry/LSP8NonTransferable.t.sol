@@ -16,7 +16,8 @@ import {ILSP8NonTransferable} from "../contracts/extensions/LSP8NonTransferable/
 import {
     LSP8TransferDisabled,
     LSP8CannotUpdateTransferLockPeriod,
-    LSP8InvalidTransferLockPeriod
+    LSP8InvalidTransferLockPeriod,
+    LSP8TokenAlreadyTransferable
 } from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableErrors.sol";
 
 // constants
@@ -246,6 +247,31 @@ contract LSP8NonTransferableTest is Test {
     function test_NonOwnerCannotCallMakeTransferable() public {
         vm.prank(randomCaller);
         vm.expectRevert("Ownable: caller is not the owner"); // Expect revert due to onlyOwner modifier
+        lsp8NonTransferable.makeTransferable();
+    }
+
+    function test_MakeTransferableRevertsWhenAlreadyTransferable() public {
+        // Create a token that's already transferable (both lock periods = 0)
+        MockLSP8NonTransferable transferableToken = new MockLSP8NonTransferable(
+            name, symbol, owner, tokenType, tokenIdFormat, 0, 0
+        );
+        assertTrue(transferableToken.isTransferable());
+
+        // Calling makeTransferable should revert since it's already transferable
+        vm.expectRevert(LSP8TokenAlreadyTransferable.selector);
+        transferableToken.makeTransferable();
+    }
+
+    function test_MakeTransferableRevertsWhenCalledTwice() public {
+        // lsp8NonTransferable has start=0, end=max (non-transferable)
+        assertFalse(lsp8NonTransferable.isTransferable());
+        
+        // First call should succeed
+        lsp8NonTransferable.makeTransferable();
+        assertTrue(lsp8NonTransferable.isTransferable());
+
+        // Second call should revert since it's now transferable
+        vm.expectRevert(LSP8TokenAlreadyTransferable.selector);
         lsp8NonTransferable.makeTransferable();
     }
 

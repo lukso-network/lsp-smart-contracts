@@ -14,7 +14,8 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
 import {
     LSP8TransferDisabled,
     LSP8InvalidTransferLockPeriod,
-    LSP8CannotUpdateTransferLockPeriod
+    LSP8CannotUpdateTransferLockPeriod,
+    LSP8TokenAlreadyTransferable
 } from "./LSP8NonTransferableErrors.sol";
 
 /// @title LSP8NonTransferableInitAbstract
@@ -89,6 +90,8 @@ abstract contract LSP8NonTransferableInitAbstract is ILSP8NonTransferable, LSP8A
 
     /// @inheritdoc ILSP8NonTransferable
     function makeTransferable() public virtual override onlyOwner {
+        require(transferLockStart != 0 || transferLockEnd != 0, LSP8TokenAlreadyTransferable());
+
         transferLockStart = 0;
         transferLockEnd = 0;
 
