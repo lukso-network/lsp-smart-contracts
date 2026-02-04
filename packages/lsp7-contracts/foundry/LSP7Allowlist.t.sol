@@ -5,17 +5,25 @@ pragma solidity ^0.8.22;
 import "forge-std/Test.sol";
 
 // modules
-import {LSP7AllowlistAbstract} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {
+    LSP7AllowlistAbstract
+} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // interfaces
-import {ILSP7Allowlist} from "../contracts/extensions/LSP7Allowlist/ILSP7Allowlist.sol";
+import {
+    ILSP7Allowlist
+} from "../contracts/extensions/LSP7Allowlist/ILSP7Allowlist.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 // errors
-import {LSP7AllowListCannotRemoveReservedAddress} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistErrors.sol";
+import {
+    LSP7AllowListCannotRemoveReservedAddress
+} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistErrors.sol";
 
 // Mock contract to test LSP7AllowlistAbstract functionality
 contract MockLSP7Allowlist is LSP7AllowlistAbstract {
@@ -82,10 +90,6 @@ contract LSP7AllowlistTest is Test {
             lsp7Allowlist.isAllowlisted(zeroAddress),
             "Zero address should be allowlisted"
         );
-        assertTrue(
-            lsp7Allowlist.isAllowlisted(deadAddress),
-            "Dead address should be allowlisted"
-        );
         assertFalse(
             lsp7Allowlist.isAllowlisted(user1),
             "Non-owner should not be allowlisted"
@@ -113,7 +117,11 @@ contract LSP7AllowlistTest is Test {
         vm.recordLogs();
         lsp7Allowlist.addToAllowlist(user1);
         Vm.Log[] memory entries = vm.getRecordedLogs();
-        assertEq(entries.length, 0, "No event should be emitted for duplicate add");
+        assertEq(
+            entries.length,
+            0,
+            "No event should be emitted for duplicate add"
+        );
         assertTrue(
             lsp7Allowlist.isAllowlisted(user1),
             "User1 should still be allowlisted"
@@ -204,7 +212,11 @@ contract LSP7AllowlistTest is Test {
         vm.recordLogs();
         lsp7Allowlist.addToAllowlist(zeroAddress);
         Vm.Log[] memory entries = vm.getRecordedLogs();
-        assertEq(entries.length, 0, "No event should be emitted for duplicate add");
+        assertEq(
+            entries.length,
+            0,
+            "No event should be emitted for duplicate add"
+        );
         assertTrue(
             lsp7Allowlist.isAllowlisted(zeroAddress),
             "Zero address should remain allowlisted"

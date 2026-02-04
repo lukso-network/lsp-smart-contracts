@@ -2,16 +2,23 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAssetInitAbstract.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../../LSP7DigitalAssetInitAbstract.sol";
 
 // interfaces
 import {ILSP7Allowlist} from "./ILSP7Allowlist.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
-import {LSP7AllowListInvalidIndexRange, LSP7AllowListCannotRemoveReservedAddress} from "./LSP7AllowlistErrors.sol";
+import {
+    LSP7AllowListInvalidIndexRange,
+    LSP7AllowListCannotRemoveReservedAddress
+} from "./LSP7AllowlistErrors.sol";
 
 /// @title LSP7AllowlistInitAbstract
 /// @dev Abstract contract implementing an _allowlist for LSP7 tokens, allowing specific addresses to bypass restrictions such as transfer locks. Inherits from LSP7DigitalAsset to integrate with token functionality.
@@ -25,7 +32,8 @@ abstract contract LSP7AllowlistInitAbstract is
     EnumerableSet.AddressSet internal _allowlist;
 
     /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
-    address internal constant _DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
+    address internal constant _DEAD_ADDRESS =
+        0x000000000000000000000000000000000000dEaD;
 
     /// @notice Initializes the LSP7Allowlist contract with base token params and allowlist.
     /// @dev Initializes the LSP7DigitalAsset base and adds the owner and `address(0)` to the allowlist.
@@ -98,7 +106,7 @@ abstract contract LSP7AllowlistInitAbstract is
         uint256 allowedAddressesCount = _allowlist.length();
         require(
             startIndex < endIndex && endIndex <= allowedAddressesCount,
-            LSP7AllowListInvalidIndexRange(
+            LSP7InvalidAllowlistIndexRange(
                 startIndex,
                 endIndex,
                 allowedAddressesCount

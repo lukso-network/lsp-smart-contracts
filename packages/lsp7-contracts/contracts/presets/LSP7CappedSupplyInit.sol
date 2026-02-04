@@ -27,13 +27,7 @@ contract LSP7CappedSupplyInit is LSP7CappedSupplyInitAbstract {
         bool isNonDivisible_,
         uint256 tokenSupplyCap_
     ) external virtual initializer {
-        LSP7DigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            isNonDivisible_
-        );
+        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_);
         __LSP7CappedSupply_init_unchained(tokenSupplyCap_);
     }
 }

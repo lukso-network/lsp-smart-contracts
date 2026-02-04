@@ -12,10 +12,7 @@ import {LSP8CappedSupplyCannotMintOverCap} from "./LSP8CappedSupplyErrors.sol";
 
 /// @title LSP8CappedSupplyAbstract
 /// @dev Abstract contract implementing a token supply cap for LSP8 tokens.
-abstract contract LSP8CappedSupplyAbstract is
-    ILSP8CappedSupply,
-    LSP8IdentifiableDigitalAsset
-{
+abstract contract LSP8CappedSupplyAbstract is ILSP8CappedSupply, LSP8IdentifiableDigitalAsset {
     /// @notice The immutable maximum token supply.
     uint256 private immutable _TOKEN_SUPPLY_CAP;
 
@@ -33,24 +30,22 @@ abstract contract LSP8CappedSupplyAbstract is
 
     /// @dev Checks if minting a new token would exceed the token supply cap.
     function _tokenSupplyCapCheck(
-        address /* to */,
-        bytes32 /* tokenId */,
-        bool /* force */,
+        address,
+        /* to */
+        bytes32,
+        /* tokenId */
+        bool,
+        /* force */
         bytes memory /* data */
-    ) internal virtual {
-        require(
-            tokenSupplyCap() == 0 || totalSupply() + 1 <= tokenSupplyCap(),
-            LSP8CappedSupplyCannotMintOverCap()
-        );
+    )
+        internal
+        virtual
+    {
+        require(tokenSupplyCap() == 0 || totalSupply() + 1 <= tokenSupplyCap(), LSP8CappedSupplyCannotMintOverCap());
     }
 
     /// @dev Same as {_mint} but allows to mint only if the {totalSupply} does not exceed the {tokenSupplyCap} after the token has been minted.
-    function _mint(
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
+    function _mint(address to, bytes32 tokenId, bool force, bytes memory data) internal virtual override {
         _tokenSupplyCapCheck(to, tokenId, force, data);
 
         super._mint(to, tokenId, force, data);

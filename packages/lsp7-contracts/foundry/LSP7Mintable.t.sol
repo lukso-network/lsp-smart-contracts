@@ -22,16 +22,7 @@ contract MockLSP7Mintable is LSP7MintableAbstract {
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
         bool mintable_
-    )
-        LSP7DigitalAsset(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            isNonDivisible_
-        )
-        LSP7MintableAbstract(mintable_)
-    {}
+    ) LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_) LSP7MintableAbstract(mintable_) {}
 }
 
 contract LSP7MintableTest is Test {
@@ -52,30 +43,9 @@ contract LSP7MintableTest is Test {
         recipient = vm.addr(100);
         randomOwner = vm.addr(101);
 
-        lsp7Mintable = new MockLSP7Mintable(
-            name,
-            symbol,
-            owner,
-            tokenType,
-            isNonDivisible,
-            true
-        );
-        lsp7MintableRandomOwner = new MockLSP7Mintable(
-            name,
-            symbol,
-            randomOwner,
-            tokenType,
-            isNonDivisible,
-            true
-        );
-        lsp7NonMintable = new MockLSP7Mintable(
-            name,
-            symbol,
-            owner,
-            tokenType,
-            isNonDivisible,
-            false
-        );
+        lsp7Mintable = new MockLSP7Mintable(name, symbol, owner, tokenType, isNonDivisible, true);
+        lsp7MintableRandomOwner = new MockLSP7Mintable(name, symbol, randomOwner, tokenType, isNonDivisible, true);
+        lsp7NonMintable = new MockLSP7Mintable(name, symbol, owner, tokenType, isNonDivisible, false);
     }
 
     function test_MintableOwnerCanMint() public {

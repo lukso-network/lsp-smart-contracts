@@ -27,13 +27,7 @@ contract LSP7CappedBalanceInit is LSP7CappedBalanceInitAbstract {
         bool isNonDivisible_,
         uint256 tokenBalanceCap_
     ) external virtual initializer {
-        LSP7DigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            isNonDivisible_
-        );
+        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_);
         __LSP7CappedBalance_init_unchained(tokenBalanceCap_);
         __LSP7Allowlist_init_unchained(newOwner_);
     }

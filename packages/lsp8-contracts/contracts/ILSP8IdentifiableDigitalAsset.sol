@@ -17,12 +17,7 @@ interface ILSP8IdentifiableDigitalAsset {
      * @param data Any additional data the caller included by the caller during the transfer, and sent in the hooks to the `from` and `to` addresses.
      */
     event Transfer(
-        address operator,
-        address indexed from,
-        address indexed to,
-        bytes32 indexed tokenId,
-        bool force,
-        bytes data
+        address operator, address indexed from, address indexed to, bytes32 indexed tokenId, bool force, bytes data
     );
 
     /**
@@ -33,10 +28,7 @@ interface ILSP8IdentifiableDigitalAsset {
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
     event OperatorAuthorizationChanged(
-        address indexed operator,
-        address indexed tokenOwner,
-        bytes32 indexed tokenId,
-        bytes operatorNotificationData
+        address indexed operator, address indexed tokenOwner, bytes32 indexed tokenId, bytes operatorNotificationData
     );
 
     /**
@@ -61,11 +53,7 @@ interface ILSP8IdentifiableDigitalAsset {
      * @param dataKey The data key for which a bytes value is set.
      * @param dataValue The value to set for the given data key.
      */
-    event TokenIdDataChanged(
-        bytes32 indexed tokenId,
-        bytes32 indexed dataKey,
-        bytes dataValue
-    );
+    event TokenIdDataChanged(bytes32 indexed tokenId, bytes32 indexed dataKey, bytes dataValue);
 
     // --- Token queries
 
@@ -79,7 +67,7 @@ interface ILSP8IdentifiableDigitalAsset {
 
     /**
      * @dev Get the number of token IDs owned by `tokenOwner`.
-
+     *
      * @param tokenOwner The address to query     *
      * @return The total number of token IDs that `tokenOwner` owns.
      */
@@ -101,9 +89,7 @@ interface ILSP8IdentifiableDigitalAsset {
      * @param tokenOwner The address that we want to get the list of token IDs for.
      * @return An array of `bytes32[] tokenIds` owned by `tokenOwner`.
      */
-    function tokenIdsOf(
-        address tokenOwner
-    ) external view returns (bytes32[] memory);
+    function tokenIdsOf(address tokenOwner) external view returns (bytes32[] memory);
 
     // --- TokenId Metadata functionality
 
@@ -113,10 +99,7 @@ interface ILSP8IdentifiableDigitalAsset {
      * @param dataKey The key for the data to retrieve.
      * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
      */
-    function getDataForTokenId(
-        bytes32 tokenId,
-        bytes32 dataKey
-    ) external returns (bytes memory dataValues);
+    function getDataForTokenId(bytes32 tokenId, bytes32 dataKey) external returns (bytes memory dataValues);
 
     /**
      * @notice Retrieves data in batch for multiple `tokenId` and `dataKey` pairs.
@@ -124,10 +107,9 @@ interface ILSP8IdentifiableDigitalAsset {
      * @param dataKeys An array of data keys corresponding to the token IDs.
      * @return dataValues An array of data values for each pair of `tokenId` and `dataKey`.
      */
-    function getDataBatchForTokenIds(
-        bytes32[] memory tokenIds,
-        bytes32[] memory dataKeys
-    ) external returns (bytes[] memory dataValues);
+    function getDataBatchForTokenIds(bytes32[] memory tokenIds, bytes32[] memory dataKeys)
+        external
+        returns (bytes[] memory dataValues);
 
     /**
      * @notice Sets data for a specific `tokenId` and `dataKey`.
@@ -136,11 +118,7 @@ interface ILSP8IdentifiableDigitalAsset {
      * @param dataValue The value to set for the given data key.
      * @custom:events {TokenIdDataChanged} event.
      */
-    function setDataForTokenId(
-        bytes32 tokenId,
-        bytes32 dataKey,
-        bytes memory dataValue
-    ) external;
+    function setDataForTokenId(bytes32 tokenId, bytes32 dataKey, bytes memory dataValue) external;
 
     /**
      * @notice Sets data in batch for multiple `tokenId` and `dataKey` pairs.
@@ -149,11 +127,8 @@ interface ILSP8IdentifiableDigitalAsset {
      * @param dataValues An array of values to set for the given data keys.
      * @custom:events {TokenIdDataChanged} event for each pair.
      */
-    function setDataBatchForTokenIds(
-        bytes32[] memory tokenIds,
-        bytes32[] memory dataKeys,
-        bytes[] memory dataValues
-    ) external;
+    function setDataBatchForTokenIds(bytes32[] memory tokenIds, bytes32[] memory dataKeys, bytes[] memory dataValues)
+        external;
 
     // --- Operator functionality
 
@@ -173,11 +148,7 @@ interface ILSP8IdentifiableDigitalAsset {
      *
      * @custom:events {OperatorAuthorizationChanged} event.
      */
-    function authorizeOperator(
-        address operator,
-        bytes32 tokenId,
-        bytes memory operatorNotificationData
-    ) external;
+    function authorizeOperator(address operator, bytes32 tokenId, bytes memory operatorNotificationData) external;
 
     /**
      * @dev Remove access of `operator` for a given `tokenId`, disallowing it to transfer `tokenId` on behalf of its owner.
@@ -196,12 +167,8 @@ interface ILSP8IdentifiableDigitalAsset {
      *
      * @custom:events {OperatorRevoked} event with address of the operator being revoked for the caller (token owner)..
      */
-    function revokeOperator(
-        address operator,
-        bytes32 tokenId,
-        bool notify,
-        bytes memory operatorNotificationData
-    ) external;
+    function revokeOperator(address operator, bytes32 tokenId, bool notify, bytes memory operatorNotificationData)
+        external;
 
     /**
      * @dev Returns whether `operator` address is an operator for a given `tokenId`.
@@ -217,10 +184,7 @@ interface ILSP8IdentifiableDigitalAsset {
      *
      * @custom:info The tokenOwner is its own operator.
      */
-    function isOperatorFor(
-        address operator,
-        bytes32 tokenId
-    ) external view returns (bool);
+    function isOperatorFor(address operator, bytes32 tokenId) external view returns (bool);
 
     /**
      * @dev Returns all `operator` addresses that are allowed to transfer or burn a specific `tokenId` on behalf of its owner.
@@ -231,9 +195,7 @@ interface ILSP8IdentifiableDigitalAsset {
      * Requirements
      * - `tokenId` must exist.
      */
-    function getOperatorsOf(
-        bytes32 tokenId
-    ) external view returns (address[] memory);
+    function getOperatorsOf(bytes32 tokenId) external view returns (address[] memory);
 
     // --- Transfer functionality
 
@@ -270,13 +232,7 @@ interface ILSP8IdentifiableDigitalAsset {
      * @custom:warning Be aware that when either the sender or the recipient can have logic that revert in their `universalReceiver(...)` function when being notified.
      * This even if the `force` was set to `true`.
      */
-    function transfer(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) external;
+    function transfer(address from, address to, bytes32 tokenId, bool force, bytes memory data) external;
 
     /**
      * @dev Transfers multiple tokens at once based on the arrays of `from`, `to` and `tokenId`.
@@ -316,7 +272,5 @@ interface ILSP8IdentifiableDigitalAsset {
      * @param data An array of ABI encoded function calls to be called on the contract.
      * @return results An array of abi-encoded data returned by the functions executed.
      */
-    function batchCalls(
-        bytes[] calldata data
-    ) external returns (bytes[] memory results);
+    function batchCalls(bytes[] calldata data) external returns (bytes[] memory results);
 }

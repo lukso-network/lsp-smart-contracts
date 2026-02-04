@@ -20,23 +20,10 @@ contract MockLSP8Enumerable is LSP8Enumerable {
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_
-    )
-        LSP8IdentifiableDigitalAsset(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            lsp8TokenIdFormat_
-        )
-    {}
+    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_) {}
 
     // Helper function to mint tokens for testing
-    function mint(
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) public {
+    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {
         _mint(to, tokenId, force, data);
     }
 
@@ -65,13 +52,7 @@ contract LSP8EnumerableTest is Test {
     MockLSP8Enumerable lsp8Enumerable;
 
     function setUp() public {
-        lsp8Enumerable = new MockLSP8Enumerable(
-            name,
-            symbol,
-            owner,
-            tokenType,
-            tokenIdFormat
-        );
+        lsp8Enumerable = new MockLSP8Enumerable(name, symbol, owner, tokenType, tokenIdFormat);
     }
 
     // Test tokenAt returns correct tokenId for valid indices
@@ -80,21 +61,9 @@ contract LSP8EnumerableTest is Test {
         lsp8Enumerable.mint(user1, tokenId2, true, "");
         lsp8Enumerable.mint(user2, tokenId3, true, "");
 
-        assertEq(
-            lsp8Enumerable.tokenAt(0),
-            tokenId1,
-            "Token at index 0 should be tokenId1"
-        );
-        assertEq(
-            lsp8Enumerable.tokenAt(1),
-            tokenId2,
-            "Token at index 1 should be tokenId2"
-        );
-        assertEq(
-            lsp8Enumerable.tokenAt(2),
-            tokenId3,
-            "Token at index 2 should be tokenId3"
-        );
+        assertEq(lsp8Enumerable.tokenAt(0), tokenId1, "Token at index 0 should be tokenId1");
+        assertEq(lsp8Enumerable.tokenAt(1), tokenId2, "Token at index 1 should be tokenId2");
+        assertEq(lsp8Enumerable.tokenAt(2), tokenId3, "Token at index 2 should be tokenId3");
     }
 
     // Test tokenAt returns bytes32(0) for invalid index
@@ -102,23 +71,12 @@ contract LSP8EnumerableTest is Test {
         lsp8Enumerable.mint(user1, tokenId1, true, "");
 
         assertEq(lsp8Enumerable.tokenAt(0), tokenId1);
-        assertEq(
-            lsp8Enumerable.tokenAt(1),
-            bytes32(0),
-            "Should return bytes32(0) for invalid index"
-        );
-        assertEq(
-            lsp8Enumerable.tokenAt(999),
-            bytes32(0),
-            "Should return bytes32(0) for large invalid index"
-        );
+        assertEq(lsp8Enumerable.tokenAt(1), bytes32(0), "Should return bytes32(0) for invalid index");
+        assertEq(lsp8Enumerable.tokenAt(999), bytes32(0), "Should return bytes32(0) for large invalid index");
         // Verify totalSupply matches expected count
         assertEq(lsp8Enumerable.totalSupply(), 1, "Total supply should be 1");
         // Verify only valid indices return tokens
-        assertTrue(
-            lsp8Enumerable.tokenAt(0) != bytes32(0),
-            "Valid index should return non-zero token"
-        );
+        assertTrue(lsp8Enumerable.tokenAt(0) != bytes32(0), "Valid index should return non-zero token");
     }
 
     // Test enumeration maintains correct indices after minting
@@ -150,21 +108,9 @@ contract LSP8EnumerableTest is Test {
 
         assertEq(lsp8Enumerable.totalSupply(), 2);
         // The last token (tokenId3) should be swapped to index 0
-        assertEq(
-            lsp8Enumerable.tokenAt(0),
-            tokenId3,
-            "After burn, tokenId3 should be at index 0"
-        );
-        assertEq(
-            lsp8Enumerable.tokenAt(1),
-            tokenId2,
-            "tokenId2 should remain at index 1"
-        );
-        assertEq(
-            lsp8Enumerable.tokenAt(2),
-            bytes32(0),
-            "Index 2 should be empty"
-        );
+        assertEq(lsp8Enumerable.tokenAt(0), tokenId3, "After burn, tokenId3 should be at index 0");
+        assertEq(lsp8Enumerable.tokenAt(1), tokenId2, "tokenId2 should remain at index 1");
+        assertEq(lsp8Enumerable.tokenAt(2), bytes32(0), "Index 2 should be empty");
     }
 
     // Test no gaps in enumeration after burns
@@ -181,10 +127,7 @@ contract LSP8EnumerableTest is Test {
 
         // Verify all indices from 0 to totalSupply-1 have valid tokens
         for (uint256 i = 0; i < lsp8Enumerable.totalSupply(); i++) {
-            assertTrue(
-                lsp8Enumerable.tokenAt(i) != bytes32(0),
-                "All indices should have valid tokens"
-            );
+            assertTrue(lsp8Enumerable.tokenAt(i) != bytes32(0), "All indices should have valid tokens");
         }
     }
 
@@ -206,32 +149,16 @@ contract LSP8EnumerableTest is Test {
     // Test boundary conditions (index 0, last index)
     function test_BoundaryConditions() public {
         // Empty state
-        assertEq(
-            lsp8Enumerable.tokenAt(0),
-            bytes32(0),
-            "Index 0 should be empty initially"
-        );
+        assertEq(lsp8Enumerable.tokenAt(0), bytes32(0), "Index 0 should be empty initially");
 
         // Mint single token
         lsp8Enumerable.mint(user1, tokenId1, true, "");
-        assertEq(
-            lsp8Enumerable.tokenAt(0),
-            tokenId1,
-            "Index 0 should have tokenId1"
-        );
-        assertEq(
-            lsp8Enumerable.tokenAt(1),
-            bytes32(0),
-            "Index 1 should be empty"
-        );
+        assertEq(lsp8Enumerable.tokenAt(0), tokenId1, "Index 0 should have tokenId1");
+        assertEq(lsp8Enumerable.tokenAt(1), bytes32(0), "Index 1 should be empty");
 
         // Burn single token
         lsp8Enumerable.burn(tokenId1, "");
-        assertEq(
-            lsp8Enumerable.tokenAt(0),
-            bytes32(0),
-            "Index 0 should be empty after burn"
-        );
+        assertEq(lsp8Enumerable.tokenAt(0), bytes32(0), "Index 0 should be empty after burn");
     }
 
     // Test multiple burns
@@ -291,11 +218,7 @@ contract LSP8EnumerableTest is Test {
         }
 
         for (uint256 i = 0; i < lsp8Enumerable.totalSupply(); i++) {
-            assertEq(
-                lsp8Enumerable.tokenAt(i),
-                expectedTokens[i],
-                "Token at index should match expected"
-            );
+            assertEq(lsp8Enumerable.tokenAt(i), expectedTokens[i], "Token at index should match expected");
         }
     }
 
@@ -312,18 +235,11 @@ contract LSP8EnumerableTest is Test {
 
         // Verify all tokens are accessible via enumeration
         for (uint256 i = 0; i < mintCount; i++) {
-            assertEq(
-                lsp8Enumerable.tokenAt(i),
-                bytes32(i + 1),
-                "Each index should have the correct token"
-            );
+            assertEq(lsp8Enumerable.tokenAt(i), bytes32(i + 1), "Each index should have the correct token");
         }
     }
 
-    function testFuzz_EnumerationAfterBurns(
-        uint8 mintCount,
-        uint8 burnCount
-    ) public {
+    function testFuzz_EnumerationAfterBurns(uint8 mintCount, uint8 burnCount) public {
         vm.assume(mintCount > 0 && mintCount <= 50);
         vm.assume(burnCount > 0 && burnCount <= mintCount);
 
@@ -334,9 +250,7 @@ contract LSP8EnumerableTest is Test {
 
         // Burn tokens from the end
         for (uint256 i = 0; i < burnCount; i++) {
-            bytes32 tokenToBurn = lsp8Enumerable.tokenAt(
-                lsp8Enumerable.totalSupply() - 1
-            );
+            bytes32 tokenToBurn = lsp8Enumerable.tokenAt(lsp8Enumerable.totalSupply() - 1);
             lsp8Enumerable.burn(tokenToBurn, "");
         }
 
@@ -345,10 +259,7 @@ contract LSP8EnumerableTest is Test {
 
         // Verify no gaps
         for (uint256 i = 0; i < expectedSupply; i++) {
-            assertTrue(
-                lsp8Enumerable.tokenAt(i) != bytes32(0),
-                "All indices should have valid tokens"
-            );
+            assertTrue(lsp8Enumerable.tokenAt(i) != bytes32(0), "All indices should have valid tokens");
         }
 
         // Verify index beyond supply is empty
@@ -384,10 +295,7 @@ contract LSP8EnumerableTest is Test {
 
         // Verify continuous enumeration (no gaps)
         for (uint256 i = 0; i < expectedSupply; i++) {
-            assertTrue(
-                lsp8Enumerable.tokenAt(i) != bytes32(0),
-                "All remaining indices should have valid tokens"
-            );
+            assertTrue(lsp8Enumerable.tokenAt(i) != bytes32(0), "All remaining indices should have valid tokens");
         }
     }
 }

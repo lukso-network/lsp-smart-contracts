@@ -29,13 +29,7 @@ contract MockLSP8Mintable is LSP8MintableAbstract {
         uint256 lsp8TokenIdFormat_,
         bool mintable_
     )
-        LSP8IdentifiableDigitalAsset(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            lsp8TokenIdFormat_
-        )
+        LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_)
         LSP8MintableAbstract(mintable_)
     {}
 }
@@ -81,10 +75,7 @@ contract LSP8MintableTest is Test {
     // Test constructor initialization
     function test_ConstructorInitializesCorrectly() public {
         assertTrue(lsp8Mintable.isMintable(), "Token should be mintable");
-        assertFalse(
-            lsp8NonMintable.isMintable(),
-            "Token should not be mintable"
-        );
+        assertFalse(lsp8NonMintable.isMintable(), "Token should not be mintable");
     }
 
     // Test owner can mint tokens
@@ -202,9 +193,7 @@ contract LSP8MintableTest is Test {
     function test_MintingSameTokenIdTwiceFails() public {
         lsp8Mintable.mint(user1, tokenId1, true, "");
 
-        vm.expectRevert(
-            abi.encodeWithSelector(LSP8TokenIdAlreadyMinted.selector, tokenId1)
-        );
+        vm.expectRevert(abi.encodeWithSelector(LSP8TokenIdAlreadyMinted.selector, tokenId1));
         lsp8Mintable.mint(user2, tokenId1, true, "");
     }
 
@@ -221,10 +210,7 @@ contract LSP8MintableTest is Test {
 
     // ------ Fuzzing ------
 
-    function testFuzz_OwnerCanMint(
-        uint128 recipientSeed,
-        uint256 tokenIdNum
-    ) public {
+    function testFuzz_OwnerCanMint(uint128 recipientSeed, uint256 tokenIdNum) public {
         vm.assume(recipientSeed > 10); // Avoid precompile addresses
         vm.assume(tokenIdNum > 0);
 
@@ -236,11 +222,7 @@ contract LSP8MintableTest is Test {
         assertEq(lsp8Mintable.balanceOf(recipient), 1);
     }
 
-    function testFuzz_NonOwnerCannotMint(
-        address attacker,
-        address recipient,
-        uint256 tokenIdNum
-    ) public {
+    function testFuzz_NonOwnerCannotMint(address attacker, address recipient, uint256 tokenIdNum) public {
         vm.assume(attacker != owner);
         vm.assume(attacker != address(0));
         vm.assume(recipient != address(0));

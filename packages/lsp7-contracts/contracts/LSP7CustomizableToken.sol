@@ -22,11 +22,9 @@ struct MintableParams {
 }
 
 /// @dev Deployment configuration for non-transferable feature.
-/// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `nonTransferableFrom_` and `nonTransferableUntil_`.
-/// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
 struct NonTransferableParams {
-    bool transferable;
     uint256 transferLockStart;
     uint256 transferLockEnd;
 }
@@ -73,20 +71,10 @@ contract LSP7CustomizableToken is
         NonTransferableParams memory nonTransferableParams,
         CappedParams memory cappedParams
     )
-        LSP7DigitalAsset(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            isNonDivisible_
-        )
+        LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_)
         LSP7AllowlistAbstract(newOwner_)
         LSP7MintableAbstract(mintableParams.mintable)
-        LSP7NonTransferableAbstract(
-            nonTransferableParams.transferable,
-            nonTransferableParams.transferLockStart,
-            nonTransferableParams.transferLockEnd
-        )
+        LSP7NonTransferableAbstract(nonTransferableParams.transferLockStart, nonTransferableParams.transferLockEnd)
         LSP7CappedBalanceAbstract(cappedParams.tokenBalanceCap)
         LSP7CappedSupplyAbstract(cappedParams.tokenSupplyCap)
     {
@@ -102,19 +90,10 @@ contract LSP7CustomizableToken is
 
     /// @inheritdoc LSP7MintableAbstract
     /// @dev Relies on {LSP7CappedSupply} for supply cap enforcement.
-    function _mint(
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    )
+    function _mint(address to, uint256 amount, bool force, bytes memory data)
         internal
         virtual
-        override(
-            LSP7DigitalAsset,
-            LSP7MintableAbstract,
-            LSP7CappedSupplyAbstract
-        )
+        override(LSP7DigitalAsset, LSP7MintableAbstract, LSP7CappedSupplyAbstract)
     {
         require(isMintable, LSP7MintDisabled());
 
@@ -129,34 +108,12 @@ contract LSP7CustomizableToken is
     /// @param amount The amount of tokens being transferred.
     /// @param force Whether to force the transfer.
     /// @param data Additional data for the transfer.
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    )
+    function _beforeTokenTransfer(address from, address to, uint256 amount, bool force, bytes memory data)
         internal
         virtual
-        override(
-            LSP7DigitalAsset,
-            LSP7CappedBalanceAbstract,
-            LSP7NonTransferableAbstract
-        )
+        override(LSP7DigitalAsset, LSP7CappedBalanceAbstract, LSP7NonTransferableAbstract)
     {
-        LSP7NonTransferableAbstract._beforeTokenTransfer(
-            from,
-            to,
-            amount,
-            force,
-            data
-        );
-        LSP7CappedBalanceAbstract._beforeTokenTransfer(
-            from,
-            to,
-            amount,
-            force,
-            data
-        );
+        LSP7NonTransferableAbstract._beforeTokenTransfer(from, to, amount, force, data);
+        LSP7CappedBalanceAbstract._beforeTokenTransfer(from, to, amount, force, data);
     }
 }

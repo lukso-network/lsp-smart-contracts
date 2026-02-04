@@ -12,10 +12,7 @@ import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 
 /// @title LSP7MintableInitAbstract
 /// @dev Abstract contract implementing a isMintable LSP7 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP7DigitalAsset to provide core token functionality.
-abstract contract LSP7MintableInitAbstract is
-    ILSP7Mintable,
-    LSP7DigitalAssetInitAbstract
-{
+abstract contract LSP7MintableInitAbstract is ILSP7Mintable, LSP7DigitalAssetInitAbstract {
     /// @notice Indicates whether minting is currently enabled or not.
     bool public isMintable;
 
@@ -36,22 +33,14 @@ abstract contract LSP7MintableInitAbstract is
         bool isNonDivisible_,
         bool mintable_
     ) internal virtual onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            isNonDivisible_
-        );
+        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_);
         __LSP7Mintable_init_unchained(mintable_);
     }
 
     /// @notice Unchained initializer for the minting status.
     /// @dev Sets the initial minting status.
     /// @param mintable_ True to enable minting after deployment, false to disable it forever.
-    function __LSP7Mintable_init_unchained(
-        bool mintable_
-    ) internal virtual onlyInitializing {
+    function __LSP7Mintable_init_unchained(bool mintable_) internal virtual onlyInitializing {
         isMintable = mintable_;
     }
 
@@ -63,12 +52,7 @@ abstract contract LSP7MintableInitAbstract is
     }
 
     /// @inheritdoc ILSP7Mintable
-    function mint(
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) public virtual override onlyOwner {
+    function mint(address to, uint256 amount, bool force, bytes memory data) public virtual override onlyOwner {
         _mint(to, amount, force, data);
     }
 
@@ -78,12 +62,7 @@ abstract contract LSP7MintableInitAbstract is
     /// @param amount The number of tokens to mint.
     /// @param force When true, allows minting to any address; when false, requires `to` to support LSP1 UniversalReceiver.
     /// @param data Additional data included in the Transfer event and sent to `to`’s UniversalReceiver hook, if applicable.
-    function _mint(
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
+    function _mint(address to, uint256 amount, bool force, bytes memory data) internal virtual override {
         require(isMintable, LSP7MintDisabled());
         super._mint(to, amount, force, data);
     }

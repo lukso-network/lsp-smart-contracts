@@ -22,11 +22,9 @@ struct MintableParams {
 }
 
 /// @dev Deployment configuration for non-transferable feature.
-/// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `nonTransferableFrom_` and `nonTransferableUntil_`.
-/// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
 struct NonTransferableParams {
-    bool transferable;
     uint256 transferLockStart;
     uint256 transferLockEnd;
 }
@@ -74,29 +72,15 @@ contract LSP8CustomizableToken is
         NonTransferableParams memory nonTransferableParams,
         CappedParams memory cappedParams
     )
-        LSP8IdentifiableDigitalAsset(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            lsp8TokenIdFormat_
-        )
+        LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_)
         LSP8AllowlistAbstract(newOwner_)
         LSP8MintableAbstract(mintableParams.mintable)
-        LSP8NonTransferableAbstract(
-            nonTransferableParams.transferable,
-            nonTransferableParams.transferLockStart,
-            nonTransferableParams.transferLockEnd
-        )
+        LSP8NonTransferableAbstract(nonTransferableParams.transferLockStart, nonTransferableParams.transferLockEnd)
         LSP8CappedBalanceAbstract(cappedParams.tokenBalanceCap)
         LSP8CappedSupplyAbstract(cappedParams.tokenSupplyCap)
     {
         // Mint initial tokens
-        for (
-            uint256 i = 0;
-            i < mintableParams.initialMintTokenIds.length;
-            i++
-        ) {
+        for (uint256 i = 0; i < mintableParams.initialMintTokenIds.length; i++) {
             _mint(newOwner_, mintableParams.initialMintTokenIds[i], true, "");
         }
     }
@@ -108,19 +92,10 @@ contract LSP8CustomizableToken is
 
     /// @inheritdoc LSP8MintableAbstract
     /// @dev Relies on {LSP8CappedSupply} for supply cap enforcement.
-    function _mint(
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    )
+    function _mint(address to, bytes32 tokenId, bool force, bytes memory data)
         internal
         virtual
-        override(
-            LSP8IdentifiableDigitalAsset,
-            LSP8MintableAbstract,
-            LSP8CappedSupplyAbstract
-        )
+        override(LSP8IdentifiableDigitalAsset, LSP8MintableAbstract, LSP8CappedSupplyAbstract)
     {
         require(isMintable, LSP8MintDisabled());
 
@@ -136,34 +111,12 @@ contract LSP8CustomizableToken is
     /// @param tokenId The unique identifier of the token being transferred.
     /// @param force Whether to force the transfer.
     /// @param data Additional data for the transfer.
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    )
+    function _beforeTokenTransfer(address from, address to, bytes32 tokenId, bool force, bytes memory data)
         internal
         virtual
-        override(
-            LSP8IdentifiableDigitalAsset,
-            LSP8CappedBalanceAbstract,
-            LSP8NonTransferableAbstract
-        )
+        override(LSP8IdentifiableDigitalAsset, LSP8CappedBalanceAbstract, LSP8NonTransferableAbstract)
     {
-        LSP8NonTransferableAbstract._beforeTokenTransfer(
-            from,
-            to,
-            tokenId,
-            force,
-            data
-        );
-        LSP8CappedBalanceAbstract._beforeTokenTransfer(
-            from,
-            to,
-            tokenId,
-            force,
-            data
-        );
+        LSP8NonTransferableAbstract._beforeTokenTransfer(from, to, tokenId, force, data);
+        LSP8CappedBalanceAbstract._beforeTokenTransfer(from, to, tokenId, force, data);
     }
 }

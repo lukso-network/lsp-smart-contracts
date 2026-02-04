@@ -15,10 +15,7 @@ import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 
 /// @title LSP7CappedBalanceAbstract
 /// @dev Abstract contract implementing a per-address balance cap for LSP7 tokens, with exemptions for allowlisted addresses. Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
-abstract contract LSP7CappedBalanceAbstract is
-    ILSP7CappedBalance,
-    LSP7AllowlistAbstract
-{
+abstract contract LSP7CappedBalanceAbstract is ILSP7CappedBalance, LSP7AllowlistAbstract {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @notice The immutable maximum token balance allowed per address.
@@ -41,12 +38,17 @@ abstract contract LSP7CappedBalanceAbstract is
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.
     function _tokenBalanceCapCheck(
-        address /* from */,
+        address,
+        /* from */
         address to,
         uint256 amount,
-        bool /* force */,
+        bool,
+        /* force */
         bytes memory /* data */
-    ) internal virtual {
+    )
+        internal
+        virtual
+    {
         // Do not check for balance cap if we are burning tokens
         if (to == address(0)) return;
 
@@ -72,13 +74,11 @@ abstract contract LSP7CappedBalanceAbstract is
     /// @param amount The amount of tokens being transferred.
     /// @param force Whether to force the transfer.
     /// @param data Additional data for the transfer.
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
+    function _beforeTokenTransfer(address from, address to, uint256 amount, bool force, bytes memory data)
+        internal
+        virtual
+        override
+    {
         if (isAllowlisted(to)) return;
         _tokenBalanceCapCheck(from, to, amount, force, data);
     }

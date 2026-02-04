@@ -6,10 +6,7 @@ import {ILSP1UniversalReceiver as ILSP1} from "@lukso/lsp1-contracts/contracts/I
 import {ILSP7DigitalAsset} from "./ILSP7DigitalAsset.sol";
 
 // modules
-import {
-    LSP4DigitalAssetMetadata,
-    ERC725Y
-} from "@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadata.sol";
+import {LSP4DigitalAssetMetadata, ERC725Y} from "@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadata.sol";
 import {LSP17Extendable} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
 
 // libraries
@@ -55,11 +52,7 @@ import {
  * @title Implementation of the LSP7 Digital Asset standard, a contract that represents a fungible token.
  * @author Matthew Stevens
  */
-abstract contract LSP7DigitalAsset is
-    ILSP7DigitalAsset,
-    LSP4DigitalAssetMetadata,
-    LSP17Extendable
-{
+abstract contract LSP7DigitalAsset is ILSP7DigitalAsset, LSP4DigitalAssetMetadata, LSP17Extendable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     // --- Storage
@@ -75,8 +68,7 @@ abstract contract LSP7DigitalAsset is
     mapping(address => EnumerableSet.AddressSet) internal _operators;
 
     // Mapping a `tokenOwner` to an `operator` to `amount` of tokens.
-    mapping(address => mapping(address => uint256))
-        internal _operatorAuthorizedAmount;
+    mapping(address => mapping(address => uint256)) internal _operatorAuthorizedAmount;
 
     /**
      * @notice Sets the token-Metadata
@@ -118,9 +110,7 @@ abstract contract LSP7DigitalAsset is
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), revert.
      */
     // solhint-disable-next-line no-complex-fallback
-    fallback(
-        bytes calldata callData
-    ) external payable virtual returns (bytes memory) {
+    fallback(bytes calldata callData) external payable virtual returns (bytes memory) {
         require(msg.data.length >= 4, InvalidFunctionSelector(callData));
         return _fallbackLSP17Extendable(callData);
     }
@@ -155,21 +145,15 @@ abstract contract LSP7DigitalAsset is
      * @custom:info The LSP7 Token contract should not hold any native tokens. Any native tokens received by the contract
      * will be forwarded to the extension address mapped to the selector from `msg.sig`.
      */
-    function _fallbackLSP17Extendable(
-        bytes calldata callData
-    ) internal virtual override returns (bytes memory) {
+    function _fallbackLSP17Extendable(bytes calldata callData) internal virtual override returns (bytes memory) {
         // If there is a function selector
-        (address extension, ) = _getExtensionAndForwardValue(msg.sig);
+        (address extension,) = _getExtensionAndForwardValue(msg.sig);
 
         // if no extension was found, revert
-        require(
-            extension != address(0),
-            NoExtensionFoundForFunctionSelector(msg.sig)
-        );
+        require(extension != address(0), NoExtensionFoundForFunctionSelector(msg.sig));
 
-        (bool success, bytes memory result) = extension.call{value: msg.value}(
-            abi.encodePacked(callData, msg.sender, msg.value)
-        );
+        (bool success, bytes memory result) =
+            extension.call{value: msg.value}(abi.encodePacked(callData, msg.sender, msg.value));
 
         if (success) {
             return result;
@@ -191,20 +175,20 @@ abstract contract LSP7DigitalAsset is
      * - If no extension is stored, returns the address(0).
      * - we do not check that payable bool as in lsp7 standard we will always forward the value to the extension
      */
-    function _getExtensionAndForwardValue(
-        bytes4 functionSelector
-    ) internal view virtual override returns (address, bool) {
+    function _getExtensionAndForwardValue(bytes4 functionSelector)
+        internal
+        view
+        virtual
+        override
+        returns (address, bool)
+    {
         // Generate the data key relevant for the functionSelector being called
-        bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
-            _LSP17_EXTENSION_PREFIX,
-            functionSelector
-        );
+        bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(_LSP17_EXTENSION_PREFIX, functionSelector);
 
         // Check if there is an extension stored under the generated data key
         bytes memory extensionAddress = _getData(mappedExtensionDataKey);
         require(
-            extensionAddress.length == 20 || extensionAddress.length == 0,
-            InvalidExtensionAddress(extensionAddress)
+            extensionAddress.length == 20 || extensionAddress.length == 0, InvalidExtensionAddress(extensionAddress)
         );
 
         return (address(bytes20(extensionAddress)), true);
@@ -213,13 +197,15 @@ abstract contract LSP7DigitalAsset is
     /**
      * @inheritdoc LSP17Extendable
      */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(ERC725Y, LSP17Extendable) returns (bool) {
-        return
-            interfaceId == _INTERFACEID_LSP7 ||
-            super.supportsInterface(interfaceId) ||
-            LSP17Extendable._supportsInterfaceInERC165Extension(interfaceId);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC725Y, LSP17Extendable)
+        returns (bool)
+    {
+        return interfaceId == _INTERFACEID_LSP7 || super.supportsInterface(interfaceId)
+            || LSP17Extendable._supportsInterfaceInERC165Extension(interfaceId);
     }
 
     // --- Token queries
@@ -243,9 +229,7 @@ abstract contract LSP7DigitalAsset is
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function balanceOf(
-        address tokenOwner
-    ) public view virtual override returns (uint256) {
+    function balanceOf(address tokenOwner) public view virtual override returns (uint256) {
         return _tokenOwnerBalances[tokenOwner];
     }
 
@@ -256,14 +240,10 @@ abstract contract LSP7DigitalAsset is
      *
      * @custom:info It's not possible to send value along the functions call due to the use of `delegatecall`.
      */
-    function batchCalls(
-        bytes[] calldata data
-    ) public virtual override returns (bytes[] memory results) {
+    function batchCalls(bytes[] calldata data) public virtual override returns (bytes[] memory results) {
         results = new bytes[](data.length);
-        for (uint256 i; i < data.length; ) {
-            (bool success, bytes memory result) = address(this).delegatecall(
-                data[i]
-            );
+        for (uint256 i; i < data.length;) {
+            (bool success, bytes memory result) = address(this).delegatecall(data[i]);
 
             if (!success) {
                 // Look for revert reason and bubble it up if present
@@ -300,24 +280,14 @@ abstract contract LSP7DigitalAsset is
      * For more information, see:
      * https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/
      */
-    function authorizeOperator(
-        address operator,
-        uint256 amount,
-        bytes memory operatorNotificationData
-    ) public virtual override {
-        _updateOperator(
-            msg.sender,
-            operator,
-            amount,
-            true,
-            operatorNotificationData
-        );
+    function authorizeOperator(address operator, uint256 amount, bytes memory operatorNotificationData)
+        public
+        virtual
+        override
+    {
+        _updateOperator(msg.sender, operator, amount, true, operatorNotificationData);
 
-        bytes memory lsp1Data = abi.encode(
-            msg.sender,
-            amount,
-            operatorNotificationData
-        );
+        bytes memory lsp1Data = abi.encode(msg.sender, amount, operatorNotificationData);
 
         _notifyTokenOperator(operator, lsp1Data);
     }
@@ -325,31 +295,20 @@ abstract contract LSP7DigitalAsset is
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function revokeOperator(
-        address operator,
-        address tokenOwner,
-        bool notify,
-        bytes memory operatorNotificationData
-    ) public virtual override {
+    function revokeOperator(address operator, address tokenOwner, bool notify, bytes memory operatorNotificationData)
+        public
+        virtual
+        override
+    {
         require(
             msg.sender == tokenOwner || msg.sender == operator,
             LSP7RevokeOperatorNotAuthorized(msg.sender, tokenOwner, operator)
         );
 
-        _updateOperator(
-            tokenOwner,
-            operator,
-            0,
-            notify,
-            operatorNotificationData
-        );
+        _updateOperator(tokenOwner, operator, 0, notify, operatorNotificationData);
 
         if (notify) {
-            bytes memory lsp1Data = abi.encode(
-                tokenOwner,
-                0,
-                operatorNotificationData
-            );
+            bytes memory lsp1Data = abi.encode(tokenOwner, 0, operatorNotificationData);
 
             _notifyTokenOperator(operator, lsp1Data);
         }
@@ -358,10 +317,7 @@ abstract contract LSP7DigitalAsset is
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function authorizedAmountFor(
-        address operator,
-        address tokenOwner
-    ) public view virtual override returns (uint256) {
+    function authorizedAmountFor(address operator, address tokenOwner) public view virtual override returns (uint256) {
         if (tokenOwner == operator) {
             return _tokenOwnerBalances[tokenOwner];
         } else {
@@ -372,41 +328,26 @@ abstract contract LSP7DigitalAsset is
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function getOperatorsOf(
-        address tokenOwner
-    ) public view virtual override returns (address[] memory) {
+    function getOperatorsOf(address tokenOwner) public view virtual override returns (address[] memory) {
         return _operators[tokenOwner].values();
     }
 
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function increaseAllowance(
-        address operator,
-        uint256 addedAmount,
-        bytes memory operatorNotificationData
-    ) public virtual override {
+    function increaseAllowance(address operator, uint256 addedAmount, bytes memory operatorNotificationData)
+        public
+        virtual
+        override
+    {
         uint256 oldAllowance = authorizedAmountFor(operator, msg.sender);
-        require(
-            oldAllowance > 0,
-            OperatorAllowanceCannotBeIncreasedFromZero(operator)
-        );
+        require(oldAllowance > 0, OperatorAllowanceCannotBeIncreasedFromZero(operator));
 
         uint256 newAllowance = oldAllowance + addedAmount;
 
-        _updateOperator(
-            msg.sender,
-            operator,
-            newAllowance,
-            true,
-            operatorNotificationData
-        );
+        _updateOperator(msg.sender, operator, newAllowance, true, operatorNotificationData);
 
-        bytes memory lsp1Data = abi.encode(
-            msg.sender,
-            newAllowance,
-            operatorNotificationData
-        );
+        bytes memory lsp1Data = abi.encode(msg.sender, newAllowance, operatorNotificationData);
 
         _notifyTokenOperator(operator, lsp1Data);
     }
@@ -426,28 +367,15 @@ abstract contract LSP7DigitalAsset is
         );
 
         uint256 currentAllowance = authorizedAmountFor(operator, tokenOwner);
-        require(
-            currentAllowance >= subtractedAmount,
-            LSP7DecreasedAllowanceBelowZero()
-        );
+        require(currentAllowance >= subtractedAmount, LSP7DecreasedAllowanceBelowZero());
 
         uint256 newAllowance;
         unchecked {
             newAllowance = currentAllowance - subtractedAmount;
-            _updateOperator(
-                tokenOwner,
-                operator,
-                newAllowance,
-                true,
-                operatorNotificationData
-            );
+            _updateOperator(tokenOwner, operator, newAllowance, true, operatorNotificationData);
         }
 
-        bytes memory lsp1Data = abi.encode(
-            tokenOwner,
-            newAllowance,
-            operatorNotificationData
-        );
+        bytes memory lsp1Data = abi.encode(tokenOwner, newAllowance, operatorNotificationData);
 
         _notifyTokenOperator(operator, lsp1Data);
     }
@@ -457,19 +385,9 @@ abstract contract LSP7DigitalAsset is
     /**
      * @inheritdoc ILSP7DigitalAsset
      */
-    function transfer(
-        address from,
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) public virtual override {
+    function transfer(address from, address to, uint256 amount, bool force, bytes memory data) public virtual override {
         if (msg.sender != from) {
-            _spendAllowance({
-                operator: msg.sender,
-                tokenOwner: from,
-                amountToSpend: amount
-            });
+            _spendAllowance({operator: msg.sender, tokenOwner: from, amountToSpend: amount});
         }
 
         _transfer(from, to, amount, force, data);
@@ -487,14 +405,12 @@ abstract contract LSP7DigitalAsset is
     ) public virtual override {
         uint256 fromLength = from.length;
         require(
-            fromLength == to.length &&
-                fromLength == amount.length &&
-                fromLength == force.length &&
-                fromLength == data.length,
+            fromLength == to.length && fromLength == amount.length && fromLength == force.length
+                && fromLength == data.length,
             LSP7InvalidTransferBatch()
         );
 
-        for (uint256 i; i < fromLength; ) {
+        for (uint256 i; i < fromLength;) {
             // using the public transfer function to handle updates to operator authorized amounts
             transfer(from[i], to[i], amount[i], force[i], data[i]);
 
@@ -537,20 +453,10 @@ abstract contract LSP7DigitalAsset is
 
         if (allowance != 0) {
             _operators[tokenOwner].add(operator);
-            emit OperatorAuthorizationChanged(
-                operator,
-                tokenOwner,
-                allowance,
-                operatorNotificationData
-            );
+            emit OperatorAuthorizationChanged(operator, tokenOwner, allowance, operatorNotificationData);
         } else {
             _operators[tokenOwner].remove(operator);
-            emit OperatorRevoked(
-                operator,
-                tokenOwner,
-                notified,
-                operatorNotificationData
-            );
+            emit OperatorRevoked(operator, tokenOwner, notified, operatorNotificationData);
         }
     }
 
@@ -571,12 +477,7 @@ abstract contract LSP7DigitalAsset is
      *
      * @custom:events {Transfer} event with `address(0)` as `from`.
      */
-    function _mint(
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) internal virtual {
+    function _mint(address to, uint256 amount, bool force, bytes memory data) internal virtual {
         require(to != address(0), LSP7CannotSendWithAddressZero());
 
         _beforeTokenTransfer(address(0), to, amount, force, data);
@@ -585,13 +486,7 @@ abstract contract LSP7DigitalAsset is
 
         _afterTokenTransfer(address(0), to, amount, force, data);
 
-        bytes memory lsp1Data = abi.encode(
-            msg.sender,
-            address(0),
-            to,
-            amount,
-            data
-        );
+        bytes memory lsp1Data = abi.encode(msg.sender, address(0), to, amount, data);
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 
@@ -620,11 +515,7 @@ abstract contract LSP7DigitalAsset is
      *
      * @custom:events {Transfer} event with `address(0)` as the `to` address
      */
-    function _burn(
-        address from,
-        uint256 amount,
-        bytes memory data
-    ) internal virtual {
+    function _burn(address from, uint256 amount, bytes memory data) internal virtual {
         require(from != address(0), LSP7CannotSendWithAddressZero());
 
         _beforeTokenTransfer(from, address(0), amount, false, data);
@@ -633,13 +524,7 @@ abstract contract LSP7DigitalAsset is
 
         _afterTokenTransfer(from, address(0), amount, false, data);
 
-        bytes memory lsp1Data = abi.encode(
-            msg.sender,
-            from,
-            address(0),
-            amount,
-            data
-        );
+        bytes memory lsp1Data = abi.encode(msg.sender, from, address(0), amount, data);
         _notifyTokenSender(from, lsp1Data);
     }
 
@@ -659,22 +544,11 @@ abstract contract LSP7DigitalAsset is
      * - `operator` cannot be the zero address.
      * - `operator` cannot be the same address as `tokenOwner`.
      */
-    function _spendAllowance(
-        address operator,
-        address tokenOwner,
-        uint256 amountToSpend
-    ) internal virtual {
-        uint256 authorizedAmount = _operatorAuthorizedAmount[tokenOwner][
-            operator
-        ];
+    function _spendAllowance(address operator, address tokenOwner, uint256 amountToSpend) internal virtual {
+        uint256 authorizedAmount = _operatorAuthorizedAmount[tokenOwner][operator];
 
         if (authorizedAmount == 0 || amountToSpend > authorizedAmount) {
-            revert LSP7AmountExceedsAuthorizedAmount(
-                tokenOwner,
-                authorizedAmount,
-                operator,
-                amountToSpend
-            );
+            revert LSP7AmountExceedsAuthorizedAmount(tokenOwner, authorizedAmount, operator, amountToSpend);
         }
 
         _updateOperator({
@@ -711,17 +585,8 @@ abstract contract LSP7DigitalAsset is
      *
      * @custom:events {Transfer} event.
      */
-    function _transfer(
-        address from,
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) internal virtual {
-        require(
-            from != address(0) && to != address(0),
-            LSP7CannotSendWithAddressZero()
-        );
+    function _transfer(address from, address to, uint256 amount, bool force, bytes memory data) internal virtual {
+        require(from != address(0) && to != address(0), LSP7CannotSendWithAddressZero());
 
         _beforeTokenTransfer(from, to, amount, force, data);
 
@@ -743,23 +608,14 @@ abstract contract LSP7DigitalAsset is
      *
      * @custom:events {Transfer} event.
      */
-    function _update(
-        address from,
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) internal virtual {
+    function _update(address from, address to, uint256 amount, bool force, bytes memory data) internal virtual {
         if (from == address(0)) {
             // Overflow check required: The rest of the code assumes that totalSupply never overflows
             _existingTokens += amount;
         } else {
             uint256 fromBalance = _tokenOwnerBalances[from];
 
-            require(
-                fromBalance >= amount,
-                LSP7AmountExceedsBalance(fromBalance, from, amount)
-            );
+            require(fromBalance >= amount, LSP7AmountExceedsBalance(fromBalance, from, amount));
 
             unchecked {
                 // Overflow not possible: amount <= fromBalance <= totalSupply.
@@ -779,14 +635,7 @@ abstract contract LSP7DigitalAsset is
             }
         }
 
-        emit Transfer({
-            operator: msg.sender,
-            from: from,
-            to: to,
-            amount: amount,
-            force: force,
-            data: data
-        });
+        emit Transfer({operator: msg.sender, from: from, to: to, amount: amount, force: force, data: data});
     }
 
     /**
@@ -805,7 +654,9 @@ abstract contract LSP7DigitalAsset is
         uint256 amount,
         bool force,
         bytes memory data // solhint-disable-next-line no-empty-blocks
-    ) internal virtual {}
+    )
+        internal
+        virtual {}
 
     /**
      * @dev Hook that is called after any token transfer, including minting and burning.
@@ -823,44 +674,32 @@ abstract contract LSP7DigitalAsset is
         uint256 amount,
         bool force,
         bytes memory data // solhint-disable-next-line no-empty-blocks
-    ) internal virtual {}
+    )
+        internal
+        virtual {}
 
     /**
      * @dev Attempt to notify the operator `operator` about the `amount` tokens being authorized with.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
      * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-
+     *
      * @param operator The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
      */
-    function _notifyTokenOperator(
-        address operator,
-        bytes memory lsp1Data
-    ) internal virtual {
-        LSP1Utils.notifyUniversalReceiver(
-            operator,
-            _TYPEID_LSP7_TOKENOPERATOR,
-            lsp1Data
-        );
+    function _notifyTokenOperator(address operator, bytes memory lsp1Data) internal virtual {
+        LSP1Utils.notifyUniversalReceiver(operator, _TYPEID_LSP7_TOKENOPERATOR, lsp1Data);
     }
 
     /**
      * @dev Attempt to notify the token sender `from` about the `amount` of tokens being transferred.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
      * If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-
+     *
      * @param from The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `from` address in the `universalReceiver` call.
      */
-    function _notifyTokenSender(
-        address from,
-        bytes memory lsp1Data
-    ) internal virtual {
-        LSP1Utils.notifyUniversalReceiver(
-            from,
-            _TYPEID_LSP7_TOKENSSENDER,
-            lsp1Data
-        );
+    function _notifyTokenSender(address from, bytes memory lsp1Data) internal virtual {
+        LSP1Utils.notifyUniversalReceiver(from, _TYPEID_LSP7_TOKENSSENDER, lsp1Data);
     }
 
     /**
@@ -875,17 +714,8 @@ abstract contract LSP7DigitalAsset is
      * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param lsp1Data The data to be sent to the `to` address in the `universalReceiver(...)` call.
      */
-    function _notifyTokenReceiver(
-        address to,
-        bool force,
-        bytes memory lsp1Data
-    ) internal virtual {
-        if (
-            ERC165Checker.supportsERC165InterfaceUnchecked(
-                to,
-                _INTERFACEID_LSP1
-            )
-        ) {
+    function _notifyTokenReceiver(address to, bool force, bytes memory lsp1Data) internal virtual {
+        if (ERC165Checker.supportsERC165InterfaceUnchecked(to, _INTERFACEID_LSP1)) {
             ILSP1(to).universalReceiver(_TYPEID_LSP7_TOKENSRECIPIENT, lsp1Data);
         } else if (!force) {
             if (to.code.length != 0) {

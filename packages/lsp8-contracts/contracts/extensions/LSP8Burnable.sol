@@ -20,10 +20,7 @@ abstract contract LSP8Burnable is LSP8IdentifiableDigitalAsset {
      * @param data Any extra data to be sent alongside burning the tokenId.
      */
     function burn(bytes32 tokenId, bytes memory data) public virtual {
-        require(
-            _isOperatorOrOwner(msg.sender, tokenId),
-            LSP8NotTokenOperator(tokenId, msg.sender)
-        );
+        require(_isOperatorOrOwner(msg.sender, tokenId), LSP8NotTokenOperator(tokenId, msg.sender));
         _burn(tokenId, data);
     }
 }

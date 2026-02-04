@@ -15,10 +15,7 @@ import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 
 /// @title LSP7CappedBalanceInitAbstract
 /// @dev Abstract contract implementing a per-address balance cap for LSP7 tokens, with exemptions for allowlisted addresses. Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
-abstract contract LSP7CappedBalanceInitAbstract is
-    ILSP7CappedBalance,
-    LSP7AllowlistInitAbstract
-{
+abstract contract LSP7CappedBalanceInitAbstract is ILSP7CappedBalance, LSP7AllowlistInitAbstract {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @notice The immutable maximum token balance allowed per address.
@@ -40,22 +37,14 @@ abstract contract LSP7CappedBalanceInitAbstract is
         bool isNonDivisible_,
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
-        __LSP7Allowlist_init(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            isNonDivisible_
-        );
+        __LSP7Allowlist_init(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_);
         __LSP7CappedBalance_init_unchained(tokenBalanceCap_);
     }
 
     /// @notice Unchained initializer for the token balance cap.
     /// @dev Sets the balance cap value.
     /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
-    function __LSP7CappedBalance_init_unchained(
-        uint256 tokenBalanceCap_
-    ) internal virtual onlyInitializing {
+    function __LSP7CappedBalance_init_unchained(uint256 tokenBalanceCap_) internal virtual onlyInitializing {
         _tokenBalanceCap = tokenBalanceCap_;
     }
 
@@ -69,12 +58,17 @@ abstract contract LSP7CappedBalanceInitAbstract is
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.
     function _tokenBalanceCapCheck(
-        address /* from */,
+        address,
+        /* from */
         address to,
         uint256 amount,
-        bool /* force */,
+        bool,
+        /* force */
         bytes memory /* data */
-    ) internal virtual {
+    )
+        internal
+        virtual
+    {
         // Do not check for balance cap if we are burning tokens
         if (to == address(0)) return;
 
@@ -100,13 +94,11 @@ abstract contract LSP7CappedBalanceInitAbstract is
     /// @param amount The amount of tokens being transferred.
     /// @param force Whether to force the transfer.
     /// @param data Additional data for the transfer.
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
+    function _beforeTokenTransfer(address from, address to, uint256 amount, bool force, bytes memory data)
+        internal
+        virtual
+        override
+    {
         if (isAllowlisted(to)) return;
         _tokenBalanceCapCheck(from, to, amount, force, data);
     }

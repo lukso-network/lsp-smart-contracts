@@ -19,15 +19,9 @@ import {
 
 /// @title LSP8NonTransferableAbstract
 /// @dev Abstract contract implementing non-transferable LSP8 token functionality with transfer lock periods and allowlist support.
-abstract contract LSP8NonTransferableAbstract is
-    ILSP8NonTransferable,
-    LSP8AllowlistAbstract
-{
+abstract contract LSP8NonTransferableAbstract is ILSP8NonTransferable, LSP8AllowlistAbstract {
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
-
-    /// @notice Indicates whether the token is currently transferable.
-    bool public transferable;
 
     /// @notice The start timestamp of the transfer lock period.
     uint256 public transferLockStart;
@@ -35,33 +29,19 @@ abstract contract LSP8NonTransferableAbstract is
     /// @notice The end timestamp of the transfer lock period.
     uint256 public transferLockEnd;
 
-    /// @notice Initializes the contract with transferability status and lock period.
-    /// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `nonTransferableFrom_` and `nonTransferableUntil_`.
+    /// @notice Initializes the contract with lock period.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
-    constructor(
-        bool transferable_,
-        uint256 transferLockStart_,
-        uint256 transferLockEnd_
-    ) {
-        require(
-            transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_,
-            LSP8InvalidTransferLockPeriod()
-        );
-        transferable = transferable_;
+    constructor(uint256 transferLockStart_, uint256 transferLockEnd_) {
+        require(transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_, LSP8InvalidTransferLockPeriod());
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
 
-        emit TransferabilityChanged(transferable_);
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
     }
 
     /// @inheritdoc ILSP8NonTransferable
     function isTransferable() public view virtual override returns (bool) {
-        if (!transferable) {
-            return false;
-        }
-
         bool isTransferLockStartDisabled = transferLockStart == 0;
         bool isTransferLockEndDisabled = transferLockEnd == 0;
 
@@ -77,63 +57,54 @@ abstract contract LSP8NonTransferableAbstract is
             return transferLockStart > block.timestamp;
         }
 
-        return
-            transferLockStart > block.timestamp ||
-            transferLockEnd < block.timestamp;
+        return transferLockStart > block.timestamp || transferLockEnd < block.timestamp;
     }
 
     /// @inheritdoc ILSP8NonTransferable
     function makeTransferable() public virtual override onlyOwner {
-        transferable = true;
         transferLockStart = 0;
         transferLockEnd = 0;
 
         emit TransferLockPeriodChanged(0, 0);
-        emit TransferabilityChanged(true);
     }
 
     /// @inheritdoc ILSP8NonTransferable
-    function updateTransferLockPeriod(
-        uint256 newTransferLockStart,
-        uint256 newTransferLockEnd
-    ) public virtual override onlyOwner {
+    function updateTransferLockPeriod(uint256 newTransferLockStart, uint256 newTransferLockEnd)
+        public
+        virtual
+        override
+        onlyOwner
+    {
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
-        require(
-            newTransferLockEnd == 0 ||
-                newTransferLockEnd >= newTransferLockStart,
-            LSP8InvalidTransferLockPeriod()
-        );
+        require(newTransferLockEnd == 0 || newTransferLockEnd >= newTransferLockStart, LSP8InvalidTransferLockPeriod());
 
-        require(
-            newTransferLockStart == 0 || block.timestamp < transferLockStart,
-            LSP8CannotUpdateTransferLockPeriod()
-        );
+        require(newTransferLockStart == 0 || block.timestamp < transferLockStart, LSP8CannotUpdateTransferLockPeriod());
 
-        require(
-            newTransferLockEnd == 0 || block.timestamp < transferLockEnd,
-            LSP8CannotUpdateTransferLockPeriod()
-        );
+        require(newTransferLockEnd == 0 || block.timestamp < transferLockEnd, LSP8CannotUpdateTransferLockPeriod());
 
         transferLockStart = newTransferLockStart;
         transferLockEnd = newTransferLockEnd;
 
-        emit TransferLockPeriodChanged(
-            newTransferLockStart,
-            newTransferLockEnd
-        );
+        emit TransferLockPeriodChanged(newTransferLockStart, newTransferLockEnd);
     }
 
     /// @notice Checks if a token transfer is allowed based on transferability status.
     /// @dev Allows burning to address(0) even when transfers are disabled, bypassing transferability restrictions. Reverts with {LSP8TransferDisabled} if the token is non-transferable and the destination is not address(0).
     /// @param to The address receiving the token.
     function _nonTransferableCheck(
-        address /* from */,
+        address,
+        /* from */
         address to,
-        bytes32 /* tokenId */,
-        bool /* force */,
+        bytes32,
+        /* tokenId */
+        bool,
+        /* force */
         bytes memory /* data */
-    ) internal virtual {
+    )
+        internal
+        virtual
+    {
         require(to == address(0) || isTransferable(), LSP8TransferDisabled());
     }
 
@@ -144,13 +115,11 @@ abstract contract LSP8NonTransferableAbstract is
     /// @param tokenId The unique identifier of the token being transferred.
     /// @param force Whether to force the transfer (passed to _nonTransferableCheck).
     /// @param data Additional data for the transfer (passed to _nonTransferableCheck).
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
+    function _beforeTokenTransfer(address from, address to, bytes32 tokenId, bool force, bytes memory data)
+        internal
+        virtual
+        override
+    {
         if (isAllowlisted(from)) return;
         _nonTransferableCheck(from, to, tokenId, force, data);
     }

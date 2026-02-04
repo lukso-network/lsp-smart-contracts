@@ -12,10 +12,7 @@ import {LSP8MintDisabled} from "./LSP8MintableErrors.sol";
 
 /// @title LSP8MintableInitAbstract
 /// @dev Abstract contract implementing a mintable LSP8 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP8IdentifiableDigitalAssetInitAbstract to provide core token functionality.
-abstract contract LSP8MintableInitAbstract is
-    ILSP8Mintable,
-    LSP8IdentifiableDigitalAssetInitAbstract
-{
+abstract contract LSP8MintableInitAbstract is ILSP8Mintable, LSP8IdentifiableDigitalAssetInitAbstract {
     /// @notice Indicates whether minting is currently enabled.
     bool public isMintable;
 
@@ -37,11 +34,7 @@ abstract contract LSP8MintableInitAbstract is
         bool mintable_
     ) internal virtual onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            lsp8TokenIdFormat_
+            name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_
         );
         __LSP8Mintable_init_unchained(mintable_);
     }
@@ -49,9 +42,7 @@ abstract contract LSP8MintableInitAbstract is
     /// @notice Unchained initializer for the minting status.
     /// @dev Sets the initial minting status.
     /// @param mintable_ True to enable minting after deployment, false to disable it forever.
-    function __LSP8Mintable_init_unchained(
-        bool mintable_
-    ) internal virtual onlyInitializing {
+    function __LSP8Mintable_init_unchained(bool mintable_) internal virtual onlyInitializing {
         isMintable = mintable_;
     }
 
@@ -63,12 +54,7 @@ abstract contract LSP8MintableInitAbstract is
     }
 
     /// @inheritdoc ILSP8Mintable
-    function mint(
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) public virtual override onlyOwner {
+    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public virtual override onlyOwner {
         _mint(to, tokenId, force, data);
     }
 
@@ -78,12 +64,7 @@ abstract contract LSP8MintableInitAbstract is
     /// @param tokenId The unique identifier for the token to mint.
     /// @param force When true, allows minting to any address; when false, requires `to` to support LSP1 UniversalReceiver.
     /// @param data Additional data included in the Transfer event and sent to `to`'s UniversalReceiver hook, if applicable.
-    function _mint(
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
+    function _mint(address to, bytes32 tokenId, bool force, bytes memory data) internal virtual override {
         require(isMintable, LSP8MintDisabled());
 
         super._mint(to, tokenId, force, data);

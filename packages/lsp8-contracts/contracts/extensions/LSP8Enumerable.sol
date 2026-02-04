@@ -36,13 +36,11 @@ abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
      * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param data The data sent alongside the the token transfer.
      */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
+    function _beforeTokenTransfer(address from, address to, bytes32 tokenId, bool force, bytes memory data)
+        internal
+        virtual
+        override
+    {
         // `tokenId` being minted
         if (from == address(0)) {
             uint256 index = totalSupply();

@@ -22,13 +22,7 @@ contract LSP7CappedSupply is LSP7CappedSupplyAbstract {
         bool isNonDivisible_,
         uint256 tokenSupplyCap_
     )
-        LSP7DigitalAsset(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            isNonDivisible_
-        )
+        LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_)
         LSP7CappedSupplyAbstract(tokenSupplyCap_)
     {}
 }

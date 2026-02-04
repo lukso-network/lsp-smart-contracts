@@ -30,24 +30,13 @@ contract MockLSP8CappedBalance is LSP8CappedBalanceAbstract {
         uint256 lsp8TokenIdFormat_,
         uint256 tokenBalanceCap_
     )
-        LSP8IdentifiableDigitalAsset(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            lsp8TokenIdFormat_
-        )
+        LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_)
         LSP8AllowlistAbstract(newOwner_)
         LSP8CappedBalanceAbstract(tokenBalanceCap_)
     {}
 
     // Helper function to mint tokens for testing
-    function mint(
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) public {
+    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {
         _mint(to, tokenId, force, data);
     }
 
@@ -73,36 +62,18 @@ contract LSP8CappedBalanceTest is Test {
     MockLSP8CappedBalance lsp8CappedBalance;
 
     function setUp() public {
-        lsp8CappedBalance = new MockLSP8CappedBalance(
-            name,
-            symbol,
-            owner,
-            tokenType,
-            tokenIdFormat,
-            tokenBalanceCap
-        );
+        lsp8CappedBalance = new MockLSP8CappedBalance(name, symbol, owner, tokenType, tokenIdFormat, tokenBalanceCap);
     }
 
     // Test constructor initialization
     function test_ConstructorInitializesCorrectly() public {
-        assertEq(
-            lsp8CappedBalance.tokenBalanceCap(),
-            tokenBalanceCap,
-            "Balance cap should be set correctly"
-        );
-        assertTrue(
-            lsp8CappedBalance.isAllowlisted(owner),
-            "Owner should be allowlisted"
-        );
+        assertEq(lsp8CappedBalance.tokenBalanceCap(), tokenBalanceCap, "Balance cap should be set correctly");
+        assertTrue(lsp8CappedBalance.isAllowlisted(owner), "Owner should be allowlisted");
     }
 
     // Test balance cap is returned correctly
     function test_TokenBalanceCapReturnsCorrectValue() public {
-        assertEq(
-            lsp8CappedBalance.tokenBalanceCap(),
-            tokenBalanceCap,
-            "Should return correct balance cap"
-        );
+        assertEq(lsp8CappedBalance.tokenBalanceCap(), tokenBalanceCap, "Should return correct balance cap");
     }
 
     // Test minting up to cap succeeds
@@ -149,14 +120,7 @@ contract LSP8CappedBalanceTest is Test {
         assertEq(lsp8CappedBalance.balanceOf(user1), 3);
 
         // Transfer 4th token to user1 (should fail, exceeds cap)
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                LSP8CappedBalanceExceeded.selector,
-                user1,
-                3,
-                tokenBalanceCap
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(LSP8CappedBalanceExceeded.selector, user1, 3, tokenBalanceCap));
         lsp8CappedBalance.transfer(owner, user1, bytes32(uint256(4)), true, "");
     }
 
@@ -220,14 +184,7 @@ contract LSP8CappedBalanceTest is Test {
 
         // user1 transfers to user2 (should fail, user2 at cap)
         vm.prank(user1);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                LSP8CappedBalanceExceeded.selector,
-                user2,
-                3,
-                tokenBalanceCap
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(LSP8CappedBalanceExceeded.selector, user2, 3, tokenBalanceCap));
         lsp8CappedBalance.transfer(user1, user2, bytes32(uint256(1)), true, "");
 
         // user2 transfers to user1 (should succeed, user1 under cap)
@@ -262,14 +219,7 @@ contract LSP8CappedBalanceTest is Test {
         // Now user1 cannot receive more tokens via transfer
         lsp8CappedBalance.mint(owner, bytes32(uint256(5)), true, "");
 
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                LSP8CappedBalanceExceeded.selector,
-                user1,
-                4,
-                tokenBalanceCap
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(LSP8CappedBalanceExceeded.selector, user1, 4, tokenBalanceCap));
         lsp8CappedBalance.transfer(owner, user1, bytes32(uint256(5)), true, "");
     }
 
@@ -279,28 +229,14 @@ contract LSP8CappedBalanceTest is Test {
         vm.assume(cap > 0 && cap <= 100);
         vm.assume(mintCount > 0 && mintCount <= 100);
 
-        MockLSP8CappedBalance token = new MockLSP8CappedBalance(
-            name,
-            symbol,
-            owner,
-            tokenType,
-            tokenIdFormat,
-            cap
-        );
+        MockLSP8CappedBalance token = new MockLSP8CappedBalance(name, symbol, owner, tokenType, tokenIdFormat, cap);
 
         for (uint256 i = 1; i <= mintCount; i++) {
             if (i <= cap) {
                 token.mint(user1, bytes32(i), true, "");
                 assertEq(token.balanceOf(user1), i);
             } else {
-                vm.expectRevert(
-                    abi.encodeWithSelector(
-                        LSP8CappedBalanceExceeded.selector,
-                        user1,
-                        cap,
-                        cap
-                    )
-                );
+                vm.expectRevert(abi.encodeWithSelector(LSP8CappedBalanceExceeded.selector, user1, cap, cap));
                 token.mint(user1, bytes32(i), true, "");
             }
         }
@@ -314,12 +250,7 @@ contract LSP8CappedBalanceTest is Test {
         lsp8CappedBalance.addToAllowlist(allowlistedAddr);
 
         for (uint256 i = 1; i <= mintCount; i++) {
-            lsp8CappedBalance.mint(
-                allowlistedAddr,
-                bytes32(uint256(1000 + i)),
-                true,
-                ""
-            );
+            lsp8CappedBalance.mint(allowlistedAddr, bytes32(uint256(1000 + i)), true, "");
         }
 
         assertEq(lsp8CappedBalance.balanceOf(allowlistedAddr), mintCount);
@@ -328,14 +259,8 @@ contract LSP8CappedBalanceTest is Test {
     function testFuzz_ZeroCapAllowsUnlimited(uint256 mintCount) public {
         vm.assume(mintCount > 0 && mintCount <= 100);
 
-        MockLSP8CappedBalance unlimitedToken = new MockLSP8CappedBalance(
-            name,
-            symbol,
-            owner,
-            tokenType,
-            tokenIdFormat,
-            0
-        );
+        MockLSP8CappedBalance unlimitedToken =
+            new MockLSP8CappedBalance(name, symbol, owner, tokenType, tokenIdFormat, 0);
 
         for (uint256 i = 1; i <= mintCount; i++) {
             unlimitedToken.mint(user1, bytes32(i), true, "");

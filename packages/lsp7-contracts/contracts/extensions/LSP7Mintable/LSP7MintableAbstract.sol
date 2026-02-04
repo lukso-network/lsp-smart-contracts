@@ -32,12 +32,7 @@ abstract contract LSP7MintableAbstract is ILSP7Mintable, LSP7DigitalAsset {
     }
 
     /// @inheritdoc ILSP7Mintable
-    function mint(
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) public virtual override onlyOwner {
+    function mint(address to, uint256 amount, bool force, bytes memory data) public virtual override onlyOwner {
         _mint(to, amount, force, data);
     }
 
@@ -47,12 +42,7 @@ abstract contract LSP7MintableAbstract is ILSP7Mintable, LSP7DigitalAsset {
     /// @param amount The number of tokens to mint.
     /// @param force When true, allows minting to any address; when false, requires `to` to support LSP1 UniversalReceiver.
     /// @param data Additional data included in the Transfer event and sent to `to`’s UniversalReceiver hook, if applicable.
-    function _mint(
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
+    function _mint(address to, uint256 amount, bool force, bytes memory data) internal virtual override {
         require(isMintable, LSP7MintDisabled());
         super._mint(to, amount, force, data);
     }

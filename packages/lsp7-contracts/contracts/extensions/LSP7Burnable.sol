@@ -12,11 +12,7 @@ abstract contract LSP7Burnable is LSP7DigitalAsset {
     /**
      * @dev See internal {_burn} function for details.
      */
-    function burn(
-        address from,
-        uint256 amount,
-        bytes memory data
-    ) public virtual {
+    function burn(address from, uint256 amount, bytes memory data) public virtual {
         if (msg.sender != from) {
             _spendAllowance(msg.sender, from, amount);
         }

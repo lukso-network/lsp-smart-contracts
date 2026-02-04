@@ -52,9 +52,7 @@ error LSP8InvalidTransferBatch();
  * @dev Reverts if the `tokenReceiver` does not implement LSP1
  * when minting or transferring tokens with `bool force` set as `false`.
  */
-error LSP8NotifyTokenReceiverContractMissingLSP1Interface(
-    address tokenReceiver
-);
+error LSP8NotifyTokenReceiverContractMissingLSP1Interface(address tokenReceiver);
 
 /**
  * @dev Reverts if the `tokenReceiver` is an EOA
@@ -102,17 +100,9 @@ error LSP8BatchCallFailed(uint256 callIndex);
 /**
  * @dev Reverts when the token owner changed inside the {_beforeTokenTransfer} hook.
  */
-error LSP8TokenOwnerChanged(
-    bytes32 tokenId,
-    address oldOwner,
-    address newOwner
-);
+error LSP8TokenOwnerChanged(bytes32 tokenId, address oldOwner, address newOwner);
 
 /**
  * @dev Reverts when the call to revoke operator is not authorized.
  */
-error LSP8RevokeOperatorNotAuthorized(
-    address caller,
-    address tokenOwner,
-    bytes32 tokenId
-);
+error LSP8RevokeOperatorNotAuthorized(address caller, address tokenOwner, bytes32 tokenId);

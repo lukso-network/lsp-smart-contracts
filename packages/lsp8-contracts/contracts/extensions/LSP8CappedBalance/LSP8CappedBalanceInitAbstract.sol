@@ -15,10 +15,7 @@ import {LSP8CappedBalanceExceeded} from "./LSP8CappedBalanceErrors.sol";
 
 /// @title LSP8CappedBalanceInitAbstract
 /// @dev Abstract contract implementing a per-address NFT count cap for LSP8 tokens, with exemptions for allowlisted addresses. Inherits from LSP8AllowlistInitAbstract to integrate allowlist functionality.
-abstract contract LSP8CappedBalanceInitAbstract is
-    ILSP8CappedBalance,
-    LSP8AllowlistInitAbstract
-{
+abstract contract LSP8CappedBalanceInitAbstract is ILSP8CappedBalance, LSP8AllowlistInitAbstract {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @notice The maximum number of NFTs allowed per address.
@@ -40,22 +37,14 @@ abstract contract LSP8CappedBalanceInitAbstract is
         uint256 lsp8TokenIdFormat_,
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
-        __LSP8Allowlist_init(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            lsp8TokenIdFormat_
-        );
+        __LSP8Allowlist_init(name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_);
         __LSP8CappedBalance_init_unchained(tokenBalanceCap_);
     }
 
     /// @notice Unchained initializer for the balance cap.
     /// @dev Sets the balance cap.
     /// @param tokenBalanceCap_ The maximum number of NFTs per address, 0 to disable.
-    function __LSP8CappedBalance_init_unchained(
-        uint256 tokenBalanceCap_
-    ) internal virtual onlyInitializing {
+    function __LSP8CappedBalance_init_unchained(uint256 tokenBalanceCap_) internal virtual onlyInitializing {
         _tokenBalanceCap = tokenBalanceCap_;
     }
 
@@ -68,16 +57,20 @@ abstract contract LSP8CappedBalanceInitAbstract is
     /// @dev The address(0) is not subject to balance cap checks as this address is used for burning tokens. Reverts with {LSP8CappedBalanceExceeded} if the recipient's NFT count after receiving the token would exceed the maximum allowed.
     /// @param to The address receiving the token.
     function _tokenBalanceCapCheck(
-        address /* from */,
+        address,
+        /* from */
         address to,
-        bytes32 /* tokenId */,
-        bool /* force */,
+        bytes32,
+        /* tokenId */
+        bool,
+        /* force */
         bytes memory /* data */
-    ) internal virtual {
+    )
+        internal
+        virtual
+    {
         require(
-            to == address(0) ||
-                tokenBalanceCap() == 0 ||
-                balanceOf(to) + 1 <= tokenBalanceCap(),
+            to == address(0) || tokenBalanceCap() == 0 || balanceOf(to) + 1 <= tokenBalanceCap(),
             LSP8CappedBalanceExceeded(to, balanceOf(to), tokenBalanceCap())
         );
     }
@@ -89,13 +82,11 @@ abstract contract LSP8CappedBalanceInitAbstract is
     /// @param tokenId The unique identifier of the token being transferred.
     /// @param force Whether to force the transfer.
     /// @param data Additional data for the transfer.
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
+    function _beforeTokenTransfer(address from, address to, bytes32 tokenId, bool force, bytes memory data)
+        internal
+        virtual
+        override
+    {
         if (isAllowlisted(to)) return;
         _tokenBalanceCapCheck(from, to, tokenId, force, data);
     }

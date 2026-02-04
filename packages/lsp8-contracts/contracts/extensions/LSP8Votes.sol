@@ -3,10 +3,7 @@ pragma solidity ^0.8.27;
 
 import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
 import {Votes} from "@openzeppelin/contracts/governance/utils/Votes.sol";
-import {
-    _TYPEID_LSP8_VOTESDELEGATOR,
-    _TYPEID_LSP8_VOTESDELEGATEE
-} from "./LSP8VotesConstants.sol";
+import {_TYPEID_LSP8_VOTESDELEGATOR, _TYPEID_LSP8_VOTESDELEGATEE} from "./LSP8VotesConstants.sol";
 import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
 
 /**
@@ -27,13 +24,11 @@ abstract contract LSP8Votes is LSP8IdentifiableDigitalAsset, Votes {
      *
      * @custom:events {DelegateVotesChanged} event.
      */
-    function _afterTokenTransfer(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
+    function _afterTokenTransfer(address from, address to, bytes32 tokenId, bool force, bytes memory data)
+        internal
+        virtual
+        override
+    {
         _transferVotingUnits(from, to, 1);
         super._afterTokenTransfer(from, to, tokenId, force, data);
     }
@@ -43,9 +38,7 @@ abstract contract LSP8Votes is LSP8IdentifiableDigitalAsset, Votes {
      *
      * @custom:warning Overriding this function will likely result in incorrect vote tracking.
      */
-    function _getVotingUnits(
-        address account
-    ) internal view virtual override returns (uint256) {
+    function _getVotingUnits(address account) internal view virtual override returns (uint256) {
         return balanceOf(account);
     }
 
@@ -55,41 +48,22 @@ abstract contract LSP8Votes is LSP8IdentifiableDigitalAsset, Votes {
      *
      * @custom:events {DelegateChanged} event.
      */
-    function _delegate(
-        address delegator,
-        address delegatee
-    ) internal virtual override {
+    function _delegate(address delegator, address delegatee) internal virtual override {
         uint256 delegatorBalance = balanceOf(delegator);
 
         super._delegate(delegator, delegatee);
 
         // Notify the delegator if it's not address(0)
         if (delegator != address(0)) {
-            bytes memory delegatorNotificationData = abi.encode(
-                msg.sender,
-                delegatee,
-                delegatorBalance
-            );
-            LSP1Utils.notifyUniversalReceiver(
-                delegator,
-                _TYPEID_LSP8_VOTESDELEGATOR,
-                delegatorNotificationData
-            );
+            bytes memory delegatorNotificationData = abi.encode(msg.sender, delegatee, delegatorBalance);
+            LSP1Utils.notifyUniversalReceiver(delegator, _TYPEID_LSP8_VOTESDELEGATOR, delegatorNotificationData);
         }
 
         // Only notify the new delegatee if it's not address(0) and if there's actual voting power
         if (delegatee != address(0) && delegatorBalance > 0) {
-            bytes memory delegateeNotificationData = abi.encode(
-                msg.sender,
-                delegator,
-                delegatorBalance
-            );
+            bytes memory delegateeNotificationData = abi.encode(msg.sender, delegator, delegatorBalance);
 
-            LSP1Utils.notifyUniversalReceiver(
-                delegatee,
-                _TYPEID_LSP8_VOTESDELEGATEE,
-                delegateeNotificationData
-            );
+            LSP1Utils.notifyUniversalReceiver(delegatee, _TYPEID_LSP8_VOTESDELEGATEE, delegateeNotificationData);
         }
     }
 }

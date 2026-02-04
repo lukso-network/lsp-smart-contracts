@@ -17,12 +17,7 @@ interface ILSP7DigitalAsset {
      * @param data Any additional data included by the caller during the transfer, and sent in the LSP1 hooks to the `from` and `to` addresses.
      */
     event Transfer(
-        address indexed operator,
-        address indexed from,
-        address indexed to,
-        uint256 amount,
-        bool force,
-        bytes data
+        address indexed operator, address indexed from, address indexed to, uint256 amount, bool force, bytes data
     );
 
     /**
@@ -33,10 +28,7 @@ interface ILSP7DigitalAsset {
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
     event OperatorAuthorizationChanged(
-        address indexed operator,
-        address indexed tokenOwner,
-        uint256 indexed amount,
-        bytes operatorNotificationData
+        address indexed operator, address indexed tokenOwner, uint256 indexed amount, bytes operatorNotificationData
     );
 
     /**
@@ -47,10 +39,7 @@ interface ILSP7DigitalAsset {
      * @param operatorNotificationData The data to notify the operator about via LSP1.
      */
     event OperatorRevoked(
-        address indexed operator,
-        address indexed tokenOwner,
-        bool indexed notified,
-        bytes operatorNotificationData
+        address indexed operator, address indexed tokenOwner, bool indexed notified, bytes operatorNotificationData
     );
 
     // --- Token queries
@@ -108,11 +97,7 @@ interface ILSP7DigitalAsset {
      * @custom:events {OperatorAuthorizationChanged} when allowance is given to a new operator or
      * an existing operator's allowance is updated.
      */
-    function authorizeOperator(
-        address operator,
-        uint256 amount,
-        bytes memory operatorNotificationData
-    ) external;
+    function authorizeOperator(address operator, uint256 amount, bytes memory operatorNotificationData) external;
 
     /**
      * @dev Enables `tokenOwner` to remove `operator` for its tokens, disallowing it to send any amount of tokens on its behalf.
@@ -129,12 +114,8 @@ interface ILSP7DigitalAsset {
      *
      * @custom:events {OperatorRevoked} event with address of the operator being revoked for the caller (token holder).
      */
-    function revokeOperator(
-        address operator,
-        address tokenOwner,
-        bool notify,
-        bytes memory operatorNotificationData
-    ) external;
+    function revokeOperator(address operator, address tokenOwner, bool notify, bytes memory operatorNotificationData)
+        external;
 
     /**
      * @custom:info This function in the LSP7 contract can be used as a prevention mechanism
@@ -156,11 +137,7 @@ interface ILSP7DigitalAsset {
      *
      * @custom:events {OperatorAuthorizationChanged} indicating the updated allowance
      */
-    function increaseAllowance(
-        address operator,
-        uint256 addedAmount,
-        bytes memory operatorNotificationData
-    ) external;
+    function increaseAllowance(address operator, uint256 addedAmount, bytes memory operatorNotificationData) external;
 
     /**
      * @custom:info This function in the LSP7 contract can be used as a prevention mechanism
@@ -205,10 +182,7 @@ interface ILSP7DigitalAsset {
      * @custom:info If this function is called with the same address for `operator` and `tokenOwner`, it will simply read the `tokenOwner`'s balance
      * (since a tokenOwner is its own operator).
      */
-    function authorizedAmountFor(
-        address operator,
-        address tokenOwner
-    ) external view returns (uint256);
+    function authorizedAmountFor(address operator, address tokenOwner) external view returns (uint256);
 
     /**
      * @dev Returns all `operator` addresses that are allowed to transfer or burn on behalf of `tokenOwner`.
@@ -216,9 +190,7 @@ interface ILSP7DigitalAsset {
      * @param tokenOwner The token owner to get the operators for.
      * @return An array of operators allowed to transfer or burn tokens on behalf of `tokenOwner`.
      */
-    function getOperatorsOf(
-        address tokenOwner
-    ) external view returns (address[] memory);
+    function getOperatorsOf(address tokenOwner) external view returns (address[] memory);
 
     // --- Transfer functionality
 
@@ -256,13 +228,7 @@ interface ILSP7DigitalAsset {
      * @custom:warning Be aware that when either the sender or the recipient can have logic that revert in their `universalReceiver(...)` function when being notified.
      * This even if the `force` was set to `true`.
      */
-    function transfer(
-        address from,
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) external;
+    function transfer(address from, address to, uint256 amount, bool force, bytes memory data) external;
 
     /**
      * @dev Same as {`transfer(...)`} but transfer multiple tokens based on the arrays of `from`, `to`, `amount`.
@@ -299,7 +265,5 @@ interface ILSP7DigitalAsset {
      * @param data An array of ABI encoded function calls to be called on the contract.
      * @return results An array of abi-encoded data returned by the functions executed.
      */
-    function batchCalls(
-        bytes[] calldata data
-    ) external returns (bytes[] memory results);
+    function batchCalls(bytes[] calldata data) external returns (bytes[] memory results);
 }

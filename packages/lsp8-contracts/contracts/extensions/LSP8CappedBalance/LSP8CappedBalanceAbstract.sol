@@ -15,10 +15,7 @@ import {LSP8CappedBalanceExceeded} from "./LSP8CappedBalanceErrors.sol";
 
 /// @title LSP8CappedBalanceAbstract
 /// @dev Abstract contract implementing a per-address NFT count cap for LSP8 tokens, with exemptions for allowlisted addresses. Inherits from LSP8AllowlistAbstract to integrate allowlist functionality.
-abstract contract LSP8CappedBalanceAbstract is
-    ILSP8CappedBalance,
-    LSP8AllowlistAbstract
-{
+abstract contract LSP8CappedBalanceAbstract is ILSP8CappedBalance, LSP8AllowlistAbstract {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @notice The immutable maximum number of NFTs allowed per address.
@@ -40,16 +37,20 @@ abstract contract LSP8CappedBalanceAbstract is
     /// @dev The address(0) is not subject to balance cap checks as this address is used for burning tokens. Reverts with {LSP8CappedBalanceExceeded} if the recipient's NFT count after receiving the token would exceed the maximum allowed.
     /// @param to The address receiving the token.
     function _tokenBalanceCapCheck(
-        address /* from */,
+        address,
+        /* from */
         address to,
-        bytes32 /* tokenId */,
-        bool /* force */,
+        bytes32,
+        /* tokenId */
+        bool,
+        /* force */
         bytes memory /* data */
-    ) internal virtual {
+    )
+        internal
+        virtual
+    {
         require(
-            to == address(0) ||
-                tokenBalanceCap() == 0 ||
-                balanceOf(to) + 1 <= tokenBalanceCap(),
+            to == address(0) || tokenBalanceCap() == 0 || balanceOf(to) + 1 <= tokenBalanceCap(),
             LSP8CappedBalanceExceeded(to, balanceOf(to), tokenBalanceCap())
         );
     }
@@ -61,13 +62,11 @@ abstract contract LSP8CappedBalanceAbstract is
     /// @param tokenId The unique identifier of the token being transferred.
     /// @param force Whether to force the transfer.
     /// @param data Additional data for the transfer.
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
+    function _beforeTokenTransfer(address from, address to, bytes32 tokenId, bool force, bytes memory data)
+        internal
+        virtual
+        override
+    {
         if (isAllowlisted(to)) return;
         _tokenBalanceCapCheck(from, to, tokenId, force, data);
     }
