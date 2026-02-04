@@ -18,5 +18,10 @@ interface ILSP8Mintable {
     /// @param tokenId The unique identifier for the token to mint.
     /// @param force When true, allows minting to any address; when false, requires `to` to support LSP1 UniversalReceiver.
     /// @param data Additional data included in the Transfer event and sent to `to`'s UniversalReceiver hook, if applicable.
-    function mint(address to, bytes32 tokenId, bool force, bytes memory data) external;
+    function mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) external;
 }

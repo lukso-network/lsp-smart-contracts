@@ -29,7 +29,13 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
         bool isNonDivisible_,
         bool mintable_
     ) external virtual initializer {
-        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_);
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
         __LSP7Mintable_init_unchained(mintable_);
     }
 }

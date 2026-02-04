@@ -20,7 +20,10 @@ import {
 
 /// @title LSP8NonTransferableInitAbstract
 /// @dev Abstract contract implementing non-transferable LSP8 token functionality with transfer lock periods and allowlist support.
-abstract contract LSP8NonTransferableInitAbstract is ILSP8NonTransferable, LSP8AllowlistInitAbstract {
+abstract contract LSP8NonTransferableInitAbstract is
+    ILSP8NonTransferable,
+    LSP8AllowlistInitAbstract
+{
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -48,20 +51,31 @@ abstract contract LSP8NonTransferableInitAbstract is ILSP8NonTransferable, LSP8A
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) internal virtual onlyInitializing {
-        __LSP8Allowlist_init(name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_);
-        __LSP8NonTransferable_init_unchained(transferLockStart_, transferLockEnd_);
+        __LSP8Allowlist_init(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        );
+        __LSP8NonTransferable_init_unchained(
+            transferLockStart_,
+            transferLockEnd_
+        );
     }
 
     /// @notice Unchained initializer for the transfer settings.
     /// @dev Sets lock period.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
-    function __LSP8NonTransferable_init_unchained(uint256 transferLockStart_, uint256 transferLockEnd_)
-        internal
-        virtual
-        onlyInitializing
-    {
-        require(transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_, LSP8InvalidTransferLockPeriod());
+    function __LSP8NonTransferable_init_unchained(
+        uint256 transferLockStart_,
+        uint256 transferLockEnd_
+    ) internal virtual onlyInitializing {
+        require(
+            transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_,
+            LSP8InvalidTransferLockPeriod()
+        );
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
 
@@ -85,12 +99,17 @@ abstract contract LSP8NonTransferableInitAbstract is ILSP8NonTransferable, LSP8A
             return transferLockStart > block.timestamp;
         }
 
-        return transferLockStart > block.timestamp || transferLockEnd < block.timestamp;
+        return
+            transferLockStart > block.timestamp ||
+            transferLockEnd < block.timestamp;
     }
 
     /// @inheritdoc ILSP8NonTransferable
     function makeTransferable() public virtual override onlyOwner {
-        require(transferLockStart != 0 || transferLockEnd != 0, LSP8TokenAlreadyTransferable());
+        require(
+            transferLockStart != 0 || transferLockEnd != 0,
+            LSP8TokenAlreadyTransferable()
+        );
 
         transferLockStart = 0;
         transferLockEnd = 0;
@@ -99,24 +118,35 @@ abstract contract LSP8NonTransferableInitAbstract is ILSP8NonTransferable, LSP8A
     }
 
     /// @inheritdoc ILSP8NonTransferable
-    function updateTransferLockPeriod(uint256 newTransferLockStart, uint256 newTransferLockEnd)
-        public
-        virtual
-        override
-        onlyOwner
-    {
+    function updateTransferLockPeriod(
+        uint256 newTransferLockStart,
+        uint256 newTransferLockEnd
+    ) public virtual override onlyOwner {
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
-        require(newTransferLockEnd == 0 || newTransferLockEnd >= newTransferLockStart, LSP8InvalidTransferLockPeriod());
+        require(
+            newTransferLockEnd == 0 ||
+                newTransferLockEnd >= newTransferLockStart,
+            LSP8InvalidTransferLockPeriod()
+        );
 
-        require(newTransferLockStart == 0 || block.timestamp < transferLockStart, LSP8CannotUpdateTransferLockPeriod());
+        require(
+            newTransferLockStart == 0 || block.timestamp < transferLockStart,
+            LSP8CannotUpdateTransferLockPeriod()
+        );
 
-        require(newTransferLockEnd == 0 || block.timestamp < transferLockEnd, LSP8CannotUpdateTransferLockPeriod());
+        require(
+            newTransferLockEnd == 0 || block.timestamp < transferLockEnd,
+            LSP8CannotUpdateTransferLockPeriod()
+        );
 
         transferLockStart = newTransferLockStart;
         transferLockEnd = newTransferLockEnd;
 
-        emit TransferLockPeriodChanged(newTransferLockStart, newTransferLockEnd);
+        emit TransferLockPeriodChanged(
+            newTransferLockStart,
+            newTransferLockEnd
+        );
     }
 
     /// @notice Checks if a token transfer is allowed based on transferability status.
@@ -131,10 +161,7 @@ abstract contract LSP8NonTransferableInitAbstract is ILSP8NonTransferable, LSP8A
         bool,
         /* force */
         bytes memory /* data */
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         require(to == address(0) || isTransferable(), LSP8TransferDisabled());
     }
 
@@ -145,11 +172,13 @@ abstract contract LSP8NonTransferableInitAbstract is ILSP8NonTransferable, LSP8A
     /// @param tokenId The unique identifier of the token being transferred.
     /// @param force Whether to force the transfer (passed to _nonTransferableCheck).
     /// @param data Additional data for the transfer (passed to _nonTransferableCheck).
-    function _beforeTokenTransfer(address from, address to, bytes32 tokenId, bool force, bytes memory data)
-        internal
-        virtual
-        override
-    {
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
         if (isAllowlisted(from)) return;
         _nonTransferableCheck(from, to, tokenId, force, data);
     }

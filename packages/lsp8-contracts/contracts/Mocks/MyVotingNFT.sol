@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.27;
 
-import {LSP8Votes, LSP8IdentifiableDigitalAsset} from "../extensions/LSP8Votes.sol";
+import {
+    LSP8Votes,
+    LSP8IdentifiableDigitalAsset
+} from "../extensions/LSP8Votes.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
 /**
@@ -9,7 +12,13 @@ import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
  */
 contract MyVotingNFT is LSP8Votes {
     constructor()
-        LSP8IdentifiableDigitalAsset("MyVotingToken", "MYVTKN", msg.sender, 0, 1)
+        LSP8IdentifiableDigitalAsset(
+            "MyVotingToken",
+            "MYVTKN",
+            msg.sender,
+            0,
+            1
+        )
         EIP712("MyVotingToken", "1")
     {}
 

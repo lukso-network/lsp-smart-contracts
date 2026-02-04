@@ -27,7 +27,15 @@ contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_) {}
+    )
+        LSP8IdentifiableDigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        )
+    {}
 
     /**
      * @notice Minting tokenId `tokenId` for address `to` with the additional data `data` (Note: allow non-LSP1 recipient is set to `force`).
@@ -39,7 +47,12 @@ contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
      * @param force Set to `false` to ensure that you are minting for a recipient that implements LSP1, `false` otherwise for forcing the minting.
      * @param data Any addition data to be sent alongside the minting.
      */
-    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public virtual override onlyOwner {
+    function mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) public virtual override onlyOwner {
         _mint(to, tokenId, force, data);
     }
 }

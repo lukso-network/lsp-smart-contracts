@@ -5,25 +5,17 @@ pragma solidity ^0.8.22;
 import "forge-std/Test.sol";
 
 // modules
-import {
-    LSP7AllowlistAbstract
-} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {LSP7AllowlistAbstract} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // interfaces
-import {
-    ILSP7Allowlist
-} from "../contracts/extensions/LSP7Allowlist/ILSP7Allowlist.sol";
+import {ILSP7Allowlist} from "../contracts/extensions/LSP7Allowlist/ILSP7Allowlist.sol";
 
 // constants
-import {
-    _LSP4_TOKEN_TYPE_TOKEN
-} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 // errors
-import {
-    LSP7AllowListCannotRemoveReservedAddress
-} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistErrors.sol";
+import {LSP7AllowListCannotRemoveReservedAddress} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistErrors.sol";
 
 // Mock contract to test LSP7AllowlistAbstract functionality
 contract MockLSP7Allowlist is LSP7AllowlistAbstract {

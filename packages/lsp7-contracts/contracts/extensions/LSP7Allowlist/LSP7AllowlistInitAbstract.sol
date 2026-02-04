@@ -106,7 +106,7 @@ abstract contract LSP7AllowlistInitAbstract is
         uint256 allowedAddressesCount = _allowlist.length();
         require(
             startIndex < endIndex && endIndex <= allowedAddressesCount,
-            LSP7InvalidAllowlistIndexRange(
+            LSP7AllowListInvalidIndexRange(
                 startIndex,
                 endIndex,
                 allowedAddressesCount

@@ -6,7 +6,10 @@ import {ILSP1UniversalReceiver as ILSP1} from "@lukso/lsp1-contracts/contracts/I
 import {ILSP8IdentifiableDigitalAsset} from "./ILSP8IdentifiableDigitalAsset.sol";
 
 // modules
-import {LSP4DigitalAssetMetadata, ERC725Y} from "@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadata.sol";
+import {
+    LSP4DigitalAssetMetadata,
+    ERC725Y
+} from "@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadata.sol";
 
 import {LSP17Extendable} from "@lukso/lsp17contractextension-contracts/contracts/LSP17Extendable.sol";
 
@@ -110,7 +113,10 @@ abstract contract LSP8IdentifiableDigitalAsset is
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_
     ) LSP4DigitalAssetMetadata(name_, symbol_, newOwner_, lsp4TokenType_) {
-        LSP4DigitalAssetMetadata._setData(_LSP8_TOKENID_FORMAT_KEY, abi.encode(lsp8TokenIdFormat_));
+        LSP4DigitalAssetMetadata._setData(
+            _LSP8_TOKENID_FORMAT_KEY,
+            abi.encode(lsp8TokenIdFormat_)
+        );
     }
 
     // fallback functions
@@ -135,7 +141,9 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * 2. If the data sent to this function is of length less than 4 bytes (not a function selector), revert.
      */
     // solhint-disable-next-line no-complex-fallback
-    fallback(bytes calldata callData) external payable virtual returns (bytes memory) {
+    fallback(
+        bytes calldata callData
+    ) external payable virtual returns (bytes memory) {
         require(msg.data.length >= 4, InvalidFunctionSelector(callData));
         return _fallbackLSP17Extendable(callData);
     }
@@ -170,15 +178,21 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * @custom:info The LSP8 Token contract should not hold any native tokens. Any native tokens received by the contract
      * will be forwarded to the extension address mapped to the selector from `msg.sig`.
      */
-    function _fallbackLSP17Extendable(bytes calldata callData) internal virtual override returns (bytes memory) {
+    function _fallbackLSP17Extendable(
+        bytes calldata callData
+    ) internal virtual override returns (bytes memory) {
         // If there is a function selector
-        (address extension,) = _getExtensionAndForwardValue(msg.sig);
+        (address extension, ) = _getExtensionAndForwardValue(msg.sig);
 
         // if no extension was found, revert
-        require(extension != address(0), NoExtensionFoundForFunctionSelector(msg.sig));
+        require(
+            extension != address(0),
+            NoExtensionFoundForFunctionSelector(msg.sig)
+        );
 
-        (bool success, bytes memory result) =
-            extension.call{value: msg.value}(abi.encodePacked(callData, msg.sender, msg.value));
+        (bool success, bytes memory result) = extension.call{value: msg.value}(
+            abi.encodePacked(callData, msg.sender, msg.value)
+        );
 
         if (success) {
             return result;
@@ -199,20 +213,20 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * - {_LSP17_EXTENSION_PREFIX} + `<bytes4>` (Check [LSP2-ERC725YJSONSchema] for encoding the data key).
      * - If no extension is stored, returns the address(0).
      */
-    function _getExtensionAndForwardValue(bytes4 functionSelector)
-        internal
-        view
-        virtual
-        override
-        returns (address, bool)
-    {
+    function _getExtensionAndForwardValue(
+        bytes4 functionSelector
+    ) internal view virtual override returns (address, bool) {
         // Generate the data key relevant for the functionSelector being called
-        bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(_LSP17_EXTENSION_PREFIX, functionSelector);
+        bytes32 mappedExtensionDataKey = LSP2Utils.generateMappingKey(
+            _LSP17_EXTENSION_PREFIX,
+            functionSelector
+        );
 
         // Check if there is an extension stored under the generated data key
         bytes memory extensionAddress = _getData(mappedExtensionDataKey);
         require(
-            extensionAddress.length == 20 || extensionAddress.length == 0, InvalidExtensionAddress(extensionAddress)
+            extensionAddress.length == 20 || extensionAddress.length == 0,
+            InvalidExtensionAddress(extensionAddress)
         );
 
         return (address(bytes20(extensionAddress)), true);
@@ -221,15 +235,13 @@ abstract contract LSP8IdentifiableDigitalAsset is
     /**
      * @inheritdoc LSP17Extendable
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC725Y, LSP17Extendable)
-        returns (bool)
-    {
-        return interfaceId == _INTERFACEID_LSP8 || super.supportsInterface(interfaceId)
-            || LSP17Extendable._supportsInterfaceInERC165Extension(interfaceId);
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC725Y, LSP17Extendable) returns (bool) {
+        return
+            interfaceId == _INTERFACEID_LSP8 ||
+            super.supportsInterface(interfaceId) ||
+            LSP17Extendable._supportsInterfaceInERC165Extension(interfaceId);
     }
 
     /**
@@ -237,8 +249,14 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * @dev The ERC725Y data key `_LSP8_TOKENID_FORMAT_KEY` cannot be changed
      * once the identifiable digital asset contract has been deployed.
      */
-    function _setData(bytes32 dataKey, bytes memory dataValue) internal virtual override {
-        require(dataKey != _LSP8_TOKENID_FORMAT_KEY, LSP8TokenIdFormatNotEditable());
+    function _setData(
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) internal virtual override {
+        require(
+            dataKey != _LSP8_TOKENID_FORMAT_KEY,
+            LSP8TokenIdFormatNotEditable()
+        );
         LSP4DigitalAssetMetadata._setData(dataKey, dataValue);
     }
 
@@ -256,14 +274,18 @@ abstract contract LSP8IdentifiableDigitalAsset is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function balanceOf(address tokenOwner) public view virtual override returns (uint256) {
+    function balanceOf(
+        address tokenOwner
+    ) public view virtual override returns (uint256) {
         return _ownedTokens[tokenOwner].length();
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenOwnerOf(bytes32 tokenId) public view virtual override returns (address) {
+    function tokenOwnerOf(
+        bytes32 tokenId
+    ) public view virtual override returns (address) {
         address tokenOwner = _tokenOwners[tokenId];
         require(tokenOwner != address(0), LSP8NonExistentTokenId(tokenId));
 
@@ -273,7 +295,9 @@ abstract contract LSP8IdentifiableDigitalAsset is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function tokenIdsOf(address tokenOwner) public view virtual override returns (bytes32[] memory) {
+    function tokenIdsOf(
+        address tokenOwner
+    ) public view virtual override returns (bytes32[] memory) {
         return _ownedTokens[tokenOwner].values();
     }
 
@@ -282,31 +306,28 @@ abstract contract LSP8IdentifiableDigitalAsset is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function getDataForTokenId(bytes32 tokenId, bytes32 dataKey)
-        public
-        view
-        virtual
-        override
-        returns (bytes memory dataValue)
-    {
+    function getDataForTokenId(
+        bytes32 tokenId,
+        bytes32 dataKey
+    ) public view virtual override returns (bytes memory dataValue) {
         return _getDataForTokenId(tokenId, dataKey);
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function getDataBatchForTokenIds(bytes32[] memory tokenIds, bytes32[] memory dataKeys)
-        public
-        view
-        virtual
-        override
-        returns (bytes[] memory dataValues)
-    {
-        require(tokenIds.length == dataKeys.length, LSP8TokenIdsDataLengthMismatch());
+    function getDataBatchForTokenIds(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys
+    ) public view virtual override returns (bytes[] memory dataValues) {
+        require(
+            tokenIds.length == dataKeys.length,
+            LSP8TokenIdsDataLengthMismatch()
+        );
 
         dataValues = new bytes[](tokenIds.length);
 
-        for (uint256 i; i < tokenIds.length;) {
+        for (uint256 i; i < tokenIds.length; ) {
             dataValues[i] = _getDataForTokenId(tokenIds[i], dataKeys[i]);
 
             // Increment the iterator in unchecked block to save gas
@@ -321,31 +342,31 @@ abstract contract LSP8IdentifiableDigitalAsset is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function setDataForTokenId(bytes32 tokenId, bytes32 dataKey, bytes memory dataValue)
-        public
-        virtual
-        override
-        onlyOwner
-    {
+    function setDataForTokenId(
+        bytes32 tokenId,
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) public virtual override onlyOwner {
         _setDataForTokenId(tokenId, dataKey, dataValue);
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function setDataBatchForTokenIds(bytes32[] memory tokenIds, bytes32[] memory dataKeys, bytes[] memory dataValues)
-        public
-        virtual
-        override
-        onlyOwner
-    {
+    function setDataBatchForTokenIds(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys,
+        bytes[] memory dataValues
+    ) public virtual override onlyOwner {
         require(
-            tokenIds.length == dataKeys.length && dataKeys.length == dataValues.length, LSP8TokenIdsDataLengthMismatch()
+            tokenIds.length == dataKeys.length &&
+                dataKeys.length == dataValues.length,
+            LSP8TokenIdsDataLengthMismatch()
         );
 
         require(tokenIds.length != 0, LSP8TokenIdsDataEmptyArray());
 
-        for (uint256 i; i < tokenIds.length;) {
+        for (uint256 i; i < tokenIds.length; ) {
             _setDataForTokenId(tokenIds[i], dataKeys[i], dataValues[i]);
 
             // Increment the iterator in unchecked block to save gas
@@ -362,10 +383,14 @@ abstract contract LSP8IdentifiableDigitalAsset is
      *
      * @custom:info It's not possible to send value along the functions call due to the use of `delegatecall`.
      */
-    function batchCalls(bytes[] calldata data) public virtual override returns (bytes[] memory results) {
+    function batchCalls(
+        bytes[] calldata data
+    ) public virtual override returns (bytes[] memory results) {
         results = new bytes[](data.length);
-        for (uint256 i; i < data.length;) {
-            (bool success, bytes memory result) = address(this).delegatecall(data[i]);
+        for (uint256 i; i < data.length; ) {
+            (bool success, bytes memory result) = address(this).delegatecall(
+                data[i]
+            );
 
             if (!success) {
                 // Look for revert reason and bubble it up if present
@@ -395,21 +420,29 @@ abstract contract LSP8IdentifiableDigitalAsset is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function authorizeOperator(address operator, bytes32 tokenId, bytes memory operatorNotificationData)
-        public
-        virtual
-        override
-    {
+    function authorizeOperator(
+        address operator,
+        bytes32 tokenId,
+        bytes memory operatorNotificationData
+    ) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
 
-        require(msg.sender == tokenOwner, LSP8NotTokenOwner(tokenOwner, tokenId, msg.sender));
+        require(
+            msg.sender == tokenOwner,
+            LSP8NotTokenOwner(tokenOwner, tokenId, msg.sender)
+        );
         require(operator != address(0), LSP8CannotUseAddressZeroAsOperator());
         require(operator != tokenOwner, LSP8TokenOwnerCannotBeOperator());
 
         bool isAdded = _operators[tokenId].add(operator);
         require(isAdded, LSP8OperatorAlreadyAuthorized(operator, tokenId));
 
-        emit OperatorAuthorizationChanged(operator, tokenOwner, tokenId, operatorNotificationData);
+        emit OperatorAuthorizationChanged(
+            operator,
+            tokenOwner,
+            tokenId,
+            operatorNotificationData
+        );
 
         bytes memory lsp1Data = abi.encode(
             msg.sender,
@@ -424,21 +457,31 @@ abstract contract LSP8IdentifiableDigitalAsset is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function revokeOperator(address operator, bytes32 tokenId, bool notify, bytes memory operatorNotificationData)
-        public
-        virtual
-        override
-    {
+    function revokeOperator(
+        address operator,
+        bytes32 tokenId,
+        bool notify,
+        bytes memory operatorNotificationData
+    ) public virtual override {
         address tokenOwner = tokenOwnerOf(tokenId);
 
         if (msg.sender != tokenOwner) {
-            require(msg.sender == operator, LSP8RevokeOperatorNotAuthorized(msg.sender, tokenOwner, tokenId));
+            require(
+                msg.sender == operator,
+                LSP8RevokeOperatorNotAuthorized(msg.sender, tokenOwner, tokenId)
+            );
         }
 
         require(operator != address(0), LSP8CannotUseAddressZeroAsOperator());
         require(operator != tokenOwner, LSP8TokenOwnerCannotBeOperator());
 
-        _revokeOperator(operator, tokenOwner, tokenId, notify, operatorNotificationData);
+        _revokeOperator(
+            operator,
+            tokenOwner,
+            tokenId,
+            notify,
+            operatorNotificationData
+        );
 
         if (notify) {
             bytes memory lsp1Data = abi.encode(
@@ -455,14 +498,19 @@ abstract contract LSP8IdentifiableDigitalAsset is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function isOperatorFor(address operator, bytes32 tokenId) public view virtual override returns (bool) {
+    function isOperatorFor(
+        address operator,
+        bytes32 tokenId
+    ) public view virtual override returns (bool) {
         return _isOperatorOrOwner(operator, tokenId);
     }
 
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function getOperatorsOf(bytes32 tokenId) public view virtual override returns (address[] memory) {
+    function getOperatorsOf(
+        bytes32 tokenId
+    ) public view virtual override returns (address[] memory) {
         _existsOrError(tokenId);
 
         return _operators[tokenId].values();
@@ -472,8 +520,12 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * @dev verifies if the `caller` is operator or owner for the `tokenId`
      * @return true if `caller` is either operator or owner
      */
-    function _isOperatorOrOwner(address caller, bytes32 tokenId) internal view virtual returns (bool) {
-        return (caller == tokenOwnerOf(tokenId) || _operators[tokenId].contains(caller));
+    function _isOperatorOrOwner(
+        address caller,
+        bytes32 tokenId
+    ) internal view virtual returns (bool) {
+        return (caller == tokenOwnerOf(tokenId) ||
+            _operators[tokenId].contains(caller));
     }
 
     // --- Transfer functionality
@@ -481,12 +533,17 @@ abstract contract LSP8IdentifiableDigitalAsset is
     /**
      * @inheritdoc ILSP8IdentifiableDigitalAsset
      */
-    function transfer(address from, address to, bytes32 tokenId, bool force, bytes memory data)
-        public
-        virtual
-        override
-    {
-        require(_isOperatorOrOwner(msg.sender, tokenId), LSP8NotTokenOperator(tokenId, msg.sender));
+    function transfer(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) public virtual override {
+        require(
+            _isOperatorOrOwner(msg.sender, tokenId),
+            LSP8NotTokenOperator(tokenId, msg.sender)
+        );
 
         _transfer(from, to, tokenId, force, data);
     }
@@ -503,12 +560,14 @@ abstract contract LSP8IdentifiableDigitalAsset is
     ) public virtual override {
         uint256 fromLength = from.length;
         require(
-            fromLength == to.length && fromLength == tokenId.length && fromLength == force.length
-                && fromLength == data.length,
+            fromLength == to.length &&
+                fromLength == tokenId.length &&
+                fromLength == force.length &&
+                fromLength == data.length,
             LSP8InvalidTransferBatch()
         );
 
-        for (uint256 i; i < fromLength;) {
+        for (uint256 i; i < fromLength; ) {
             transfer(from[i], to[i], tokenId[i], force[i], data[i]);
 
             unchecked {
@@ -530,7 +589,13 @@ abstract contract LSP8IdentifiableDigitalAsset is
         bool isRemoved = _operators[tokenId].remove(operator);
         require(isRemoved, LSP8NonExistingOperator(operator, tokenId));
 
-        emit OperatorRevoked(operator, tokenOwner, tokenId, notified, operatorNotificationData);
+        emit OperatorRevoked(
+            operator,
+            tokenOwner,
+            tokenId,
+            notified,
+            operatorNotificationData
+        );
     }
 
     /**
@@ -539,18 +604,23 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * @param tokenOwner The address that is the owner of the `tokenId`.
      * @param tokenId The token to remove the associated operators for.
      */
-    function _clearOperators(address tokenOwner, bytes32 tokenId) internal virtual {
+    function _clearOperators(
+        address tokenOwner,
+        bytes32 tokenId
+    ) internal virtual {
         // here is a good example of why having multiple operators will be expensive.. we
         // need to clear them on token transfer
         //
         // NOTE: this may cause a tx to fail if there is too many operators to clear, in which case
         // the tokenOwner needs to call `revokeOperator` until there is less operators to clear and
         // the desired `transfer` or `burn` call can succeed.
-        EnumerableSet.AddressSet storage operatorsForTokenId = _operators[tokenId];
+        EnumerableSet.AddressSet storage operatorsForTokenId = _operators[
+            tokenId
+        ];
 
         uint256 operatorListLength = operatorsForTokenId.length();
         address operator;
-        for (uint256 i; i < operatorListLength;) {
+        for (uint256 i; i < operatorListLength; ) {
             // we are emptying the list, always remove from index 0
             operator = operatorsForTokenId.at(0);
             _revokeOperator(operator, tokenOwner, tokenId, false, "");
@@ -595,7 +665,12 @@ abstract contract LSP8IdentifiableDigitalAsset is
      *
      * @custom:events {Transfer} event with `address(0)` as `from` address.
      */
-    function _mint(address to, bytes32 tokenId, bool force, bytes memory data) internal virtual {
+    function _mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) internal virtual {
         require(to != address(0), LSP8CannotSendToAddressZero());
 
         // Check that `tokenId` is not already minted
@@ -616,7 +691,13 @@ abstract contract LSP8IdentifiableDigitalAsset is
 
         _afterTokenTransfer(address(0), to, tokenId, force, data);
 
-        bytes memory lsp1Data = abi.encode(msg.sender, address(0), to, tokenId, data);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            address(0),
+            to,
+            tokenId,
+            data
+        );
         _notifyTokenReceiver(to, force, lsp1Data);
     }
 
@@ -665,7 +746,13 @@ abstract contract LSP8IdentifiableDigitalAsset is
 
         _afterTokenTransfer(tokenOwner, address(0), tokenId, false, data);
 
-        bytes memory lsp1Data = abi.encode(msg.sender, tokenOwner, address(0), tokenId, data);
+        bytes memory lsp1Data = abi.encode(
+            msg.sender,
+            tokenOwner,
+            address(0),
+            tokenId,
+            data
+        );
 
         _notifyTokenSender(tokenOwner, lsp1Data);
     }
@@ -695,9 +782,18 @@ abstract contract LSP8IdentifiableDigitalAsset is
      *
      * @custom:warning This internal function does not check if the sender is authorized or not to operate on the `tokenId`.
      */
-    function _transfer(address from, address to, bytes32 tokenId, bool force, bytes memory data) internal virtual {
+    function _transfer(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) internal virtual {
         address tokenOwner = tokenOwnerOf(tokenId);
-        require(from == tokenOwner, LSP8NotTokenOwner(tokenOwner, tokenId, from));
+        require(
+            from == tokenOwner,
+            LSP8NotTokenOwner(tokenOwner, tokenId, from)
+        );
 
         require(to != address(0), LSP8CannotSendToAddressZero());
 
@@ -705,7 +801,10 @@ abstract contract LSP8IdentifiableDigitalAsset is
 
         // Check that `tokenId`'s owner was not changed inside the `_beforeTokenTransfer` hook
         address currentTokenOwner = tokenOwnerOf(tokenId);
-        require(currentTokenOwner == tokenOwner, LSP8TokenOwnerChanged(tokenId, tokenOwner, currentTokenOwner));
+        require(
+            currentTokenOwner == tokenOwner,
+            LSP8TokenOwnerChanged(tokenId, tokenOwner, currentTokenOwner)
+        );
 
         _clearOperators(from, tokenId);
 
@@ -731,7 +830,11 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * @param dataValue The value to set for the given data key.
      * @custom:events {TokenIdDataChanged} event.
      */
-    function _setDataForTokenId(bytes32 tokenId, bytes32 dataKey, bytes memory dataValue) internal virtual {
+    function _setDataForTokenId(
+        bytes32 tokenId,
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) internal virtual {
         _store[keccak256(bytes.concat(tokenId, dataKey))] = dataValue;
         emit TokenIdDataChanged(tokenId, dataKey, dataValue);
     }
@@ -743,12 +846,10 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * @param dataKey The key for the data to retrieve.
      * @return dataValues The data value associated with the given `tokenId` and `dataKey`.
      */
-    function _getDataForTokenId(bytes32 tokenId, bytes32 dataKey)
-        internal
-        view
-        virtual
-        returns (bytes memory dataValues)
-    {
+    function _getDataForTokenId(
+        bytes32 tokenId,
+        bytes32 dataKey
+    ) internal view virtual returns (bytes memory dataValues) {
         return _store[keccak256(bytes.concat(tokenId, dataKey))];
     }
 
@@ -768,9 +869,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
         bytes32 tokenId,
         bool force,
         bytes memory data // solhint-disable-next-line no-empty-blocks
-    )
-        internal
-        virtual {}
+    ) internal virtual {}
 
     /**
      * @dev Hook that is called after any token transfer, including minting and burning.
@@ -788,9 +887,7 @@ abstract contract LSP8IdentifiableDigitalAsset is
         bytes32 tokenId,
         bool force,
         bytes memory data // solhint-disable-next-line no-empty-blocks
-    )
-        internal
-        virtual {}
+    ) internal virtual {}
 
     /**
      * @dev Attempt to notify the operator `operator` about the `tokenId` being authorized.
@@ -800,8 +897,15 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * @param operator The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
      */
-    function _notifyTokenOperator(address operator, bytes memory lsp1Data) internal virtual {
-        LSP1Utils.notifyUniversalReceiver(operator, _TYPEID_LSP8_TOKENOPERATOR, lsp1Data);
+    function _notifyTokenOperator(
+        address operator,
+        bytes memory lsp1Data
+    ) internal virtual {
+        LSP1Utils.notifyUniversalReceiver(
+            operator,
+            _TYPEID_LSP8_TOKENOPERATOR,
+            lsp1Data
+        );
     }
 
     /**
@@ -812,8 +916,15 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * @param from The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `from` address in the `universalReceiver` call.
      */
-    function _notifyTokenSender(address from, bytes memory lsp1Data) internal virtual {
-        LSP1Utils.notifyUniversalReceiver(from, _TYPEID_LSP8_TOKENSSENDER, lsp1Data);
+    function _notifyTokenSender(
+        address from,
+        bytes memory lsp1Data
+    ) internal virtual {
+        LSP1Utils.notifyUniversalReceiver(
+            from,
+            _TYPEID_LSP8_TOKENSSENDER,
+            lsp1Data
+        );
     }
 
     /**
@@ -828,8 +939,17 @@ abstract contract LSP8IdentifiableDigitalAsset is
      * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param lsp1Data The data to be sent to the `to` address in the `universalReceiver(...)` call.
      */
-    function _notifyTokenReceiver(address to, bool force, bytes memory lsp1Data) internal virtual {
-        if (ERC165Checker.supportsERC165InterfaceUnchecked(to, _INTERFACEID_LSP1)) {
+    function _notifyTokenReceiver(
+        address to,
+        bool force,
+        bytes memory lsp1Data
+    ) internal virtual {
+        if (
+            ERC165Checker.supportsERC165InterfaceUnchecked(
+                to,
+                _INTERFACEID_LSP1
+            )
+        ) {
             ILSP1(to).universalReceiver(_TYPEID_LSP8_TOKENSRECIPIENT, lsp1Data);
         } else if (!force) {
             if (to.code.length != 0) {

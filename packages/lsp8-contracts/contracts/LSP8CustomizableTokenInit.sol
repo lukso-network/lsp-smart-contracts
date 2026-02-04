@@ -100,18 +100,27 @@ contract LSP8CustomizableTokenInit is
         CappedParamsInit memory cappedParams
     ) internal virtual onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
-            name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
         );
         __LSP8Allowlist_init_unchained(newOwner_);
         __LSP8Mintable_init_unchained(mintableParams.mintable);
         __LSP8NonTransferable_init_unchained(
-            nonTransferableParams.transferLockStart, nonTransferableParams.transferLockEnd
+            nonTransferableParams.transferLockStart,
+            nonTransferableParams.transferLockEnd
         );
         __LSP8CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
         __LSP8CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
 
         // Mint initial tokens
-        for (uint256 i = 0; i < mintableParams.initialMintTokenIds.length; i++) {
+        for (
+            uint256 i = 0;
+            i < mintableParams.initialMintTokenIds.length;
+            i++
+        ) {
             _mint(newOwner_, mintableParams.initialMintTokenIds[i], true, "");
         }
     }
@@ -123,16 +132,30 @@ contract LSP8CustomizableTokenInit is
 
     /// @inheritdoc LSP8MintableInitAbstract
     /// @dev Relies on {LSP8CappedSupply} for supply cap enforcement.
-    function _mint(address to, bytes32 tokenId, bool force, bytes memory data)
+    function _mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    )
         internal
         virtual
-        override(LSP8IdentifiableDigitalAssetInitAbstract, LSP8MintableInitAbstract, LSP8CappedSupplyInitAbstract)
+        override(
+            LSP8IdentifiableDigitalAssetInitAbstract,
+            LSP8MintableInitAbstract,
+            LSP8CappedSupplyInitAbstract
+        )
     {
         require(isMintable, LSP8MintDisabled());
 
         _tokenSupplyCapCheck(to, tokenId, force, data);
 
-        LSP8IdentifiableDigitalAssetInitAbstract._mint(to, tokenId, force, data);
+        LSP8IdentifiableDigitalAssetInitAbstract._mint(
+            to,
+            tokenId,
+            force,
+            data
+        );
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
@@ -142,7 +165,13 @@ contract LSP8CustomizableTokenInit is
     /// @param tokenId The unique identifier of the token being transferred.
     /// @param force Whether to force the transfer.
     /// @param data Additional data for the transfer.
-    function _beforeTokenTransfer(address from, address to, bytes32 tokenId, bool force, bytes memory data)
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    )
         internal
         virtual
         override(
@@ -151,7 +180,19 @@ contract LSP8CustomizableTokenInit is
             LSP8NonTransferableInitAbstract
         )
     {
-        LSP8NonTransferableInitAbstract._beforeTokenTransfer(from, to, tokenId, force, data);
-        LSP8CappedBalanceInitAbstract._beforeTokenTransfer(from, to, tokenId, force, data);
+        LSP8NonTransferableInitAbstract._beforeTokenTransfer(
+            from,
+            to,
+            tokenId,
+            force,
+            data
+        );
+        LSP8CappedBalanceInitAbstract._beforeTokenTransfer(
+            from,
+            to,
+            tokenId,
+            force,
+            data
+        );
     }
 }

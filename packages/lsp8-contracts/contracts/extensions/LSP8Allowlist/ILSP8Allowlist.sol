@@ -35,8 +35,8 @@ interface ILSP8Allowlist {
     /// @param endIndex The end index of the range (exclusive).
     /// @return An array of addresses in the allowlist.
     /// @custom:info To get all the items in the array call `getAllowlistedAddressesLength()` to get the array length (e.g. `allowlistedAddressesLength`) and then call `getAllowlistedAddressesByIndex(0, allowlistedAddressesLength)`
-    function getAllowlistedAddressesByIndex(uint256 startIndex, uint256 endIndex)
-        external
-        view
-        returns (address[] memory);
+    function getAllowlistedAddressesByIndex(
+        uint256 startIndex,
+        uint256 endIndex
+    ) external view returns (address[] memory);
 }

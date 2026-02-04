@@ -23,7 +23,13 @@ contract LSP7CappedBalance is LSP7CappedBalanceAbstract {
         bool isNonDivisible_,
         uint256 tokenBalanceCap_
     )
-        LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_)
+        LSP7DigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        )
         LSP7CappedBalanceAbstract(tokenBalanceCap_)
         LSP7AllowlistAbstract(newOwner_)
     {}

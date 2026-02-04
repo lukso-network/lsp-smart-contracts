@@ -22,5 +22,10 @@ interface ILSP8Mintable is ILSP8IdentifiableDigitalAsset {
      *
      * Emits a {Transfer} event.
      */
-    function mint(address to, bytes32 tokenId, bool force, bytes memory data) external;
+    function mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) external;
 }

@@ -25,7 +25,13 @@ contract LSP7NonTransferable is LSP7NonTransferableAbstract {
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     )
-        LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_)
+        LSP7DigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        )
         LSP7NonTransferableAbstract(transferLockStart_, transferLockEnd_)
         LSP7AllowlistAbstract(newOwner_)
     {}

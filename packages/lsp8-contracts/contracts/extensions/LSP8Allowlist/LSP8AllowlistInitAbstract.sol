@@ -2,17 +2,13 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    LSP8IdentifiableDigitalAssetInitAbstract
-} from "../../LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {LSP8IdentifiableDigitalAssetInitAbstract} from "../../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 
 // interfaces
 import {ILSP8Allowlist} from "./ILSP8Allowlist.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {

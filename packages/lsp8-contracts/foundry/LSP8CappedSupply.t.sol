@@ -28,12 +28,23 @@ contract MockLSP8CappedSupply is LSP8CappedSupplyAbstract {
         uint256 lsp8TokenIdFormat_,
         uint256 tokenSupplyCap_
     )
-        LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_)
+        LSP8IdentifiableDigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        )
         LSP8CappedSupplyAbstract(tokenSupplyCap_)
     {}
 
     // Helper function to mint tokens for testing
-    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {
+    function mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) public {
         _mint(to, tokenId, force, data);
     }
 
@@ -57,18 +68,37 @@ contract LSP8CappedSupplyTest is Test {
     MockLSP8CappedSupply lsp8CappedSupply;
 
     function setUp() public {
-        lsp8CappedSupply = new MockLSP8CappedSupply(name, symbol, owner, tokenType, tokenIdFormat, tokenSupplyCap);
+        lsp8CappedSupply = new MockLSP8CappedSupply(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            tokenSupplyCap
+        );
     }
 
     // Test constructor initialization
     function test_ConstructorInitializesCorrectly() public {
-        assertEq(lsp8CappedSupply.tokenSupplyCap(), tokenSupplyCap, "Supply cap should be set correctly");
-        assertEq(lsp8CappedSupply.totalSupply(), 0, "Initial supply should be 0");
+        assertEq(
+            lsp8CappedSupply.tokenSupplyCap(),
+            tokenSupplyCap,
+            "Supply cap should be set correctly"
+        );
+        assertEq(
+            lsp8CappedSupply.totalSupply(),
+            0,
+            "Initial supply should be 0"
+        );
     }
 
     // Test tokenSupplyCap returns correct value
     function test_TokenSupplyCapReturnsCorrectValue() public {
-        assertEq(lsp8CappedSupply.tokenSupplyCap(), tokenSupplyCap, "Should return correct supply cap");
+        assertEq(
+            lsp8CappedSupply.tokenSupplyCap(),
+            tokenSupplyCap,
+            "Should return correct supply cap"
+        );
     }
 
     // Test minting up to cap succeeds
@@ -76,7 +106,11 @@ contract LSP8CappedSupplyTest is Test {
         for (uint256 i = 1; i <= tokenSupplyCap; i++) {
             lsp8CappedSupply.mint(user1, bytes32(i), true, "");
         }
-        assertEq(lsp8CappedSupply.totalSupply(), tokenSupplyCap, "Total supply should equal cap");
+        assertEq(
+            lsp8CappedSupply.totalSupply(),
+            tokenSupplyCap,
+            "Total supply should equal cap"
+        );
     }
 
     // Test exceeding cap reverts
@@ -88,7 +122,12 @@ contract LSP8CappedSupplyTest is Test {
 
         // Try to mint one more
         vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
-        lsp8CappedSupply.mint(user1, bytes32(uint256(tokenSupplyCap + 1)), true, "");
+        lsp8CappedSupply.mint(
+            user1,
+            bytes32(uint256(tokenSupplyCap + 1)),
+            true,
+            ""
+        );
     }
 
     // Test cap=0 disables the limit
@@ -146,9 +185,23 @@ contract LSP8CappedSupplyTest is Test {
     // Test supply cap is immutable
     function test_SupplyCapIsImmutable() public {
         // Create two tokens with different caps
-        MockLSP8CappedSupply token1 = new MockLSP8CappedSupply(name, symbol, owner, tokenType, tokenIdFormat, 5);
+        MockLSP8CappedSupply token1 = new MockLSP8CappedSupply(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            5
+        );
 
-        MockLSP8CappedSupply token2 = new MockLSP8CappedSupply(name, symbol, owner, tokenType, tokenIdFormat, 100);
+        MockLSP8CappedSupply token2 = new MockLSP8CappedSupply(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            100
+        );
 
         assertEq(token1.tokenSupplyCap(), 5);
         assertEq(token2.tokenSupplyCap(), 100);
@@ -198,7 +251,12 @@ contract LSP8CappedSupplyTest is Test {
 
         // Fail at cap + 1
         vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
-        lsp8CappedSupply.mint(user1, bytes32(uint256(tokenSupplyCap + 1)), true, "");
+        lsp8CappedSupply.mint(
+            user1,
+            bytes32(uint256(tokenSupplyCap + 1)),
+            true,
+            ""
+        );
     }
 
     // ------ Fuzzing ------
@@ -207,7 +265,14 @@ contract LSP8CappedSupplyTest is Test {
         vm.assume(cap > 0 && cap <= 100);
         vm.assume(mintCount > 0 && mintCount <= 150);
 
-        MockLSP8CappedSupply token = new MockLSP8CappedSupply(name, symbol, owner, tokenType, tokenIdFormat, cap);
+        MockLSP8CappedSupply token = new MockLSP8CappedSupply(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            cap
+        );
 
         for (uint256 i = 1; i <= mintCount; i++) {
             if (i <= cap) {
@@ -223,7 +288,14 @@ contract LSP8CappedSupplyTest is Test {
     function testFuzz_ZeroCapAllowsUnlimited(uint256 mintCount) public {
         vm.assume(mintCount > 0 && mintCount <= 500);
 
-        MockLSP8CappedSupply unlimitedToken = new MockLSP8CappedSupply(name, symbol, owner, tokenType, tokenIdFormat, 0);
+        MockLSP8CappedSupply unlimitedToken = new MockLSP8CappedSupply(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            0
+        );
 
         for (uint256 i = 1; i <= mintCount; i++) {
             unlimitedToken.mint(user1, bytes32(i), true, "");
@@ -236,7 +308,14 @@ contract LSP8CappedSupplyTest is Test {
         vm.assume(cap > 0 && cap <= 50);
         vm.assume(burnCount > 0 && burnCount <= cap);
 
-        MockLSP8CappedSupply token = new MockLSP8CappedSupply(name, symbol, owner, tokenType, tokenIdFormat, cap);
+        MockLSP8CappedSupply token = new MockLSP8CappedSupply(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            cap
+        );
 
         // Mint to cap
         for (uint256 i = 1; i <= cap; i++) {

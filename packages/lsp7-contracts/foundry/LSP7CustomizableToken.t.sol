@@ -45,81 +45,186 @@ contract LSP7CustomizableTokenTest is Test {
     LSP7CustomizableToken token;
 
     function setUp() public {
-        MintableParams memory mintableParams = MintableParams(mintable, initialMintAmount);
+        MintableParams memory mintableParams = MintableParams(
+            mintable,
+            initialMintAmount
+        );
 
-        NonTransferableParams memory nonTransferableParams = NonTransferableParams(transferLockStart, transferLockEnd);
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferLockStart,
+                transferLockEnd
+            );
 
-        CappedParams memory cappedParams = CappedParams(tokenBalanceCap, tokenSupplyCap);
+        CappedParams memory cappedParams = CappedParams(
+            tokenBalanceCap,
+            tokenSupplyCap
+        );
 
         token = new LSP7CustomizableToken(
-            name, symbol, owner, tokenType, isNonDivisible, mintableParams, nonTransferableParams, cappedParams
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
     }
 
     // Constructor Tests
     function test_ConstructorInitializesCorrectly() public {
-        assertEq(token.balanceOf(owner), initialMintAmount, "Owner should have initial tokens");
-        assertEq(token.totalSupply(), initialMintAmount, "Total supply should match initial mint");
-        assertEq(token.tokenBalanceCap(), tokenBalanceCap, "Balance cap should be set");
+        assertEq(
+            token.balanceOf(owner),
+            initialMintAmount,
+            "Owner should have initial tokens"
+        );
+        assertEq(
+            token.totalSupply(),
+            initialMintAmount,
+            "Total supply should match initial mint"
+        );
+        assertEq(
+            token.tokenBalanceCap(),
+            tokenBalanceCap,
+            "Balance cap should be set"
+        );
         assertEq(token.isMintable(), mintable, "Mintable status should be set");
         assertTrue(token.isTransferable(), "Token should be transferable");
-        assertEq(token.transferLockStart(), transferLockStart, "Lock start should be set");
-        assertEq(token.transferLockEnd(), transferLockEnd, "Lock end should be set");
-        assertEq(token.tokenSupplyCap(), tokenSupplyCap, "Supply cap should be set");
+        assertEq(
+            token.transferLockStart(),
+            transferLockStart,
+            "Lock start should be set"
+        );
+        assertEq(
+            token.transferLockEnd(),
+            transferLockEnd,
+            "Lock end should be set"
+        );
+        assertEq(
+            token.tokenSupplyCap(),
+            tokenSupplyCap,
+            "Supply cap should be set"
+        );
         assertTrue(token.isAllowlisted(owner), "Owner should be allowlisted");
-        assertTrue(token.isAllowlisted(zeroAddress), "Zero address should be allowlisted");
+        assertTrue(
+            token.isAllowlisted(zeroAddress),
+            "Zero address should be allowlisted"
+        );
     }
 
     function test_ConstructorRevertsIfInitialMintExceedsSupplyCap() public {
-        MintableParams memory mintableParams = MintableParams(mintable, tokenSupplyCap + 1);
+        MintableParams memory mintableParams = MintableParams(
+            mintable,
+            tokenSupplyCap + 1
+        );
 
-        NonTransferableParams memory nonTransferableParams = NonTransferableParams(transferLockStart, transferLockEnd);
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferLockStart,
+                transferLockEnd
+            );
 
-        CappedParams memory cappedParams = CappedParams(tokenBalanceCap, tokenSupplyCap);
+        CappedParams memory cappedParams = CappedParams(
+            tokenBalanceCap,
+            tokenSupplyCap
+        );
 
         vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
         new LSP7CustomizableToken(
-            name, symbol, owner, tokenType, isNonDivisible, mintableParams, nonTransferableParams, cappedParams
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
     }
 
     function test_ConstructorSucceedsWithZeroInitialMint() public {
         MintableParams memory mintableParams = MintableParams(mintable, 0);
 
-        NonTransferableParams memory nonTransferableParams = NonTransferableParams(transferLockStart, transferLockEnd);
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferLockStart,
+                transferLockEnd
+            );
 
-        CappedParams memory cappedParams = CappedParams(tokenBalanceCap, tokenSupplyCap);
+        CappedParams memory cappedParams = CappedParams(
+            tokenBalanceCap,
+            tokenSupplyCap
+        );
 
         LSP7CustomizableToken zeroMintToken = new LSP7CustomizableToken(
-            name, symbol, owner, tokenType, isNonDivisible, mintableParams, nonTransferableParams, cappedParams
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
-        assertEq(zeroMintToken.balanceOf(owner), 0, "Owner should have no tokens");
+        assertEq(
+            zeroMintToken.balanceOf(owner),
+            0,
+            "Owner should have no tokens"
+        );
         assertEq(zeroMintToken.totalSupply(), 0, "Total supply should be zero");
     }
 
     function test_ConstructorRevertsWithInvalidLockPeriod() public {
-        MintableParams memory mintableParams = MintableParams(mintable, initialMintAmount);
+        MintableParams memory mintableParams = MintableParams(
+            mintable,
+            initialMintAmount
+        );
 
-        NonTransferableParams memory nonTransferableParams = NonTransferableParams(200, 100);
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(200, 100);
 
-        CappedParams memory cappedParams = CappedParams(tokenBalanceCap, tokenSupplyCap);
+        CappedParams memory cappedParams = CappedParams(
+            tokenBalanceCap,
+            tokenSupplyCap
+        );
 
         vm.expectRevert(LSP7InvalidTransferLockPeriod.selector);
         new LSP7CustomizableToken(
-            name, symbol, owner, tokenType, isNonDivisible, mintableParams, nonTransferableParams, cappedParams
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
     }
 
     // Supply Cap Tests
     function test_TokenSupplyCapReturnsCorrectValue() public {
-        assertEq(token.tokenSupplyCap(), tokenSupplyCap, "Should return supply cap when isMintable");
+        assertEq(
+            token.tokenSupplyCap(),
+            tokenSupplyCap,
+            "Should return supply cap when isMintable"
+        );
         token.disableMinting();
-        assertEq(token.tokenSupplyCap(), initialMintAmount, "Should return totalSupply when not isMintable");
+        assertEq(
+            token.tokenSupplyCap(),
+            initialMintAmount,
+            "Should return totalSupply when not isMintable"
+        );
     }
 
     function test_MintFailsWhenExceedingSupplyCap() public {
         token.mint(owner, tokenSupplyCap - initialMintAmount, true, "");
-        assertEq(token.totalSupply(), tokenSupplyCap, "Total supply should reach cap");
+        assertEq(
+            token.totalSupply(),
+            tokenSupplyCap,
+            "Total supply should reach cap"
+        );
 
         vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
         token.mint(owner, 1, true, "");
@@ -128,28 +233,54 @@ contract LSP7CustomizableTokenTest is Test {
     function test_MintSucceedsUpToSupplyCap() public {
         uint256 amount = tokenSupplyCap - initialMintAmount;
         token.mint(owner, amount, true, "");
-        assertEq(token.totalSupply(), tokenSupplyCap, "Total supply should match cap");
+        assertEq(
+            token.totalSupply(),
+            tokenSupplyCap,
+            "Total supply should match cap"
+        );
     }
 
     function test_MintWithMaxSupplyCapAllowsUnlimitedMinting() public {
-        MintableParams memory mintableParams = MintableParams(mintable, initialMintAmount);
+        MintableParams memory mintableParams = MintableParams(
+            mintable,
+            initialMintAmount
+        );
 
-        NonTransferableParams memory nonTransferableParams = NonTransferableParams(transferLockStart, transferLockEnd);
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferLockStart,
+                transferLockEnd
+            );
 
         CappedParams memory cappedParams = CappedParams(tokenBalanceCap, 0);
 
         LSP7CustomizableToken unlimitedToken = new LSP7CustomizableToken(
-            name, symbol, owner, tokenType, isNonDivisible, mintableParams, nonTransferableParams, cappedParams
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
         unlimitedToken.mint(owner, type(uint256).max / 2, true, "");
-        assertEq(unlimitedToken.balanceOf(owner), type(uint256).max / 2 + initialMintAmount, "Should allow large mint");
+        assertEq(
+            unlimitedToken.balanceOf(owner),
+            type(uint256).max / 2 + initialMintAmount,
+            "Should allow large mint"
+        );
     }
 
     // Balance Cap Tests
     function test_BalanceCapEnforcedCorrectly() public {
         MintableParams memory mintableParams = MintableParams(mintable, 2000);
 
-        NonTransferableParams memory nonTransferableParams = NonTransferableParams(transferLockStart, transferLockEnd);
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferLockStart,
+                transferLockEnd
+            );
 
         CappedParams memory cappedParams = CappedParams(
             1500, // tokenBalanceCap
@@ -157,7 +288,14 @@ contract LSP7CustomizableTokenTest is Test {
         );
 
         LSP7CustomizableToken tokenWithBalanceCap = new LSP7CustomizableToken(
-            name, symbol, owner, tokenType, isNonDivisible, mintableParams, nonTransferableParams, cappedParams
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            mintableParams,
+            nonTransferableParams,
+            cappedParams
         );
 
         // Should be able to transfer up to the balance cap
@@ -165,14 +303,29 @@ contract LSP7CustomizableTokenTest is Test {
         assertEq(tokenWithBalanceCap.balanceOf(user1), 1000);
 
         // Should fail when trying to exceed the balance cap
-        vm.expectRevert(abi.encodeWithSelector(LSP7CappedBalanceExceeded.selector, user1, 600, 1000, 1500));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP7CappedBalanceExceeded.selector,
+                user1,
+                600,
+                1000,
+                1500
+            )
+        );
         tokenWithBalanceCap.transfer(owner, user1, 600, true, ""); // Would make total 1600 > 1500 cap
     }
 
     function test_BalanceCapDisabledWhenZero() public {
-        MintableParams memory mintableParams = MintableParams(mintable, 1000000);
+        MintableParams memory mintableParams = MintableParams(
+            mintable,
+            1000000
+        );
 
-        NonTransferableParams memory nonTransferableParams = NonTransferableParams(transferLockStart, transferLockEnd);
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferLockStart,
+                transferLockEnd
+            );
 
         CappedParams memory cappedParams = CappedParams(
             0, // tokenBalanceCap = 0 (disabled)
@@ -180,8 +333,15 @@ contract LSP7CustomizableTokenTest is Test {
         );
 
         LSP7CustomizableToken tokenWithoutBalanceCap = new LSP7CustomizableToken(
-            name, symbol, owner, tokenType, isNonDivisible, mintableParams, nonTransferableParams, cappedParams
-        );
+                name,
+                symbol,
+                owner,
+                tokenType,
+                isNonDivisible,
+                mintableParams,
+                nonTransferableParams,
+                cappedParams
+            );
 
         // Should be able to transfer any amount when balance cap is disabled
         tokenWithoutBalanceCap.transfer(owner, user1, 1000000, true, "");
@@ -190,7 +350,10 @@ contract LSP7CustomizableTokenTest is Test {
 
     // Minting Tests
     function test_OwnerCanMintToNonAllowlistedAddress() public {
-        assertFalse(token.isAllowlisted(user1), "User1 should not be allowlisted");
+        assertFalse(
+            token.isAllowlisted(user1),
+            "User1 should not be allowlisted"
+        );
         token.mint(user1, 500, true, "");
         assertEq(token.balanceOf(user1), 500, "User1 should have 500 tokens");
     }

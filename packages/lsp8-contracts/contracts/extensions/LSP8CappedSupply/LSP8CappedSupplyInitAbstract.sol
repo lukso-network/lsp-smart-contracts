@@ -12,7 +12,10 @@ import {LSP8CappedSupplyCannotMintOverCap} from "./LSP8CappedSupplyErrors.sol";
 
 /// @title LSP8CappedSupplyInitAbstract
 /// @dev Abstract contract implementing a token supply cap for LSP8 tokens.
-abstract contract LSP8CappedSupplyInitAbstract is ILSP8CappedSupply, LSP8IdentifiableDigitalAssetInitAbstract {
+abstract contract LSP8CappedSupplyInitAbstract is
+    ILSP8CappedSupply,
+    LSP8IdentifiableDigitalAssetInitAbstract
+{
     /// @notice The maximum token supply.
     uint256 private _tokenSupplyCap;
 
@@ -33,7 +36,11 @@ abstract contract LSP8CappedSupplyInitAbstract is ILSP8CappedSupply, LSP8Identif
         uint256 tokenSupplyCap_
     ) internal virtual onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
-            name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
         );
         __LSP8CappedSupply_init_unchained(tokenSupplyCap_);
     }
@@ -41,7 +48,9 @@ abstract contract LSP8CappedSupplyInitAbstract is ILSP8CappedSupply, LSP8Identif
     /// @notice Unchained initializer for the token supply cap.
     /// @dev Sets the maximum token supply cap.
     /// @param tokenSupplyCap_ The maximum total supply, 0 to disable.
-    function __LSP8CappedSupply_init_unchained(uint256 tokenSupplyCap_) internal virtual onlyInitializing {
+    function __LSP8CappedSupply_init_unchained(
+        uint256 tokenSupplyCap_
+    ) internal virtual onlyInitializing {
         _tokenSupplyCap = tokenSupplyCap_;
     }
 
@@ -59,15 +68,20 @@ abstract contract LSP8CappedSupplyInitAbstract is ILSP8CappedSupply, LSP8Identif
         bool,
         /* force */
         bytes memory /* data */
-    )
-        internal
-        virtual
-    {
-        require(tokenSupplyCap() == 0 || totalSupply() + 1 <= tokenSupplyCap(), LSP8CappedSupplyCannotMintOverCap());
+    ) internal virtual {
+        require(
+            tokenSupplyCap() == 0 || totalSupply() + 1 <= tokenSupplyCap(),
+            LSP8CappedSupplyCannotMintOverCap()
+        );
     }
 
     /// @dev Same as {_mint} but allows to mint only if the {totalSupply} does not exceed the {tokenSupplyCap} after the token has been minted.
-    function _mint(address to, bytes32 tokenId, bool force, bytes memory data) internal virtual override {
+    function _mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
         _tokenSupplyCapCheck(to, tokenId, force, data);
 
         super._mint(to, tokenId, force, data);

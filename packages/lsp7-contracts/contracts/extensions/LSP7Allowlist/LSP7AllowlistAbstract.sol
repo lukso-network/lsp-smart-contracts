@@ -75,7 +75,7 @@ abstract contract LSP7AllowlistAbstract is ILSP7Allowlist, LSP7DigitalAsset {
         uint256 allowedAddressesCount = _allowlist.length();
         require(
             startIndex < endIndex && endIndex <= allowedAddressesCount,
-            LSP7InvalidAllowlistIndexRange(
+            LSP7AllowListInvalidIndexRange(
                 startIndex,
                 endIndex,
                 allowedAddressesCount

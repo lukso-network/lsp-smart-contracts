@@ -16,7 +16,10 @@ import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
 
 // constants
-import {_TYPEID_LSP7_VOTESDELEGATOR, _TYPEID_LSP7_VOTESDELEGATEE} from "./LSP7VotesConstants.sol";
+import {
+    _TYPEID_LSP7_VOTESDELEGATOR,
+    _TYPEID_LSP7_VOTESDELEGATEE
+} from "./LSP7VotesConstants.sol";
 
 // errors
 import {
@@ -42,7 +45,11 @@ import {
  * For any contract intended to be deployed in production that inherits from this extension, it is recommended to conduct
  * an independent security audit, including this extension in the audit scope.
  */
-abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712Upgradeable, IERC5805 {
+abstract contract LSP7VotesInitAbstract is
+    LSP7DigitalAssetInitAbstract,
+    EIP712Upgradeable,
+    IERC5805
+{
     using Counters for Counters.Counter;
     mapping(address => Counters.Counter) private _nonces;
 
@@ -52,8 +59,8 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
     }
 
     bytes32 internal constant _DELEGATION_TYPEHASH =
-    // solhint-disable-next-line gas-small-strings
-    keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
+        // solhint-disable-next-line gas-small-strings
+        keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
 
     mapping(address => address) private _delegates;
     mapping(address => Checkpoint[]) private _checkpoints;
@@ -67,7 +74,13 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
         bool isNonDivisible_,
         string memory version_
     ) internal virtual onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_);
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
         __EIP712_init(name_, version_);
     }
 
@@ -96,28 +109,37 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
     /**
      * @dev Get the `pos`-th checkpoint for `account`.
      */
-    function checkpoints(address account, uint32 pos) public view virtual returns (Checkpoint memory) {
+    function checkpoints(
+        address account,
+        uint32 pos
+    ) public view virtual returns (Checkpoint memory) {
         return _checkpoints[account][pos];
     }
 
     /**
      * @dev Get number of checkpoints for `account`.
      */
-    function numCheckpoints(address account) public view virtual returns (uint32) {
+    function numCheckpoints(
+        address account
+    ) public view virtual returns (uint32) {
         return SafeCast.toUint32(_checkpoints[account].length);
     }
 
     /**
      * @dev Get the address `account` is currently delegating to.
      */
-    function delegates(address account) public view virtual override returns (address) {
+    function delegates(
+        address account
+    ) public view virtual override returns (address) {
         return _delegates[account];
     }
 
     /**
      * @dev Gets the current votes balance for `account`
      */
-    function getVotes(address account) public view virtual override returns (uint256) {
+    function getVotes(
+        address account
+    ) public view virtual override returns (uint256) {
         uint256 pos = _checkpoints[account].length;
         unchecked {
             return pos == 0 ? 0 : _checkpoints[account][pos - 1].votes;
@@ -130,7 +152,10 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
      * @custom:requirements
      * - `timepoint` must be in the past
      */
-    function getPastVotes(address account, uint256 timepoint) public view virtual override returns (uint256) {
+    function getPastVotes(
+        address account,
+        uint256 timepoint
+    ) public view virtual override returns (uint256) {
         require(timepoint < clock(), LSP7VotesFutureLookup(timepoint));
         return _checkpointsLookup(_checkpoints[account], timepoint);
     }
@@ -142,7 +167,9 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
      * @custom:requirements
      * - `timepoint` must be in the past
      */
-    function getPastTotalSupply(uint256 timepoint) public view virtual override returns (uint256) {
+    function getPastTotalSupply(
+        uint256 timepoint
+    ) public view virtual override returns (uint256) {
         require(timepoint < clock(), LSP7VotesFutureLookup(timepoint));
         return _checkpointsLookup(_totalSupplyCheckpoints, timepoint);
     }
@@ -150,7 +177,10 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
     /**
      * @dev Lookup a value in a list of (sorted) checkpoints.
      */
-    function _checkpointsLookup(Checkpoint[] storage ckpts, uint256 timepoint) private view returns (uint256) {
+    function _checkpointsLookup(
+        Checkpoint[] storage ckpts,
+        uint256 timepoint
+    ) private view returns (uint256) {
         // We run a binary search to look for the last (most recent) checkpoint taken before (or at) `timepoint`.
         //
         // Initially we check if the block is recent to narrow the search range.
@@ -201,17 +231,30 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
     /**
      * @dev Delegates votes from signer to `delegatee`
      */
-    function delegateBySig(address delegatee, uint256 nonce, uint256 expiry, uint8 v, bytes32 r, bytes32 s)
-        public
-        virtual
-        override
-    {
+    function delegateBySig(
+        address delegatee,
+        uint256 nonce,
+        uint256 expiry,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public virtual override {
         // solhint-disable-next-line not-rely-on-time
         require(block.timestamp <= expiry, LSP7VotesSignatureExpired(expiry));
         address signer = ECDSA.recover(
-            _hashTypedDataV4(keccak256(abi.encode(_DELEGATION_TYPEHASH, delegatee, nonce, expiry))), v, r, s
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(_DELEGATION_TYPEHASH, delegatee, nonce, expiry)
+                )
+            ),
+            v,
+            r,
+            s
         );
-        require(nonce == _useNonce(signer), LSP7VotesInvalidNonce(signer, nonce));
+        require(
+            nonce == _useNonce(signer),
+            LSP7VotesInvalidNonce(signer, nonce)
+        );
         _delegate(signer, delegatee);
     }
 
@@ -226,7 +269,11 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
      * @dev Transfers, mints, or burns voting units. To register a mint, `from` should be zero. To register a burn, `to`
      * should be zero. Total supply of voting units will be adjusted with mints and burns.
      */
-    function _transferVotingUnits(address from, address to, uint256 amount) internal virtual {
+    function _transferVotingUnits(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual {
         if (from == address(0)) {
             _writeCheckpoint(_totalSupplyCheckpoints, _add, amount);
         }
@@ -243,7 +290,13 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
      * - {DelegateVotesChanged} when voting power is removed from source address
      * - {DelegateVotesChanged} when voting power is added to destination address
      */
-    function _update(address from, address to, uint256 value, bool force, bytes memory data) internal virtual override {
+    function _update(
+        address from,
+        address to,
+        uint256 value,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
         super._update(from, to, value, force, data);
         if (from == address(0)) {
             uint256 supply = totalSupply();
@@ -271,15 +324,31 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
 
         // Notify the delegator if it's not address(0)
         if (delegator != address(0)) {
-            bytes memory delegatorNotificationData = abi.encode(msg.sender, delegatee, delegatorBalance);
-            LSP1Utils.notifyUniversalReceiver(delegator, _TYPEID_LSP7_VOTESDELEGATOR, delegatorNotificationData);
+            bytes memory delegatorNotificationData = abi.encode(
+                msg.sender,
+                delegatee,
+                delegatorBalance
+            );
+            LSP1Utils.notifyUniversalReceiver(
+                delegator,
+                _TYPEID_LSP7_VOTESDELEGATOR,
+                delegatorNotificationData
+            );
         }
 
         // Only notify the new delegatee if it's not address(0) and if there's actual voting power
         if (delegatee != address(0) && delegatorBalance > 0) {
-            bytes memory delegateeNotificationData = abi.encode(msg.sender, delegator, delegatorBalance);
+            bytes memory delegateeNotificationData = abi.encode(
+                msg.sender,
+                delegator,
+                delegatorBalance
+            );
 
-            LSP1Utils.notifyUniversalReceiver(delegatee, _TYPEID_LSP7_VOTESDELEGATEE, delegateeNotificationData);
+            LSP1Utils.notifyUniversalReceiver(
+                delegatee,
+                _TYPEID_LSP7_VOTESDELEGATEE,
+                delegateeNotificationData
+            );
         }
     }
 
@@ -290,15 +359,27 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
      * - {DelegateVotesChanged} when voting power is removed from source address
      * - {DelegateVotesChanged} when voting power is added to destination address
      */
-    function _moveVotingPower(address src, address dst, uint256 amount) private {
+    function _moveVotingPower(
+        address src,
+        address dst,
+        uint256 amount
+    ) private {
         if (src != dst && amount > 0) {
             if (src != address(0)) {
-                (uint256 oldWeight, uint256 newWeight) = _writeCheckpoint(_checkpoints[src], _subtract, amount);
+                (uint256 oldWeight, uint256 newWeight) = _writeCheckpoint(
+                    _checkpoints[src],
+                    _subtract,
+                    amount
+                );
                 emit DelegateVotesChanged(src, oldWeight, newWeight);
             }
 
             if (dst != address(0)) {
-                (uint256 oldWeight, uint256 newWeight) = _writeCheckpoint(_checkpoints[dst], _add, amount);
+                (uint256 oldWeight, uint256 newWeight) = _writeCheckpoint(
+                    _checkpoints[dst],
+                    _add,
+                    amount
+                );
                 emit DelegateVotesChanged(dst, oldWeight, newWeight);
             }
         }
@@ -312,15 +393,24 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
         uint256 pos = ckpts.length;
 
         unchecked {
-            Checkpoint memory oldCkpt = pos == 0 ? Checkpoint(0, 0) : _unsafeAccess(ckpts, pos - 1);
+            Checkpoint memory oldCkpt = pos == 0
+                ? Checkpoint(0, 0)
+                : _unsafeAccess(ckpts, pos - 1);
 
             oldWeight = oldCkpt.votes;
             newWeight = op(oldWeight, delta);
 
             if (pos > 0 && oldCkpt.fromBlock == clock()) {
-                _unsafeAccess(ckpts, pos - 1).votes = SafeCast.toUint224(newWeight);
+                _unsafeAccess(ckpts, pos - 1).votes = SafeCast.toUint224(
+                    newWeight
+                );
             } else {
-                ckpts.push(Checkpoint({fromBlock: SafeCast.toUint32(clock()), votes: SafeCast.toUint224(newWeight)}));
+                ckpts.push(
+                    Checkpoint({
+                        fromBlock: SafeCast.toUint32(clock()),
+                        votes: SafeCast.toUint224(newWeight)
+                    })
+                );
             }
         }
     }
@@ -336,7 +426,10 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
     /**
      * @dev Access an element of the array without performing bounds check. The position is assumed to be within bounds.
      */
-    function _unsafeAccess(Checkpoint[] storage ckpts, uint256 pos) private pure returns (Checkpoint storage result) {
+    function _unsafeAccess(
+        Checkpoint[] storage ckpts,
+        uint256 pos
+    ) private pure returns (Checkpoint storage result) {
         // solhint-disable-next-line no-inline-assembly
         assembly {
             mstore(0, ckpts.slot)
@@ -349,7 +442,9 @@ abstract contract LSP7VotesInitAbstract is LSP7DigitalAssetInitAbstract, EIP712U
      *
      * Returns the current value and increments nonce.
      */
-    function _useNonce(address owner) internal virtual returns (uint256 current) {
+    function _useNonce(
+        address owner
+    ) internal virtual returns (uint256 current) {
         Counters.Counter storage nonce = _nonces[owner];
         current = nonce.current();
         nonce.increment();

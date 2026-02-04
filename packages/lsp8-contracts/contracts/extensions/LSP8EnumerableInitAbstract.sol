@@ -7,7 +7,9 @@ import {LSP8IdentifiableDigitalAssetInitAbstract} from "../LSP8IdentifiableDigit
 /**
  * @dev LSP8 extension.
  */
-abstract contract LSP8EnumerableInitAbstract is LSP8IdentifiableDigitalAssetInitAbstract {
+abstract contract LSP8EnumerableInitAbstract is
+    LSP8IdentifiableDigitalAssetInitAbstract
+{
     // Mapping from token index to token id
     mapping(uint256 => bytes32) private _indexToken;
 
@@ -33,11 +35,13 @@ abstract contract LSP8EnumerableInitAbstract is LSP8IdentifiableDigitalAssetInit
      * @param tokenId The bytes32 identifier of the token being transferred.
      * @param data The data sent alongside the the token transfer.
      */
-    function _beforeTokenTransfer(address from, address to, bytes32 tokenId, bool force, bytes memory data)
-        internal
-        virtual
-        override
-    {
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
         if (from == address(0)) {
             uint256 index = totalSupply();
             _indexToken[index] = tokenId;

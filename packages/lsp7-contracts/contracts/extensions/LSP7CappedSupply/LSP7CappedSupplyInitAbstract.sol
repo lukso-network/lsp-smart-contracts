@@ -29,14 +29,22 @@ abstract contract LSP7CappedSupplyInitAbstract is LSP7DigitalAssetInitAbstract {
         bool isNonDivisible_,
         uint256 tokenSupplyCap_
     ) internal virtual onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_);
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
         __LSP7CappedSupply_init_unchained(tokenSupplyCap_);
     }
 
     /// @notice Unchained initializer for the token supply cap.
     /// @dev Sets the maximum token supply cap.
     /// @param tokenSupplyCap_ The maximum total supply in wei, 0 to disable.
-    function __LSP7CappedSupply_init_unchained(uint256 tokenSupplyCap_) internal virtual onlyInitializing {
+    function __LSP7CappedSupply_init_unchained(
+        uint256 tokenSupplyCap_
+    ) internal virtual onlyInitializing {
         _tokenSupplyCap = tokenSupplyCap_;
     }
 
@@ -55,17 +63,21 @@ abstract contract LSP7CappedSupplyInitAbstract is LSP7DigitalAssetInitAbstract {
         bool,
         /* force */
         bytes memory /* data */
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         require(
-            tokenSupplyCap() == 0 || (totalSupply() + amount) <= tokenSupplyCap(), LSP7CappedSupplyCannotMintOverCap()
+            tokenSupplyCap() == 0 ||
+                (totalSupply() + amount) <= tokenSupplyCap(),
+            LSP7CappedSupplyCannotMintOverCap()
         );
     }
 
     /// @dev Same as {_mint} but allows to mint only if the {totalSupply} does not exceed the {tokenSupplyCap} after `amount` of tokens have been minted.
-    function _mint(address to, uint256 amount, bool force, bytes memory data) internal virtual override {
+    function _mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
         _tokenSupplyCapCheck(to, amount, force, data);
 
         super._mint(to, amount, force, data);

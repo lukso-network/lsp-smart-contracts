@@ -24,5 +24,8 @@ interface ILSP8NonTransferable {
     /// @custom:emits {TransferLockPeriodChanged} event.
     /// @param newTransferLockStart The new start timestamp for the transfer lock period.
     /// @param newTransferLockEnd The new end timestamp for the transfer lock period.
-    function updateTransferLockPeriod(uint256 newTransferLockStart, uint256 newTransferLockEnd) external;
+    function updateTransferLockPeriod(
+        uint256 newTransferLockStart,
+        uint256 newTransferLockEnd
+    ) external;
 }

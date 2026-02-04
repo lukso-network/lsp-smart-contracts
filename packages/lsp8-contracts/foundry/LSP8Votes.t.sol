@@ -12,7 +12,10 @@ import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 // constants
 import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
-import {_TYPEID_LSP8_VOTESDELEGATOR, _TYPEID_LSP8_VOTESDELEGATEE} from "../contracts/extensions/LSP8VotesConstants.sol";
+import {
+    _TYPEID_LSP8_VOTESDELEGATOR,
+    _TYPEID_LSP8_VOTESDELEGATEE
+} from "../contracts/extensions/LSP8VotesConstants.sol";
 
 // Mock contract to test LSP8Votes functionality
 contract MockLSP8Votes is LSP8Votes {
@@ -22,10 +25,24 @@ contract MockLSP8Votes is LSP8Votes {
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_) EIP712(name_, "1") {}
+    )
+        LSP8IdentifiableDigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        )
+        EIP712(name_, "1")
+    {}
 
     // Helper function to mint tokens for testing
-    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {
+    function mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) public {
         _mint(to, tokenId, force, data);
     }
 
@@ -67,7 +84,13 @@ contract LSP8VotesTest is Test {
     MockLSP8Votes lsp8Votes;
 
     function setUp() public {
-        lsp8Votes = new MockLSP8Votes(name, symbol, owner, tokenType, tokenIdFormat);
+        lsp8Votes = new MockLSP8Votes(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat
+        );
     }
 
     // Test initial state
@@ -325,7 +348,9 @@ contract LSP8VotesTest is Test {
 
     // ------ Fuzzing ------
 
-    function testFuzz_VotesEqualBalanceAfterDelegation(uint8 tokenCount) public {
+    function testFuzz_VotesEqualBalanceAfterDelegation(
+        uint8 tokenCount
+    ) public {
         vm.assume(tokenCount > 0 && tokenCount <= 50);
 
         for (uint256 i = 1; i <= tokenCount; i++) {
@@ -340,7 +365,10 @@ contract LSP8VotesTest is Test {
         assertEq(lsp8Votes.getVotes(user1), tokenCount);
     }
 
-    function testFuzz_VotesTransferCorrectly(uint8 mintCount, uint8 transferCount) public {
+    function testFuzz_VotesTransferCorrectly(
+        uint8 mintCount,
+        uint8 transferCount
+    ) public {
         vm.assume(mintCount > 0 && mintCount <= 20);
         vm.assume(transferCount > 0 && transferCount <= mintCount);
 
@@ -368,7 +396,10 @@ contract LSP8VotesTest is Test {
         assertEq(lsp8Votes.getVotes(user2), transferCount);
     }
 
-    function testFuzz_DelegationChanges(uint128 firstDelegateeSeed, uint128 secondDelegateeSeed) public {
+    function testFuzz_DelegationChanges(
+        uint128 firstDelegateeSeed,
+        uint128 secondDelegateeSeed
+    ) public {
         vm.assume(firstDelegateeSeed > 10); // Avoid precompile addresses
         vm.assume(secondDelegateeSeed > 10);
         vm.assume(firstDelegateeSeed != secondDelegateeSeed);
@@ -394,6 +425,14 @@ contract LSP8VotesTest is Test {
 
 // Interface for Votes events
 interface IVotes {
-    event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
-    event DelegateVotesChanged(address indexed delegate, uint256 previousVotes, uint256 newVotes);
+    event DelegateChanged(
+        address indexed delegator,
+        address indexed fromDelegate,
+        address indexed toDelegate
+    );
+    event DelegateVotesChanged(
+        address indexed delegate,
+        uint256 previousVotes,
+        uint256 newVotes
+    );
 }

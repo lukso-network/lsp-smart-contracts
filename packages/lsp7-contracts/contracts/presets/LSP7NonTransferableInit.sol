@@ -29,8 +29,17 @@ contract LSP7NonTransferableInit is LSP7NonTransferableInitAbstract {
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) external virtual initializer {
-        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_);
-        __LSP7NonTransferable_init_unchained(transferLockStart_, transferLockEnd_);
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
+        __LSP7NonTransferable_init_unchained(
+            transferLockStart_,
+            transferLockEnd_
+        );
         __LSP7Allowlist_init_unchained(newOwner_);
     }
 }

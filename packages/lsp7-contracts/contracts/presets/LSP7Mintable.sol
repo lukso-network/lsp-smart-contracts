@@ -22,5 +22,14 @@ contract LSP7Mintable is LSP7MintableAbstract {
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
         bool mintable_
-    ) LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_) LSP7MintableAbstract(mintable_) {}
+    )
+        LSP7DigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        )
+        LSP7MintableAbstract(mintable_)
+    {}
 }

@@ -9,7 +9,10 @@ import {LSP8IdentifiableDigitalAssetInitAbstract} from "../LSP8IdentifiableDigit
 /**
  * @dev LSP8IdentifiableDigitalAsset deployable preset contract (inheritable proxy version) with a public {mint} function callable only by the contract {owner}.
  */
-abstract contract LSP8MintableInitAbstract is LSP8IdentifiableDigitalAssetInitAbstract, ILSP8Mintable {
+abstract contract LSP8MintableInitAbstract is
+    LSP8IdentifiableDigitalAssetInitAbstract,
+    ILSP8Mintable
+{
     /**
      * @notice Initialize a `LSP7MintableInitAbstract` token contract with: token name = `name_`, token symbol = `symbol_`, and
      * address `newOwner_` as the token contract owner.
@@ -28,7 +31,11 @@ abstract contract LSP8MintableInitAbstract is LSP8IdentifiableDigitalAssetInitAb
         uint256 lsp8TokenIdFormat_
     ) internal virtual override onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
-            name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
         );
     }
 
@@ -42,7 +49,12 @@ abstract contract LSP8MintableInitAbstract is LSP8IdentifiableDigitalAssetInitAb
      * @param force Set to `false` to ensure that you are minting for a recipient that implements LSP1, `false` otherwise for forcing the minting.
      * @param data Any addition data to be sent alongside the minting.
      */
-    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public virtual override onlyOwner {
+    function mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) public virtual override onlyOwner {
         _mint(to, tokenId, force, data);
     }
 }

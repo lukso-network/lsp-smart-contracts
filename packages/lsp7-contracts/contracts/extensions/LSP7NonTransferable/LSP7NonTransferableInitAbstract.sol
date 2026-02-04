@@ -20,7 +20,10 @@ import {
 
 /// @title LSP7NonTransferableInitAbstract
 /// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods and allowlist support.
-abstract contract LSP7NonTransferableInitAbstract is ILSP7NonTransferable, LSP7AllowlistInitAbstract {
+abstract contract LSP7NonTransferableInitAbstract is
+    ILSP7NonTransferable,
+    LSP7AllowlistInitAbstract
+{
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -50,19 +53,30 @@ abstract contract LSP7NonTransferableInitAbstract is ILSP7NonTransferable, LSP7A
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) internal virtual onlyInitializing {
-        __LSP7Allowlist_init(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_);
-        __LSP7NonTransferable_init_unchained(transferLockStart_, transferLockEnd_);
+        __LSP7Allowlist_init(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
+        __LSP7NonTransferable_init_unchained(
+            transferLockStart_,
+            transferLockEnd_
+        );
     }
 
     /// @notice Unchained initializer for the lock period.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
-    function __LSP7NonTransferable_init_unchained(uint256 transferLockStart_, uint256 transferLockEnd_)
-        internal
-        virtual
-        onlyInitializing
-    {
-        require(transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_, LSP7InvalidTransferLockPeriod());
+    function __LSP7NonTransferable_init_unchained(
+        uint256 transferLockStart_,
+        uint256 transferLockEnd_
+    ) internal virtual onlyInitializing {
+        require(
+            transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_,
+            LSP7InvalidTransferLockPeriod()
+        );
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
 
@@ -90,12 +104,17 @@ abstract contract LSP7NonTransferableInitAbstract is ILSP7NonTransferable, LSP7A
         }
 
         // The last case is when the non-transferable feature is enabled is enabled within a certain time period
-        return transferLockStart > block.timestamp || transferLockEnd < block.timestamp;
+        return
+            transferLockStart > block.timestamp ||
+            transferLockEnd < block.timestamp;
     }
 
     /// @inheritdoc ILSP7NonTransferable
     function makeTransferable() public virtual override onlyOwner {
-        require(transferLockStart != 0 || transferLockEnd != 0, LSP7TokenAlreadyTransferable());
+        require(
+            transferLockStart != 0 || transferLockEnd != 0,
+            LSP7TokenAlreadyTransferable()
+        );
 
         transferLockStart = 0;
         transferLockEnd = 0;
@@ -104,24 +123,35 @@ abstract contract LSP7NonTransferableInitAbstract is ILSP7NonTransferable, LSP7A
     }
 
     /// @inheritdoc ILSP7NonTransferable
-    function updateTransferLockPeriod(uint256 newTransferLockStart, uint256 newTransferLockEnd)
-        public
-        virtual
-        override
-        onlyOwner
-    {
+    function updateTransferLockPeriod(
+        uint256 newTransferLockStart,
+        uint256 newTransferLockEnd
+    ) public virtual override onlyOwner {
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
-        require(newTransferLockEnd == 0 || newTransferLockEnd >= newTransferLockStart, LSP7InvalidTransferLockPeriod());
+        require(
+            newTransferLockEnd == 0 ||
+                newTransferLockEnd >= newTransferLockStart,
+            LSP7InvalidTransferLockPeriod()
+        );
 
-        require(newTransferLockStart == 0 || block.timestamp < transferLockStart, LSP7CannotUpdateTransferLockPeriod());
+        require(
+            newTransferLockStart == 0 || block.timestamp < transferLockStart,
+            LSP7CannotUpdateTransferLockPeriod()
+        );
 
-        require(newTransferLockEnd == 0 || block.timestamp < transferLockEnd, LSP7CannotUpdateTransferLockPeriod());
+        require(
+            newTransferLockEnd == 0 || block.timestamp < transferLockEnd,
+            LSP7CannotUpdateTransferLockPeriod()
+        );
 
         transferLockStart = newTransferLockStart;
         transferLockEnd = newTransferLockEnd;
 
-        emit TransferLockPeriodChanged(newTransferLockStart, newTransferLockEnd);
+        emit TransferLockPeriodChanged(
+            newTransferLockStart,
+            newTransferLockEnd
+        );
     }
 
     /// @notice Checks if a token transfer is allowed based on transferability status.
@@ -136,10 +166,7 @@ abstract contract LSP7NonTransferableInitAbstract is ILSP7NonTransferable, LSP7A
         bool,
         /* force */
         bytes memory /* data */
-    )
-        internal
-        virtual
-    {
+    ) internal virtual {
         // Allow burning or transferring tokens only if the transferability status is enabled
         require(to == address(0) || isTransferable(), LSP7TransferDisabled());
     }
@@ -151,11 +178,13 @@ abstract contract LSP7NonTransferableInitAbstract is ILSP7NonTransferable, LSP7A
     /// @param amount The amount of tokens being transferred.
     /// @param force Whether to force the transfer (passed to _nonTransferableCheck).
     /// @param data Additional data for the transfer (passed to _nonTransferableCheck).
-    function _beforeTokenTransfer(address from, address to, uint256 amount, bool force, bytes memory data)
-        internal
-        virtual
-        override
-    {
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
         if (isAllowlisted(from)) return;
         _nonTransferableCheck(from, to, amount, force, data);
     }

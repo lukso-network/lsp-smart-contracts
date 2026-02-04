@@ -9,7 +9,10 @@ import {LSP8Burnable} from "../contracts/extensions/LSP8Burnable.sol";
 import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 
 // errors
-import {LSP8NotTokenOperator, LSP8NonExistentTokenId} from "../contracts/LSP8Errors.sol";
+import {
+    LSP8NotTokenOperator,
+    LSP8NonExistentTokenId
+} from "../contracts/LSP8Errors.sol";
 
 // constants
 import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
@@ -23,10 +26,23 @@ contract MockLSP8Burnable is LSP8Burnable {
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_
-    ) LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_) {}
+    )
+        LSP8IdentifiableDigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        )
+    {}
 
     // Helper function to mint tokens for testing
-    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {
+    function mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) public {
         _mint(to, tokenId, force, data);
     }
 }
@@ -51,7 +67,13 @@ contract LSP8BurnableTest is Test {
     MockLSP8Burnable lsp8Burnable;
 
     function setUp() public {
-        lsp8Burnable = new MockLSP8Burnable(name, symbol, owner, tokenType, tokenIdFormat);
+        lsp8Burnable = new MockLSP8Burnable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat
+        );
 
         // Mint some tokens for testing
         lsp8Burnable.mint(owner, tokenId1, true, "");
@@ -100,7 +122,13 @@ contract LSP8BurnableTest is Test {
     // Test non-operator cannot burn
     function test_NonOperatorCannotBurn() public {
         vm.prank(nonOwner);
-        vm.expectRevert(abi.encodeWithSelector(LSP8NotTokenOperator.selector, tokenId1, nonOwner));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8NotTokenOperator.selector,
+                tokenId1,
+                nonOwner
+            )
+        );
         lsp8Burnable.burn(tokenId1, "");
 
         // Token should still exist
@@ -109,7 +137,13 @@ contract LSP8BurnableTest is Test {
 
     function test_UserCannotBurnOtherUsersToken() public {
         vm.prank(user1);
-        vm.expectRevert(abi.encodeWithSelector(LSP8NotTokenOperator.selector, tokenId1, user1));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8NotTokenOperator.selector,
+                tokenId1,
+                user1
+            )
+        );
         lsp8Burnable.burn(tokenId1, "");
 
         assertEq(lsp8Burnable.balanceOf(owner), 1);
@@ -117,7 +151,12 @@ contract LSP8BurnableTest is Test {
 
     // Test burning non-existent token fails
     function test_BurningNonExistentTokenFails() public {
-        vm.expectRevert(abi.encodeWithSelector(LSP8NonExistentTokenId.selector, nonExistentTokenId));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8NonExistentTokenId.selector,
+                nonExistentTokenId
+            )
+        );
         lsp8Burnable.burn(nonExistentTokenId, "");
     }
 
@@ -164,7 +203,9 @@ contract LSP8BurnableTest is Test {
     function test_BurningSameTokenTwiceFails() public {
         lsp8Burnable.burn(tokenId1, "");
 
-        vm.expectRevert(abi.encodeWithSelector(LSP8NonExistentTokenId.selector, tokenId1));
+        vm.expectRevert(
+            abi.encodeWithSelector(LSP8NonExistentTokenId.selector, tokenId1)
+        );
         lsp8Burnable.burn(tokenId1, "");
     }
 
@@ -185,7 +226,10 @@ contract LSP8BurnableTest is Test {
         assertEq(lsp8Burnable.totalSupply(), supplyBefore - 1);
     }
 
-    function testFuzz_NonOwnerCannotBurn(address attacker, uint256 tokenIdNum) public {
+    function testFuzz_NonOwnerCannotBurn(
+        address attacker,
+        uint256 tokenIdNum
+    ) public {
         vm.assume(tokenIdNum > 100);
         vm.assume(attacker != user1);
         vm.assume(attacker != address(0));
@@ -194,7 +238,13 @@ contract LSP8BurnableTest is Test {
         lsp8Burnable.mint(user1, tokenId, true, "");
 
         vm.prank(attacker);
-        vm.expectRevert(abi.encodeWithSelector(LSP8NotTokenOperator.selector, tokenId, attacker));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8NotTokenOperator.selector,
+                tokenId,
+                attacker
+            )
+        );
         lsp8Burnable.burn(tokenId, "");
 
         // Token should still exist

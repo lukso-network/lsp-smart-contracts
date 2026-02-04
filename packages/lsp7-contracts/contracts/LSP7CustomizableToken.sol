@@ -71,10 +71,19 @@ contract LSP7CustomizableToken is
         NonTransferableParams memory nonTransferableParams,
         CappedParams memory cappedParams
     )
-        LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_)
+        LSP7DigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        )
         LSP7AllowlistAbstract(newOwner_)
         LSP7MintableAbstract(mintableParams.mintable)
-        LSP7NonTransferableAbstract(nonTransferableParams.transferLockStart, nonTransferableParams.transferLockEnd)
+        LSP7NonTransferableAbstract(
+            nonTransferableParams.transferLockStart,
+            nonTransferableParams.transferLockEnd
+        )
         LSP7CappedBalanceAbstract(cappedParams.tokenBalanceCap)
         LSP7CappedSupplyAbstract(cappedParams.tokenSupplyCap)
     {
@@ -90,10 +99,19 @@ contract LSP7CustomizableToken is
 
     /// @inheritdoc LSP7MintableAbstract
     /// @dev Relies on {LSP7CappedSupply} for supply cap enforcement.
-    function _mint(address to, uint256 amount, bool force, bytes memory data)
+    function _mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    )
         internal
         virtual
-        override(LSP7DigitalAsset, LSP7MintableAbstract, LSP7CappedSupplyAbstract)
+        override(
+            LSP7DigitalAsset,
+            LSP7MintableAbstract,
+            LSP7CappedSupplyAbstract
+        )
     {
         require(isMintable, LSP7MintDisabled());
 
@@ -108,12 +126,34 @@ contract LSP7CustomizableToken is
     /// @param amount The amount of tokens being transferred.
     /// @param force Whether to force the transfer.
     /// @param data Additional data for the transfer.
-    function _beforeTokenTransfer(address from, address to, uint256 amount, bool force, bytes memory data)
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    )
         internal
         virtual
-        override(LSP7DigitalAsset, LSP7CappedBalanceAbstract, LSP7NonTransferableAbstract)
+        override(
+            LSP7DigitalAsset,
+            LSP7CappedBalanceAbstract,
+            LSP7NonTransferableAbstract
+        )
     {
-        LSP7NonTransferableAbstract._beforeTokenTransfer(from, to, amount, force, data);
-        LSP7CappedBalanceAbstract._beforeTokenTransfer(from, to, amount, force, data);
+        LSP7NonTransferableAbstract._beforeTokenTransfer(
+            from,
+            to,
+            amount,
+            force,
+            data
+        );
+        LSP7CappedBalanceAbstract._beforeTokenTransfer(
+            from,
+            to,
+            amount,
+            force,
+            data
+        );
     }
 }

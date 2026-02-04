@@ -93,11 +93,18 @@ contract LSP7CustomizableTokenInit is
         NonTransferableParams memory nonTransferableParams,
         CappedParams memory cappedParams
     ) internal virtual onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_);
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
         __LSP7Allowlist_init_unchained(newOwner_);
         __LSP7Mintable_init_unchained(mintableParams.isMintable);
         __LSP7NonTransferable_init_unchained(
-            nonTransferableParams.transferLockStart, nonTransferableParams.transferLockEnd
+            nonTransferableParams.transferLockStart,
+            nonTransferableParams.transferLockEnd
         );
         __LSP7CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
         __LSP7CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
@@ -116,10 +123,19 @@ contract LSP7CustomizableTokenInit is
 
     /// @inheritdoc LSP7MintableInitAbstract
     /// @dev Relies on {LSP7CappedSupplyInitAbstract} for supply cap enforcement.
-    function _mint(address to, uint256 amount, bool force, bytes memory data)
+    function _mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    )
         internal
         virtual
-        override(LSP7DigitalAssetInitAbstract, LSP7MintableInitAbstract, LSP7CappedSupplyInitAbstract)
+        override(
+            LSP7DigitalAssetInitAbstract,
+            LSP7MintableInitAbstract,
+            LSP7CappedSupplyInitAbstract
+        )
     {
         require(isMintable, LSP7MintDisabled());
 
@@ -134,12 +150,34 @@ contract LSP7CustomizableTokenInit is
     /// @param amount The amount of tokens being transferred.
     /// @param force Whether to force the transfer.
     /// @param data Additional data for the transfer.
-    function _beforeTokenTransfer(address from, address to, uint256 amount, bool force, bytes memory data)
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    )
         internal
         virtual
-        override(LSP7DigitalAssetInitAbstract, LSP7NonTransferableInitAbstract, LSP7CappedBalanceInitAbstract)
+        override(
+            LSP7DigitalAssetInitAbstract,
+            LSP7NonTransferableInitAbstract,
+            LSP7CappedBalanceInitAbstract
+        )
     {
-        LSP7NonTransferableInitAbstract._beforeTokenTransfer(from, to, amount, force, data);
-        LSP7CappedBalanceInitAbstract._beforeTokenTransfer(from, to, amount, force, data);
+        LSP7NonTransferableInitAbstract._beforeTokenTransfer(
+            from,
+            to,
+            amount,
+            force,
+            data
+        );
+        LSP7CappedBalanceInitAbstract._beforeTokenTransfer(
+            from,
+            to,
+            amount,
+            force,
+            data
+        );
     }
 }
