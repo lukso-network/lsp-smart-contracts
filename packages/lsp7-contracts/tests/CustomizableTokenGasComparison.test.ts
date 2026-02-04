@@ -6,46 +6,12 @@ import {
     type LSP7MintableInit,
     LSP7MintableInit__factory,
     type CustomizableTokenInit,
-    CustomizableTokenInit__factory,
+    LSP7CustomizableTokenInit__factory,
 } from '../types/ethers-contracts/index.js';
 
 import { LSP4_TOKEN_TYPES } from '@lukso/lsp4-contracts/constants';
 
-/**
- * Deploy a minimal proxy (ERC1167) contract
- * @param baseContractAddress The address of the base implementation contract
- * @param deployer The signer to deploy the proxy
- * @returns The address of the deployed proxy
- */
-async function deployProxy(baseContractAddress: string, deployer: HardhatEthersSigner) {
-    /**
-     * @see https://blog.openzeppelin.com/deep-dive-into-the-minimal-proxy-contract/
-     * The first 10 x hex opcodes copy the runtime code into memory and return it.
-     */
-    const eip1167RuntimeCodeTemplate =
-        '0x3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3';
-
-    // deploy proxy contract
-    const proxyBytecode = eip1167RuntimeCodeTemplate.replace(
-        'bebebebebebebebebebebebebebebebebebebebe',
-        baseContractAddress.substring(2),
-    );
-    const tx = await deployer.sendTransaction({
-        data: proxyBytecode,
-    });
-    const receipt = await tx.wait();
-
-    if (
-        !receipt ||
-        receipt.status !== 1 ||
-        receipt.contractAddress === null ||
-        receipt.contractAddress === undefined
-    ) {
-        throw new Error('Failed to deploy proxy contract');
-    }
-
-    return receipt.contractAddress;
-}
+import { deployProxy } from '../../lsp-smart-contracts/tests/utils/fixtures.js';
 
 describe('Gas Comparison: LSP7MintableInit vs CustomizableTokenInit', () => {
     let ethers: HardhatEthers;
@@ -66,7 +32,7 @@ describe('Gas Comparison: LSP7MintableInit vs CustomizableTokenInit', () => {
         it('should deploy both contracts as minimal proxies and compare gas costs', async () => {
             // Deploy base implementation contracts
             const lsp7MintableInitBase = await new LSP7MintableInit__factory(owner).deploy();
-            const customizableTokenInitBase = await new CustomizableTokenInit__factory(owner).deploy();
+            const customizableTokenInitBase = await new LSP7CustomizableTokenInit__factory(owner).deploy();
 
             const lsp7MintableInitBaseAddress = await lsp7MintableInitBase.getAddress();
             const customizableTokenInitBaseAddress = await customizableTokenInitBase.getAddress();
@@ -91,7 +57,7 @@ describe('Gas Comparison: LSP7MintableInit vs CustomizableTokenInit', () => {
                 lsp7MintableProxyAddress,
                 owner,
             );
-            const customizableTokenInit: CustomizableTokenInit = CustomizableTokenInit__factory.connect(
+            const customizableTokenInit: CustomizableTokenInit = LSP7CustomizableTokenInit__factory.connect(
                 customizableTokenProxyAddress,
                 owner,
             );
