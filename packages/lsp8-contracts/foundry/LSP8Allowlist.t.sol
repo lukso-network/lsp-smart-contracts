@@ -411,4 +411,33 @@ contract LSP8AllowlistTest is Test {
             lsp8Allowlist.removeFromAllowlist(addr);
         }
     }
+
+    function testFuzz_GetAllowlistedAddressesByIndex(
+        uint256 startIndex,
+        uint256 endIndex
+    ) public {
+        startIndex = bound(startIndex, 0, 100);
+        endIndex = bound(endIndex, 0, 100);
+        vm.assume(startIndex > endIndex);
+
+        uint256 currentLength = lsp8Allowlist.getAllowlistedAddressesLength();
+
+        for (uint256 i = 0; i < 100; i++) {
+            vm.prank(owner);
+            lsp8Allowlist.addToAllowlist(vm.addr(100 + i));
+        }
+
+        uint256 newLength = lsp8Allowlist.getAllowlistedAddressesLength();
+        assertEq(newLength, currentLength + 100);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8AllowListInvalidIndexRange.selector,
+                startIndex,
+                endIndex,
+                newLength
+            )
+        );
+        lsp8Allowlist.getAllowlistedAddressesByIndex(startIndex, endIndex);
+    }
 }

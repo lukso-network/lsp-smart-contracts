@@ -59,7 +59,8 @@
     "verify-balance": "npx hardhat verify-balance",
     "deploy": "npx hardhat ignition deploy --verify",
     "deploy:base": "npx hardhat ignition deploy ignition/modules/base.ts --strategy create2 --verify",
-    "test": "hardhat test --no-compile tests/*.test.ts"
+    "test": "hardhat test --no-compile tests/*.test.ts",
+    "test:foundry": "FOUNDRY_PROFILE=lsp8 forge test -vvvv"
   },
   "dependencies": {
     "@lukso/lsp1-contracts": "~0.15.5",
