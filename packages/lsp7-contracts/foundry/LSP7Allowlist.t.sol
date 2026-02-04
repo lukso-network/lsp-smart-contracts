@@ -14,6 +14,9 @@ import {ILSP7Allowlist} from "../contracts/extensions/LSP7Allowlist/ILSP7Allowli
 // constants
 import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
+// errors
+import {LSP7AllowListCannotRemoveReservedAddress} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistErrors.sol";
+
 // Mock contract to test LSP7AllowlistAbstract functionality
 contract MockLSP7Allowlist is LSP7AllowlistAbstract {
     constructor(
@@ -55,6 +58,7 @@ contract LSP7AllowlistTest is Test {
     address user1 = vm.addr(101);
     address user2 = vm.addr(102);
     address zeroAddress = address(0);
+    address deadAddress = 0x000000000000000000000000000000000000dEaD;
 
     MockLSP7Allowlist lsp7Allowlist;
 
@@ -77,6 +81,10 @@ contract LSP7AllowlistTest is Test {
         assertTrue(
             lsp7Allowlist.isAllowlisted(zeroAddress),
             "Zero address should be allowlisted"
+        );
+        assertTrue(
+            lsp7Allowlist.isAllowlisted(deadAddress),
+            "Dead address should be allowlisted"
         );
         assertFalse(
             lsp7Allowlist.isAllowlisted(user1),
@@ -203,17 +211,39 @@ contract LSP7AllowlistTest is Test {
         );
     }
 
-    function test_RemoveZeroAddressFromAllowlist() public {
+    function test_CannotRemoveZeroAddressFromAllowlist() public {
         assertTrue(
             lsp7Allowlist.isAllowlisted(zeroAddress),
             "Zero address should be allowlisted initially"
         );
-        vm.expectEmit(true, true, false, true, address(lsp7Allowlist));
-        emit ILSP7Allowlist.AllowlistChanged(zeroAddress, false);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP7AllowListCannotRemoveReservedAddress.selector,
+                zeroAddress
+            )
+        );
         lsp7Allowlist.removeFromAllowlist(zeroAddress);
-        assertFalse(
+        assertTrue(
             lsp7Allowlist.isAllowlisted(zeroAddress),
-            "Zero address should not be allowlisted"
+            "Zero address should still be allowlisted"
+        );
+    }
+
+    function test_CannotRemoveDeadAddressFromAllowlist() public {
+        assertTrue(
+            lsp7Allowlist.isAllowlisted(deadAddress),
+            "Dead address should be allowlisted initially"
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP7AllowListCannotRemoveReservedAddress.selector,
+                deadAddress
+            )
+        );
+        lsp7Allowlist.removeFromAllowlist(deadAddress);
+        assertTrue(
+            lsp7Allowlist.isAllowlisted(deadAddress),
+            "Dead address should still be allowlisted"
         );
     }
 
@@ -243,9 +273,8 @@ contract LSP7AllowlistTest is Test {
 
     function testFuzz_AllowlistManagement(address addr, bool add) public {
         vm.assume(addr != address(0));
+        vm.assume(addr != deadAddress); // Exclude dead address (protected)
         vm.assume(addr != owner); // Exclude owner to test new addresses
-
-        bool initialStatus = lsp7Allowlist.isAllowlisted(addr);
 
         if (add) {
             vm.expectEmit(true, true, false, true, address(lsp7Allowlist));

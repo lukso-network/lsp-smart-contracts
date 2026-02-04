@@ -167,10 +167,6 @@ const config: HardhatUserConfig = {
       '@lukso/lsp8-contracts/contracts/extensions/LSP8VotesConstants.sol': LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8VotesInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol':
-        LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateVault.sol':
-        LSP7_VIA_IR_SETTINGS,
       // imports into lsp-smart-contracts package
       'contracts/LSP4DigitalAssetMetadata/LSP4Utils.sol': VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol': LSP7_VIA_IR_SETTINGS,
@@ -216,10 +212,6 @@ const config: HardhatUserConfig = {
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7VotesInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol':
-        LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateVault/LSP1UniversalReceiverDelegateVault.sol':
-        LSP7_VIA_IR_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol':
         LSP8_COMPILER_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol':

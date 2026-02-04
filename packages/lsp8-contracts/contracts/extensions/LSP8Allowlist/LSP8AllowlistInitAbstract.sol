@@ -11,7 +11,7 @@ import {ILSP8Allowlist} from "./ILSP8Allowlist.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
-import {LSP8InvalidAllowlistIndexRange} from "./LSP8AllowlistErrors.sol";
+import {LSP8AllowListInvalidIndexRange, LSP8AllowListCannotRemoveReservedAddress} from "./LSP8AllowlistErrors.sol";
 
 /// @title LSP8AllowlistInitAbstract
 /// @dev Abstract contract implementing an allowlist for LSP8 tokens, allowing specific addresses to bypass restrictions such as transfer locks. Inherits from LSP8IdentifiableDigitalAssetInitAbstract to integrate with token functionality.
@@ -23,6 +23,9 @@ abstract contract LSP8AllowlistInitAbstract is
 
     /// @notice The set of addresses allowed to bypass certain restrictions (e.g., transfer locks).
     EnumerableSet.AddressSet internal _allowlist;
+
+    /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
+    address internal constant _DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 
     /// @notice Initializes the LSP8Allowlist contract with base token params and allowlist.
     /// @dev Initializes the LSP8IdentifiableDigitalAsset base and sets up the allowlist with owner and zero address.
@@ -49,13 +52,14 @@ abstract contract LSP8AllowlistInitAbstract is
     }
 
     /// @notice Unchained initializer for the allowlist.
-    /// @dev Adds the contract owner and `address(0)` to the allowlist.
+    /// @dev Adds the contract owner, `address(0)`, and the dead address to the allowlist.
     /// @param newOwner_ The address to add to the allowlist.
     function __LSP8Allowlist_init_unchained(
         address newOwner_
     ) internal virtual onlyInitializing {
         _allowlist.add(newOwner_);
         _allowlist.add(address(0));
+        _allowlist.add(_DEAD_ADDRESS);
     }
 
     /// @inheritdoc ILSP8Allowlist
@@ -66,6 +70,10 @@ abstract contract LSP8AllowlistInitAbstract is
 
     /// @inheritdoc ILSP8Allowlist
     function removeFromAllowlist(address _address) public override onlyOwner {
+        require(
+            _address != address(0) && _address != _DEAD_ADDRESS,
+            LSP8AllowListCannotRemoveReservedAddress(_address)
+        );
         _allowlist.remove(_address);
         emit AllowlistChanged(_address, false);
     }
@@ -90,7 +98,7 @@ abstract contract LSP8AllowlistInitAbstract is
         uint256 allowedAddressesCount = _allowlist.length();
         require(
             startIndex < endIndex && endIndex <= allowedAddressesCount,
-            LSP8InvalidAllowlistIndexRange(
+            LSP8AllowListInvalidIndexRange(
                 startIndex,
                 endIndex,
                 allowedAddressesCount
