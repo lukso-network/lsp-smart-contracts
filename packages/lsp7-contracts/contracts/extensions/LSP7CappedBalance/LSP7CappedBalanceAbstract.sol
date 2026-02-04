@@ -50,14 +50,17 @@ abstract contract LSP7CappedBalanceAbstract is
         // Do not check for balance cap if we are burning tokens
         if (to == address(0)) return;
 
+        uint256 maxBalanceAllowed = tokenBalanceCap();
+        bool isBalanceCapEnabled = maxBalanceAllowed != 0;
+
         require(
-            tokenBalanceCap() == 0 ||
-                (balanceOf(to) + amount) <= tokenBalanceCap(),
+            !isBalanceCapEnabled ||
+                (balanceOf(to) + amount) <= maxBalanceAllowed,
             LSP7CappedBalanceExceeded(
                 to,
                 amount,
                 balanceOf(to),
-                tokenBalanceCap()
+                maxBalanceAllowed
             )
         );
     }
