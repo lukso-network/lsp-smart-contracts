@@ -2,13 +2,17 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP7AllowlistAbstract} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {
+    LSP7AllowlistAbstract
+} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {
@@ -27,12 +31,10 @@ abstract contract LSP7NonTransferableAbstract is
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    /// @notice The timestamp at which point in time the token is not transferrable.
-    /// @dev `transferLockStart` can be disabled by setting it to 0. It means no start time is set (transfers locked up until `transferLockEnd`).
+    /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockStart;
 
-    /// @notice The timestamp at which point in time the non-transferability of the token ends and the token is transferrable again.
-    /// @dev `transferLockEnd` can be disabled by setting it to 0. It means no end time is set (transfers locked indefinitely).
+    /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockEnd;
 
     /// @notice Initializes the contract with non-transferable locking period.

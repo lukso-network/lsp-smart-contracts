@@ -6,8 +6,14 @@ pragma solidity ^0.8.27;
 interface ILSP7NonTransferable {
     /// @dev Emitted when the transfer lock period is updated.
     /// @param start The new start timestamp of the transfer lock period.
-    /// @param end The new end tim∫stamp of the transfer lock period.
+    /// @param end The new end timestamp of the transfer lock period.
     event TransferLockPeriodChanged(uint256 indexed start, uint256 indexed end);
+
+    /// @notice The start timestamp of the transfer lock period, at which point the token becomes non-transferable.
+    function transferLockStart() external view returns (uint256);
+
+    /// @notice The end timestamp of the transfer lock period, at which point the token becomes transferable again.
+    function transferLockEnd() external view returns (uint256);
 
     /// @notice Checks if the token is currently transferable.
     /// @dev Returns true if the token is transferable (based on the lock period). Note that transfers from allowlisted addresses and burning (transfers to address(0)) is always allowed, regardless of transferability status.

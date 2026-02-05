@@ -2,13 +2,17 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8AllowlistAbstract} from "../LSP8Allowlist/LSP8AllowlistAbstract.sol";
+import {
+    LSP8AllowlistAbstract
+} from "../LSP8Allowlist/LSP8AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP8NonTransferable} from "./ILSP8NonTransferable.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {
@@ -27,10 +31,10 @@ abstract contract LSP8NonTransferableAbstract is
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    /// @notice The start timestamp of the transfer lock period.
+    /// @inheritdoc ILSP8NonTransferable
     uint256 public transferLockStart;
 
-    /// @notice The end timestamp of the transfer lock period.
+    /// @inheritdoc ILSP8NonTransferable
     uint256 public transferLockEnd;
 
     /// @notice Initializes the contract with lock period.

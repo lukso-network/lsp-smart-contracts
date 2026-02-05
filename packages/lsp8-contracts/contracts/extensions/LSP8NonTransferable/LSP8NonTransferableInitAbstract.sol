@@ -31,10 +31,10 @@ abstract contract LSP8NonTransferableInitAbstract is
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    /// @notice The start timestamp of the transfer lock period.
+    /// @inheritdoc ILSP8NonTransferable
     uint256 public transferLockStart;
 
-    /// @notice The end timestamp of the transfer lock period.
+    /// @inheritdoc ILSP8NonTransferable
     uint256 public transferLockEnd;
 
     /// @notice Initializes the LSP8NonTransferable contract with base token params, allowlist, and transfer settings.

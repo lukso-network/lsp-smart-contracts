@@ -31,12 +31,10 @@ abstract contract LSP7NonTransferableInitAbstract is
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    /// @notice The timestamp at which point in time the token is not transferrable.
-    /// @dev `transferLockStart` can be disabled by setting it to 0. It means no start time is set (transfers locked up until `transferLockEnd`).
+    /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockStart;
 
-    /// @notice The timestamp at which point in time the non-transferability of the token ends and the token is transferrable again.
-    /// @dev `transferLockEnd` can be disabled by setting it to 0. It means no end time is set (transfers locked indefinitely).
+    /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockEnd;
 
     /// @notice Initializes the LSP7NonTransferable contract with base token params, allowlist, and transfer settings.
