@@ -91,6 +91,10 @@ contract LSP7AllowlistTest is Test {
             lsp7Allowlist.isAllowlisted(zeroAddress),
             "Zero address should be allowlisted"
         );
+        assertTrue(
+            lsp7Allowlist.isAllowlisted(deadAddress),
+            "Dead address should be allowlisted"
+        );
         assertFalse(
             lsp7Allowlist.isAllowlisted(user1),
             "Non-owner should not be allowlisted"

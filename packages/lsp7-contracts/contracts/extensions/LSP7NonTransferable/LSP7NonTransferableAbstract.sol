@@ -124,13 +124,10 @@ abstract contract LSP7NonTransferableAbstract is
     /// @dev Allows burning to address(0) even when transfers are disabled, bypassing transferability restrictions. Reverts with {LSP7TransferDisabled} if the token is non-transferable and the destination is not address(0).
     /// @param to The address receiving the tokens.
     function _nonTransferableCheck(
-        address,
-        /* from */
+        address /* from */,
         address to,
-        uint256,
-        /* amount */
-        bool,
-        /* force */
+        uint256 /* amount */,
+        bool /* force */,
         bytes memory /* data */
     ) internal virtual {
         // Allow burning or transferring tokens only if the transferability status is enabled

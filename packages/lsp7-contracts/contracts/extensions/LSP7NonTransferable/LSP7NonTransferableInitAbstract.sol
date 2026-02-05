@@ -2,13 +2,17 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7AllowlistInitAbstract} from "../LSP7Allowlist/LSP7AllowlistInitAbstract.sol";
+import {
+    LSP7AllowlistInitAbstract
+} from "../LSP7Allowlist/LSP7AllowlistInitAbstract.sol";
 
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {
@@ -158,13 +162,10 @@ abstract contract LSP7NonTransferableInitAbstract is
     /// @dev Allows burning to address(0) even when transfers are disabled, bypassing transferability restrictions. Reverts with {LSP7TransferDisabled} if the token is non-transferable and the destination is not address(0).
     /// @param to The address receiving the tokens.
     function _nonTransferableCheck(
-        address,
-        /* from */
+        address /* from */,
         address to,
-        uint256,
-        /* amount */
-        bool,
-        /* force */
+        uint256 /* amount */,
+        bool /* force */,
         bytes memory /* data */
     ) internal virtual {
         // Allow burning or transferring tokens only if the transferability status is enabled

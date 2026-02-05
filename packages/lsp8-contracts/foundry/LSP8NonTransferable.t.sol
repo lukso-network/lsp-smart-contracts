@@ -5,12 +5,20 @@ pragma solidity ^0.8.27;
 import "forge-std/Test.sol";
 
 // modules
-import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
-import {LSP8AllowlistAbstract} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
-import {LSP8NonTransferableAbstract} from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8AllowlistAbstract
+} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
+import {
+    LSP8NonTransferableAbstract
+} from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol";
 
 // interfaces
-import {ILSP8NonTransferable} from "../contracts/extensions/LSP8NonTransferable/ILSP8NonTransferable.sol";
+import {
+    ILSP8NonTransferable
+} from "../contracts/extensions/LSP8NonTransferable/ILSP8NonTransferable.sol";
 
 // errors
 import {
@@ -21,7 +29,9 @@ import {
 } from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_NFT
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
 
 contract MockLSP8NonTransferable is LSP8NonTransferableAbstract {
@@ -324,7 +334,7 @@ contract LSP8NonTransferableTest is Test {
     }
 
     function test_MakeTransferableEnablesTransfersFromLockPeriod() public {
-        // Create a token with a lock period
+        // Create a token with a lock period. Meaning the token cannot be transferred during a certain time period.
         MockLSP8NonTransferable tokenWithLock = new MockLSP8NonTransferable(
             name,
             symbol,
@@ -347,14 +357,29 @@ contract LSP8NonTransferableTest is Test {
         assertEq(tokenWithLock.balanceOf(recipient), 1);
     }
 
-    function test_NonOwnerCannotCallMakeTransferable() public {
-        vm.prank(randomCaller);
+    function testFuzz_NonOwnerCannotCallMakeTransferable(
+        address caller
+    ) public {
+        vm.assume(caller != owner);
+        vm.prank(caller);
         vm.expectRevert("Ownable: caller is not the owner"); // Expect revert due to onlyOwner modifier
         lsp8NonTransferable.makeTransferable();
     }
 
+    function testFuzz_NonOwnerCannotCallUpdateTransferLockPeriod(
+        address caller
+    ) public {
+        vm.assume(caller != owner);
+        vm.prank(caller);
+        vm.expectRevert("Ownable: caller is not the owner"); // Expect revert due to onlyOwner modifier
+        lsp8NonTransferable.updateTransferLockPeriod(
+            block.timestamp + 100,
+            block.timestamp + 200
+        );
+    }
+
     function test_MakeTransferableRevertsWhenAlreadyTransferable() public {
-        // Create a token that's already transferable (both lock periods = 0)
+        // Create a token that is always transferable (both lock periods = 0)
         MockLSP8NonTransferable transferableToken = new MockLSP8NonTransferable(
             name,
             symbol,

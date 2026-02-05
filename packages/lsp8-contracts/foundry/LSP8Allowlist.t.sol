@@ -5,17 +5,11 @@ pragma solidity ^0.8.27;
 import "forge-std/Test.sol";
 
 // modules
-import {
-    LSP8AllowlistAbstract
-} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
-import {
-    LSP8IdentifiableDigitalAsset
-} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
+import {LSP8AllowlistAbstract} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
+import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 
 // interfaces
-import {
-    ILSP8Allowlist
-} from "../contracts/extensions/LSP8Allowlist/ILSP8Allowlist.sol";
+import {ILSP8Allowlist} from "../contracts/extensions/LSP8Allowlist/ILSP8Allowlist.sol";
 
 // errors
 import {
@@ -24,9 +18,7 @@ import {
 } from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistErrors.sol";
 
 // constants
-import {
-    _LSP4_TOKEN_TYPE_NFT
-} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
 
 // Mock contract to test LSP8AllowlistAbstract functionality

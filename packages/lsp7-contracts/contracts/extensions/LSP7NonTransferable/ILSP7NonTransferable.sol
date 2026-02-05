@@ -6,23 +6,28 @@ pragma solidity ^0.8.27;
 interface ILSP7NonTransferable {
     /// @dev Emitted when the transfer lock period is updated.
     /// @param start The new start timestamp of the transfer lock period.
-    /// @param end The new end timestamp of the transfer lock period.
+    /// @param end The new end tim∫stamp of the transfer lock period.
     event TransferLockPeriodChanged(uint256 indexed start, uint256 indexed end);
 
     /// @notice Checks if the token is currently transferable.
     /// @dev Returns true if the token is transferable (based on the lock period). Note that transfers from allowlisted addresses and burning (transfers to address(0)) is always allowed, regardless of transferability status.
-    /// @return True if the token is transferable, false otherwise.
+    /// @return A `true` or `false` boolean indicating if the token is transferable or not.
     function isTransferable() external view returns (bool);
 
-    /// @notice Removes all transfer lock, enabling token transfers for non-allowlisted addresses.
+    /// @notice Removes all transfer lock periods, enabling token transfers for non-allowlisted addresses.
     /// @dev Can only be called by the contract owner. Sets both lock periods to 0.
     /// @custom:emits {TransferLockPeriodChanged} event.
     function makeTransferable() external;
 
     /// @notice Updates the transfer lock period with new start and end timestamps.
-    /// When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart).
-    /// When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd).
+    /// - When `transferLockStart` is 0 and `transferLockEnd` is set to a non-zero value, it means no start time is set. The token is non-transferable immediately until `transferLockEnd`.
+    /// - When `transferLockStart` is set to a value and `transferLockEnd` is 0, it means the tokens becomes non-transferable at a certain point in time and indefinitely (no end time).
+    ///
+    /// - To make the token always non-transferable, set `transferLockStart` to 0 and `transferLockEnd` to type(uint256).max.
+    /// - To disable completely the non-transferable feature (= make the token always transferable), set both `transferLockStart` and `transferLockEnd` to 0.
+    ///
     /// @dev Can only be called by the contract owner. Reverts if the current lock period has already started or ended.
+    ///
     /// @custom:emits {TransferLockPeriodChanged} event.
     /// @param newTransferLockStart The new start timestamp for the transfer lock period.
     /// @param newTransferLockEnd The new end timestamp for the transfer lock period.

@@ -2,13 +2,17 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8AllowlistInitAbstract} from "../LSP8Allowlist/LSP8AllowlistInitAbstract.sol";
+import {
+    LSP8AllowlistInitAbstract
+} from "../LSP8Allowlist/LSP8AllowlistInitAbstract.sol";
 
 // interfaces
 import {ILSP8NonTransferable} from "./ILSP8NonTransferable.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {
@@ -153,13 +157,10 @@ abstract contract LSP8NonTransferableInitAbstract is
     /// @dev Allows burning to address(0) even when transfers are disabled, bypassing transferability restrictions. Reverts with {LSP8TransferDisabled} if the token is non-transferable and the destination is not address(0).
     /// @param to The address receiving the token.
     function _nonTransferableCheck(
-        address,
-        /* from */
+        address /* from */,
         address to,
-        bytes32,
-        /* tokenId */
-        bool,
-        /* force */
+        bytes32 /* tokenId */,
+        bool /* force */,
         bytes memory /* data */
     ) internal virtual {
         require(to == address(0) || isTransferable(), LSP8TransferDisabled());

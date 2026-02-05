@@ -6,11 +6,17 @@ import "forge-std/Test.sol";
 
 // modules
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
-import {LSP7AllowlistAbstract} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
-import {LSP7NonTransferableAbstract} from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
+import {
+    LSP7AllowlistAbstract
+} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {
+    LSP7NonTransferableAbstract
+} from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
 
 // interfaces
-import {ILSP7NonTransferable} from "../contracts/extensions/LSP7NonTransferable/ILSP7NonTransferable.sol";
+import {
+    ILSP7NonTransferable
+} from "../contracts/extensions/LSP7NonTransferable/ILSP7NonTransferable.sol";
 
 // errors
 import {
@@ -21,7 +27,9 @@ import {
 } from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract MockLSP7NonTransferable is LSP7NonTransferableAbstract {
     constructor(
@@ -373,7 +381,7 @@ contract LSP7NonTransferableTest is Test {
     }
 
     function test_MakeTransferableEnablesTransfersFromLockPeriod() public {
-        // Create a token with a lock period
+        // Create a token with a lock period. Meaning the token cannot be transferred during a certain time period.
         MockLSP7NonTransferable tokenWithLock = new MockLSP7NonTransferable(
             name,
             symbol,
@@ -396,14 +404,29 @@ contract LSP7NonTransferableTest is Test {
         assertEq(tokenWithLock.balanceOf(recipient), 10);
     }
 
-    function test_NonOwnerCannotCallMakeTransferable() public {
-        vm.prank(randomCaller);
+    function testFuzz_NonOwnerCannotCallMakeTransferable(
+        address caller
+    ) public {
+        vm.assume(caller != owner);
+        vm.prank(caller);
         vm.expectRevert("Ownable: caller is not the owner"); // Expect revert due to onlyOwner modifier
         lsp7NonTransferable.makeTransferable();
     }
 
+    function testFuzz_NonOwnerCannotCallUpdateTransferLockPeriod(
+        address caller
+    ) public {
+        vm.assume(caller != owner);
+        vm.prank(caller);
+        vm.expectRevert("Ownable: caller is not the owner"); // Expect revert due to onlyOwner modifier
+        lsp7NonTransferable.updateTransferLockPeriod(
+            block.timestamp + 100,
+            block.timestamp + 200
+        );
+    }
+
     function test_MakeTransferableRevertsWhenAlreadyTransferable() public {
-        // Create a token that's already transferable (both lock periods = 0)
+        // Create a token that is always transferable, disabling the non-transferable feature (both lock periods = 0)
         MockLSP7NonTransferable transferableToken = new MockLSP7NonTransferable(
             name,
             symbol,
@@ -492,7 +515,7 @@ contract LSP7NonTransferableTest is Test {
         );
     }
 
-    // Test for new behavior: disabling lock periods by setting to 0 according to feedback
+    // Test for new behavior: disabling lock periods by setting to 0
     function test_UpdateTransferLockPeriodWithZeroStart() public {
         // When transferLockStart is set to 0, transfers should be locked until transferLockEnd
         uint256 newTransferLockStart = 0;

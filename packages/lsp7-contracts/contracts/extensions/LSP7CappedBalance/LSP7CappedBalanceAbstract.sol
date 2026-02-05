@@ -2,13 +2,17 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP7AllowlistAbstract} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {
+    LSP7AllowlistAbstract
+} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
@@ -41,12 +45,10 @@ abstract contract LSP7CappedBalanceAbstract is
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.
     function _tokenBalanceCapCheck(
-        address,
-        /* from */
+        address /* from */,
         address to,
         uint256 amount,
-        bool,
-        /* force */
+        bool /* force */,
         bytes memory /* data */
     ) internal virtual {
         // Do not check for balance cap if we are burning tokens

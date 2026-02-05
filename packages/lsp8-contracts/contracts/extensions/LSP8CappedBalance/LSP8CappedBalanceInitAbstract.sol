@@ -2,13 +2,17 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8AllowlistInitAbstract} from "../LSP8Allowlist/LSP8AllowlistInitAbstract.sol";
+import {
+    LSP8AllowlistInitAbstract
+} from "../LSP8Allowlist/LSP8AllowlistInitAbstract.sol";
 
 // interfaces
 import {ILSP8CappedBalance} from "./ILSP8CappedBalance.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {LSP8CappedBalanceExceeded} from "./LSP8CappedBalanceErrors.sol";
@@ -68,13 +72,10 @@ abstract contract LSP8CappedBalanceInitAbstract is
     /// @dev The address(0) is not subject to balance cap checks as this address is used for burning tokens. Reverts with {LSP8CappedBalanceExceeded} if the recipient's NFT count after receiving the token would exceed the maximum allowed.
     /// @param to The address receiving the token.
     function _tokenBalanceCapCheck(
-        address,
-        /* from */
+        address /* from */,
         address to,
-        bytes32,
-        /* tokenId */
-        bool,
-        /* force */
+        bytes32 /* tokenId */,
+        bool /* force */,
         bytes memory /* data */
     ) internal virtual {
         require(

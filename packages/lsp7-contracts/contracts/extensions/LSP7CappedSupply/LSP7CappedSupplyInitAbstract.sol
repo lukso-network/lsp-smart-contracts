@@ -2,7 +2,9 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAssetInitAbstract.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../../LSP7DigitalAssetInitAbstract.sol";
 
 // errors
 import {LSP7CappedSupplyCannotMintOverCap} from "./LSP7CappedSupplyErrors.sol";
@@ -57,11 +59,9 @@ abstract contract LSP7CappedSupplyInitAbstract is LSP7DigitalAssetInitAbstract {
 
     /// @dev Checks if minting `amount` of tokens would exceed the token supply cap.
     function _tokenSupplyCapCheck(
-        address,
-        /* to */
+        address /* to */,
         uint256 amount,
-        bool,
-        /* force */
+        bool /* force */,
         bytes memory /* data */
     ) internal virtual {
         require(
