@@ -28,9 +28,11 @@ abstract contract LSP7CappedSupplyAbstract is LSP7DigitalAsset {
 
     /// @dev Checks if minting `amount` of tokens would exceed the token supply cap.
     function _tokenSupplyCapCheck(
-        address /* to */,
+        address,
+        /* to */
         uint256 amount,
-        bool /* force */,
+        bool,
+        /* force */
         bytes memory /* data */
     ) internal virtual {
         require(

@@ -2,19 +2,24 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7AllowlistInitAbstract} from "../LSP7Allowlist/LSP7AllowlistInitAbstract.sol";
+import {
+    LSP7AllowlistInitAbstract
+} from "../LSP7Allowlist/LSP7AllowlistInitAbstract.sol";
 
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {
     LSP7TransferDisabled,
     LSP7InvalidTransferLockPeriod,
-    LSP7CannotUpdateTransferLockPeriod
+    LSP7CannotUpdateTransferLockPeriod,
+    LSP7TokenAlreadyTransferable
 } from "./LSP7NonTransferableErrors.sol";
 
 /// @title LSP7NonTransferableInitAbstract
@@ -26,25 +31,19 @@ abstract contract LSP7NonTransferableInitAbstract is
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    /// @notice Indicates whether the token is currently transferable.
-    bool internal _transferable;
-
-    /// @notice The timestamp at which point in time the token is not transferrable.
-    /// @dev `transferLockStart` can be disabled by setting it to 0. It means no start time is set (transfers locked up until `transferLockEnd`).
+    /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockStart;
 
-    /// @notice The timestamp at which point in time the non-transferability of the token ends and the token is transferrable again.
-    /// @dev `transferLockEnd` can be disabled by setting it to 0. It means no end time is set (transfers locked indefinitely).
+    /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockEnd;
 
     /// @notice Initializes the LSP7NonTransferable contract with base token params, allowlist, and transfer settings.
-    /// @dev Initializes the LSP7Allowlist (which initializes LSP7DigitalAsset) and sets the transferability status and lock period.
+    /// @dev Initializes the LSP7Allowlist (which initializes LSP7DigitalAsset) and sets the lock period.
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param newOwner_ The owner of the contract, added to the allowlist.
     /// @param lsp4TokenType_ The token type (see LSP4).
     /// @param isNonDivisible_ Whether the token is non-divisible.
-    /// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `transferLockStart_` and `transferLockEnd_`.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
     function __LSP7NonTransferable_init(
@@ -53,7 +52,6 @@ abstract contract LSP7NonTransferableInitAbstract is
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        bool transferable_,
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) internal virtual onlyInitializing {
@@ -65,18 +63,15 @@ abstract contract LSP7NonTransferableInitAbstract is
             isNonDivisible_
         );
         __LSP7NonTransferable_init_unchained(
-            transferable_,
             transferLockStart_,
             transferLockEnd_
         );
     }
 
-    /// @notice Unchained initializer for the transferability status and lock period.
-    /// @param transferable_ True to enable transfers, false to prevent transfers.
+    /// @notice Unchained initializer for the lock period.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
     function __LSP7NonTransferable_init_unchained(
-        bool transferable_,
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) internal virtual onlyInitializing {
@@ -84,20 +79,14 @@ abstract contract LSP7NonTransferableInitAbstract is
             transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_,
             LSP7InvalidTransferLockPeriod()
         );
-        _transferable = transferable_;
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
 
-        emit TransferabilityChanged(transferable_);
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
     }
 
     /// @inheritdoc ILSP7NonTransferable
     function isTransferable() public view virtual override returns (bool) {
-        if (!_transferable) {
-            return false;
-        }
-
         bool isTransferLockStartEnabled = transferLockStart != 0;
         bool isTransferLockEndEnabled = transferLockEnd != 0;
 
@@ -124,12 +113,15 @@ abstract contract LSP7NonTransferableInitAbstract is
 
     /// @inheritdoc ILSP7NonTransferable
     function makeTransferable() public virtual override onlyOwner {
-        _transferable = true;
+        require(
+            transferLockStart != 0 || transferLockEnd != 0,
+            LSP7TokenAlreadyTransferable()
+        );
+
         transferLockStart = 0;
         transferLockEnd = 0;
 
         emit TransferLockPeriodChanged(0, 0);
-        emit TransferabilityChanged(true);
     }
 
     /// @inheritdoc ILSP7NonTransferable

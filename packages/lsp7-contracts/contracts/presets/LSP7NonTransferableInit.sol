@@ -18,7 +18,6 @@ contract LSP7NonTransferableInit is LSP7NonTransferableInitAbstract {
     /// @param newOwner_ The owner of the token contract.
     /// @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
     /// @param isNonDivisible_ Specify if the LSP7 token is a fungible or non-fungible token.
-    /// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `nonTransferableFrom_` and `nonTransferableUntil_`.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
     function initialize(
@@ -27,7 +26,6 @@ contract LSP7NonTransferableInit is LSP7NonTransferableInitAbstract {
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        bool transferable_,
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) external virtual initializer {
@@ -39,7 +37,6 @@ contract LSP7NonTransferableInit is LSP7NonTransferableInitAbstract {
             isNonDivisible_
         );
         __LSP7NonTransferable_init_unchained(
-            transferable_,
             transferLockStart_,
             transferLockEnd_
         );

@@ -12,7 +12,10 @@ import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigital
 import {ILSP8Allowlist} from "../contracts/extensions/LSP8Allowlist/ILSP8Allowlist.sol";
 
 // errors
-import {LSP8AllowListInvalidIndexRange, LSP8AllowListCannotRemoveReservedAddress} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistErrors.sol";
+import {
+    LSP8AllowListInvalidIndexRange,
+    LSP8AllowListCannotRemoveReservedAddress
+} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistErrors.sol";
 
 // constants
 import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
@@ -114,7 +117,11 @@ contract LSP8AllowlistTest is Test {
         vm.recordLogs();
         lsp8Allowlist.addToAllowlist(user1);
         Vm.Log[] memory entries = vm.getRecordedLogs();
-        assertEq(entries.length, 0, "No event should be emitted for duplicate add");
+        assertEq(
+            entries.length,
+            0,
+            "No event should be emitted for duplicate add"
+        );
         assertTrue(
             lsp8Allowlist.isAllowlisted(user1),
             "User1 should still be allowlisted"
@@ -293,7 +300,11 @@ contract LSP8AllowlistTest is Test {
         vm.recordLogs();
         lsp8Allowlist.addToAllowlist(zeroAddress);
         Vm.Log[] memory entries = vm.getRecordedLogs();
-        assertEq(entries.length, 0, "No event should be emitted for duplicate add");
+        assertEq(
+            entries.length,
+            0,
+            "No event should be emitted for duplicate add"
+        );
         assertTrue(
             lsp8Allowlist.isAllowlisted(zeroAddress),
             "Zero address should remain allowlisted"
@@ -391,5 +402,34 @@ contract LSP8AllowlistTest is Test {
         } else {
             lsp8Allowlist.removeFromAllowlist(addr);
         }
+    }
+
+    function testFuzz_GetAllowlistedAddressesByIndex(
+        uint256 startIndex,
+        uint256 endIndex
+    ) public {
+        startIndex = bound(startIndex, 0, 100);
+        endIndex = bound(endIndex, 0, 100);
+        vm.assume(startIndex > endIndex);
+
+        uint256 currentLength = lsp8Allowlist.getAllowlistedAddressesLength();
+
+        for (uint256 i = 0; i < 100; i++) {
+            vm.prank(owner);
+            lsp8Allowlist.addToAllowlist(vm.addr(100 + i));
+        }
+
+        uint256 newLength = lsp8Allowlist.getAllowlistedAddressesLength();
+        assertEq(newLength, currentLength + 100);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8AllowListInvalidIndexRange.selector,
+                startIndex,
+                endIndex,
+                newLength
+            )
+        );
+        lsp8Allowlist.getAllowlistedAddressesByIndex(startIndex, endIndex);
     }
 }

@@ -673,7 +673,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      * @custom:requirements
      * - `tokenId` must not exist and not have been already minted.
      * - `to` cannot be the zero address.
-
+     *
      * @custom:events {Transfer} event with `address(0)` as `from` address.
      */
     function _mint(
@@ -904,7 +904,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      * @dev Attempt to notify the operator `operator` about the `tokenId` being authorized.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
      * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-
+     *
      * @param operator The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
      */
@@ -923,7 +923,7 @@ abstract contract LSP8IdentifiableDigitalAssetInitAbstract is
      * @dev Attempt to notify the token sender `from` about the `tokenId` being transferred.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP8_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
      * If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-
+     *
      * @param from The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `from` address in the `universalReceiver` call.
      */

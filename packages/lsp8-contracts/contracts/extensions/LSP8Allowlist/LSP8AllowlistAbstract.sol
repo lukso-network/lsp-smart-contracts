@@ -11,7 +11,10 @@ import {ILSP8Allowlist} from "./ILSP8Allowlist.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
-import {LSP8AllowListInvalidIndexRange, LSP8AllowListCannotRemoveReservedAddress} from "./LSP8AllowlistErrors.sol";
+import {
+    LSP8AllowListInvalidIndexRange,
+    LSP8AllowListCannotRemoveReservedAddress
+} from "./LSP8AllowlistErrors.sol";
 
 /// @title LSP8AllowlistAbstract
 /// @dev Abstract contract implementing an allowlist for LSP8 tokens, allowing specific addresses to bypass restrictions such as transfer locks. Inherits from LSP8IdentifiableDigitalAsset to integrate with token functionality.
@@ -25,7 +28,8 @@ abstract contract LSP8AllowlistAbstract is
     EnumerableSet.AddressSet internal _allowlist;
 
     /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
-    address internal constant _DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
+    address internal constant _DEAD_ADDRESS =
+        0x000000000000000000000000000000000000dEaD;
 
     /// @notice Initializes the allowlist with the contract owner, zero address, and dead address.
     /// @dev Adds the contract owner, `address(0)`, and the dead address to the allowlist to enable specific behaviors like minting and burning.

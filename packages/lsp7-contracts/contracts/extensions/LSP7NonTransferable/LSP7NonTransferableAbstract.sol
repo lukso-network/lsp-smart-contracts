@@ -2,19 +2,24 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP7AllowlistAbstract} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {
+    LSP7AllowlistAbstract
+} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {
     LSP7TransferDisabled,
     LSP7InvalidTransferLockPeriod,
-    LSP7CannotUpdateTransferLockPeriod
+    LSP7CannotUpdateTransferLockPeriod,
+    LSP7TokenAlreadyTransferable
 } from "./LSP7NonTransferableErrors.sol";
 
 /// @title LSP7NonTransferableAbstract
@@ -26,44 +31,28 @@ abstract contract LSP7NonTransferableAbstract is
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    /// @notice Indicates whether the token is currently transferable.
-    bool internal _transferable;
-
-    /// @notice The timestamp at which point in time the token is not transferrable.
-    /// @dev `transferLockStart` can be disabled by setting it to 0. It means no start time is set (transfers locked up until `transferLockEnd`).
+    /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockStart;
 
-    /// @notice The timestamp at which point in time the non-transferability of the token ends and the token is transferrable again.
-    /// @dev `transferLockEnd` can be disabled by setting it to 0. It means no end time is set (transfers locked indefinitely).
+    /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockEnd;
 
-    /// @notice Initializes the contract with transferability status and non-transferable locking period.
-    /// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `transferLockStart_` and `transferLockEnd_`.
+    /// @notice Initializes the contract with non-transferable locking period.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
-    constructor(
-        bool transferable_,
-        uint256 transferLockStart_,
-        uint256 transferLockEnd_
-    ) {
+    constructor(uint256 transferLockStart_, uint256 transferLockEnd_) {
         require(
             transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_,
             LSP7InvalidTransferLockPeriod()
         );
-        _transferable = transferable_;
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
 
-        emit TransferabilityChanged(transferable_);
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
     }
 
     /// @inheritdoc ILSP7NonTransferable
     function isTransferable() public view virtual override returns (bool) {
-        if (!_transferable) {
-            return false;
-        }
-
         bool isTransferLockStartEnabled = transferLockStart != 0;
         bool isTransferLockEndEnabled = transferLockEnd != 0;
 
@@ -90,18 +79,15 @@ abstract contract LSP7NonTransferableAbstract is
 
     /// @inheritdoc ILSP7NonTransferable
     function makeTransferable() public virtual override onlyOwner {
-        // 1. Check if `isTransferable()` is set to `false`. If it is, set `_transferable` to `true` and emit the `TransferabilityChanged` event.
+        require(
+            transferLockStart != 0 || transferLockEnd != 0,
+            LSP7TokenAlreadyTransferable()
+        );
 
-        // 2. Check if `transferLockStart` is not 0 OR `transferLockEnd` is not 0. If they are not, we change the state variables and emit the `TransferLockPeriodChanged` event.
-
-        // 3. We should be able to call this function only once
-
-        _transferable = true;
         transferLockStart = 0;
         transferLockEnd = 0;
 
         emit TransferLockPeriodChanged(0, 0);
-        emit TransferabilityChanged(true);
     }
 
     /// @inheritdoc ILSP7NonTransferable

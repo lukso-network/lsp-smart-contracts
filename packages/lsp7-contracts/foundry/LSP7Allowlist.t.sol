@@ -5,17 +5,26 @@ pragma solidity ^0.8.22;
 import "forge-std/Test.sol";
 
 // modules
-import {LSP7AllowlistAbstract} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {
+    LSP7AllowlistAbstract
+} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // interfaces
-import {ILSP7Allowlist} from "../contracts/extensions/LSP7Allowlist/ILSP7Allowlist.sol";
+import {
+    ILSP7Allowlist
+} from "../contracts/extensions/LSP7Allowlist/ILSP7Allowlist.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 // errors
-import {LSP7AllowListCannotRemoveReservedAddress} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistErrors.sol";
+import {
+    LSP7AllowListInvalidIndexRange,
+    LSP7AllowListCannotRemoveReservedAddress
+} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistErrors.sol";
 
 // Mock contract to test LSP7AllowlistAbstract functionality
 contract MockLSP7Allowlist is LSP7AllowlistAbstract {
@@ -113,7 +122,11 @@ contract LSP7AllowlistTest is Test {
         vm.recordLogs();
         lsp7Allowlist.addToAllowlist(user1);
         Vm.Log[] memory entries = vm.getRecordedLogs();
-        assertEq(entries.length, 0, "No event should be emitted for duplicate add");
+        assertEq(
+            entries.length,
+            0,
+            "No event should be emitted for duplicate add"
+        );
         assertTrue(
             lsp7Allowlist.isAllowlisted(user1),
             "User1 should still be allowlisted"
@@ -204,7 +217,11 @@ contract LSP7AllowlistTest is Test {
         vm.recordLogs();
         lsp7Allowlist.addToAllowlist(zeroAddress);
         Vm.Log[] memory entries = vm.getRecordedLogs();
-        assertEq(entries.length, 0, "No event should be emitted for duplicate add");
+        assertEq(
+            entries.length,
+            0,
+            "No event should be emitted for duplicate add"
+        );
         assertTrue(
             lsp7Allowlist.isAllowlisted(zeroAddress),
             "Zero address should remain allowlisted"
@@ -302,5 +319,34 @@ contract LSP7AllowlistTest is Test {
         } else {
             lsp7Allowlist.removeFromAllowlist(addr);
         }
+    }
+
+    function testFuzz_GetAllowlistedAddressesByIndex(
+        uint256 startIndex,
+        uint256 endIndex
+    ) public {
+        startIndex = bound(startIndex, 0, 100);
+        endIndex = bound(endIndex, 0, 100);
+        vm.assume(startIndex > endIndex);
+
+        uint256 currentLength = lsp7Allowlist.getAllowlistedAddressesLength();
+
+        for (uint256 i = 0; i < 100; i++) {
+            vm.prank(owner);
+            lsp7Allowlist.addToAllowlist(vm.addr(100 + i));
+        }
+
+        uint256 newLength = lsp7Allowlist.getAllowlistedAddressesLength();
+        assertEq(newLength, currentLength + 100);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP7AllowListInvalidIndexRange.selector,
+                startIndex,
+                endIndex,
+                newLength
+            )
+        );
+        lsp7Allowlist.getAllowlistedAddressesByIndex(startIndex, endIndex);
     }
 }

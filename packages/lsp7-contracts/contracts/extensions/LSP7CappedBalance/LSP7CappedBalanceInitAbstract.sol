@@ -69,10 +69,12 @@ abstract contract LSP7CappedBalanceInitAbstract is
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.
     function _tokenBalanceCapCheck(
-        address /* from */,
+        address,
+        /* from */
         address to,
         uint256 amount,
-        bool /* force */,
+        bool,
+        /* force */
         bytes memory /* data */
     ) internal virtual {
         // Do not check for balance cap if we are burning tokens

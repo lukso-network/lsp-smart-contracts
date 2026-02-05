@@ -6,21 +6,30 @@ import "forge-std/Test.sol";
 
 // modules
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
-import {LSP7AllowlistAbstract} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
-import {LSP7NonTransferableAbstract} from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
+import {
+    LSP7AllowlistAbstract
+} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {
+    LSP7NonTransferableAbstract
+} from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
 
 // interfaces
-import {ILSP7NonTransferable} from "../contracts/extensions/LSP7NonTransferable/ILSP7NonTransferable.sol";
+import {
+    ILSP7NonTransferable
+} from "../contracts/extensions/LSP7NonTransferable/ILSP7NonTransferable.sol";
 
 // errors
 import {
     LSP7TransferDisabled,
     LSP7CannotUpdateTransferLockPeriod,
-    LSP7InvalidTransferLockPeriod
+    LSP7InvalidTransferLockPeriod,
+    LSP7TokenAlreadyTransferable
 } from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract MockLSP7NonTransferable is LSP7NonTransferableAbstract {
     constructor(
@@ -29,7 +38,6 @@ contract MockLSP7NonTransferable is LSP7NonTransferableAbstract {
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        bool transferable_,
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     )
@@ -40,11 +48,7 @@ contract MockLSP7NonTransferable is LSP7NonTransferableAbstract {
             lsp4TokenType_,
             isNonDivisible_
         )
-        LSP7NonTransferableAbstract(
-            transferable_,
-            transferLockStart_,
-            transferLockEnd_
-        )
+        LSP7NonTransferableAbstract(transferLockStart_, transferLockEnd_)
         LSP7AllowlistAbstract(newOwner_)
     {}
 
@@ -76,9 +80,13 @@ contract LSP7NonTransferableTest is Test {
     uint256 tokenType = _LSP4_TOKEN_TYPE_TOKEN;
     bool isNonDivisible = false;
 
-    bool transferable = false;
-    uint256 transferLockStart = block.timestamp + 3600;
-    uint256 transferLockEnd = transferLockStart + 3600;
+    // For "always non-transferable" token: start = 0, end = type(uint256).max
+    uint256 transferLockStart = 0;
+    uint256 transferLockEnd = type(uint256).max;
+
+    // For "lock period" token: specific start and end times
+    uint256 lockPeriodStart = block.timestamp + 3600;
+    uint256 lockPeriodEnd = lockPeriodStart + 3600;
 
     address zeroAddress = address(0);
     address owner = address(this);
@@ -91,26 +99,26 @@ contract LSP7NonTransferableTest is Test {
     MockLSP7NonTransferable lsp7TransferableWithLockPeriod;
 
     function setUp() public {
+        // Token that's always non-transferable (start=0, end=max)
         lsp7NonTransferable = new MockLSP7NonTransferable(
             name,
             symbol,
             owner,
             tokenType,
             isNonDivisible,
-            transferable,
             transferLockStart,
             transferLockEnd
         );
 
+        // Token with a specific lock period (transferable outside the period)
         lsp7TransferableWithLockPeriod = new MockLSP7NonTransferable(
             name,
             symbol,
             owner,
             tokenType,
             isNonDivisible,
-            true,
-            transferLockStart,
-            transferLockEnd
+            lockPeriodStart,
+            lockPeriodEnd
         );
 
         lsp7NonTransferable.mint(owner, 100, true, "");
@@ -133,12 +141,10 @@ contract LSP7NonTransferableTest is Test {
 
     // Constructor and Initial State
     function test_ConstructorSetsInitialStateAndEmitsEvents() public {
-        bool token1_Transferable = true;
-        uint256 token1_TransferLockStart = 1111;
-        uint256 token1_TransferLockEnd = 2222;
+        // Token with start=0, end=0 --> always transferable
+        uint256 token1_TransferLockStart = 0;
+        uint256 token1_TransferLockEnd = 0;
 
-        vm.expectEmit(true, false, false, false);
-        emit ILSP7NonTransferable.TransferabilityChanged(token1_Transferable);
         vm.expectEmit(true, true, false, false);
         emit ILSP7NonTransferable.TransferLockPeriodChanged(
             token1_TransferLockStart,
@@ -151,7 +157,6 @@ contract LSP7NonTransferableTest is Test {
             owner,
             tokenType,
             isNonDivisible,
-            token1_Transferable,
             token1_TransferLockStart,
             token1_TransferLockEnd
         );
@@ -160,12 +165,10 @@ contract LSP7NonTransferableTest is Test {
 
         // -------------------------------
 
-        bool token2_Transferable = false;
-        uint256 token2_TransferLockStart = 3333;
-        uint256 token2_TransferLockEnd = 4444;
+        // Token with start=0, end=max --> always non-transferable
+        uint256 token2_TransferLockStart = 0;
+        uint256 token2_TransferLockEnd = type(uint256).max;
 
-        vm.expectEmit(true, false, false, false);
-        emit ILSP7NonTransferable.TransferabilityChanged(token2_Transferable);
         vm.expectEmit(true, true, false, false);
         emit ILSP7NonTransferable.TransferLockPeriodChanged(
             token2_TransferLockStart,
@@ -178,7 +181,6 @@ contract LSP7NonTransferableTest is Test {
             owner,
             tokenType,
             isNonDivisible,
-            token2_Transferable,
             token2_TransferLockStart,
             token2_TransferLockEnd
         );
@@ -194,9 +196,8 @@ contract LSP7NonTransferableTest is Test {
             owner,
             tokenType,
             isNonDivisible,
-            false,
             100,
-            50 // end < start
+            50 // end < start (non-zero end < start)
         );
     }
 
@@ -224,7 +225,7 @@ contract LSP7NonTransferableTest is Test {
 
     // Transfer Lock Period
     function test_TransferFailsDuringLockPeriod() public {
-        vm.warp(transferLockStart + 50); // Inside lock period
+        vm.warp(lockPeriodStart + 50); // Inside lock period
         assertFalse(lsp7TransferableWithLockPeriod.isTransferable());
         vm.prank(randomCaller);
         vm.expectRevert(LSP7TransferDisabled.selector);
@@ -239,7 +240,7 @@ contract LSP7NonTransferableTest is Test {
     }
 
     function test_TransferSucceedsBeforeLockPeriod() public {
-        vm.warp(transferLockStart - 50); // Before lock period
+        vm.warp(lockPeriodStart - 50); // Before lock period
         assertTrue(lsp7TransferableWithLockPeriod.isTransferable());
         vm.prank(randomCaller);
         lsp7TransferableWithLockPeriod.transfer(
@@ -253,7 +254,7 @@ contract LSP7NonTransferableTest is Test {
     }
 
     function test_TransferSucceedsAfterLockPeriod() public {
-        vm.warp(transferLockEnd + 50); // After lock period
+        vm.warp(lockPeriodEnd + 50); // After lock period
         assertTrue(lsp7TransferableWithLockPeriod.isTransferable());
         vm.prank(randomCaller);
         lsp7TransferableWithLockPeriod.transfer(
@@ -273,7 +274,7 @@ contract LSP7NonTransferableTest is Test {
         address tokenRecipient = vm.addr(101);
 
         uint256 transferLockStartBlock = block.timestamp + 100;
-        uint256 transferLockEndBlock = transferLockStart;
+        uint256 transferLockEndBlock = transferLockStartBlock;
 
         MockLSP7NonTransferable lsp7NonTransferableToken = new MockLSP7NonTransferable(
                 "Test Non Transferable Token",
@@ -281,7 +282,6 @@ contract LSP7NonTransferableTest is Test {
                 msg.sender,
                 _LSP4_TOKEN_TYPE_TOKEN,
                 false, // isNonDivisible
-                true, // transferable
                 transferLockStartBlock,
                 transferLockEndBlock
             );
@@ -346,7 +346,7 @@ contract LSP7NonTransferableTest is Test {
 
     // Allowlist Behavior
     function test_AllowlistedAddressCanTransferDuringLockPeriod() public {
-        vm.warp(transferLockStart + 50); // Inside lock period
+        // lsp7NonTransferable has start=0, end=max (always non-transferable for non-allowlisted)
         assertFalse(lsp7NonTransferable.isTransferable());
         vm.prank(allowlistedUser);
         lsp7NonTransferable.transfer(allowlistedUser, recipient, 10, true, "");
@@ -354,7 +354,7 @@ contract LSP7NonTransferableTest is Test {
     }
 
     function test_NonAllowlistedAddressCannotTransferDuringLockPeriod() public {
-        vm.warp(transferLockStart + 50); // Inside lock period
+        // lsp7NonTransferable has start=0, end=max (always non-transferable for non-allowlisted)
         assertFalse(lsp7NonTransferable.isTransferable());
         vm.prank(nonAllowlistedUser);
         vm.expectRevert(LSP7TransferDisabled.selector);
@@ -368,13 +368,10 @@ contract LSP7NonTransferableTest is Test {
         assertEq(lsp7NonTransferable.balanceOf(recipient), 0);
     }
 
-    // Transferability Flag
-    function test_MakeTransferableEnablesTransfersBeforeLockPeriod() public {
-        vm.warp(transferLockStart - 50); // Before lock period
-
+    // makeTransferable() Function
+    function test_MakeTransferableEnablesTransfers() public {
+        // lsp7NonTransferable has start=0, end=max (always non-transferable)
         assertFalse(lsp7NonTransferable.isTransferable());
-        vm.expectEmit(true, false, false, false);
-        emit ILSP7NonTransferable.TransferabilityChanged(true);
         lsp7NonTransferable.makeTransferable();
         assertTrue(lsp7NonTransferable.isTransferable());
 
@@ -383,98 +380,146 @@ contract LSP7NonTransferableTest is Test {
         assertEq(lsp7NonTransferable.balanceOf(recipient), 10);
     }
 
-    function test_MakeTransferableEnablesTransfersAfterLockPeriod() public {
-        vm.warp(transferLockEnd + 50); // Before lock period
+    function test_MakeTransferableEnablesTransfersFromLockPeriod() public {
+        // Create a token with a lock period. Meaning the token cannot be transferred during a certain time period.
+        MockLSP7NonTransferable tokenWithLock = new MockLSP7NonTransferable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            block.timestamp + 100,
+            block.timestamp + 200
+        );
+        tokenWithLock.mint(randomCaller, 100, true, "");
 
-        assertFalse(lsp7NonTransferable.isTransferable());
-        vm.expectEmit(true, false, false, false);
-        emit ILSP7NonTransferable.TransferabilityChanged(true);
-        lsp7NonTransferable.makeTransferable();
-        assertTrue(lsp7NonTransferable.isTransferable());
+        vm.warp(block.timestamp + 150); // Inside lock period
+        assertFalse(tokenWithLock.isTransferable());
+
+        tokenWithLock.makeTransferable();
+        assertTrue(tokenWithLock.isTransferable());
 
         vm.prank(randomCaller);
-        lsp7NonTransferable.transfer(randomCaller, recipient, 10, true, "");
-        assertEq(lsp7NonTransferable.balanceOf(recipient), 10);
+        tokenWithLock.transfer(randomCaller, recipient, 10, true, "");
+        assertEq(tokenWithLock.balanceOf(recipient), 10);
     }
 
-    function test_MakeTransferableDoesEnableTransfersInLockPeriod() public {
-        vm.warp(transferLockStart + 50); // Before lock period
-
-        assertFalse(lsp7NonTransferable.isTransferable());
-        vm.expectEmit(true, false, false, false);
-        emit ILSP7NonTransferable.TransferabilityChanged(true);
-        lsp7NonTransferable.makeTransferable();
-        assertTrue(lsp7NonTransferable.isTransferable());
-
-        vm.prank(randomCaller);
-        lsp7NonTransferable.transfer(randomCaller, recipient, 10, true, "");
-        assertEq(lsp7NonTransferable.balanceOf(recipient), 10);
-    }
-
-    function test_NonOwnerCannotCallMakeTransferable() public {
-        vm.prank(randomCaller);
+    function testFuzz_NonOwnerCannotCallMakeTransferable(
+        address caller
+    ) public {
+        vm.assume(caller != owner);
+        vm.prank(caller);
         vm.expectRevert("Ownable: caller is not the owner"); // Expect revert due to onlyOwner modifier
+        lsp7NonTransferable.makeTransferable();
+    }
+
+    function testFuzz_NonOwnerCannotCallUpdateTransferLockPeriod(
+        address caller
+    ) public {
+        vm.assume(caller != owner);
+        vm.prank(caller);
+        vm.expectRevert("Ownable: caller is not the owner"); // Expect revert due to onlyOwner modifier
+        lsp7NonTransferable.updateTransferLockPeriod(
+            block.timestamp + 100,
+            block.timestamp + 200
+        );
+    }
+
+    function test_MakeTransferableRevertsWhenAlreadyTransferable() public {
+        // Create a token that is always transferable, disabling the non-transferable feature (both lock periods = 0)
+        MockLSP7NonTransferable transferableToken = new MockLSP7NonTransferable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            0,
+            0
+        );
+        assertTrue(transferableToken.isTransferable());
+
+        // Calling makeTransferable should revert since it's already transferable
+        vm.expectRevert(LSP7TokenAlreadyTransferable.selector);
+        transferableToken.makeTransferable();
+    }
+
+    function test_MakeTransferableRevertsWhenCalledTwice() public {
+        // lsp7NonTransferable has start=0, end=max (non-transferable)
+        assertFalse(lsp7NonTransferable.isTransferable());
+
+        // First call should succeed
+        lsp7NonTransferable.makeTransferable();
+        assertTrue(lsp7NonTransferable.isTransferable());
+
+        // Second call should revert since it's now transferable
+        vm.expectRevert(LSP7TokenAlreadyTransferable.selector);
         lsp7NonTransferable.makeTransferable();
     }
 
     // Lock Period Updates
     function test_UpdateTransferLockPeriodSucceedsBeforeStart() public {
-        uint256 newTransferLockStart = transferLockStart + 150;
-        uint256 newTransferLockEnd = transferLockEnd + 250;
+        uint256 newTransferLockStart = lockPeriodStart + 150;
+        uint256 newTransferLockEnd = lockPeriodEnd + 250;
 
         vm.expectEmit(true, true, false, false);
         emit ILSP7NonTransferable.TransferLockPeriodChanged(
             newTransferLockStart,
             newTransferLockEnd
         );
-        lsp7NonTransferable.updateTransferLockPeriod(
+        lsp7TransferableWithLockPeriod.updateTransferLockPeriod(
             newTransferLockStart,
             newTransferLockEnd
         );
-        assertEq(lsp7NonTransferable.transferLockStart(), newTransferLockStart);
-        assertEq(lsp7NonTransferable.transferLockEnd(), newTransferLockEnd);
+        assertEq(
+            lsp7TransferableWithLockPeriod.transferLockStart(),
+            newTransferLockStart
+        );
+        assertEq(
+            lsp7TransferableWithLockPeriod.transferLockEnd(),
+            newTransferLockEnd
+        );
     }
 
     function test_UpdateTransferLockPeriodRevertsAfterStart() public {
-        uint256 newTransferLockStart = transferLockStart + 150;
-        uint256 newTransferLockEnd = transferLockEnd + 250;
+        uint256 newTransferLockStart = lockPeriodStart + 150;
+        uint256 newTransferLockEnd = lockPeriodEnd + 250;
 
-        vm.warp(transferLockStart + 50);
+        vm.warp(lockPeriodStart + 50);
         vm.expectRevert(LSP7CannotUpdateTransferLockPeriod.selector);
-        lsp7NonTransferable.updateTransferLockPeriod(
+        lsp7TransferableWithLockPeriod.updateTransferLockPeriod(
             newTransferLockStart,
             newTransferLockEnd
         );
     }
 
     function test_UpdateTransferLockPeriodRevertsAfterEnd() public {
-        uint256 newTransferLockStart = transferLockStart + 150;
-        uint256 newTransferLockEnd = transferLockEnd + 250;
+        uint256 newTransferLockStart = lockPeriodStart + 150;
+        uint256 newTransferLockEnd = lockPeriodEnd + 250;
 
-        vm.warp(transferLockEnd + 50);
+        vm.warp(lockPeriodEnd + 50);
         vm.expectRevert(LSP7CannotUpdateTransferLockPeriod.selector);
-        lsp7NonTransferable.updateTransferLockPeriod(
+        lsp7TransferableWithLockPeriod.updateTransferLockPeriod(
             newTransferLockStart,
             newTransferLockEnd
         );
     }
 
     function test_UpdateTransferLockPeriodRevertsInvalidPeriod() public {
-        uint256 newTransferLockStart = transferLockStart + 150;
+        uint256 newTransferLockStart = lockPeriodStart + 150;
         uint256 newTransferLockEnd = newTransferLockStart - 50;
 
         vm.expectRevert(LSP7InvalidTransferLockPeriod.selector);
-        lsp7NonTransferable.updateTransferLockPeriod(
+        lsp7TransferableWithLockPeriod.updateTransferLockPeriod(
             newTransferLockStart,
             newTransferLockEnd
         );
     }
 
-    // Test for new behavior: disabling lock periods by setting to 0 according to feedback
+    // Test for new behavior: disabling lock periods by setting to 0
     function test_UpdateTransferLockPeriodWithZeroStart() public {
         // When transferLockStart is set to 0, transfers should be locked until transferLockEnd
         uint256 newTransferLockStart = 0;
-        uint256 newTransferLockEnd = transferLockEnd + 250;
+        uint256 newTransferLockEnd = lockPeriodEnd + 250;
 
         vm.expectEmit(true, true, false, false);
         emit ILSP7NonTransferable.TransferLockPeriodChanged(
@@ -504,7 +549,7 @@ contract LSP7NonTransferableTest is Test {
 
     function test_UpdateTransferLockPeriodWithZeroEnd() public {
         // When transferLockEnd is set to 0, transfers should be locked from transferLockStart to forever
-        uint256 newTransferLockStart = transferLockStart + 150;
+        uint256 newTransferLockStart = lockPeriodStart + 150;
         uint256 newTransferLockEnd = 0;
 
         vm.expectEmit(true, true, false, false);
@@ -559,10 +604,10 @@ contract LSP7NonTransferableTest is Test {
         );
 
         // With both 0, transfers should be allowed anytime
-        vm.warp(transferLockStart - 50); // Before original start time
+        vm.warp(lockPeriodStart - 50); // Before original start time
         assertTrue(lsp7TransferableWithLockPeriod.isTransferable());
 
-        vm.warp(transferLockEnd + 50); // After original end time
+        vm.warp(lockPeriodEnd + 50); // After original end time
         assertTrue(lsp7TransferableWithLockPeriod.isTransferable());
     }
 
@@ -592,7 +637,6 @@ contract LSP7NonTransferableTest is Test {
             owner,
             tokenType,
             isNonDivisible,
-            true, // transferable
             0, // transferLockStart = 0 (no start time restriction)
             0 // transferLockEnd = 0 (no end time restriction)
         );
@@ -618,16 +662,15 @@ contract LSP7NonTransferableTest is Test {
             owner,
             tokenType,
             isNonDivisible,
-            true, // transferable
             0, // transferLockStart = 0 (no restriction)
             1000 // transferLockEnd = 1000 (restricted until then)
         );
 
         vm.warp(500); // Before lock end time
-        assertFalse(token.isTransferable()); // Should be allowed before end time
+        assertFalse(token.isTransferable()); // Should be locked before end time
 
         vm.warp(1500); // After lock end time
-        assertTrue(token.isTransferable()); // Should be restricted after end time
+        assertTrue(token.isTransferable()); // Should be transferable after end time
     }
 
     function test_TransferWithZeroEnd() public {
@@ -638,22 +681,21 @@ contract LSP7NonTransferableTest is Test {
             owner,
             tokenType,
             isNonDivisible,
-            true, // transferable
             1000, // transferLockStart = 1000 (restricted from then)
-            0 // transferLockEnd = 0 (no restriction after start)
+            0 // transferLockEnd = 0 (no restriction after start = perpetual lock)
         );
 
         vm.warp(500); // Before lock start time
-        assertTrue(token.isTransferable()); // Should be allowed before start time
+        assertTrue(token.isTransferable()); // Should be transferable before start time
 
         vm.warp(1500); // After lock start time
-        assertFalse(token.isTransferable()); // Should be restricted after start time
+        assertFalse(token.isTransferable()); // Should be locked after start time (perpetually)
     }
 
     function test_NonOwnerCannotUpdateLockPeriod() public {
         vm.prank(recipient);
         vm.expectRevert(); // Expect revert due to onlyOwner modifier
-        lsp7NonTransferable.updateTransferLockPeriod(
+        lsp7TransferableWithLockPeriod.updateTransferLockPeriod(
             block.timestamp + 100,
             block.timestamp + 200
         );
@@ -710,31 +752,43 @@ contract LSP7NonTransferableTest is Test {
         // If newEnd < newStart, expect revert
         if (newEnd != 0 && newEnd < newStart) {
             vm.expectRevert(LSP7InvalidTransferLockPeriod.selector);
-            lsp7NonTransferable.updateTransferLockPeriod(newStart, newEnd);
+            lsp7TransferableWithLockPeriod.updateTransferLockPeriod(
+                newStart,
+                newEnd
+            );
         }
         // If block.timestamp >= transferLockStart and newStart is non-zero, expect revert
-        else if (newStart != 0 && currentTime >= transferLockStart) {
+        else if (newStart != 0 && currentTime >= lockPeriodStart) {
             vm.expectRevert(LSP7CannotUpdateTransferLockPeriod.selector);
-            lsp7NonTransferable.updateTransferLockPeriod(newStart, newEnd);
+            lsp7TransferableWithLockPeriod.updateTransferLockPeriod(
+                newStart,
+                newEnd
+            );
         }
         // If block.timestamp >= transferLockEnd and newEnd is non-zero, expect revert
-        else if (newEnd != 0 && currentTime >= transferLockEnd) {
+        else if (newEnd != 0 && currentTime >= lockPeriodEnd) {
             vm.expectRevert(LSP7CannotUpdateTransferLockPeriod.selector);
-            lsp7NonTransferable.updateTransferLockPeriod(newStart, newEnd);
+            lsp7TransferableWithLockPeriod.updateTransferLockPeriod(
+                newStart,
+                newEnd
+            );
         } else {
             vm.expectEmit(true, true, false, false);
             emit ILSP7NonTransferable.TransferLockPeriodChanged(
                 newStart,
                 newEnd
             );
-            lsp7NonTransferable.updateTransferLockPeriod(newStart, newEnd);
+            lsp7TransferableWithLockPeriod.updateTransferLockPeriod(
+                newStart,
+                newEnd
+            );
             assertEq(
-                lsp7NonTransferable.transferLockStart(),
+                lsp7TransferableWithLockPeriod.transferLockStart(),
                 newStart,
                 "Lock start should update"
             );
             assertEq(
-                lsp7NonTransferable.transferLockEnd(),
+                lsp7TransferableWithLockPeriod.transferLockEnd(),
                 newEnd,
                 "Lock end should update"
             );

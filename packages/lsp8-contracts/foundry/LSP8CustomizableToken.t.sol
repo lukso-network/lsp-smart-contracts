@@ -30,7 +30,6 @@ contract LSP8CustomizableTokenTest is Test {
     uint256 tokenType = _LSP4_TOKEN_TYPE_NFT;
     uint256 tokenIdFormat = 0; // NUMBER format
     bool mintable = true;
-    bool transferable = true;
     uint256 transferLockStart = 0;
     uint256 transferLockEnd = 0;
     uint256 tokenBalanceCap = 5; // Max 5 NFTs per address
@@ -61,7 +60,6 @@ contract LSP8CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 transferLockStart,
                 transferLockEnd
             );
@@ -138,7 +136,6 @@ contract LSP8CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 transferLockStart,
                 transferLockEnd
             );
@@ -170,7 +167,6 @@ contract LSP8CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 transferLockStart,
                 transferLockEnd
             );
@@ -206,7 +202,6 @@ contract LSP8CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 200,
                 100 // End before start - invalid
             );
@@ -280,7 +275,6 @@ contract LSP8CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 transferLockStart,
                 transferLockEnd
             );
@@ -350,7 +344,6 @@ contract LSP8CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 transferLockStart,
                 transferLockEnd
             );
@@ -415,9 +408,8 @@ contract LSP8CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                false, // non-transferable
                 0,
-                0
+                type(uint256).max // non-transferable
             );
 
         CappedParams memory cappedParams = CappedParams(0, 0);
@@ -457,9 +449,8 @@ contract LSP8CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                false, // non-transferable
                 0,
-                0
+                type(uint256).max // non-transferable
             );
 
         CappedParams memory cappedParams = CappedParams(0, 0);
@@ -510,9 +501,8 @@ contract LSP8CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                false, // non-transferable
                 0,
-                0
+                type(uint256).max // non-transferable
             );
 
         CappedParams memory cappedParams = CappedParams(0, 0);

@@ -22,11 +22,9 @@ struct MintableParams {
 }
 
 /// @dev Deployment configuration for non-transferable feature.
-/// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `nonTransferableFrom_` and `nonTransferableUntil_`.
-/// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
 struct NonTransferableParams {
-    bool transferable;
     uint256 transferLockStart;
     uint256 transferLockEnd;
 }
@@ -83,7 +81,6 @@ contract LSP7CustomizableToken is
         LSP7AllowlistAbstract(newOwner_)
         LSP7MintableAbstract(mintableParams.mintable)
         LSP7NonTransferableAbstract(
-            nonTransferableParams.transferable,
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         )

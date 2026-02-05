@@ -2,19 +2,24 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8AllowlistAbstract} from "../LSP8Allowlist/LSP8AllowlistAbstract.sol";
+import {
+    LSP8AllowlistAbstract
+} from "../LSP8Allowlist/LSP8AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP8NonTransferable} from "./ILSP8NonTransferable.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {
     LSP8TransferDisabled,
     LSP8InvalidTransferLockPeriod,
-    LSP8CannotUpdateTransferLockPeriod
+    LSP8CannotUpdateTransferLockPeriod,
+    LSP8TokenAlreadyTransferable
 } from "./LSP8NonTransferableErrors.sol";
 
 /// @title LSP8NonTransferableAbstract
@@ -26,42 +31,28 @@ abstract contract LSP8NonTransferableAbstract is
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    /// @notice Indicates whether the token is currently transferable.
-    bool public transferable;
-
-    /// @notice The start timestamp of the transfer lock period.
+    /// @inheritdoc ILSP8NonTransferable
     uint256 public transferLockStart;
 
-    /// @notice The end timestamp of the transfer lock period.
+    /// @inheritdoc ILSP8NonTransferable
     uint256 public transferLockEnd;
 
-    /// @notice Initializes the contract with transferability status and lock period.
-    /// @param transferable_ True to enable transfers, false to prevent transfers, or defined via `nonTransferableFrom_` and `nonTransferableUntil_`.
+    /// @notice Initializes the contract with lock period.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
-    constructor(
-        bool transferable_,
-        uint256 transferLockStart_,
-        uint256 transferLockEnd_
-    ) {
+    constructor(uint256 transferLockStart_, uint256 transferLockEnd_) {
         require(
             transferLockEnd_ == 0 || transferLockEnd_ >= transferLockStart_,
             LSP8InvalidTransferLockPeriod()
         );
-        transferable = transferable_;
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
 
-        emit TransferabilityChanged(transferable_);
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
     }
 
     /// @inheritdoc ILSP8NonTransferable
     function isTransferable() public view virtual override returns (bool) {
-        if (!transferable) {
-            return false;
-        }
-
         bool isTransferLockStartDisabled = transferLockStart == 0;
         bool isTransferLockEndDisabled = transferLockEnd == 0;
 
@@ -84,12 +75,15 @@ abstract contract LSP8NonTransferableAbstract is
 
     /// @inheritdoc ILSP8NonTransferable
     function makeTransferable() public virtual override onlyOwner {
-        transferable = true;
+        require(
+            transferLockStart != 0 || transferLockEnd != 0,
+            LSP8TokenAlreadyTransferable()
+        );
+
         transferLockStart = 0;
         transferLockEnd = 0;
 
         emit TransferLockPeriodChanged(0, 0);
-        emit TransferabilityChanged(true);
     }
 
     /// @inheritdoc ILSP8NonTransferable
@@ -128,10 +122,13 @@ abstract contract LSP8NonTransferableAbstract is
     /// @dev Allows burning to address(0) even when transfers are disabled, bypassing transferability restrictions. Reverts with {LSP8TransferDisabled} if the token is non-transferable and the destination is not address(0).
     /// @param to The address receiving the token.
     function _nonTransferableCheck(
-        address /* from */,
+        address,
+        /* from */
         address to,
-        bytes32 /* tokenId */,
-        bool /* force */,
+        bytes32,
+        /* tokenId */
+        bool,
+        /* force */
         bytes memory /* data */
     ) internal virtual {
         require(to == address(0) || isTransferable(), LSP8TransferDisabled());

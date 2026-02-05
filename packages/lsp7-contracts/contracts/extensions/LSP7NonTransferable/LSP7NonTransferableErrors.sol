@@ -9,3 +9,6 @@ error LSP7InvalidTransferLockPeriod();
 
 /// @dev Error thrown when attempting to update the transfer lock period after it has begun.
 error LSP7CannotUpdateTransferLockPeriod();
+
+/// @dev Error thrown when attempting to make a token transferable that is already transferable.
+error LSP7TokenAlreadyTransferable();

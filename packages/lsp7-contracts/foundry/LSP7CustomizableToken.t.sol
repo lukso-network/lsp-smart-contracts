@@ -31,7 +31,6 @@ contract LSP7CustomizableTokenTest is Test {
     bool isNonDivisible = false;
     bool mintable = true;
     uint256 initialMintAmount = 1000;
-    bool transferable = true;
     uint256 transferLockStart = 0;
     uint256 transferLockEnd = 0;
     uint256 tokenBalanceCap = 2000;
@@ -53,7 +52,6 @@ contract LSP7CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 transferLockStart,
                 transferLockEnd
             );
@@ -124,7 +122,6 @@ contract LSP7CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 transferLockStart,
                 transferLockEnd
             );
@@ -152,7 +149,6 @@ contract LSP7CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 transferLockStart,
                 transferLockEnd
             );
@@ -187,11 +183,7 @@ contract LSP7CustomizableTokenTest is Test {
         );
 
         NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams(
-                transferable,
-                200,
-                100
-            );
+            memory nonTransferableParams = NonTransferableParams(200, 100);
 
         CappedParams memory cappedParams = CappedParams(
             tokenBalanceCap,
@@ -256,7 +248,6 @@ contract LSP7CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 transferLockStart,
                 transferLockEnd
             );
@@ -287,7 +278,6 @@ contract LSP7CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 transferLockStart,
                 transferLockEnd
             );
@@ -333,7 +323,6 @@ contract LSP7CustomizableTokenTest is Test {
 
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
-                transferable,
                 transferLockStart,
                 transferLockEnd
             );

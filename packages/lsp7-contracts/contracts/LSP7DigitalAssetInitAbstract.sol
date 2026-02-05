@@ -843,7 +843,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
      * @dev Attempt to notify the operator `operator` about the `amount` tokens being authorized with.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENOPERATOR` as typeId, if `operator` is a contract that supports the LSP1 interface.
      * If `operator` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-
+     *
      * @param operator The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `operator` address in the `universalReceiver` call.
      */
@@ -862,7 +862,7 @@ abstract contract LSP7DigitalAssetInitAbstract is
      * @dev Attempt to notify the token sender `from` about the `amount` of tokens being transferred.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_TOKENSSENDER` as typeId, if `from` is a contract that supports the LSP1 interface.
      * If `from` is an EOA or a contract that does not support the LSP1 interface, nothing will happen and no notification will be sent.
-
+     *
      * @param from The address to call the {universalReceiver} function on.
      * @param lsp1Data the data to be sent to the `from` address in the `universalReceiver` call.
      */

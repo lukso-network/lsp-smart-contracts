@@ -2,13 +2,17 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8AllowlistAbstract} from "../LSP8Allowlist/LSP8AllowlistAbstract.sol";
+import {
+    LSP8AllowlistAbstract
+} from "../LSP8Allowlist/LSP8AllowlistAbstract.sol";
 
 // interfaces
 import {ILSP8CappedBalance} from "./ILSP8CappedBalance.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {LSP8CappedBalanceExceeded} from "./LSP8CappedBalanceErrors.sol";

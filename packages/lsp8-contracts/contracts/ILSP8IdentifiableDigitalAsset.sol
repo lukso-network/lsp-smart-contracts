@@ -79,7 +79,7 @@ interface ILSP8IdentifiableDigitalAsset {
 
     /**
      * @dev Get the number of token IDs owned by `tokenOwner`.
-
+     *
      * @param tokenOwner The address to query     *
      * @return The total number of token IDs that `tokenOwner` owns.
      */
