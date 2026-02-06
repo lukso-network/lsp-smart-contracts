@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.17.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp8-contracts-v0.16.7...lsp8-contracts-v0.17.0) (2026-02-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* use `require` with custom `error` in LSP8 preset and extensions + increase minimum pragma version
+* use `require` with custom `error` in LSP8
+
+### Features
+
+* create customizeable token contract ([82d8a33](https://github.com/lukso-network/lsp-smart-contracts/commit/82d8a339defd873990bf2202638c2afd429f3c1f))
+* create hardhat-packager plugin ([21ba47c](https://github.com/lukso-network/lsp-smart-contracts/commit/21ba47c0490b36cf3dadc29f174138e247b477f5))
+* create LSP8 token extensions ([a57ba8e](https://github.com/lukso-network/lsp-smart-contracts/commit/a57ba8e97d8281422625e1db834a0c35210d8189))
+* protect address(0) and dead address in allowlist for burning ([060d520](https://github.com/lukso-network/lsp-smart-contracts/commit/060d520275c04ea75d1d2c296a2130078cc14b3d))
+* upgrade dependencies and Hardhat version to v3 ([32cbc59](https://github.com/lukso-network/lsp-smart-contracts/commit/32cbc5929774bcf58b48414c697325a6ee7c6b39))
+
+
+### Bug Fixes
+
+* prevent makeTransferable from executing when token is already transferable ([9a3c20d](https://github.com/lukso-network/lsp-smart-contracts/commit/9a3c20d751b999a288429a6bf4708d7f1608bba5))
+* resolve `solidity-bytes-utils` dependency to `0.8.4` to remove trufflehd-wallet and other vulnerabilities in dependencies ([cbe21e9](https://github.com/lukso-network/lsp-smart-contracts/commit/cbe21e99ec3b6a74136c17cc364f3d00f6ddd37b))
+* security improvements ([8efd690](https://github.com/lukso-network/lsp-smart-contracts/commit/8efd690dc7cb792d6c62c2cda0aef417c77c526d))
+
+
+### Code Refactoring
+
+* use `require` with custom `error` in LSP8 ([9076821](https://github.com/lukso-network/lsp-smart-contracts/commit/907682151a43cec5c8e226b80738b58d66ee2393))
+* use `require` with custom `error` in LSP8 preset and extensions + increase minimum pragma version ([49a9973](https://github.com/lukso-network/lsp-smart-contracts/commit/49a9973f7fd33e42d1d05cbfeee0d0fb93107137))
+
 ## [0.16.7](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp8-contracts-v0.16.6...lsp8-contracts-v0.16.7) (2025-06-19)
 
 ### Bug Fixes

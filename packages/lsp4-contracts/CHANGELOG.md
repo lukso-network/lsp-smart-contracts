@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.17.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp4-contracts-v0.16.7...lsp4-contracts-v0.17.0) (2026-02-06)
+
+
+### Features
+
+* create hardhat-packager plugin ([21ba47c](https://github.com/lukso-network/lsp-smart-contracts/commit/21ba47c0490b36cf3dadc29f174138e247b477f5))
+* upgrade dependencies and Hardhat version to v3 ([32cbc59](https://github.com/lukso-network/lsp-smart-contracts/commit/32cbc5929774bcf58b48414c697325a6ee7c6b39))
+
+
+### Bug Fixes
+
+* resolve `solidity-bytes-utils` dependency to `0.8.4` to remove trufflehd-wallet and other vulnerabilities in dependencies ([cbe21e9](https://github.com/lukso-network/lsp-smart-contracts/commit/cbe21e99ec3b6a74136c17cc364f3d00f6ddd37b))
+
 ## [0.16.7](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp4-contracts-v0.16.6...lsp4-contracts-v0.16.7) (2025-06-19)
 
 

@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.17.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.16.7...lsp-smart-contracts-v0.17.0) (2026-02-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade pragma version for LSP8 contracts in `@lukso/lsp-smart-contracts` package
+* change `if ... revert` with `require` + custom `error` in LSP7
+* upgrade solc compiler + EVM version in LSP7 package to optimize runtime cost
+
+### Features
+
+* add LSP26 Type Ids to `LSP1_TYPE_IDS` constant list in `@lukso/lsp-smart-contracts` ([9f5c347](https://github.com/lukso-network/lsp-smart-contracts/commit/9f5c3471b153c10dd67495d1606882f63553aab5))
+* create hardhat-packager plugin ([21ba47c](https://github.com/lukso-network/lsp-smart-contracts/commit/21ba47c0490b36cf3dadc29f174138e247b477f5))
+* create proxy version of CustomizableToken ([eded50a](https://github.com/lukso-network/lsp-smart-contracts/commit/eded50aeac5444b50a8840fc1a67ac3c71f96bd6))
+* upgrade dependencies and Hardhat version to v3 ([32cbc59](https://github.com/lukso-network/lsp-smart-contracts/commit/32cbc5929774bcf58b48414c697325a6ee7c6b39))
+
+
+### Bug Fixes
+
+* resolve `solidity-bytes-utils` dependency to `0.8.4` to remove trufflehd-wallet and other vulnerabilities in dependencies ([cbe21e9](https://github.com/lukso-network/lsp-smart-contracts/commit/cbe21e99ec3b6a74136c17cc364f3d00f6ddd37b))
+
+
+### Reverts
+
+* remove LSP1 changes from PR 1067 ([e2b8b43](https://github.com/lukso-network/lsp-smart-contracts/commit/e2b8b4341720162aba31b7ae380820081f5050f9))
+
+
+### Code Refactoring
+
+* change `if ... revert` with `require` + custom `error` in LSP7 ([53ad54f](https://github.com/lukso-network/lsp-smart-contracts/commit/53ad54fdf736e2a449948efa39c9f05cc7024b58))
+* upgrade pragma version for LSP8 contracts in `@lukso/lsp-smart-contracts` package ([87a0174](https://github.com/lukso-network/lsp-smart-contracts/commit/87a01744f6ed7726aefaff041aaf308bd1bd721e))
+* upgrade solc compiler + EVM version in LSP7 package to optimize runtime cost ([b0a4c7f](https://github.com/lukso-network/lsp-smart-contracts/commit/b0a4c7fb487f228d9d2b2f5c56a7113d0fe99f24))
+
 ## [0.16.7](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.16.6...lsp-smart-contracts-v0.16.7) (2025-06-19)
 
 ### Bug Fixes

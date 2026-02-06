@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp25-contracts-v0.15.5...lsp25-contracts-v0.16.0) (2026-02-06)
+
+
+### Features
+
+* create hardhat-packager plugin ([21ba47c](https://github.com/lukso-network/lsp-smart-contracts/commit/21ba47c0490b36cf3dadc29f174138e247b477f5))
+* upgrade dependencies and Hardhat version to v3 ([32cbc59](https://github.com/lukso-network/lsp-smart-contracts/commit/32cbc5929774bcf58b48414c697325a6ee7c6b39))
+
 ## [0.15.5](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp25-contracts-v0.15.4...lsp25-contracts-v0.15.5) (2025-06-19)
 
 
