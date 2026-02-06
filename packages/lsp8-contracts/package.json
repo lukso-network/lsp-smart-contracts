@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp8-contracts",
-  "version": "0.16.7",
+  "version": "0.17.0",
   "description": "Package for the LSP8 Identifiable Digital Asset standard",
   "license": "Apache-2.0",
   "author": "",
