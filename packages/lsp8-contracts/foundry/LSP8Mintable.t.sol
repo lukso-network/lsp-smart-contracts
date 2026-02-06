@@ -5,18 +5,28 @@ pragma solidity ^0.8.27;
 import "forge-std/Test.sol";
 
 // modules
-import {LSP8MintableAbstract} from "../contracts/extensions/LSP8Mintable/LSP8MintableAbstract.sol";
-import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8MintableAbstract
+} from "../contracts/extensions/LSP8Mintable/LSP8MintableAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 
 // interfaces
-import {ILSP8Mintable} from "../contracts/extensions/LSP8Mintable/ILSP8Mintable.sol";
+import {
+    ILSP8Mintable
+} from "../contracts/extensions/LSP8Mintable/ILSP8Mintable.sol";
 
 // errors
-import {LSP8MintDisabled} from "../contracts/extensions/LSP8Mintable/LSP8MintableErrors.sol";
+import {
+    LSP8MintDisabled
+} from "../contracts/extensions/LSP8Mintable/LSP8MintableErrors.sol";
 import {LSP8TokenIdAlreadyMinted} from "../contracts/LSP8Errors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_NFT
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
 
 // Mock contract to test LSP8MintableAbstract functionality
@@ -59,6 +69,7 @@ contract LSP8MintableTest is Test {
     MockLSP8Mintable lsp8NonMintable;
 
     function setUp() public {
+        vm.recordLogs();
         lsp8Mintable = new MockLSP8Mintable(
             name,
             symbol,
@@ -67,7 +78,15 @@ contract LSP8MintableTest is Test {
             tokenIdFormat,
             true // mintable
         );
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+        uint256 lastEvent = logs.length - 1;
+        assertEq(
+            logs[lastEvent].topics[0],
+            ILSP8Mintable.MintingStatusChanged.selector
+        );
+        assertEq(logs[lastEvent].topics[1], bytes32(abi.encode(true)));
 
+        // vm.recordLogs();
         lsp8NonMintable = new MockLSP8Mintable(
             name,
             symbol,
@@ -76,6 +95,13 @@ contract LSP8MintableTest is Test {
             tokenIdFormat,
             false // not mintable
         );
+        logs = vm.getRecordedLogs();
+        lastEvent = logs.length - 1;
+        assertEq(
+            logs[lastEvent].topics[0],
+            ILSP8Mintable.MintingStatusChanged.selector
+        );
+        assertEq(logs[lastEvent].topics[1], bytes32(abi.encode(false)));
     }
 
     // Test constructor initialization
@@ -121,9 +147,14 @@ contract LSP8MintableTest is Test {
 
     // Test disableMinting permanently disables minting
     function test_DisableMintingPreventsNewMints() public {
+        assertTrue(lsp8Mintable.isMintable());
+
         // Mint before disabling
         lsp8Mintable.mint(user1, tokenId1, true, "");
         assertEq(lsp8Mintable.totalSupply(), 1);
+
+        // check it is still mintable
+        assertTrue(lsp8Mintable.isMintable());
 
         // Disable minting
         lsp8Mintable.disableMinting();
@@ -146,12 +177,22 @@ contract LSP8MintableTest is Test {
     }
 
     // Test isMintable flag changes correctly
-    function test_IsMintableFlagChanges() public {
+    function test_DisableMintingChangesFlag() public {
         assertTrue(lsp8Mintable.isMintable());
 
+        vm.recordLogs();
         lsp8Mintable.disableMinting();
 
         assertFalse(lsp8Mintable.isMintable());
+
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        assertEq(logs.length, 1);
+        assertEq(
+            logs[0].topics[0],
+            ILSP8Mintable.MintingStatusChanged.selector
+        );
+        assertEq(logs[0].topics[1], bytes32(abi.encode(false)));
     }
 
     // Test disableMinting is only callable by owner
@@ -221,15 +262,10 @@ contract LSP8MintableTest is Test {
 
     // ------ Fuzzing ------
 
-    function testFuzz_OwnerCanMint(
-        uint128 recipientSeed,
-        uint256 tokenIdNum
-    ) public {
-        vm.assume(recipientSeed > 10); // Avoid precompile addresses
-        vm.assume(tokenIdNum > 0);
+    function testFuzz_OwnerCanMint(address recipient, bytes32 tokenId) public {
+        assumeNoPrecompiles(recipient);
+        vm.assume(recipient != address(0));
 
-        address recipient = vm.addr(uint256(recipientSeed));
-        bytes32 tokenId = bytes32(tokenIdNum);
         lsp8Mintable.mint(recipient, tokenId, true, "");
 
         assertEq(lsp8Mintable.tokenOwnerOf(tokenId), recipient);
@@ -237,19 +273,16 @@ contract LSP8MintableTest is Test {
     }
 
     function testFuzz_NonOwnerCannotMint(
-        address attacker,
+        address caller,
         address recipient,
-        uint256 tokenIdNum
+        bytes32 tokenId
     ) public {
-        vm.assume(attacker != owner);
-        vm.assume(attacker != address(0));
+        vm.assume(caller != owner);
+        vm.assume(caller != address(0));
         vm.assume(recipient != address(0));
-        vm.assume(tokenIdNum > 0);
 
-        bytes32 tokenId = bytes32(tokenIdNum);
-
-        vm.prank(attacker);
-        vm.expectRevert();
+        vm.prank(caller);
+        vm.expectRevert("Ownable: caller is not the owner");
         lsp8Mintable.mint(recipient, tokenId, true, "");
     }
 

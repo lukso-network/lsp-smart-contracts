@@ -22,13 +22,14 @@ abstract contract LSP7MintableAbstract is ILSP7Mintable, LSP7DigitalAsset {
     /// @custom:info If `mintable_` is set to `true` then it can be disabled using `disableMinting()` function later on.
     constructor(bool mintable_) {
         isMintable = mintable_;
+        emit MintingStatusChanged(mintable_);
     }
 
     /// @inheritdoc ILSP7Mintable
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP7MintDisabled());
         isMintable = false;
-        emit MintingDisabled();
+        emit MintingStatusChanged(false);
     }
 
     /// @inheritdoc ILSP7Mintable
