@@ -2,7 +2,9 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8IdentifiableDigitalAssetInitAbstract} from "../../LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAssetInitAbstract
+} from "../../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 
 // interfaces
 import {ILSP8Mintable} from "./ILSP8Mintable.sol";
@@ -53,13 +55,14 @@ abstract contract LSP8MintableInitAbstract is
         bool mintable_
     ) internal virtual onlyInitializing {
         isMintable = mintable_;
+        emit MintingStatusChanged(mintable_);
     }
 
     /// @inheritdoc ILSP8Mintable
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP8MintDisabled());
         isMintable = false;
-        emit MintingDisabled();
+        emit MintingStatusChanged(false);
     }
 
     /// @inheritdoc ILSP8Mintable

@@ -2,7 +2,9 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAssetInitAbstract.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../../LSP7DigitalAssetInitAbstract.sol";
 
 // interfaces
 import {ILSP7Mintable} from "./ILSP7Mintable.sol";
@@ -53,13 +55,14 @@ abstract contract LSP7MintableInitAbstract is
         bool mintable_
     ) internal virtual onlyInitializing {
         isMintable = mintable_;
+        emit MintingStatusChanged(mintable_);
     }
 
     /// @inheritdoc ILSP7Mintable
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP7MintDisabled());
         isMintable = false;
-        emit MintingDisabled();
+        emit MintingStatusChanged(false);
     }
 
     /// @inheritdoc ILSP7Mintable

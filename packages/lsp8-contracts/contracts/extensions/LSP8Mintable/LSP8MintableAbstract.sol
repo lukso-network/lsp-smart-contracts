@@ -2,7 +2,9 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8IdentifiableDigitalAsset} from "../../LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../../LSP8IdentifiableDigitalAsset.sol";
 
 // interfaces
 import {ILSP8Mintable} from "./ILSP8Mintable.sol";
@@ -25,13 +27,14 @@ abstract contract LSP8MintableAbstract is
     /// @custom:info If `mintable_` is set to `true` then it can be disabled using `disableMinting()` function later on.
     constructor(bool mintable_) {
         isMintable = mintable_;
+        emit MintingStatusChanged(mintable_);
     }
 
     /// @inheritdoc ILSP8Mintable
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP8MintDisabled());
         isMintable = false;
-        emit MintingDisabled();
+        emit MintingStatusChanged(false);
     }
 
     /// @inheritdoc ILSP8Mintable
