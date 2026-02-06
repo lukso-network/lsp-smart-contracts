@@ -4,15 +4,26 @@ pragma solidity ^0.8.22;
 // test
 import "forge-std/Test.sol";
 
+// interfaces
+import {
+    ILSP7Mintable
+} from "../contracts/extensions/LSP7Mintable/ILSP7Mintable.sol";
+
 // modules
-import {LSP7MintableAbstract} from "../contracts/extensions/LSP7Mintable/LSP7MintableAbstract.sol";
+import {
+    LSP7MintableAbstract
+} from "../contracts/extensions/LSP7Mintable/LSP7MintableAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // errors
-import {LSP7MintDisabled} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {
+    LSP7MintDisabled
+} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract MockLSP7Mintable is LSP7MintableAbstract {
     constructor(
@@ -60,6 +71,8 @@ contract LSP7MintableTest is Test {
             isNonDivisible,
             true
         );
+
+        vm.recordLogs();
         lsp7MintableRandomOwner = new MockLSP7Mintable(
             name,
             symbol,
@@ -68,6 +81,16 @@ contract LSP7MintableTest is Test {
             isNonDivisible,
             true
         );
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+        // assertEq(logs.length, 1);
+        uint256 lastEvent = logs.length - 1;
+        assertEq(
+            logs[lastEvent].topics[0],
+            ILSP7Mintable.MintingStatusChanged.selector
+        );
+        assertEq(logs[lastEvent].topics[1], bytes32(abi.encode(true)));
+
+        vm.recordLogs();
         lsp7NonMintable = new MockLSP7Mintable(
             name,
             symbol,
@@ -76,6 +99,13 @@ contract LSP7MintableTest is Test {
             isNonDivisible,
             false
         );
+        logs = vm.getRecordedLogs();
+        lastEvent = logs.length - 1;
+        assertEq(
+            logs[lastEvent].topics[0],
+            ILSP7Mintable.MintingStatusChanged.selector
+        );
+        assertEq(logs[lastEvent].topics[1], bytes32(abi.encode(false)));
     }
 
     function test_MintableOwnerCanMint() public {
@@ -86,7 +116,18 @@ contract LSP7MintableTest is Test {
 
     function test_MintableOwnerCanDisableMint() public {
         assertEq(lsp7Mintable.isMintable(), true);
+
+        vm.recordLogs();
         lsp7Mintable.disableMinting();
+
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+        assertEq(logs.length, 1);
+        assertEq(
+            logs[0].topics[0],
+            ILSP7Mintable.MintingStatusChanged.selector
+        );
+        assertEq(logs[0].topics[1], bytes32(abi.encode(false)));
+
         assertEq(lsp7Mintable.isMintable(), false);
 
         assertEq(lsp7Mintable.balanceOf(recipient), 0);

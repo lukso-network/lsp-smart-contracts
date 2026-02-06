@@ -5,7 +5,7 @@ pragma solidity ^0.8.27;
 /// @dev Interface for a mintable LSP8 token extension, allowing the owner to mint new tokens and disable minting.
 interface ILSP8Mintable {
     /// @dev Emitted when minting status is changed.
-    event MintingStatusChanged(bool enabled);
+    event MintingStatusChanged(bool indexed enabled);
 
     /// @notice Disables minting of new tokens permanently.
     /// @dev Can only be called by the contract owner. Prevents further calls to mint after invocation.
