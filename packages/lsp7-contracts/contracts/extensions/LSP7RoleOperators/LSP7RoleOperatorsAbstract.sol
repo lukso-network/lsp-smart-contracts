@@ -25,7 +25,8 @@ import {
 import {
     LSP7RoleOperatorsInvalidIndexRange,
     LSP7RoleOperatorsCannotRemoveReservedAddress,
-    LSP7RoleOperatorsNotAuthorized
+    LSP7RoleOperatorsNotAuthorized,
+    LSP7RoleOperatorsArrayLengthMismatch
 } from "./LSP7RoleOperatorsErrors.sol";
 
 abstract contract LSP7RoleOperatorsAbstract is
@@ -159,5 +160,62 @@ abstract contract LSP7RoleOperatorsAbstract is
         address operator
     ) public view override returns (bytes memory) {
         return _roleOperatorData[role][operator];
+    }
+
+    /// @inheritdoc ILSP7RoleOperators
+    function authorizeRoleOperatorBatch(
+        bytes32 role,
+        address[] calldata operators,
+        bytes[] calldata dataArray
+    ) public override onlyOwner {
+        require(
+            operators.length == dataArray.length,
+            LSP7RoleOperatorsArrayLengthMismatch(operators.length, dataArray.length)
+        );
+
+        for (uint256 i = 0; i < operators.length; ) {
+            address operator = operators[i];
+            bytes calldata data = dataArray[i];
+
+            bool added = _roleAddresses[role].add(operator);
+            if (added) emit RoleOperatorChanged(role, operator, true);
+
+            if (data.length > 0 || _roleOperatorData[role][operator].length > 0) {
+                _roleOperatorData[role][operator] = data;
+                emit RoleOperatorDataChanged(role, operator, data);
+            }
+
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    /// @inheritdoc ILSP7RoleOperators
+    function revokeRoleOperatorBatch(
+        bytes32 role,
+        address[] calldata operators
+    ) public override onlyOwner {
+        for (uint256 i = 0; i < operators.length; ) {
+            address operator = operators[i];
+
+            require(
+                operator != address(0) && operator != _DEAD_ADDRESS,
+                LSP7RoleOperatorsCannotRemoveReservedAddress(operator)
+            );
+
+            bool removed = _roleAddresses[role].remove(operator);
+            if (removed) {
+                if (_roleOperatorData[role][operator].length > 0) {
+                    delete _roleOperatorData[role][operator];
+                    emit RoleOperatorDataChanged(role, operator, "");
+                }
+                emit RoleOperatorChanged(role, operator, false);
+            }
+
+            unchecked {
+                ++i;
+            }
+        }
     }
 }
