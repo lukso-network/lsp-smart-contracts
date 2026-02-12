@@ -4,7 +4,7 @@ import type { ContractNatSpec, DevDoc, UserDoc, AbiItem } from './types.js';
 
 // Type for the artifacts object from Hardhat Runtime Environment
 type Artifacts = {
-  getAllFullyQualifiedNames(): Promise<string[]>;
+  getAllFullyQualifiedNames(): Promise<ReadonlySet<string>>;
   readArtifact(name: string): Promise<{
     buildInfoId?: string;
     inputSourceName?: string;
