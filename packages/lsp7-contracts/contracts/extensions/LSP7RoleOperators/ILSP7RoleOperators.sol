@@ -101,4 +101,28 @@ interface ILSP7RoleOperators {
         uint256 startIndex,
         uint256 endIndex
     ) external view returns (address[] memory);
+
+    /// @notice Authorizes multiple operators for a role with associated data in a single transaction.
+    /// @dev Can only be called by the contract owner. The operators and data arrays must have the same length.
+    /// @param role The role to authorize operators for.
+    /// @param operators The addresses to authorize as role operators.
+    /// @param dataArray The data to associate with each operator (must match operators array length).
+    /// @custom:events Emits {RoleOperatorChanged} for each newly added operator.
+    /// @custom:events Emits {RoleOperatorDataChanged} for each operator where data is set or changed.
+    function authorizeRoleOperatorBatch(
+        bytes32 role,
+        address[] calldata operators,
+        bytes[] calldata dataArray
+    ) external;
+
+    /// @notice Revokes multiple operators from a role in a single transaction.
+    /// @dev Can only be called by the contract owner. Cannot revoke reserved addresses (address(0), dead address).
+    /// @param role The role to revoke operators from.
+    /// @param operators The addresses to revoke from the role.
+    /// @custom:events Emits {RoleOperatorChanged} for each removed operator.
+    /// @custom:events Emits {RoleOperatorDataChanged} for each operator that had associated data.
+    function revokeRoleOperatorBatch(
+        bytes32 role,
+        address[] calldata operators
+    ) external;
 }
