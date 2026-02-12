@@ -7,6 +7,9 @@ const plugin: HardhatPlugin = {
   id: 'hardhat-natspec-docs',
   hookHandlers: {
     config: () => import('./hooks/config.js'),
+    // Solidity hook for runOnCompile feature
+    // Note: Hook availability depends on Hardhat version
+    // solidity: () => import('./hooks/solidity.js'),
   },
   tasks: [
     task('docs', 'Generate NatSpec documentation from contract comments')
