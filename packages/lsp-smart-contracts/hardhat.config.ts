@@ -1,4 +1,5 @@
 import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
+import natspecDocsPlugin from '@lukso/hardhat-natspec-docs';
 import { task } from 'hardhat/config';
 import type { SolidityUserConfig } from 'hardhat/types/config';
 import type { HardhatUserConfig } from 'hardhat/config';
@@ -22,7 +23,7 @@ const DEFAULT_COMPILER_SETTINGS: SolidityUserConfig = {
     },
     outputSelection: {
       '*': {
-        '*': ['storageLayout'],
+        '*': ['storageLayout', 'devdoc', 'userdoc'],
       },
     },
   },
@@ -44,7 +45,7 @@ const VIA_IR_SETTINGS: SolidityUserConfig = {
     },
     outputSelection: {
       '*': {
-        '*': ['storageLayout'],
+        '*': ['storageLayout', 'devdoc', 'userdoc'],
       },
     },
   },
@@ -67,7 +68,7 @@ const LSP7_VIA_IR_SETTINGS: SolidityUserConfig = {
     },
     outputSelection: {
       '*': {
-        '*': ['storageLayout'],
+        '*': ['storageLayout', 'devdoc', 'userdoc'],
       },
     },
   },
@@ -88,14 +89,20 @@ const LSP8_COMPILER_SETTINGS: SolidityUserConfig = {
     },
     outputSelection: {
       '*': {
-        '*': ['storageLayout'],
+        '*': ['storageLayout', 'devdoc', 'userdoc'],
       },
     },
   },
 };
 
 const config: HardhatUserConfig = {
-  plugins: [hardhatToolboxMochaEthers],
+  plugins: [hardhatToolboxMochaEthers, natspecDocsPlugin],
+  natspecDocs: {
+    outputDir: 'docs',
+    include: ['contracts/**/*'],
+    exclude: ['contracts/Mocks/**/*'],
+    runOnCompile: false, // Run manually via `hardhat docs`
+  },
   solidity: {
     compilers: [DEFAULT_COMPILER_SETTINGS, LSP8_COMPILER_SETTINGS, LSP7_VIA_IR_SETTINGS],
     overrides: {

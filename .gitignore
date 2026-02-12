@@ -154,3 +154,6 @@ abi.ts
 
 # VSCode settings
 .vscode/
+
+# GSD planning artifacts
+.planning/
