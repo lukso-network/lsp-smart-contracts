@@ -5,26 +5,19 @@ pragma solidity ^0.8.22;
 import "forge-std/Test.sol";
 
 // modules
-import {
-    LSP7RoleOperatorsAbstract
-} from "../contracts/extensions/LSP7RoleOperators/LSP7RoleOperatorsAbstract.sol";
+import {LSP7RoleOperatorsAbstract} from "../contracts/extensions/LSP7RoleOperators/LSP7RoleOperatorsAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // interfaces
-import {
-    ILSP7RoleOperators
-} from "../contracts/extensions/LSP7RoleOperators/ILSP7RoleOperators.sol";
+import {ILSP7RoleOperators} from "../contracts/extensions/LSP7RoleOperators/ILSP7RoleOperators.sol";
 
 // constants
-import {
-    _LSP4_TOKEN_TYPE_TOKEN
-} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {
     _MINT_ROLE,
     _ALLOW_TRANSFER_ROLE,
     _INFINITE_BALANCE_ROLE,
-    _DEAD_ADDRESS,
-    _ZERO_ADDRESS
+    _DEAD_ADDRESS
 } from "../contracts/extensions/LSP7RoleOperators/LSP7RoleOperatorsConstants.sol";
 
 // errors
@@ -54,7 +47,12 @@ contract MockLSP7RoleOperators is LSP7RoleOperatorsAbstract {
         LSP7RoleOperatorsAbstract(newOwner_)
     {}
 
-    function mint(address to, uint256 amount, bool force, bytes memory data) public {
+    function mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) public {
         _mint(to, amount, force, data);
     }
 }
@@ -106,23 +104,32 @@ contract LSP7RoleOperatorsTest is Test {
     function test_ConstructorInitializesReservedAddresses() public {
         // Zero address in ALLOW_TRANSFER and INFINITE_BALANCE
         assertTrue(
-            lsp7RoleOperators.isRoleOperator(_ALLOW_TRANSFER_ROLE, _ZERO_ADDRESS),
+            lsp7RoleOperators.isRoleOperator(_ALLOW_TRANSFER_ROLE, address(0)),
             "Zero address should have ALLOW_TRANSFER_ROLE"
         );
         assertTrue(
-            lsp7RoleOperators.isRoleOperator(_INFINITE_BALANCE_ROLE, _ZERO_ADDRESS),
+            lsp7RoleOperators.isRoleOperator(
+                _INFINITE_BALANCE_ROLE,
+                address(0)
+            ),
             "Zero address should have INFINITE_BALANCE_ROLE"
         );
 
         // Dead address in INFINITE_BALANCE
         assertTrue(
-            lsp7RoleOperators.isRoleOperator(_INFINITE_BALANCE_ROLE, _DEAD_ADDRESS),
+            lsp7RoleOperators.isRoleOperator(
+                _INFINITE_BALANCE_ROLE,
+                _DEAD_ADDRESS
+            ),
             "Dead address should have INFINITE_BALANCE_ROLE"
         );
 
         // Dead address NOT in ALLOW_TRANSFER
         assertFalse(
-            lsp7RoleOperators.isRoleOperator(_ALLOW_TRANSFER_ROLE, _DEAD_ADDRESS),
+            lsp7RoleOperators.isRoleOperator(
+                _ALLOW_TRANSFER_ROLE,
+                _DEAD_ADDRESS
+            ),
             "Dead address should NOT have ALLOW_TRANSFER_ROLE"
         );
     }
@@ -133,9 +140,13 @@ contract LSP7RoleOperatorsTest is Test {
 
     function test_AuthorizeRoleOperatorAsOwner() public {
         vm.expectEmit(true, true, true, true, address(lsp7RoleOperators));
-        emit ILSP7RoleOperators.RoleOperatorChanged(_MINT_ROLE, operator1, true);
+        emit ILSP7RoleOperators.RoleOperatorChanged(
+            operator1,
+            _MINT_ROLE,
+            true
+        );
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
-        
+
         assertTrue(
             lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
             "Operator1 should have MINT_ROLE"
@@ -158,7 +169,7 @@ contract LSP7RoleOperatorsTest is Test {
             0,
             "No event should be emitted for duplicate add"
         );
-        
+
         assertTrue(
             lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
             "Operator1 should still have MINT_ROLE"
@@ -173,9 +184,13 @@ contract LSP7RoleOperatorsTest is Test {
         );
 
         vm.expectEmit(true, true, true, true, address(lsp7RoleOperators));
-        emit ILSP7RoleOperators.RoleOperatorChanged(_MINT_ROLE, operator1, false);
+        emit ILSP7RoleOperators.RoleOperatorChanged(
+            operator1,
+            _MINT_ROLE,
+            false
+        );
         lsp7RoleOperators.revokeRoleOperator(_MINT_ROLE, operator1);
-        
+
         assertFalse(
             lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
             "Operator1 should not have MINT_ROLE"
@@ -186,7 +201,7 @@ contract LSP7RoleOperatorsTest is Test {
         vm.prank(nonOwner);
         vm.expectRevert();
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
-        
+
         assertFalse(
             lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
             "Operator1 should not have MINT_ROLE"
@@ -195,11 +210,11 @@ contract LSP7RoleOperatorsTest is Test {
 
     function test_NonOwnerCannotRevoke() public {
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
-        
+
         vm.prank(nonOwner);
         vm.expectRevert();
         lsp7RoleOperators.revokeRoleOperator(_MINT_ROLE, operator1);
-        
+
         assertTrue(
             lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
             "Operator1 should still have MINT_ROLE"
@@ -211,13 +226,13 @@ contract LSP7RoleOperatorsTest is Test {
             lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
             "Operator1 should not have MINT_ROLE initially"
         );
-        
+
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
         assertTrue(
             lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
             "Operator1 should have MINT_ROLE after authorization"
         );
-        
+
         lsp7RoleOperators.revokeRoleOperator(_MINT_ROLE, operator1);
         assertFalse(
             lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
@@ -231,41 +246,63 @@ contract LSP7RoleOperatorsTest is Test {
 
     function test_AuthorizeRoleOperatorWithData() public {
         bytes memory data = abi.encodePacked(uint256(1000));
-        
+
         vm.expectEmit(true, true, true, true, address(lsp7RoleOperators));
-        emit ILSP7RoleOperators.RoleOperatorChanged(_MINT_ROLE, operator1, true);
+        emit ILSP7RoleOperators.RoleOperatorChanged(
+            operator1,
+            _MINT_ROLE,
+            true
+        );
         vm.expectEmit(true, true, false, true, address(lsp7RoleOperators));
-        emit ILSP7RoleOperators.RoleOperatorDataChanged(_MINT_ROLE, operator1, data);
-        
-        lsp7RoleOperators.authorizeRoleOperatorWithData(_MINT_ROLE, operator1, data);
-        
+        emit ILSP7RoleOperators.RoleOperatorDataChanged(
+            _MINT_ROLE,
+            operator1,
+            data
+        );
+
+        lsp7RoleOperators.authorizeRoleOperatorWithData(
+            _MINT_ROLE,
+            operator1,
+            data
+        );
+
         assertTrue(
             lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
             "Operator1 should have MINT_ROLE"
         );
-        
-        bytes memory storedData = lsp7RoleOperators.getRoleOperatorData(_MINT_ROLE, operator1);
+
+        bytes memory storedData = lsp7RoleOperators.getRoleOperatorData(
+            _MINT_ROLE,
+            operator1
+        );
         assertEq(storedData, data, "Stored data should match");
     }
 
     function test_SetRoleOperatorData() public {
         // First authorize the operator
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
-        
+
         bytes memory data = abi.encodePacked(uint256(2000));
-        
+
         vm.expectEmit(true, true, false, true, address(lsp7RoleOperators));
-        emit ILSP7RoleOperators.RoleOperatorDataChanged(_MINT_ROLE, operator1, data);
-        
+        emit ILSP7RoleOperators.RoleOperatorDataChanged(
+            _MINT_ROLE,
+            operator1,
+            data
+        );
+
         lsp7RoleOperators.setRoleOperatorData(_MINT_ROLE, operator1, data);
-        
-        bytes memory storedData = lsp7RoleOperators.getRoleOperatorData(_MINT_ROLE, operator1);
+
+        bytes memory storedData = lsp7RoleOperators.getRoleOperatorData(
+            _MINT_ROLE,
+            operator1
+        );
         assertEq(storedData, data, "Stored data should match");
     }
 
     function test_SetRoleOperatorDataRevertsIfNotAuthorized() public {
         bytes memory data = abi.encodePacked(uint256(1000));
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 LSP7RoleOperatorsNotAuthorized.selector,
@@ -278,37 +315,73 @@ contract LSP7RoleOperatorsTest is Test {
 
     function test_GetRoleOperatorDataReturnsStoredData() public {
         bytes memory data = abi.encodePacked(uint256(3000));
-        
-        lsp7RoleOperators.authorizeRoleOperatorWithData(_MINT_ROLE, operator1, data);
-        
-        bytes memory retrievedData = lsp7RoleOperators.getRoleOperatorData(_MINT_ROLE, operator1);
-        assertEq(retrievedData, data, "Retrieved data should match stored data");
+
+        lsp7RoleOperators.authorizeRoleOperatorWithData(
+            _MINT_ROLE,
+            operator1,
+            data
+        );
+
+        bytes memory retrievedData = lsp7RoleOperators.getRoleOperatorData(
+            _MINT_ROLE,
+            operator1
+        );
+        assertEq(
+            retrievedData,
+            data,
+            "Retrieved data should match stored data"
+        );
     }
 
     function test_GetRoleOperatorDataReturnsEmptyForNonOperator() public {
-        bytes memory data = lsp7RoleOperators.getRoleOperatorData(_MINT_ROLE, operator1);
+        bytes memory data = lsp7RoleOperators.getRoleOperatorData(
+            _MINT_ROLE,
+            operator1
+        );
         assertEq(data.length, 0, "Should return empty bytes for non-operator");
     }
 
     function test_RevokeRoleOperatorClearsData() public {
         bytes memory data = abi.encodePacked(uint256(4000));
-        lsp7RoleOperators.authorizeRoleOperatorWithData(_MINT_ROLE, operator1, data);
-        
+        lsp7RoleOperators.authorizeRoleOperatorWithData(
+            _MINT_ROLE,
+            operator1,
+            data
+        );
+
         // Verify data is stored
-        bytes memory storedData = lsp7RoleOperators.getRoleOperatorData(_MINT_ROLE, operator1);
+        bytes memory storedData = lsp7RoleOperators.getRoleOperatorData(
+            _MINT_ROLE,
+            operator1
+        );
         assertEq(storedData, data, "Data should be stored");
-        
+
         // Revoke should emit data changed event with empty bytes
         vm.expectEmit(true, true, false, true, address(lsp7RoleOperators));
-        emit ILSP7RoleOperators.RoleOperatorDataChanged(_MINT_ROLE, operator1, "");
+        emit ILSP7RoleOperators.RoleOperatorDataChanged(
+            _MINT_ROLE,
+            operator1,
+            ""
+        );
         vm.expectEmit(true, true, true, true, address(lsp7RoleOperators));
-        emit ILSP7RoleOperators.RoleOperatorChanged(_MINT_ROLE, operator1, false);
-        
+        emit ILSP7RoleOperators.RoleOperatorChanged(
+            operator1,
+            _MINT_ROLE,
+            false
+        );
+
         lsp7RoleOperators.revokeRoleOperator(_MINT_ROLE, operator1);
-        
+
         // Verify data is cleared
-        bytes memory clearedData = lsp7RoleOperators.getRoleOperatorData(_MINT_ROLE, operator1);
-        assertEq(clearedData.length, 0, "Data should be cleared after revocation");
+        bytes memory clearedData = lsp7RoleOperators.getRoleOperatorData(
+            _MINT_ROLE,
+            operator1
+        );
+        assertEq(
+            clearedData.length,
+            0,
+            "Data should be cleared after revocation"
+        );
     }
 
     // ============================================================
@@ -316,23 +389,41 @@ contract LSP7RoleOperatorsTest is Test {
     // ============================================================
 
     function test_AuthorizeRoleOperatorBatch() public {
+        bytes32[] memory roles = new bytes32[](3);
+        roles[0] = _MINT_ROLE;
+        roles[1] = _MINT_ROLE;
+        roles[2] = _MINT_ROLE;
+
         address[] memory operators = new address[](3);
         operators[0] = operator1;
         operators[1] = operator2;
         operators[2] = operator3;
-        
+
         bytes[] memory dataArray = new bytes[](3);
         dataArray[0] = abi.encodePacked(uint256(1000));
         dataArray[1] = abi.encodePacked(uint256(2000));
         dataArray[2] = abi.encodePacked(uint256(3000));
-        
-        lsp7RoleOperators.authorizeRoleOperatorBatch(_MINT_ROLE, operators, dataArray);
-        
+
+        lsp7RoleOperators.authorizeRoleOperatorBatch(
+            roles,
+            operators,
+            dataArray
+        );
+
         // Verify all operators are authorized
-        assertTrue(lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1), "Operator1 should be authorized");
-        assertTrue(lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator2), "Operator2 should be authorized");
-        assertTrue(lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator3), "Operator3 should be authorized");
-        
+        assertTrue(
+            lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
+            "Operator1 should be authorized"
+        );
+        assertTrue(
+            lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator2),
+            "Operator2 should be authorized"
+        );
+        assertTrue(
+            lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator3),
+            "Operator3 should be authorized"
+        );
+
         // Verify data is stored
         assertEq(
             lsp7RoleOperators.getRoleOperatorData(_MINT_ROLE, operator1),
@@ -352,15 +443,20 @@ contract LSP7RoleOperatorsTest is Test {
     }
 
     function test_AuthorizeRoleOperatorBatchArrayMismatch() public {
+        bytes32[] memory roles = new bytes32[](3);
+        roles[0] = _MINT_ROLE;
+        roles[1] = _MINT_ROLE;
+        roles[2] = _MINT_ROLE;
+
         address[] memory operators = new address[](3);
         operators[0] = operator1;
         operators[1] = operator2;
         operators[2] = operator3;
-        
+
         bytes[] memory dataArray = new bytes[](2); // Wrong length
         dataArray[0] = abi.encodePacked(uint256(1000));
         dataArray[1] = abi.encodePacked(uint256(2000));
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 LSP7RoleOperatorsArrayLengthMismatch.selector,
@@ -368,7 +464,11 @@ contract LSP7RoleOperatorsTest is Test {
                 2
             )
         );
-        lsp7RoleOperators.authorizeRoleOperatorBatch(_MINT_ROLE, operators, dataArray);
+        lsp7RoleOperators.authorizeRoleOperatorBatch(
+            roles,
+            operators,
+            dataArray
+        );
     }
 
     function test_RevokeRoleOperatorBatch() public {
@@ -376,32 +476,57 @@ contract LSP7RoleOperatorsTest is Test {
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator2);
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator3);
-        
+
+        bytes32[] memory roles = new bytes32[](2);
+        roles[0] = _MINT_ROLE;
+        roles[1] = _MINT_ROLE;
+
         address[] memory operators = new address[](2);
         operators[0] = operator1;
         operators[1] = operator2;
-        
-        lsp7RoleOperators.revokeRoleOperatorBatch(_MINT_ROLE, operators);
-        
+
+        lsp7RoleOperators.revokeRoleOperatorBatch(roles, operators);
+
         // Verify operators are revoked
-        assertFalse(lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1), "Operator1 should be revoked");
-        assertFalse(lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator2), "Operator2 should be revoked");
-        assertTrue(lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator3), "Operator3 should still be authorized");
+        assertFalse(
+            lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
+            "Operator1 should be revoked"
+        );
+        assertFalse(
+            lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator2),
+            "Operator2 should be revoked"
+        );
+        assertTrue(
+            lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator3),
+            "Operator3 should still be authorized"
+        );
     }
 
     function test_RevokeRoleOperatorBatchClearsData() public {
         // Authorize with data
         bytes memory data1 = abi.encodePacked(uint256(1000));
         bytes memory data2 = abi.encodePacked(uint256(2000));
-        lsp7RoleOperators.authorizeRoleOperatorWithData(_MINT_ROLE, operator1, data1);
-        lsp7RoleOperators.authorizeRoleOperatorWithData(_MINT_ROLE, operator2, data2);
-        
+        lsp7RoleOperators.authorizeRoleOperatorWithData(
+            _MINT_ROLE,
+            operator1,
+            data1
+        );
+        lsp7RoleOperators.authorizeRoleOperatorWithData(
+            _MINT_ROLE,
+            operator2,
+            data2
+        );
+
+        bytes32[] memory roles = new bytes32[](2);
+        roles[0] = _MINT_ROLE;
+        roles[1] = _MINT_ROLE;
+
         address[] memory operators = new address[](2);
         operators[0] = operator1;
         operators[1] = operator2;
-        
-        lsp7RoleOperators.revokeRoleOperatorBatch(_MINT_ROLE, operators);
-        
+
+        lsp7RoleOperators.revokeRoleOperatorBatch(roles, operators);
+
         // Verify data is cleared
         assertEq(
             lsp7RoleOperators.getRoleOperatorData(_MINT_ROLE, operator1).length,
@@ -419,15 +544,17 @@ contract LSP7RoleOperatorsTest is Test {
     // Enumeration and pagination tests (TEST-03)
     // ============================================================
 
-    function test_GetRoleOperatorsLength() public {
-        // Initially owner only has MINT_ROLE
-        uint256 initialLength = lsp7RoleOperators.getRoleOperatorsLength(_MINT_ROLE);
+    function test_GetRoleOperatorsCount() public {
+        // Initially, the owner is an operator for all roles; here we check _MINT_ROLE
+        uint256 initialLength = lsp7RoleOperators.getRoleOperatorsCount(
+            _MINT_ROLE
+        );
         assertEq(initialLength, 1, "Initial length should be 1 (owner)");
-        
+
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator2);
-        
-        uint256 newLength = lsp7RoleOperators.getRoleOperatorsLength(_MINT_ROLE);
+
+        uint256 newLength = lsp7RoleOperators.getRoleOperatorsCount(_MINT_ROLE);
         assertEq(newLength, 3, "Length should be 3 after adding 2 operators");
     }
 
@@ -435,21 +562,29 @@ contract LSP7RoleOperatorsTest is Test {
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator2);
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator3);
-        
-        address[] memory operators = lsp7RoleOperators.getRoleOperatorsByIndex(_MINT_ROLE, 0, 3);
+
+        address[] memory operators = lsp7RoleOperators.getRoleOperatorsByIndex(
+            _MINT_ROLE,
+            0,
+            3
+        );
         assertEq(operators.length, 3, "Should return 3 operators");
-        
+
         // Get slice
-        address[] memory slice = lsp7RoleOperators.getRoleOperatorsByIndex(_MINT_ROLE, 1, 3);
+        address[] memory slice = lsp7RoleOperators.getRoleOperatorsByIndex(
+            _MINT_ROLE,
+            1,
+            3
+        );
         assertEq(slice.length, 2, "Should return 2 operators");
     }
 
     function test_GetRoleOperatorsByIndexInvalidRange() public {
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator2);
-        
-        uint256 length = lsp7RoleOperators.getRoleOperatorsLength(_MINT_ROLE);
-        
+
+        uint256 length = lsp7RoleOperators.getRoleOperatorsCount(_MINT_ROLE);
+
         // startIndex >= endIndex
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -460,7 +595,7 @@ contract LSP7RoleOperatorsTest is Test {
             )
         );
         lsp7RoleOperators.getRoleOperatorsByIndex(_MINT_ROLE, 2, 1);
-        
+
         // endIndex > length
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -478,18 +613,30 @@ contract LSP7RoleOperatorsTest is Test {
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator2);
         lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator3);
-        
-        assertEq(lsp7RoleOperators.getRoleOperatorsLength(_MINT_ROLE), 4, "Should have 4 operators");
-        
+
+        assertEq(
+            lsp7RoleOperators.getRoleOperatorsCount(_MINT_ROLE),
+            4,
+            "Should have 4 operators"
+        );
+
         // Remove one
         lsp7RoleOperators.revokeRoleOperator(_MINT_ROLE, operator2);
-        
-        assertEq(lsp7RoleOperators.getRoleOperatorsLength(_MINT_ROLE), 3, "Should have 3 operators");
-        
+
+        assertEq(
+            lsp7RoleOperators.getRoleOperatorsCount(_MINT_ROLE),
+            3,
+            "Should have 3 operators"
+        );
+
         // Verify remaining operators
-        address[] memory operators = lsp7RoleOperators.getRoleOperatorsByIndex(_MINT_ROLE, 0, 3);
+        address[] memory operators = lsp7RoleOperators.getRoleOperatorsByIndex(
+            _MINT_ROLE,
+            0,
+            3
+        );
         assertEq(operators.length, 3, "Should return 3 operators");
-        
+
         // Verify operator2 is not in the list
         bool foundOperator2 = false;
         for (uint256 i = 0; i < operators.length; i++) {
@@ -507,76 +654,206 @@ contract LSP7RoleOperatorsTest is Test {
 
     function test_CannotRemoveZeroAddress() public {
         assertTrue(
-            lsp7RoleOperators.isRoleOperator(_ALLOW_TRANSFER_ROLE, _ZERO_ADDRESS),
+            lsp7RoleOperators.isRoleOperator(_ALLOW_TRANSFER_ROLE, address(0)),
             "Zero address should have ALLOW_TRANSFER_ROLE"
         );
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 LSP7RoleOperatorsCannotRemoveReservedAddress.selector,
-                _ZERO_ADDRESS
+                address(0)
             )
         );
-        lsp7RoleOperators.revokeRoleOperator(_ALLOW_TRANSFER_ROLE, _ZERO_ADDRESS);
-        
+        lsp7RoleOperators.revokeRoleOperator(_ALLOW_TRANSFER_ROLE, address(0));
+
         assertTrue(
-            lsp7RoleOperators.isRoleOperator(_ALLOW_TRANSFER_ROLE, _ZERO_ADDRESS),
+            lsp7RoleOperators.isRoleOperator(_ALLOW_TRANSFER_ROLE, address(0)),
             "Zero address should still have ALLOW_TRANSFER_ROLE"
         );
     }
 
     function test_CannotRemoveDeadAddress() public {
         assertTrue(
-            lsp7RoleOperators.isRoleOperator(_INFINITE_BALANCE_ROLE, _DEAD_ADDRESS),
+            lsp7RoleOperators.isRoleOperator(
+                _INFINITE_BALANCE_ROLE,
+                _DEAD_ADDRESS
+            ),
             "Dead address should have INFINITE_BALANCE_ROLE"
         );
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 LSP7RoleOperatorsCannotRemoveReservedAddress.selector,
                 _DEAD_ADDRESS
             )
         );
-        lsp7RoleOperators.revokeRoleOperator(_INFINITE_BALANCE_ROLE, _DEAD_ADDRESS);
-        
+        lsp7RoleOperators.revokeRoleOperator(
+            _INFINITE_BALANCE_ROLE,
+            _DEAD_ADDRESS
+        );
+
         assertTrue(
-            lsp7RoleOperators.isRoleOperator(_INFINITE_BALANCE_ROLE, _DEAD_ADDRESS),
+            lsp7RoleOperators.isRoleOperator(
+                _INFINITE_BALANCE_ROLE,
+                _DEAD_ADDRESS
+            ),
             "Dead address should still have INFINITE_BALANCE_ROLE"
         );
     }
 
     function test_CannotBatchRemoveReservedAddresses() public {
+        bytes32[] memory roles = new bytes32[](2);
+        roles[0] = _ALLOW_TRANSFER_ROLE;
+        roles[1] = _ALLOW_TRANSFER_ROLE;
+
         address[] memory operators = new address[](2);
-        operators[0] = _ZERO_ADDRESS;
+        operators[0] = address(0);
         operators[1] = operator1;
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 LSP7RoleOperatorsCannotRemoveReservedAddress.selector,
-                _ZERO_ADDRESS
+                address(0)
             )
         );
-        lsp7RoleOperators.revokeRoleOperatorBatch(_ALLOW_TRANSFER_ROLE, operators);
+        lsp7RoleOperators.revokeRoleOperatorBatch(roles, operators);
     }
 
     function test_ZeroAddressPrePopulatedInAllowTransferRole() public {
-        uint256 length = lsp7RoleOperators.getRoleOperatorsLength(_ALLOW_TRANSFER_ROLE);
-        assertTrue(length >= 1, "ALLOW_TRANSFER_ROLE should have at least 1 operator");
-        
+        uint256 length = lsp7RoleOperators.getRoleOperatorsCount(
+            _ALLOW_TRANSFER_ROLE
+        );
         assertTrue(
-            lsp7RoleOperators.isRoleOperator(_ALLOW_TRANSFER_ROLE, _ZERO_ADDRESS),
+            length >= 1,
+            "ALLOW_TRANSFER_ROLE should have at least 1 operator"
+        );
+
+        assertTrue(
+            lsp7RoleOperators.isRoleOperator(_ALLOW_TRANSFER_ROLE, address(0)),
             "Zero address should be pre-populated in ALLOW_TRANSFER_ROLE"
         );
     }
 
     function test_DeadAddressPrePopulatedInInfiniteBalanceRole() public {
-        uint256 length = lsp7RoleOperators.getRoleOperatorsLength(_INFINITE_BALANCE_ROLE);
-        assertTrue(length >= 1, "INFINITE_BALANCE_ROLE should have at least 1 operator");
-        
+        uint256 length = lsp7RoleOperators.getRoleOperatorsCount(
+            _INFINITE_BALANCE_ROLE
+        );
         assertTrue(
-            lsp7RoleOperators.isRoleOperator(_INFINITE_BALANCE_ROLE, _DEAD_ADDRESS),
+            length >= 1,
+            "INFINITE_BALANCE_ROLE should have at least 1 operator"
+        );
+
+        assertTrue(
+            lsp7RoleOperators.isRoleOperator(
+                _INFINITE_BALANCE_ROLE,
+                _DEAD_ADDRESS
+            ),
             "Dead address should be pre-populated in INFINITE_BALANCE_ROLE"
         );
+    }
+
+    // ============================================================
+    // Reverse lookup tests (getOperatorRoles)
+    // ============================================================
+
+    function test_GetOperatorRolesForOwner() public {
+        bytes32[] memory roles = lsp7RoleOperators.getOperatorRoles(owner);
+        assertEq(roles.length, 3, "Owner should have 3 roles");
+    }
+
+    function test_GetOperatorRolesAfterAuthorize() public {
+        lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
+        lsp7RoleOperators.authorizeRoleOperator(
+            _ALLOW_TRANSFER_ROLE,
+            operator1
+        );
+
+        bytes32[] memory roles = lsp7RoleOperators.getOperatorRoles(operator1);
+        assertEq(roles.length, 2, "Operator1 should have 2 roles");
+    }
+
+    function test_GetOperatorRolesAfterRevoke() public {
+        lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, operator1);
+        lsp7RoleOperators.authorizeRoleOperator(
+            _ALLOW_TRANSFER_ROLE,
+            operator1
+        );
+
+        lsp7RoleOperators.revokeRoleOperator(_MINT_ROLE, operator1);
+
+        bytes32[] memory roles = lsp7RoleOperators.getOperatorRoles(operator1);
+        assertEq(
+            roles.length,
+            1,
+            "Operator1 should have 1 role after revocation"
+        );
+        assertEq(
+            roles[0],
+            _ALLOW_TRANSFER_ROLE,
+            "Remaining role should be ALLOW_TRANSFER_ROLE"
+        );
+    }
+
+    function test_GetOperatorRolesReturnsEmptyForNonOperator() public {
+        bytes32[] memory roles = lsp7RoleOperators.getOperatorRoles(operator1);
+        assertEq(roles.length, 0, "Non-operator should have 0 roles");
+    }
+
+    function test_GetOperatorRolesForReservedAddresses() public {
+        // address(0) should have ALLOW_TRANSFER and INFINITE_BALANCE roles
+        bytes32[] memory zeroRoles = lsp7RoleOperators.getOperatorRoles(
+            address(0)
+        );
+        assertEq(zeroRoles.length, 2, "Zero address should have 2 roles");
+
+        // dead address should have INFINITE_BALANCE role
+        bytes32[] memory deadRoles = lsp7RoleOperators.getOperatorRoles(
+            _DEAD_ADDRESS
+        );
+        assertEq(deadRoles.length, 1, "Dead address should have 1 role");
+        assertEq(
+            deadRoles[0],
+            _INFINITE_BALANCE_ROLE,
+            "Dead address role should be INFINITE_BALANCE_ROLE"
+        );
+    }
+
+    // ============================================================
+    // Batch with multiple roles tests
+    // ============================================================
+
+    function test_AuthorizeRoleOperatorBatchMultipleRoles() public {
+        bytes32[] memory roles = new bytes32[](2);
+        roles[0] = _MINT_ROLE;
+        roles[1] = _ALLOW_TRANSFER_ROLE;
+
+        address[] memory operators = new address[](2);
+        operators[0] = operator1;
+        operators[1] = operator1;
+
+        bytes[] memory dataArray = new bytes[](2);
+        dataArray[0] = "";
+        dataArray[1] = "";
+
+        lsp7RoleOperators.authorizeRoleOperatorBatch(
+            roles,
+            operators,
+            dataArray
+        );
+
+        assertTrue(
+            lsp7RoleOperators.isRoleOperator(_MINT_ROLE, operator1),
+            "Operator1 should have MINT_ROLE"
+        );
+        assertTrue(
+            lsp7RoleOperators.isRoleOperator(_ALLOW_TRANSFER_ROLE, operator1),
+            "Operator1 should have ALLOW_TRANSFER_ROLE"
+        );
+
+        bytes32[] memory operatorRoles = lsp7RoleOperators.getOperatorRoles(
+            operator1
+        );
+        assertEq(operatorRoles.length, 2, "Operator1 should have 2 roles");
     }
 
     // ============================================================
@@ -591,9 +868,15 @@ contract LSP7RoleOperatorsTest is Test {
         vm.assume(addr != address(0));
         vm.assume(addr != _DEAD_ADDRESS);
         vm.assume(addr != owner);
-        
+        // Exclude precompile addresses (1-9) which can interfere with LSP1 callback checks
+        vm.assume(uint160(addr) > 9);
+
         if (authorize) {
-            lsp7RoleOperators.authorizeRoleOperatorWithData(_MINT_ROLE, addr, data);
+            lsp7RoleOperators.authorizeRoleOperatorWithData(
+                _MINT_ROLE,
+                addr,
+                data
+            );
             assertTrue(
                 lsp7RoleOperators.isRoleOperator(_MINT_ROLE, addr),
                 "Address should be authorized"
@@ -619,21 +902,26 @@ contract LSP7RoleOperatorsTest is Test {
     ) public {
         // Add some operators
         for (uint256 i = 0; i < 10; i++) {
-            lsp7RoleOperators.authorizeRoleOperator(_MINT_ROLE, vm.addr(200 + i));
+            lsp7RoleOperators.authorizeRoleOperator(
+                _MINT_ROLE,
+                vm.addr(200 + i)
+            );
         }
-        
-        uint256 totalLength = lsp7RoleOperators.getRoleOperatorsLength(_MINT_ROLE);
-        
+
+        uint256 totalLength = lsp7RoleOperators.getRoleOperatorsCount(
+            _MINT_ROLE
+        );
+
         // Bound indices
         uint256 boundedStart = bound(startIndex, 0, totalLength - 1);
         uint256 boundedEnd = bound(endIndex, boundedStart + 1, totalLength);
-        
+
         address[] memory operators = lsp7RoleOperators.getRoleOperatorsByIndex(
             _MINT_ROLE,
             boundedStart,
             boundedEnd
         );
-        
+
         assertEq(
             operators.length,
             boundedEnd - boundedStart,
