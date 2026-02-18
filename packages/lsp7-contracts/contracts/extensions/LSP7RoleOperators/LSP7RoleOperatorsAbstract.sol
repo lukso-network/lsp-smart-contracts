@@ -11,9 +11,7 @@ import {ILSP7RoleOperators} from "./ILSP7RoleOperators.sol";
 import {
     EnumerableSet
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {
-    LSP1Utils
-} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
+import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
 
 // constants
 import {
@@ -29,7 +27,7 @@ import {
     LSP7RoleOperatorsInvalidIndexRange,
     LSP7RoleOperatorsCannotRemoveReservedAddress,
     LSP7RoleOperatorsNotAuthorized,
-    LSP7RoleOperatorsArrayLengthMismatch
+    LSP7RoleOperatorsNotOwnerOrSelf
 } from "./LSP7RoleOperatorsErrors.sol";
 
 abstract contract LSP7RoleOperatorsAbstract is
@@ -68,19 +66,6 @@ abstract contract LSP7RoleOperatorsAbstract is
     /// @inheritdoc ILSP7RoleOperators
     function authorizeRoleOperator(
         bytes32 role,
-        address operator
-    ) public override onlyOwner {
-        bool added = _roleAddresses[role].add(operator);
-        if (added) {
-            _operatorRoles[operator].add(role);
-            emit RoleOperatorChanged(operator, role, true);
-            _notifyRoleOperator(operator, role, true);
-        }
-    }
-
-    /// @inheritdoc ILSP7RoleOperators
-    function authorizeRoleOperatorWithData(
-        bytes32 role,
         address operator,
         bytes calldata data
     ) public override onlyOwner {
@@ -101,7 +86,11 @@ abstract contract LSP7RoleOperatorsAbstract is
     function revokeRoleOperator(
         bytes32 role,
         address operator
-    ) public override onlyOwner {
+    ) public override {
+        require(
+            msg.sender == owner() || msg.sender == operator,
+            LSP7RoleOperatorsNotOwnerOrSelf(msg.sender, operator)
+        );
         require(
             operator != address(0) && operator != _DEAD_ADDRESS,
             LSP7RoleOperatorsCannotRemoveReservedAddress(operator)
@@ -120,22 +109,22 @@ abstract contract LSP7RoleOperatorsAbstract is
     }
 
     /// @inheritdoc ILSP7RoleOperators
-    function isRoleOperator(
-        bytes32 role,
-        address operator
+    function hasRole(
+        address operator,
+        bytes32 role
     ) public view override returns (bool) {
         return _roleAddresses[role].contains(operator);
     }
 
     /// @inheritdoc ILSP7RoleOperators
-    function getOperatorRoles(
+    function getRolesFor(
         address operator
     ) public view override returns (bytes32[] memory) {
         return _operatorRoles[operator].values();
     }
 
     /// @inheritdoc ILSP7RoleOperators
-    function getRoleOperatorsCount(
+    function getOperatorsCountForRole(
         bytes32 role
     ) public view returns (uint256) {
         return _roleAddresses[role].length();
@@ -192,76 +181,6 @@ abstract contract LSP7RoleOperatorsAbstract is
         return _roleOperatorData[role][operator];
     }
 
-    /// @inheritdoc ILSP7RoleOperators
-    function authorizeRoleOperatorBatch(
-        bytes32[] calldata roles,
-        address[] calldata operators,
-        bytes[] calldata dataArray
-    ) public override onlyOwner {
-        require(
-            roles.length == operators.length && operators.length == dataArray.length,
-            LSP7RoleOperatorsArrayLengthMismatch(operators.length, dataArray.length)
-        );
-
-        for (uint256 i = 0; i < operators.length; ) {
-            address operator = operators[i];
-            bytes32 role = roles[i];
-            bytes calldata data = dataArray[i];
-
-            bool added = _roleAddresses[role].add(operator);
-            if (added) {
-                _operatorRoles[operator].add(role);
-                emit RoleOperatorChanged(operator, role, true);
-                _notifyRoleOperator(operator, role, true);
-            }
-
-            if (data.length > 0 || _roleOperatorData[role][operator].length > 0) {
-                _roleOperatorData[role][operator] = data;
-                emit RoleOperatorDataChanged(role, operator, data);
-            }
-
-            unchecked {
-                ++i;
-            }
-        }
-    }
-
-    /// @inheritdoc ILSP7RoleOperators
-    function revokeRoleOperatorBatch(
-        bytes32[] calldata roles,
-        address[] calldata operators
-    ) public override onlyOwner {
-        require(
-            roles.length == operators.length,
-            LSP7RoleOperatorsArrayLengthMismatch(roles.length, operators.length)
-        );
-
-        for (uint256 i = 0; i < operators.length; ) {
-            address operator = operators[i];
-            bytes32 role = roles[i];
-
-            require(
-                operator != address(0) && operator != _DEAD_ADDRESS,
-                LSP7RoleOperatorsCannotRemoveReservedAddress(operator)
-            );
-
-            bool removed = _roleAddresses[role].remove(operator);
-            if (removed) {
-                _operatorRoles[operator].remove(role);
-                if (_roleOperatorData[role][operator].length > 0) {
-                    delete _roleOperatorData[role][operator];
-                    emit RoleOperatorDataChanged(role, operator, "");
-                }
-                emit RoleOperatorChanged(operator, role, false);
-                _notifyRoleOperator(operator, role, false);
-            }
-
-            unchecked {
-                ++i;
-            }
-        }
-    }
-
     /**
      * @dev Attempt to notify the role operator about the role change.
      * This is done by calling its {universalReceiver} function with the `_TYPEID_LSP7_ROLE_OPERATOR` as typeId,
@@ -277,11 +196,7 @@ abstract contract LSP7RoleOperatorsAbstract is
         bytes32 role,
         bool added
     ) internal virtual {
-        bytes memory lsp1Data = abi.encode(
-            msg.sender,
-            role,
-            added
-        );
+        bytes memory lsp1Data = abi.encode(msg.sender, role, added);
 
         LSP1Utils.notifyUniversalReceiver(
             operator,

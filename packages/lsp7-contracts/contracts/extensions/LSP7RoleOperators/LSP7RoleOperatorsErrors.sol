@@ -11,7 +11,4 @@ error LSP7RoleOperatorsCannotRemoveReservedAddress(address reservedAddress);
 
 error LSP7RoleOperatorsNotAuthorized(bytes32 role, address operator);
 
-error LSP7RoleOperatorsArrayLengthMismatch(
-    uint256 operatorsLength,
-    uint256 dataLength
-);
+error LSP7RoleOperatorsNotOwnerOrSelf(address caller, address operator);
