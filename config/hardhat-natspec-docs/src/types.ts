@@ -7,6 +7,8 @@ export interface NatSpecDocsUserConfig {
   outputDir?: string;
   /** Generate on compile (default: false) */
   runOnCompile?: boolean;
+  /** Contract names to place under libraries/ instead of contracts/ */
+  libraries?: string[];
 }
 
 export interface NatSpecDocsConfig {
@@ -14,4 +16,5 @@ export interface NatSpecDocsConfig {
   exclude: string[];
   outputDir: string;
   runOnCompile: boolean;
+  libraries: string[];
 }

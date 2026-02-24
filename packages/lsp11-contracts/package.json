@@ -56,6 +56,7 @@
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test:foundry": "FOUNDRY_PROFILE=lsp11 forge test -vvvv",
+    "build:docs": "hardhat docs",
     "test:coverage": "hardhat coverage",
     "build:package": "hardhat prepare-package"
   },
@@ -64,6 +65,7 @@
     "@openzeppelin/contracts": "^4.9.3"
   },
   "devDependencies": {
+    "@lukso/hardhat-natspec-docs": "*",
     "@lukso/hardhat-packager-v3": "*",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "eslint-config-custom": "*",

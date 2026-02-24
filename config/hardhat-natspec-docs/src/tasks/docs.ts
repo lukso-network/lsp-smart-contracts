@@ -9,32 +9,28 @@ interface DocsTaskArgs {
 const docsAction: NewTaskActionFunction<DocsTaskArgs> = async (args, hre) => {
   const config = hre.config.natspecDocs;
   const outputDir = args.output ?? config.outputDir;
-  
+
   console.log('[hardhat-natspec-docs] Extracting NatSpec documentation...');
-  
+
   // Get artifacts path from Hardhat runtime
   const artifactsPath = hre.config.paths.artifacts;
-  
+
   // Extract NatSpec from build artifacts
-  const contracts = await extractNatSpec(
-    hre.artifacts,
-    artifactsPath,
-    {
-      include: config.include,
-      exclude: config.exclude,
-    },
-  );
-  
+  const contracts = await extractNatSpec(hre.artifacts, artifactsPath, {
+    include: config.include,
+    exclude: config.exclude,
+  });
+
   if (contracts.length === 0) {
     console.log('[hardhat-natspec-docs] No contracts found matching filters');
     return;
   }
-  
+
   console.log(`[hardhat-natspec-docs] Found ${contracts.length} contracts`);
-  
+
   // Generate and write documentation
-  await writeDocumentation(contracts, outputDir);
-  
+  await writeDocumentation(contracts, outputDir, config.libraries);
+
   console.log(`[hardhat-natspec-docs] Documentation generated in ${outputDir}/`);
 };
 

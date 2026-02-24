@@ -6,25 +6,43 @@ import type { ContractNatSpec } from '../extractor/types.js';
 import { generateContractMarkdown, generateIndexMarkdown } from './markdown.js';
 
 /**
- * Write all documentation to output directory
+ * Write all documentation to output directory, splitting into
+ * contracts/ and libraries/ subdirectories.
+ *
+ * @param libraries - Contract names that belong under libraries/
  */
 export async function writeDocumentation(
   contracts: ContractNatSpec[],
   outputDir: string,
+  libraries: string[],
 ): Promise<void> {
-  // Ensure output directory exists
+  // Clean and recreate output directory to remove stale files
+  await fs.rm(outputDir, { recursive: true, force: true });
   await fs.mkdir(outputDir, { recursive: true });
-  
-  // Generate and write index
-  const indexContent = generateIndexMarkdown(contracts);
-  await fs.writeFile(path.join(outputDir, 'README.md'), indexContent, 'utf-8');
-  
-  // Generate and write each contract
+
+  const librarySet = new Set(libraries);
+  const contractsDir = path.join(outputDir, 'contracts');
+  const librariesDir = path.join(outputDir, 'libraries');
+
+  await fs.mkdir(contractsDir, { recursive: true });
+
+  let libCount = 0;
+
+  // Generate and write each contract into the right subdirectory
   for (const contract of contracts) {
     const content = generateContractMarkdown(contract);
     const fileName = `${contract.contractName}.md`;
-    await fs.writeFile(path.join(outputDir, fileName), content, 'utf-8');
+
+    if (librarySet.has(contract.contractName)) {
+      await fs.mkdir(librariesDir, { recursive: true });
+      await fs.writeFile(path.join(librariesDir, fileName), content, 'utf-8');
+      libCount++;
+    } else {
+      await fs.writeFile(path.join(contractsDir, fileName), content, 'utf-8');
+    }
   }
-  
-  console.log(`[hardhat-natspec-docs] Generated documentation for ${contracts.length} contracts in ${outputDir}`);
+
+  console.log(
+    `[hardhat-natspec-docs] Generated documentation for ${contracts.length - libCount} contracts and ${libCount} libraries in ${outputDir}`,
+  );
 }

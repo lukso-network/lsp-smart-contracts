@@ -54,6 +54,7 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
+    "build:docs": "hardhat docs",
     "build:package": "hardhat prepare-package"
   },
   "dependencies": {
@@ -64,6 +65,7 @@
     "solidity-bytes-utils": "0.8.4"
   },
   "devDependencies": {
+    "@lukso/hardhat-natspec-docs": "*",
     "@lukso/hardhat-packager-v3": "*",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "eslint-config-custom": "*",

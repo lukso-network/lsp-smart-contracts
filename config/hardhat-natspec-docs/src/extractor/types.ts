@@ -37,6 +37,7 @@ export interface ErrorDoc {
 export interface StateVariableDoc {
   details?: string;
   return?: string;
+  returns?: Record<string, string>;
 }
 
 /**
@@ -65,6 +66,20 @@ export interface ErrorUserDoc {
 }
 
 /**
+ * Internal method extracted from AST
+ * (internal functions are not in ABI but have NatSpec in AST documentation)
+ */
+export interface InternalMethod {
+  name: string;
+  code: string;
+  notice?: string;
+  details?: string;
+  params?: Array<{ name: string; type: string; description?: string }>;
+  returns?: Array<{ name: string; type: string; description?: string }>;
+  customTags?: Record<string, string>;
+}
+
+/**
  * Combined NatSpec for a contract
  */
 export interface ContractNatSpec {
@@ -73,6 +88,8 @@ export interface ContractNatSpec {
   devdoc: DevDoc;
   userdoc: UserDoc;
   abi: AbiItem[];
+  /** Internal methods extracted from AST (not in ABI) */
+  internalMethods?: InternalMethod[];
 }
 
 /**

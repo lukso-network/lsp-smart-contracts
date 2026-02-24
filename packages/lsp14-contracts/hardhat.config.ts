@@ -1,9 +1,16 @@
 import type { HardhatUserConfig } from 'hardhat/config';
 import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
 import hardhatPackager from '@lukso/hardhat-packager-v3';
+import natspecDocsPlugin from '@lukso/hardhat-natspec-docs';
 
 const config: HardhatUserConfig = {
-  plugins: [hardhatToolboxMochaEthers, hardhatPackager],
+  plugins: [hardhatToolboxMochaEthers, hardhatPackager, natspecDocsPlugin],
+  natspecDocs: {
+    outputDir: 'docs',
+    include: ['contracts/**/*'],
+    exclude: ['contracts/Mocks/**/*', 'contracts/mock/**/*', 'contracts/foundry_artifacts/**/*'],
+    runOnCompile: false,
+  },
   packager: {
     contracts: ['ILSP14Ownable2Step', 'LSP14Ownable2Step'],
   },
@@ -22,7 +29,7 @@ const config: HardhatUserConfig = {
       },
       outputSelection: {
         '*': {
-          '*': ['storageLayout'],
+          '*': ['storageLayout', 'devdoc', 'userdoc'],
         },
       },
     },

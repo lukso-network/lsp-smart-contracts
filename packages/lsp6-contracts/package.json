@@ -56,6 +56,7 @@
     "lint": "eslint . --ext .ts,.js",
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'",
     "test:foundry": "FOUNDRY_PROFILE=lsp6 forge test -vvvv",
+    "build:docs": "hardhat docs",
     "build:package": "hardhat prepare-package",
     "verify-balance": "npx hardhat verify-balance",
     "deploy": "npx hardhat ignition deploy --verify",
@@ -75,6 +76,7 @@
     "solidity-bytes-utils": "0.8.4"
   },
   "devDependencies": {
+    "@lukso/hardhat-natspec-docs": "*",
     "@lukso/hardhat-packager-v3": "*",
     "@lukso/hardhat-verify-balance": "*",
     "@nomicfoundation/hardhat-ignition-ethers": "^3.0.0",

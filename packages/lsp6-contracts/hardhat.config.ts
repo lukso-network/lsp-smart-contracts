@@ -4,6 +4,7 @@ import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-et
 import hardhatIgnitionEthers from '@nomicfoundation/hardhat-ignition-ethers';
 import hardhatPackager from '@lukso/hardhat-packager-v3';
 import hardhatVerifyBalance from '@lukso/hardhat-verify-balance';
+import natspecDocsPlugin from '@lukso/hardhat-natspec-docs';
 
 const config: HardhatUserConfig = {
   plugins: [
@@ -11,7 +12,15 @@ const config: HardhatUserConfig = {
     hardhatIgnitionEthers,
     hardhatPackager,
     hardhatVerifyBalance,
+    natspecDocsPlugin,
   ],
+  natspecDocs: {
+    outputDir: 'docs',
+    include: ['contracts/**/*'],
+    exclude: ['contracts/Mocks/**/*', 'contracts/mock/**/*', 'contracts/foundry_artifacts/**/*'],
+    runOnCompile: false,
+    libraries: ['LSP6Utils'],
+  },
   packager: {
     contracts: ['ILSP6KeyManager', 'LSP6KeyManager', 'LSP6KeyManagerInit'],
   },
@@ -92,7 +101,7 @@ const config: HardhatUserConfig = {
       },
       outputSelection: {
         '*': {
-          '*': ['storageLayout'],
+          '*': ['storageLayout', 'devdoc', 'userdoc'],
         },
       },
     },

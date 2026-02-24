@@ -59,7 +59,6 @@
     "build:foundry": "forge build",
     "build:js": "unbuild",
     "build:types": "wagmi generate",
-    "build:docs": "hardhat dodoc && prettier -w ./docs && bash dodoc/postProcessingContracts.sh && dodoc/postProcessingLibraries.sh",
     "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",

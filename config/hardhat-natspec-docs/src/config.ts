@@ -18,7 +18,7 @@ export async function validateUserConfig(
     ];
   }
 
-  const { include, exclude, outputDir, runOnCompile } = userConfig.natspecDocs;
+  const { include, exclude, outputDir, runOnCompile, libraries } = userConfig.natspecDocs;
   const errors: HardhatUserConfigValidationError[] = [];
 
   if (include !== undefined) {
@@ -71,6 +71,24 @@ export async function validateUserConfig(
     });
   }
 
+  if (libraries !== undefined) {
+    if (!Array.isArray(libraries)) {
+      errors.push({
+        path: ['natspecDocs', 'libraries'],
+        message: 'Expected an array of contract names.',
+      });
+    } else {
+      libraries.forEach((name, index) => {
+        if (typeof name !== 'string' || name.length === 0) {
+          errors.push({
+            path: ['natspecDocs', 'libraries', index.toString()],
+            message: 'Expected a non-empty string.',
+          });
+        }
+      });
+    }
+  }
+
   return errors;
 }
 
@@ -82,8 +100,9 @@ export async function resolveUserConfig(
   const exclude = userConfig.natspecDocs?.exclude ?? [];
   const outputDir = userConfig.natspecDocs?.outputDir ?? 'docs';
   const runOnCompile = userConfig.natspecDocs?.runOnCompile ?? false;
+  const libraries = userConfig.natspecDocs?.libraries ?? [];
 
-  const natspecDocs = { include, exclude, outputDir, runOnCompile };
+  const natspecDocs = { include, exclude, outputDir, runOnCompile, libraries };
 
   return {
     ...partiallyResolvedConfig,

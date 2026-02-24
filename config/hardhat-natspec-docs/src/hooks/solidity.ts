@@ -40,6 +40,6 @@ export async function generateDocsIfEnabled(hre: HardhatRuntimeEnvironment): Pro
   );
   
   if (contracts.length > 0) {
-    await writeDocumentation(contracts, config.outputDir);
+    await writeDocumentation(contracts, config.outputDir, config.libraries);
   }
 }
