@@ -36,7 +36,7 @@ When marked as 'public', a method can be called both externally and internally, 
 
 ```solidity
 function lsp20VerifyCall(
-  address requestor,
+  address requester,
   address target,
   address caller,
   uint256 value,
@@ -48,7 +48,7 @@ function lsp20VerifyCall(
 
 | Name        |   Type    | Description                                                                        |
 | ----------- | :-------: | ---------------------------------------------------------------------------------- |
-| `requestor` | `address` | The address that requested to make the call to `target`.                           |
+| `requester` | `address` | The address that requested to make the call to `target`.                           |
 | `target`    | `address` | The address of the contract that implements the `LSP20CallVerification` interface. |
 | `caller`    | `address` | The address who called the function on the `target` contract.                      |
 | `value`     | `uint256` | The value sent by the caller to the function called on the msg.sender              |
