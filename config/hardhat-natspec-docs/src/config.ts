@@ -9,7 +9,11 @@ export async function validateUserConfig(
     return [];
   }
 
-  if (typeof userConfig.natspecDocs !== 'object') {
+  if (
+    userConfig.natspecDocs === null ||
+    Array.isArray(userConfig.natspecDocs) ||
+    typeof userConfig.natspecDocs !== 'object'
+  ) {
     return [
       {
         path: ['natspecDocs'],
