@@ -4,17 +4,51 @@ This guide covers how to deploy the LUKSO smart contract infrastructure on a new
 
 All contract build artifacts (creation bytecodes, runtime bytecodes, salts, compiler settings) are stored in [`deployments/contracts.json`](./deployments/contracts.json).
 
-## Currently Deployed Networks
+## Deployed Contracts by Network
 
-These contracts share the same deterministic addresses on every network where they are deployed.
+All contracts use CREATE2 via the Nick Factory, so they have the **same address on every chain** where deployed. Scanned 19 networks via `cast code` — contracts are live on 8.
 
-| Network | Explorer | Status |
-| ------- | -------- | ------ |
-| LUKSO | [explorer.lukso.network](https://explorer.lukso.network/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) | Deployed |
-| Ethereum | [etherscan.io](https://etherscan.io/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) | Deployed |
-| Base | [basescan.org](https://basescan.org/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) | Deployed |
+> **Legend:** Links go to the block explorer for that contract on that network. A dash (—) means not deployed.
 
-> Since all contracts use CREATE2, they get the **same address on every chain**. You can verify any contract is deployed by checking the address in the relevant explorer.
+### Singletons
+
+| Contract                     | Address                                                                                             | LUKSO                                                                                  | LUKSO Testnet                                                                                            | Ethereum                                                                     | Sepolia                                                                              | Base                                                                         | Base Sepolia                                                                         | Arbitrum                                                                    | Optimism                                                                                |
+| ---------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| LSP23LinkedContractsFactory  | [`0x2300...a30`](https://explorer.lukso.network/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) | [✔](https://explorer.lukso.network/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) | [✔](https://explorer.execution.testnet.lukso.network/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) | [✔](https://etherscan.io/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) | [✔](https://sepolia.etherscan.io/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) | [✔](https://basescan.org/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) | [✔](https://sepolia.basescan.org/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) | [✔](https://arbiscan.io/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) | [✔](https://optimistic.etherscan.io/address/0x2300000A84D25dF63081feAa37ba6b62C4c89a30) |
+| UP Init PostDeploymentModule | [`0x0000...F00`](https://explorer.lukso.network/address/0x000000000066093407b6704B89793beFfD0D8F00) | [✔](https://explorer.lukso.network/address/0x000000000066093407b6704B89793beFfD0D8F00) | [✔](https://explorer.execution.testnet.lukso.network/address/0x000000000066093407b6704B89793beFfD0D8F00) | [✔](https://etherscan.io/address/0x000000000066093407b6704B89793beFfD0D8F00) | [✔](https://sepolia.etherscan.io/address/0x000000000066093407b6704B89793beFfD0D8F00) | [✔](https://basescan.org/address/0x000000000066093407b6704B89793beFfD0D8F00) | [✔](https://sepolia.basescan.org/address/0x000000000066093407b6704B89793beFfD0D8F00) | [✔](https://arbiscan.io/address/0x000000000066093407b6704B89793beFfD0D8F00) | [✔](https://optimistic.etherscan.io/address/0x000000000066093407b6704B89793beFfD0D8F00) |
+| UP PostDeploymentModule      | [`0x0000...cD7`](https://explorer.lukso.network/address/0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7) | —                                                                                      | [✔](https://explorer.execution.testnet.lukso.network/address/0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7) | —                                                                            | —                                                                                    | —                                                                            | —                                                                                    | —                                                                           | [✔](https://optimistic.etherscan.io/address/0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7) |
+
+### Implementation Contracts
+
+| Contract                        | Version | Address                                                                                             | LUKSO                                                                                  | LUKSO Testnet                                                                                            | Ethereum                                                                     | Sepolia                                                                              | Base                                                                         | Base Sepolia                                                                         | Arbitrum                                                                    | Optimism                                                                                |
+| ------------------------------- | ------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| UniversalProfileInit            | 0.14.0  | [`0x3024...D4F`](https://explorer.lukso.network/address/0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F) | [✔](https://explorer.lukso.network/address/0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F) | [✔](https://explorer.execution.testnet.lukso.network/address/0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F) | [✔](https://etherscan.io/address/0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F) | [✔](https://sepolia.etherscan.io/address/0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F) | [✔](https://basescan.org/address/0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F) | [✔](https://sepolia.basescan.org/address/0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F) | —                                                                           | [✔](https://optimistic.etherscan.io/address/0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F) |
+| UniversalProfileInit            | 0.12.1  | [`0x52c9...2A9`](https://explorer.lukso.network/address/0x52c90985AF970D4E0DC26Cb5D052505278aF32A9) | [✔](https://explorer.lukso.network/address/0x52c90985AF970D4E0DC26Cb5D052505278aF32A9) | [✔](https://explorer.execution.testnet.lukso.network/address/0x52c90985AF970D4E0DC26Cb5D052505278aF32A9) | [✔](https://etherscan.io/address/0x52c90985AF970D4E0DC26Cb5D052505278aF32A9) | [✔](https://sepolia.etherscan.io/address/0x52c90985AF970D4E0DC26Cb5D052505278aF32A9) | [✔](https://basescan.org/address/0x52c90985AF970D4E0DC26Cb5D052505278aF32A9) | [✔](https://sepolia.basescan.org/address/0x52c90985AF970D4E0DC26Cb5D052505278aF32A9) | [✔](https://arbiscan.io/address/0x52c90985AF970D4E0DC26Cb5D052505278aF32A9) | —                                                                                       |
+| LSP6KeyManagerInit              | 0.14.0  | [`0x2Fe3...8a4`](https://explorer.lukso.network/address/0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4) | [✔](https://explorer.lukso.network/address/0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4) | [✔](https://explorer.execution.testnet.lukso.network/address/0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4) | [✔](https://etherscan.io/address/0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4) | [✔](https://sepolia.etherscan.io/address/0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4) | [✔](https://basescan.org/address/0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4) | [✔](https://sepolia.basescan.org/address/0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4) | —                                                                           | [✔](https://optimistic.etherscan.io/address/0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4) |
+| LSP6KeyManagerInit              | 0.12.1  | [`0xa756...64C`](https://explorer.lukso.network/address/0xa75684d7D048704a2DB851D05Ba0c3cbe226264C) | [✔](https://explorer.lukso.network/address/0xa75684d7D048704a2DB851D05Ba0c3cbe226264C) | [✔](https://explorer.execution.testnet.lukso.network/address/0xa75684d7D048704a2DB851D05Ba0c3cbe226264C) | [✔](https://etherscan.io/address/0xa75684d7D048704a2DB851D05Ba0c3cbe226264C) | [✔](https://sepolia.etherscan.io/address/0xa75684d7D048704a2DB851D05Ba0c3cbe226264C) | [✔](https://basescan.org/address/0xa75684d7D048704a2DB851D05Ba0c3cbe226264C) | [✔](https://sepolia.basescan.org/address/0xa75684d7D048704a2DB851D05Ba0c3cbe226264C) | [✔](https://arbiscan.io/address/0xa75684d7D048704a2DB851D05Ba0c3cbe226264C) | —                                                                                       |
+| LSP1UniversalReceiverDelegateUP | 0.14.0  | [`0x7870...00D`](https://explorer.lukso.network/address/0x7870C5B8BC9572A8001C3f96f7ff59961B23500D) | [✔](https://explorer.lukso.network/address/0x7870C5B8BC9572A8001C3f96f7ff59961B23500D) | [✔](https://explorer.execution.testnet.lukso.network/address/0x7870C5B8BC9572A8001C3f96f7ff59961B23500D) | [✔](https://etherscan.io/address/0x7870C5B8BC9572A8001C3f96f7ff59961B23500D) | [✔](https://sepolia.etherscan.io/address/0x7870C5B8BC9572A8001C3f96f7ff59961B23500D) | [✔](https://basescan.org/address/0x7870C5B8BC9572A8001C3f96f7ff59961B23500D) | [✔](https://sepolia.basescan.org/address/0x7870C5B8BC9572A8001C3f96f7ff59961B23500D) | —                                                                           | [✔](https://optimistic.etherscan.io/address/0x7870C5B8BC9572A8001C3f96f7ff59961B23500D) |
+| LSP1UniversalReceiverDelegateUP | 0.12.1  | [`0xA546...8c8`](https://explorer.lukso.network/address/0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8) | [✔](https://explorer.lukso.network/address/0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8) | [✔](https://explorer.execution.testnet.lukso.network/address/0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8) | [✔](https://etherscan.io/address/0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8) | [✔](https://sepolia.etherscan.io/address/0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8) | [✔](https://basescan.org/address/0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8) | [✔](https://sepolia.basescan.org/address/0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8) | [✔](https://arbiscan.io/address/0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8) | —                                                                                       |
+| LSP7MintableInit                | 0.14.0  | [`0x28B7...2d8`](https://explorer.lukso.network/address/0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8) | [✔](https://explorer.lukso.network/address/0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8) | [✔](https://explorer.execution.testnet.lukso.network/address/0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8) | —                                                                            | —                                                                                    | —                                                                            | —                                                                                    | —                                                                           | —                                                                                       |
+| LSP8MintableInit                | 0.14.0  | [`0xd787...997`](https://explorer.lukso.network/address/0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997) | [✔](https://explorer.lukso.network/address/0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997) | [✔](https://explorer.execution.testnet.lukso.network/address/0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997) | —                                                                            | —                                                                                    | —                                                                            | —                                                                                    | —                                                                           | —                                                                                       |
+
+### Networks Scanned (not deployed)
+
+**Mainnets:** BSC, Polygon, Avalanche, Gnosis, Fantom, Linea, Scroll, zkSync Era — no contracts found.
+
+**Testnets:** Holesky, Arbitrum Sepolia, Optimism Sepolia — no contracts found.
+
+### Summary by Network
+
+| Network       | Type    | Singletons | Implementations | Total     |
+| ------------- | ------- | ---------- | --------------- | --------- |
+| LUKSO Mainnet | mainnet | 2/3        | 8/8             | 10/11     |
+| LUKSO Testnet | testnet | 3/3        | 8/8             | **11/11** |
+| Ethereum      | mainnet | 2/3        | 6/8             | 8/11      |
+| Sepolia       | testnet | 2/3        | 6/8             | 8/11      |
+| Base          | mainnet | 2/3        | 6/8             | 8/11      |
+| Base Sepolia  | testnet | 2/3        | 6/8             | 8/11      |
+| Arbitrum      | mainnet | 2/3        | 3/8             | 5/11      |
+| Optimism      | mainnet | 3/3        | 3/8             | 6/11      |
 
 ---
 
@@ -27,24 +61,24 @@ There are two categories of contracts:
 
 ### Singletons
 
-| Contract | Address | Purpose |
-| -------- | ------- | ------- |
-| LSP23LinkedContractsFactory | `0x2300000A84D25dF63081feAa37ba6b62C4c89a30` | Factory for deploying linked contract pairs (UP + KeyManager) |
+| Contract                                 | Address                                      | Purpose                                                                  |
+| ---------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------ |
+| LSP23LinkedContractsFactory              | `0x2300000A84D25dF63081feAa37ba6b62C4c89a30` | Factory for deploying linked contract pairs (UP + KeyManager)            |
 | UniversalProfileInitPostDeploymentModule | `0x000000000066093407b6704B89793beFfD0D8F00` | Sets initial data keys and transfers ownership after UP proxy deployment |
-| UniversalProfilePostDeploymentModule | `0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7` | Same as above but for non-proxy UP deployments |
+| UniversalProfilePostDeploymentModule     | `0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7` | Same as above but for non-proxy UP deployments                           |
 
 ### Implementation Contracts
 
-| Contract | Version | Address | Source |
-| -------- | ------- | ------- | ------ |
-| UniversalProfileInit | 0.14.0 | `0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F` | [`packages/universalprofile-contracts/contracts/UniversalProfileInit.sol`](./packages/universalprofile-contracts/contracts/UniversalProfileInit.sol) |
-| UniversalProfileInit | 0.12.1 | `0x52c90985AF970D4E0DC26Cb5D052505278aF32A9` | same |
-| LSP6KeyManagerInit | 0.14.0 | `0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4` | [`packages/lsp6-contracts/contracts/LSP6KeyManagerInit.sol`](./packages/lsp6-contracts/contracts/LSP6KeyManagerInit.sol) |
-| LSP6KeyManagerInit | 0.12.1 | `0xa75684d7D048704a2DB851D05Ba0c3cbe226264C` | same |
-| LSP1UniversalReceiverDelegateUP | 0.14.0 | `0x7870C5B8BC9572A8001C3f96f7ff59961B23500D` | [`packages/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol`](./packages/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol) |
-| LSP1UniversalReceiverDelegateUP | 0.12.1 | `0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8` | same |
-| LSP7MintableInit | 0.14.0 | `0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8` | `packages/lsp7-contracts/contracts/presets/LSP7MintableInit.sol` |
-| LSP8MintableInit | 0.14.0 | `0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997` | `packages/lsp8-contracts/contracts/presets/LSP8MintableInit.sol` |
+| Contract                        | Version | Address                                      | Source                                                                                                                                                             |
+| ------------------------------- | ------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| UniversalProfileInit            | 0.14.0  | `0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F` | [`packages/universalprofile-contracts/contracts/UniversalProfileInit.sol`](./packages/universalprofile-contracts/contracts/UniversalProfileInit.sol)               |
+| UniversalProfileInit            | 0.12.1  | `0x52c90985AF970D4E0DC26Cb5D052505278aF32A9` | same                                                                                                                                                               |
+| LSP6KeyManagerInit              | 0.14.0  | `0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4` | [`packages/lsp6-contracts/contracts/LSP6KeyManagerInit.sol`](./packages/lsp6-contracts/contracts/LSP6KeyManagerInit.sol)                                           |
+| LSP6KeyManagerInit              | 0.12.1  | `0xa75684d7D048704a2DB851D05Ba0c3cbe226264C` | same                                                                                                                                                               |
+| LSP1UniversalReceiverDelegateUP | 0.14.0  | `0x7870C5B8BC9572A8001C3f96f7ff59961B23500D` | [`packages/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol`](./packages/lsp1delegate-contracts/contracts/LSP1UniversalReceiverDelegateUP.sol) |
+| LSP1UniversalReceiverDelegateUP | 0.12.1  | `0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8` | same                                                                                                                                                               |
+| LSP7MintableInit                | 0.14.0  | `0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8` | `packages/lsp7-contracts/contracts/presets/LSP7MintableInit.sol`                                                                                                   |
+| LSP8MintableInit                | 0.14.0  | `0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997` | `packages/lsp8-contracts/contracts/presets/LSP8MintableInit.sol`                                                                                                   |
 
 ---
 
@@ -79,31 +113,31 @@ cast send 0x4e59b44847b379578588920cA78FbF26c0B4956C \
 
 The central factory for deploying linked contract pairs. See the [LSP-23 spec](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#lsp23linkedcontractsfactory-deployment) for the full deployment transaction data.
 
-| Field | Value |
-| ----- | ----- |
-| Expected address | `0x2300000A84D25dF63081feAa37ba6b62C4c89a30` |
-| Salt | `0x12a6712f113536d8b01d99f72ce168c7e1090124db54cd16f03c20000022178c` |
-| Compiler | solc 0.8.17, 1,000 optimization runs |
+| Field            | Value                                                                |
+| ---------------- | -------------------------------------------------------------------- |
+| Expected address | `0x2300000A84D25dF63081feAa37ba6b62C4c89a30`                         |
+| Salt             | `0x12a6712f113536d8b01d99f72ce168c7e1090124db54cd16f03c20000022178c` |
+| Compiler         | solc 0.8.17, 1,000 optimization runs                                 |
 
 ### 1.2 UniversalProfileInitPostDeploymentModule
 
 Called by LSP23 after deploying a UP + KeyManager proxy pair. Sets initial data keys via `delegatecall` on the UP, then transfers ownership to the KeyManager. See [deployment details](./packages/lsp23-contracts/contracts/modules/deployment-UP-init-module.md).
 
-| Field | Value |
-| ----- | ----- |
-| Expected address | `0x000000000066093407b6704B89793beFfD0D8F00` |
-| Salt | `0x12a6712f113536d8b01d99f72ce168c7e10901240d73e80eeb821d01aa4c2b1a` |
-| Compiler | solc 0.8.17, 9,999,999 optimization runs |
+| Field            | Value                                                                |
+| ---------------- | -------------------------------------------------------------------- |
+| Expected address | `0x000000000066093407b6704B89793beFfD0D8F00`                         |
+| Salt             | `0x12a6712f113536d8b01d99f72ce168c7e10901240d73e80eeb821d01aa4c2b1a` |
+| Compiler         | solc 0.8.17, 9,999,999 optimization runs                             |
 
 ### 1.3 UniversalProfilePostDeploymentModule
 
 Same role as above, but for non-proxy (direct) UP deployments. See [deployment details](./packages/lsp23-contracts/contracts/modules/deployment-UP-module.md).
 
-| Field | Value |
-| ----- | ----- |
-| Expected address | `0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7` |
-| Salt | `0x42ff55d7957589c62da54a4368b10a2bc549f2038bbb6880ec6b3e0ecae2ba58` |
-| Compiler | solc 0.8.17, 9,999,999 optimization runs |
+| Field            | Value                                                                |
+| ---------------- | -------------------------------------------------------------------- |
+| Expected address | `0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7`                         |
+| Salt             | `0x42ff55d7957589c62da54a4368b10a2bc549f2038bbb6880ec6b3e0ecae2ba58` |
+| Compiler         | solc 0.8.17, 9,999,999 optimization runs                             |
 
 **Verify each deployment:**
 
@@ -122,19 +156,21 @@ Implementation contracts are base contracts behind ERC-1167 minimal proxies. Eac
 
 All implementation contracts use the same salt and deployment pattern:
 
-| Field | Value |
-| ----- | ----- |
-| Salt | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
-| Compiler | solc 0.8.17, 1,000 optimization runs |
+| Field    | Value                                                                |
+| -------- | -------------------------------------------------------------------- |
+| Salt     | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| Compiler | solc 0.8.17, 1,000 optimization runs                                 |
 
 Deploy each by extracting its creation bytecode from `deployments/contracts.json` and sending `salt + creationBytecode` to the Nick Factory (same pattern as singletons).
 
 ### Contract Details
 
 **UniversalProfileInit** — Proxy-deployable Universal Profile (ERC725Account + LSP1 + LSP3).
+
 - Initialization: `initialize(address initialOwner)`
 
 **LSP6KeyManagerInit** — Proxy-deployable Key Manager (permission controller for ERC725Account).
+
 - Initialization: `initialize(address target_)` where `target_` is the UP address
 
 **LSP1UniversalReceiverDelegateUP** — Stateless delegate that auto-registers LSP5 ReceivedAssets and LSP10 ReceivedVaults data keys. No initialization needed.
@@ -149,11 +185,14 @@ Once singletons and implementations are deployed, create Universal Profile + Key
 
 ```solidity
 function deployERC1167Proxies(
-    PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,
-    SecondaryContractDeploymentInit calldata secondaryContractDeploymentInit,
-    address postDeploymentModule,
-    bytes calldata postDeploymentModuleCalldata
-) external payable returns (address primaryContractAddress, address secondaryContractAddress);
+  PrimaryContractDeploymentInit calldata primaryContractDeploymentInit,
+  SecondaryContractDeploymentInit calldata secondaryContractDeploymentInit,
+  address postDeploymentModule,
+  bytes calldata postDeploymentModuleCalldata
+)
+  external
+  payable
+  returns (address primaryContractAddress, address secondaryContractAddress);
 ```
 
 ### How it works
@@ -168,17 +207,18 @@ function deployERC1167Proxies(
 
 ### Parameters
 
-| Parameter | Value |
-| --------- | ----- |
-| `primaryContractDeploymentInit.implementationContract` | UniversalProfileInit address |
-| `primaryContractDeploymentInit.initializationCalldata` | `abi.encodeWithSignature("initialize(address)", postDeploymentModuleAddress)` |
-| `secondaryContractDeploymentInit.implementationContract` | LSP6KeyManagerInit address |
-| `secondaryContractDeploymentInit.initializationCalldata` | `abi.encodeWithSignature("initialize(address)")` — UP address appended by LSP23 |
-| `secondaryContractDeploymentInit.addPrimaryContractAddress` | `true` |
-| `postDeploymentModule` | `0x000000000066093407b6704B89793beFfD0D8F00` |
-| `postDeploymentModuleCalldata` | ABI-encoded `(bytes32[], bytes[])` — the data keys/values to set on the UP |
+| Parameter                                                   | Value                                                                           |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `primaryContractDeploymentInit.implementationContract`      | UniversalProfileInit address                                                    |
+| `primaryContractDeploymentInit.initializationCalldata`      | `abi.encodeWithSignature("initialize(address)", postDeploymentModuleAddress)`   |
+| `secondaryContractDeploymentInit.implementationContract`    | LSP6KeyManagerInit address                                                      |
+| `secondaryContractDeploymentInit.initializationCalldata`    | `abi.encodeWithSignature("initialize(address)")` — UP address appended by LSP23 |
+| `secondaryContractDeploymentInit.addPrimaryContractAddress` | `true`                                                                          |
+| `postDeploymentModule`                                      | `0x000000000066093407b6704B89793beFfD0D8F00`                                    |
+| `postDeploymentModuleCalldata`                              | ABI-encoded `(bytes32[], bytes[])` — the data keys/values to set on the UP      |
 
 The `postDeploymentModuleCalldata` typically sets:
+
 - `SupportedStandards:LSP3Profile` — profile metadata
 - `LSP1UniversalReceiverDelegate` — points to the LSP1 delegate address
 - `AddressPermissions:Permissions:<controller>` — permissions for the controller EOA
@@ -214,12 +254,12 @@ forge verify-contract \
 
 ### Compiler Settings
 
-| Contract | solc | Optimization Runs |
-| -------- | ---- | ----------------- |
-| LSP23LinkedContractsFactory | 0.8.17 | 1,000 |
-| UniversalProfileInitPostDeploymentModule | 0.8.17 | 9,999,999 |
-| UniversalProfilePostDeploymentModule | 0.8.17 | 9,999,999 |
-| All implementation contracts | 0.8.17 | 1,000 |
+| Contract                                 | solc   | Optimization Runs |
+| ---------------------------------------- | ------ | ----------------- |
+| LSP23LinkedContractsFactory              | 0.8.17 | 1,000             |
+| UniversalProfileInitPostDeploymentModule | 0.8.17 | 9,999,999         |
+| UniversalProfilePostDeploymentModule     | 0.8.17 | 9,999,999         |
+| All implementation contracts             | 0.8.17 | 1,000             |
 
 ---
 
@@ -232,12 +272,12 @@ The JSON file contains all contract build artifacts needed for deployment.
 - **Singletons** have a flat structure: `type`, `version`, `address`, `salt`, `compilerSettings`, `creationBytecode`, `bytecode`
 - **Implementation contracts** have a `versions` array, each entry with: `version`, `address`, `salt`, `compilerSettings`, `creationBytecode`, `bytecode`, `releaseurl`
 
-| Field | Description |
-| ----- | ----------- |
+| Field              | Description                                                                      |
+| ------------------ | -------------------------------------------------------------------------------- |
 | `creationBytecode` | Full contract creation bytecode — concatenate with salt and send to Nick Factory |
-| `bytecode` | Runtime bytecode — what ends up on-chain after deployment, used for verification |
-| `salt` | The CREATE2 salt for deterministic address computation |
-| `compilerSettings` | Solidity compiler version and optimization settings |
+| `bytecode`         | Runtime bytecode — what ends up on-chain after deployment, used for verification |
+| `salt`             | The CREATE2 salt for deterministic address computation                           |
+| `compilerSettings` | Solidity compiler version and optimization settings                              |
 
 ## Further Reading
 
