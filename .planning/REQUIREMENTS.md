@@ -100,55 +100,55 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BASE-01 | — | Pending |
-| BASE-02 | — | Pending |
-| BASE-03 | — | Pending |
-| BASE-04 | — | Pending |
-| BASE-05 | — | Pending |
-| BASE-06 | — | Pending |
-| BASE-07 | — | Pending |
-| BASE-08 | — | Pending |
-| BASE-09 | — | Pending |
-| BASE-10 | — | Pending |
-| BASE-11 | — | Pending |
-| BASE-12 | — | Pending |
-| BASE-13 | — | Pending |
-| BASE-14 | — | Pending |
-| BASE-15 | — | Pending |
-| BASE-16 | — | Pending |
-| BASE-17 | — | Pending |
-| BASE-18 | — | Pending |
-| BASE-19 | — | Pending |
-| EXT7-01 | — | Pending |
-| EXT7-02 | — | Pending |
-| EXT7-03 | — | Pending |
-| EXT7-04 | — | Pending |
-| EXT7-05 | — | Pending |
-| EXT7-06 | — | Pending |
-| EXT8-01 | — | Pending |
-| EXT8-02 | — | Pending |
-| EXT8-03 | — | Pending |
-| EXT8-04 | — | Pending |
-| EXT8-05 | — | Pending |
-| EXT8-06 | — | Pending |
-| EXT8-07 | — | Pending |
-| TEST-01 | — | Pending |
-| TEST-02 | — | Pending |
-| TEST-03 | — | Pending |
-| TEST-04 | — | Pending |
-| TEST-05 | — | Pending |
-| TEST-06 | — | Pending |
-| TEST-07 | — | Pending |
-| TEST-08 | — | Pending |
-| MIGR-01 | — | Pending |
-| MIGR-02 | — | Pending |
-| MIGR-03 | — | Pending |
+| BASE-01 | Phase 1 | Pending |
+| BASE-02 | Phase 1 | Pending |
+| BASE-03 | Phase 1 | Pending |
+| BASE-04 | Phase 1 | Pending |
+| BASE-05 | Phase 1 | Pending |
+| BASE-06 | Phase 1 | Pending |
+| BASE-07 | Phase 1 | Pending |
+| BASE-08 | Phase 1 | Pending |
+| BASE-09 | Phase 1 | Pending |
+| BASE-10 | Phase 1 | Pending |
+| BASE-11 | Phase 1 | Pending |
+| BASE-12 | Phase 1 | Pending |
+| BASE-13 | Phase 1 | Pending |
+| BASE-14 | Phase 1 | Pending |
+| BASE-15 | Phase 1 | Pending |
+| BASE-16 | Phase 1 | Pending |
+| BASE-17 | Phase 1 | Pending |
+| BASE-18 | Phase 1 | Pending |
+| BASE-19 | Phase 1 | Pending |
+| EXT7-01 | Phase 3 | Pending |
+| EXT7-02 | Phase 3 | Pending |
+| EXT7-03 | Phase 3 | Pending |
+| EXT7-04 | Phase 3 | Pending |
+| EXT7-05 | Phase 3 | Pending |
+| EXT7-06 | Phase 3 | Pending |
+| EXT8-01 | Phase 2 | Pending |
+| EXT8-02 | Phase 4 | Pending |
+| EXT8-03 | Phase 4 | Pending |
+| EXT8-04 | Phase 4 | Pending |
+| EXT8-05 | Phase 4 | Pending |
+| EXT8-06 | Phase 4 | Pending |
+| EXT8-07 | Phase 4 | Pending |
+| TEST-01 | Phase 1 | Pending |
+| TEST-02 | Phase 1 | Pending |
+| TEST-03 | Phase 1 | Pending |
+| TEST-04 | Phase 3 | Pending |
+| TEST-05 | Phase 3 | Pending |
+| TEST-06 | Phase 3 | Pending |
+| TEST-07 | Phase 4 | Pending |
+| TEST-08 | Phase 5 | Pending |
+| MIGR-01 | Phase 5 | Pending |
+| MIGR-02 | Phase 5 | Pending |
+| MIGR-03 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 42 total
-- Mapped to phases: 0
-- Unmapped: 42
+- v1 requirements: 43 total
+- Mapped to phases: 43
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-27 after initial definition*
+*Last updated: 2026-02-27 after roadmap creation*
