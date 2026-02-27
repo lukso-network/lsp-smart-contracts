@@ -1,0 +1,154 @@
+# Requirements: AccessControlExtended
+
+**Defined:** 2026-02-27
+**Core Value:** Provide a standardized, OZ-backed role management system that extensions can inherit to gate privileged actions and bypass restrictions
+
+## v1 Requirements
+
+Requirements for initial release. Each maps to roadmap phases.
+
+### Base Contract
+
+- [ ] **BASE-01**: AccessControlExtended extends OZ AccessControlEnumerable with three storage mappings (forward role-to-members, reverse address-to-roles, auxiliary bytes per role-address)
+- [ ] **BASE-02**: `grantRole(bytes32, address)` and `revokeRole(bytes32, address)` follow OZ standard parameter order and behavior
+- [ ] **BASE-03**: `hasRole(bytes32, address)` returns true if account holds the specified role
+- [ ] **BASE-04**: `getRoleMember(bytes32, uint256)` and `getRoleMemberCount(bytes32)` enumerate members of a role (forward lookup)
+- [ ] **BASE-05**: `getRolesOf(address)` returns all roles assigned to a given address (reverse lookup via Bytes32Set)
+- [ ] **BASE-06**: `setRoleData(bytes32, address, bytes)` stores arbitrary data for a role-address pair, reverting if account does not hold the role
+- [ ] **BASE-07**: `getRoleData(bytes32, address)` retrieves auxiliary data for a role-address pair
+- [ ] **BASE-08**: `grantRoleWithData(bytes32, address, bytes)` atomically grants a role and sets auxiliary data in one transaction
+- [ ] **BASE-09**: Revoking a role automatically clears associated auxiliary data and emits `RoleDataChanged`
+- [ ] **BASE-10**: `RoleDataChanged(bytes32 indexed role, address indexed account, bytes data)` event emitted on any data mutation
+- [ ] **BASE-11**: `renounceRole(bytes32, address)` allows an account to self-revoke a role (OZ standard)
+- [ ] **BASE-12**: `onlyRole(bytes32)` modifier available for extensions to gate function access
+- [ ] **BASE-13**: `DEFAULT_ADMIN_ROLE` granted to contract owner in constructor/initializer
+- [ ] **BASE-14**: `IAccessControlExtended` interface extending `IAccessControlEnumerable` with custom functions, registered via ERC-165
+- [ ] **BASE-15**: `supportsInterface` correctly returns true for `IAccessControl`, `IAccessControlEnumerable`, and `IAccessControlExtended`
+- [ ] **BASE-16**: `AccessControlExtendedAbstract` (constructor-based variant) compiles and works with LSP7DigitalAsset inheritance chain
+- [ ] **BASE-17**: `AccessControlExtendedInitAbstract` (proxy/initializable variant) uses proper storage gaps and `onlyInitializing` modifier
+- [ ] **BASE-18**: `AccessControlExtendedConstants.sol` defines shared role constants (if any) and interface IDs
+- [ ] **BASE-19**: `AccessControlExtendedErrors.sol` defines custom errors following codebase convention
+
+### LSP7 Extension Updates
+
+- [ ] **EXT7-01**: LSP7NonTransferable checks `hasRole(_TRANSFER_ROLE, from)` in `_beforeTokenTransfer` to allow role holders to bypass non-transferable restriction
+- [ ] **EXT7-02**: LSP7CappedBalance checks `hasRole(_UNCAPPED_ROLE, to)` in `_beforeTokenTransfer` to allow role holders to exceed per-address balance cap
+- [ ] **EXT7-03**: LSP7Mintable uses `onlyRole(_MINTER_ROLE)` or `hasRole` check instead of `onlyOwner` for minting
+- [ ] **EXT7-04**: Both Abstract and InitAbstract variants updated for each LSP7 extension
+- [ ] **EXT7-05**: LSP7CustomizableToken composite contract updated with resolved `supportsInterface` and `_beforeTokenTransfer` diamond
+- [ ] **EXT7-06**: Updated interfaces for modified LSP7 extension contracts
+
+### LSP8 Extension Updates
+
+- [ ] **EXT8-01**: AccessControlExtended base contract duplicated in lsp8-contracts package with LSP8-specific imports
+- [ ] **EXT8-02**: LSP8NonTransferable checks `hasRole(_TRANSFER_ROLE, from)` in `_beforeTokenTransfer` to allow role holders to bypass non-transferable restriction
+- [ ] **EXT8-03**: LSP8CappedBalance checks `hasRole(_UNCAPPED_ROLE, to)` in `_beforeTokenTransfer` to allow role holders to exceed per-address balance cap
+- [ ] **EXT8-04**: LSP8Mintable uses `onlyRole(_MINTER_ROLE)` or `hasRole` check instead of `onlyOwner` for minting
+- [ ] **EXT8-05**: Both Abstract and InitAbstract variants updated for each LSP8 extension
+- [ ] **EXT8-06**: LSP8 composite contract updated (if exists) with resolved diamond
+- [ ] **EXT8-07**: Updated interfaces for modified LSP8 extension contracts
+
+### Testing
+
+- [ ] **TEST-01**: Foundry tests for AccessControlExtended base contract: grant, revoke, hasRole, enumerate, reverse lookup, auxiliary data, grant-with-data, data cleanup on revoke
+- [ ] **TEST-02**: Foundry tests for `supportsInterface` returning correct values for all three interface IDs
+- [ ] **TEST-03**: Foundry tests for InitAbstract variant: initialization, double-initialization revert, storage gap verification
+- [ ] **TEST-04**: Foundry tests for LSP7NonTransferable with AccessControlExtended: normal restriction + role bypass
+- [ ] **TEST-05**: Foundry tests for LSP7CappedBalance with AccessControlExtended: normal cap enforcement + role bypass
+- [ ] **TEST-06**: Foundry tests for LSP7Mintable with AccessControlExtended: role-gated minting
+- [ ] **TEST-07**: Foundry tests for LSP8 equivalents of all extension tests
+- [ ] **TEST-08**: Integration tests for composite contract with all extensions combined
+
+### Migration
+
+- [ ] **MIGR-01**: Delete `packages/lsp7-contracts/contracts/extensions/LSP7RoleOperators/` directory entirely
+- [ ] **MIGR-02**: Remove all imports and references to LSP7RoleOperators from the codebase
+- [ ] **MIGR-03**: Update any existing tests that reference RoleOperators to use AccessControlExtended
+
+## v2 Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+### Base Contract Enhancements
+
+- **BASE-V2-01**: Paginated reverse lookup `getRolesOfByIndex(address, start, end)` for gas-safe enumeration
+- **BASE-V2-02**: `getRoleCountOf(address)` for efficient existence checks before iterating
+
+### Additional Extensions
+
+- **EXT-V2-01**: CappedSupply extension integration with role-based supply cap bypass
+- **EXT-V2-02**: Burnable extension integration with role-gated burn permissions
+- **EXT-V2-03**: `AccessControlDefaultAdminRules` integration for 2-step admin transfer
+
+## Out of Scope
+
+Explicitly excluded. Documented to prevent scope creep.
+
+| Feature | Reason |
+|---------|--------|
+| LSP1 Universal Receiver notifications on role changes | Adds gas overhead and reentrancy vectors; OZ standard events are sufficient |
+| Batch role operations (grantRoles, revokeRoles) | Keep it simple; use multicall wrapper if needed |
+| Predefined roles in base contract | Base must be generic; extensions define their own role constants |
+| Role expiration / time-based roles | Encode expiry in auxiliary data instead; avoids per-hasRole timestamp check overhead |
+| Cross-contract role sharing | Requires shared registry; out of scope since base is duplicated per package |
+| Role delegation | Fundamentally changes security model; use grant/revoke for permanent access |
+| Shared npm package for AccessControlExtended | Base contract duplicated inline; revisit only if drift proves unmanageable |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| BASE-01 | — | Pending |
+| BASE-02 | — | Pending |
+| BASE-03 | — | Pending |
+| BASE-04 | — | Pending |
+| BASE-05 | — | Pending |
+| BASE-06 | — | Pending |
+| BASE-07 | — | Pending |
+| BASE-08 | — | Pending |
+| BASE-09 | — | Pending |
+| BASE-10 | — | Pending |
+| BASE-11 | — | Pending |
+| BASE-12 | — | Pending |
+| BASE-13 | — | Pending |
+| BASE-14 | — | Pending |
+| BASE-15 | — | Pending |
+| BASE-16 | — | Pending |
+| BASE-17 | — | Pending |
+| BASE-18 | — | Pending |
+| BASE-19 | — | Pending |
+| EXT7-01 | — | Pending |
+| EXT7-02 | — | Pending |
+| EXT7-03 | — | Pending |
+| EXT7-04 | — | Pending |
+| EXT7-05 | — | Pending |
+| EXT7-06 | — | Pending |
+| EXT8-01 | — | Pending |
+| EXT8-02 | — | Pending |
+| EXT8-03 | — | Pending |
+| EXT8-04 | — | Pending |
+| EXT8-05 | — | Pending |
+| EXT8-06 | — | Pending |
+| EXT8-07 | — | Pending |
+| TEST-01 | — | Pending |
+| TEST-02 | — | Pending |
+| TEST-03 | — | Pending |
+| TEST-04 | — | Pending |
+| TEST-05 | — | Pending |
+| TEST-06 | — | Pending |
+| TEST-07 | — | Pending |
+| TEST-08 | — | Pending |
+| MIGR-01 | — | Pending |
+| MIGR-02 | — | Pending |
+| MIGR-03 | — | Pending |
+
+**Coverage:**
+- v1 requirements: 42 total
+- Mapped to phases: 0
+- Unmapped: 42
+
+---
+*Requirements defined: 2026-02-27*
+*Last updated: 2026-02-27 after initial definition*
