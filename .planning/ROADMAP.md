@@ -25,8 +25,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Depends on**: Nothing (first phase)
 **Requirements**: BASE-01, BASE-02, BASE-03, BASE-04, BASE-05, BASE-06, BASE-07, BASE-08, BASE-09, BASE-10, BASE-11, BASE-12, BASE-13, BASE-14, BASE-15, BASE-16, BASE-17, BASE-18, BASE-19, TEST-01, TEST-02, TEST-03
 **Success Criteria** (what must be TRUE):
-  1. A developer can grant, revoke, and check roles using OZ-standard function signatures (`grantRole(bytes32, address)`, `hasRole(bytes32, address)`) and the contract compiles under Solidity 0.8.28
-  2. A developer can call `getRolesOf(address)` to get all roles for an address, `grantRoleWithData` to atomically grant a role with metadata, and `getRoleData`/`setRoleData` for auxiliary data -- and revoking a role automatically clears its associated data
+  1. A developer can grant, revoke, and check roles using OZ-standard function signatures (`grantRole(bytes32, address)`, `hasRole(bytes32, address)`) and the contract compiles under Solidity 0.8.27
+  2. A developer can call `rolesOf(address)` to get all roles for an address, `grantRoleWithData` to atomically grant a role with metadata, and `getRoleData`/`setRoleData` for auxiliary data -- and revoking a role automatically clears its associated data
   3. Both Abstract (constructor) and InitAbstract (proxy) variants exist, the InitAbstract variant reverts on double initialization, and `supportsInterface` returns true for `IAccessControl`, `IAccessControlEnumerable`, and `IAccessControlExtended`
   4. All Foundry tests pass: role grant/revoke/enumerate, reverse lookup, auxiliary data lifecycle, interface detection, and InitAbstract storage safety
 **Plans**: 2 plans

@@ -13,8 +13,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **BASE-02**: `grantRole(bytes32, address)` and `revokeRole(bytes32, address)` follow OZ standard parameter order and behavior
 - [ ] **BASE-03**: `hasRole(bytes32, address)` returns true if account holds the specified role
 - [ ] **BASE-04**: `getRoleMember(bytes32, uint256)` and `getRoleMemberCount(bytes32)` enumerate members of a role (forward lookup)
-- [ ] **BASE-05**: `getRolesOf(address)` returns all roles assigned to a given address (reverse lookup via Bytes32Set)
-- [ ] **BASE-06**: `setRoleData(bytes32, address, bytes)` stores arbitrary data for a role-address pair, reverting if account does not hold the role
+- [ ] **BASE-05**: `rolesOf(address)` returns all roles assigned to a given address (reverse lookup via Bytes32Set)
+- [ ] **BASE-06**: `setRoleData(bytes32, address, bytes)` stores arbitrary data for a role-address pair; allows pre-configuration without requiring the account to hold the role; requires admin authority (owner, `DEFAULT_ADMIN_ROLE`, or role's admin)
 - [ ] **BASE-07**: `getRoleData(bytes32, address)` retrieves auxiliary data for a role-address pair
 - [ ] **BASE-08**: `grantRoleWithData(bytes32, address, bytes)` atomically grants a role and sets auxiliary data in one transaction
 - [ ] **BASE-09**: Revoking a role automatically clears associated auxiliary data and emits `RoleDataChanged`
