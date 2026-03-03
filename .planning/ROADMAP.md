@@ -29,11 +29,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A developer can call `getRolesOf(address)` to get all roles for an address, `grantRoleWithData` to atomically grant a role with metadata, and `getRoleData`/`setRoleData` for auxiliary data -- and revoking a role automatically clears its associated data
   3. Both Abstract (constructor) and InitAbstract (proxy) variants exist, the InitAbstract variant reverts on double initialization, and `supportsInterface` returns true for `IAccessControl`, `IAccessControlEnumerable`, and `IAccessControlExtended`
   4. All Foundry tests pass: role grant/revoke/enumerate, reverse lookup, auxiliary data lifecycle, interface detection, and InitAbstract storage safety
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md -- Base contract implementation (interface, errors, constants, Abstract, InitAbstract)
+- [ ] 01-02-PLAN.md -- Foundry test suite for AccessControlExtended (Abstract + InitAbstract)
 
 ### Phase 2: LSP8 Package Duplication
 **Goal**: An identical AccessControlExtended base contract exists in the LSP8 package with LSP8-specific imports, verified by passing the same Foundry tests
