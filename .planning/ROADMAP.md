@@ -12,7 +12,7 @@ This project replaces the custom `LSP7RoleOperators` system with `AccessControlE
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Base Contract** - AccessControlExtended implementation with full Foundry test coverage in the LSP7 package
+- [x] **Phase 1: Base Contract** - AccessControlExtended implementation with full Foundry test coverage in the LSP7 package (completed 2026-03-03)
 - [ ] **Phase 2: LSP8 Package Duplication** - Copy base contract to lsp8-contracts with adjusted imports
 - [ ] **Phase 3: LSP7 Extension Updates** - Update NonTransferable, CappedBalance, and Mintable extensions to use role-based access control
 - [ ] **Phase 4: LSP8 Extension Updates** - Mirror LSP7 extension changes for all LSP8 equivalents
@@ -101,7 +101,7 @@ Note: Phase 3 depends on Phase 1 and Phase 4 depends on Phase 2, so 3 and 4 coul
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Base Contract | 0/2 | Not started | - |
+| 1. Base Contract | 0/2 | Complete    | 2026-03-03 |
 | 2. LSP8 Package Duplication | 0/1 | Not started | - |
 | 3. LSP7 Extension Updates | 0/3 | Not started | - |
 | 4. LSP8 Extension Updates | 0/3 | Not started | - |
