@@ -9,25 +9,25 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Base Contract
 
-- [ ] **BASE-01**: AccessControlExtended extends OZ AccessControlEnumerable with three storage mappings (forward role-to-members, reverse address-to-roles, auxiliary bytes per role-address)
-- [ ] **BASE-02**: `grantRole(bytes32, address)` and `revokeRole(bytes32, address)` follow OZ standard parameter order and behavior
-- [ ] **BASE-03**: `hasRole(bytes32, address)` returns true if account holds the specified role
-- [ ] **BASE-04**: `getRoleMember(bytes32, uint256)` and `getRoleMemberCount(bytes32)` enumerate members of a role (forward lookup)
-- [ ] **BASE-05**: `rolesOf(address)` returns all roles assigned to a given address (reverse lookup via Bytes32Set)
-- [ ] **BASE-06**: `setRoleData(bytes32, address, bytes)` stores arbitrary data for a role-address pair; allows pre-configuration without requiring the account to hold the role; requires admin authority (owner, `DEFAULT_ADMIN_ROLE`, or role's admin)
-- [ ] **BASE-07**: `getRoleData(bytes32, address)` retrieves auxiliary data for a role-address pair
-- [ ] **BASE-08**: `grantRoleWithData(bytes32, address, bytes)` atomically grants a role and sets auxiliary data in one transaction
-- [ ] **BASE-09**: Revoking a role automatically clears associated auxiliary data and emits `RoleDataChanged`
-- [ ] **BASE-10**: `RoleDataChanged(bytes32 indexed role, address indexed account, bytes data)` event emitted on any data mutation
-- [ ] **BASE-11**: `renounceRole(bytes32, address)` allows an account to self-revoke a role (OZ standard)
-- [ ] **BASE-12**: `onlyRole(bytes32)` modifier available for extensions to gate function access
-- [ ] **BASE-13**: `DEFAULT_ADMIN_ROLE` granted to contract owner in constructor/initializer
-- [ ] **BASE-14**: `IAccessControlExtended` interface extending `IAccessControlEnumerable` with custom functions, registered via ERC-165
-- [ ] **BASE-15**: `supportsInterface` correctly returns true for `IAccessControl`, `IAccessControlEnumerable`, and `IAccessControlExtended`
-- [ ] **BASE-16**: `AccessControlExtendedAbstract` (constructor-based variant) compiles and works with LSP7DigitalAsset inheritance chain
-- [ ] **BASE-17**: `AccessControlExtendedInitAbstract` (proxy/initializable variant) uses proper storage gaps and `onlyInitializing` modifier
-- [ ] **BASE-18**: `AccessControlExtendedConstants.sol` defines shared role constants (if any) and interface IDs
-- [ ] **BASE-19**: `AccessControlExtendedErrors.sol` defines custom errors following codebase convention
+- [x] **BASE-01**: AccessControlExtended extends OZ AccessControlEnumerable with three storage mappings (forward role-to-members, reverse address-to-roles, auxiliary bytes per role-address)
+- [x] **BASE-02**: `grantRole(bytes32, address)` and `revokeRole(bytes32, address)` follow OZ standard parameter order and behavior
+- [x] **BASE-03**: `hasRole(bytes32, address)` returns true if account holds the specified role
+- [x] **BASE-04**: `getRoleMember(bytes32, uint256)` and `getRoleMemberCount(bytes32)` enumerate members of a role (forward lookup)
+- [x] **BASE-05**: `rolesOf(address)` returns all roles assigned to a given address (reverse lookup via Bytes32Set)
+- [x] **BASE-06**: `setRoleData(bytes32, address, bytes)` stores arbitrary data for a role-address pair; allows pre-configuration without requiring the account to hold the role; requires admin authority (owner, `DEFAULT_ADMIN_ROLE`, or role's admin)
+- [x] **BASE-07**: `getRoleData(bytes32, address)` retrieves auxiliary data for a role-address pair
+- [x] **BASE-08**: `grantRoleWithData(bytes32, address, bytes)` atomically grants a role and sets auxiliary data in one transaction
+- [x] **BASE-09**: Revoking a role automatically clears associated auxiliary data and emits `RoleDataChanged`
+- [x] **BASE-10**: `RoleDataChanged(bytes32 indexed role, address indexed account, bytes data)` event emitted on any data mutation
+- [x] **BASE-11**: `renounceRole(bytes32, address)` allows an account to self-revoke a role (OZ standard)
+- [x] **BASE-12**: `onlyRole(bytes32)` modifier available for extensions to gate function access
+- [x] **BASE-13**: `DEFAULT_ADMIN_ROLE` granted to contract owner in constructor/initializer
+- [x] **BASE-14**: `IAccessControlExtended` interface extending `IAccessControlEnumerable` with custom functions, registered via ERC-165
+- [x] **BASE-15**: `supportsInterface` correctly returns true for `IAccessControl`, `IAccessControlEnumerable`, and `IAccessControlExtended`
+- [x] **BASE-16**: `AccessControlExtendedAbstract` (constructor-based variant) compiles and works with LSP7DigitalAsset inheritance chain
+- [x] **BASE-17**: `AccessControlExtendedInitAbstract` (proxy/initializable variant) uses proper storage gaps and `onlyInitializing` modifier
+- [x] **BASE-18**: `AccessControlExtendedConstants.sol` defines shared role constants (if any) and interface IDs
+- [x] **BASE-19**: `AccessControlExtendedErrors.sol` defines custom errors following codebase convention
 
 ### LSP7 Extension Updates
 
@@ -100,25 +100,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BASE-01 | Phase 1 | Pending |
-| BASE-02 | Phase 1 | Pending |
-| BASE-03 | Phase 1 | Pending |
-| BASE-04 | Phase 1 | Pending |
-| BASE-05 | Phase 1 | Pending |
-| BASE-06 | Phase 1 | Pending |
-| BASE-07 | Phase 1 | Pending |
-| BASE-08 | Phase 1 | Pending |
-| BASE-09 | Phase 1 | Pending |
-| BASE-10 | Phase 1 | Pending |
-| BASE-11 | Phase 1 | Pending |
-| BASE-12 | Phase 1 | Pending |
-| BASE-13 | Phase 1 | Pending |
-| BASE-14 | Phase 1 | Pending |
-| BASE-15 | Phase 1 | Pending |
-| BASE-16 | Phase 1 | Pending |
-| BASE-17 | Phase 1 | Pending |
-| BASE-18 | Phase 1 | Pending |
-| BASE-19 | Phase 1 | Pending |
+| BASE-01 | Phase 1 | Complete |
+| BASE-02 | Phase 1 | Complete |
+| BASE-03 | Phase 1 | Complete |
+| BASE-04 | Phase 1 | Complete |
+| BASE-05 | Phase 1 | Complete |
+| BASE-06 | Phase 1 | Complete |
+| BASE-07 | Phase 1 | Complete |
+| BASE-08 | Phase 1 | Complete |
+| BASE-09 | Phase 1 | Complete |
+| BASE-10 | Phase 1 | Complete |
+| BASE-11 | Phase 1 | Complete |
+| BASE-12 | Phase 1 | Complete |
+| BASE-13 | Phase 1 | Complete |
+| BASE-14 | Phase 1 | Complete |
+| BASE-15 | Phase 1 | Complete |
+| BASE-16 | Phase 1 | Complete |
+| BASE-17 | Phase 1 | Complete |
+| BASE-18 | Phase 1 | Complete |
+| BASE-19 | Phase 1 | Complete |
 | EXT7-01 | Phase 3 | Pending |
 | EXT7-02 | Phase 3 | Pending |
 | EXT7-03 | Phase 3 | Pending |
