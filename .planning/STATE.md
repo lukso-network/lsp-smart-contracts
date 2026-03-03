@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 Phase: 1 of 5 (Base Contract)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-03-03 -- Completed 01-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase Complete
+Last activity: 2026-03-03 -- Completed 01-02-PLAN.md
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
+- Total plans completed: 2
 - Average duration: 5min
-- Total execution time: 0.08 hours
+- Total execution time: 0.17 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-base-contract | 1 | 5min | 5min |
+| 01-base-contract | 2 | 10min | 5min |
 
 **Recent Trend:**
-- Last 5 plans: 5min
-- Trend: -
+- Last 5 plans: 5min, 5min
+- Trend: stable
 
 *Updated after each plan completion*
 
@@ -52,6 +52,8 @@ Recent decisions affecting current work:
 - [01-01]: grantRoleWithData updates data silently if role already held
 - [01-01]: _revokeRole auto-clears auxiliary data (BASE-09)
 - [01-01]: Error prefix uses full AccessControlExtended name
+- [01-02]: Used ERC1967Proxy from OZ for proxy-based InitAbstract testing
+- [01-02]: Removed view modifier from test functions due to via_ir + assert compatibility
 
 ### Pending Todos
 
@@ -67,5 +69,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-03
-Stopped at: Completed 01-01-PLAN.md
+Stopped at: Completed 01-02-PLAN.md (Phase 1 complete)
 Resume file: None

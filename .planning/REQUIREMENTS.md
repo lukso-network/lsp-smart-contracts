@@ -50,9 +50,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Testing
 
-- [ ] **TEST-01**: Foundry tests for AccessControlExtended base contract: grant, revoke, hasRole, enumerate, reverse lookup, auxiliary data, grant-with-data, data cleanup on revoke
-- [ ] **TEST-02**: Foundry tests for `supportsInterface` returning correct values for all three interface IDs
-- [ ] **TEST-03**: Foundry tests for InitAbstract variant: initialization, double-initialization revert, storage gap verification
+- [x] **TEST-01**: Foundry tests for AccessControlExtended base contract: grant, revoke, hasRole, enumerate, reverse lookup, auxiliary data, grant-with-data, data cleanup on revoke
+- [x] **TEST-02**: Foundry tests for `supportsInterface` returning correct values for all three interface IDs
+- [x] **TEST-03**: Foundry tests for InitAbstract variant: initialization, double-initialization revert, storage gap verification
 - [ ] **TEST-04**: Foundry tests for LSP7NonTransferable with AccessControlExtended: normal restriction + role bypass
 - [ ] **TEST-05**: Foundry tests for LSP7CappedBalance with AccessControlExtended: normal cap enforcement + role bypass
 - [ ] **TEST-06**: Foundry tests for LSP7Mintable with AccessControlExtended: role-gated minting
@@ -132,9 +132,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXT8-05 | Phase 4 | Pending |
 | EXT8-06 | Phase 4 | Pending |
 | EXT8-07 | Phase 4 | Pending |
-| TEST-01 | Phase 1 | Pending |
-| TEST-02 | Phase 1 | Pending |
-| TEST-03 | Phase 1 | Pending |
+| TEST-01 | Phase 1 | Complete |
+| TEST-02 | Phase 1 | Complete |
+| TEST-03 | Phase 1 | Complete |
 | TEST-04 | Phase 3 | Pending |
 | TEST-05 | Phase 3 | Pending |
 | TEST-06 | Phase 3 | Pending |
