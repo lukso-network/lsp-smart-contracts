@@ -154,4 +154,7 @@ abi.ts
 
 # VSCode settings
 .vscode/
-.planning/
+# .planning/
+
+# AI
+.claude/
