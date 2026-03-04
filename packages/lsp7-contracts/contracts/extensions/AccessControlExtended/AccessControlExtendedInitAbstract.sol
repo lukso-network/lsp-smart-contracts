@@ -7,9 +7,7 @@ import {
 } from "../../LSP7DigitalAssetInitAbstract.sol";
 
 // interfaces
-import {
-    IAccessControlExtended
-} from "./IAccessControlExtended.sol";
+import {IAccessControlExtended} from "./IAccessControlExtended.sol";
 import {
     IAccessControl
 } from "@openzeppelin/contracts/access/IAccessControl.sol";
@@ -61,16 +59,19 @@ abstract contract AccessControlExtendedInitAbstract is
     // --- Storage
 
     /// @dev Mapping from role to its admin role.
-    mapping(bytes32 => bytes32) private _roleAdmins;
+    mapping(bytes32 role => bytes32 adminRole) private _roleAdmins;
 
     /// @dev Forward lookup: role -> set of member addresses.
-    mapping(bytes32 => EnumerableSet.AddressSet) private _roleMembers;
+    mapping(bytes32 role => EnumerableSet.AddressSet members)
+        private _roleMembers;
 
     /// @dev Reverse lookup: address -> set of roles held.
-    mapping(address => EnumerableSet.Bytes32Set) private _addressRoles;
+    mapping(address account => EnumerableSet.Bytes32Set rolesAssigned)
+        private _addressRoles;
 
     /// @dev Auxiliary data: role -> address -> bytes.
-    mapping(bytes32 => mapping(address => bytes)) private _roleData;
+    mapping(bytes32 role => mapping(address account => bytes roleData))
+        private _roleData;
 
     // --- Modifier
 
@@ -86,41 +87,42 @@ abstract contract AccessControlExtendedInitAbstract is
     // --- Initializer
 
     /**
-     * @dev Chained initializer. Initializes the LSP7 base and grants DEFAULT_ADMIN_ROLE.
+     * @dev Chained initializer. Initializes the LSP7 base and grants DEFAULT_ADMIN_ROLE to the initial owner,
+     * so they appear in enumeration (getRoleMember, rolesOf).
      *
      * @param name_ Token name.
      * @param symbol_ Token symbol.
-     * @param newOwner_ Initial owner who receives DEFAULT_ADMIN_ROLE.
+     * @param initialOwner_ Initial contract owner who also receives DEFAULT_ADMIN_ROLE.
      * @param lsp4TokenType_ The LSP4 token type.
      * @param isNonDivisible_ Whether the token is non-divisible.
      */
     function __AccessControlExtended_init(
         string memory name_,
         string memory symbol_,
-        address newOwner_,
+        address initialOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_
     ) internal virtual onlyInitializing {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
-            newOwner_,
+            initialOwner_,
             lsp4TokenType_,
             isNonDivisible_
         );
-        __AccessControlExtended_init_unchained(newOwner_);
+        __AccessControlExtended_init_unchained(initialOwner_);
     }
 
     /**
      * @dev Standalone initializer. Only grants DEFAULT_ADMIN_ROLE to the owner.
      * Use when the LSP7 base is already initialized through another path.
      *
-     * @param newOwner_ The owner who receives DEFAULT_ADMIN_ROLE.
+     * @param initialOwner_ The initial contract owner who also receives DEFAULT_ADMIN_ROLE.
      */
     function __AccessControlExtended_init_unchained(
-        address newOwner_
+        address initialOwner_
     ) internal virtual onlyInitializing {
-        _grantRole(DEFAULT_ADMIN_ROLE, newOwner_);
+        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
     }
 
     // --- ERC-165
@@ -150,22 +152,20 @@ abstract contract AccessControlExtendedInitAbstract is
     }
 
     /// @inheritdoc IAccessControl
-    function getRoleAdmin(
-        bytes32 role
-    ) public view virtual returns (bytes32) {
+    function getRoleAdmin(bytes32 role) public view virtual returns (bytes32) {
         return _roleAdmins[role];
     }
 
     /**
      * @inheritdoc IAccessControl
-     * @dev Grants `role` to `account`. The caller must hold the admin role for `role`
-     * (or be the contract owner / DEFAULT_ADMIN_ROLE holder).
+     * @dev Grants `role` to `account`.
+     *
+     * @custom:requirements The caller must hold the admin role for `role` (or be the contract owner, which has  DEFAULT_ADMIN_ROLE by default).
      */
     function grantRole(
         bytes32 role,
         address account
-    ) public virtual {
-        _checkRole(getRoleAdmin(role));
+    ) public virtual onlyRole(getRoleAdmin(role)) {
         _grantRole(role, account);
     }
 
@@ -177,8 +177,7 @@ abstract contract AccessControlExtendedInitAbstract is
     function revokeRole(
         bytes32 role,
         address account
-    ) public virtual {
-        _checkRole(getRoleAdmin(role));
+    ) public virtual onlyRole(getRoleAdmin(role)) {
         _revokeRole(role, account);
     }
 
@@ -187,17 +186,26 @@ abstract contract AccessControlExtendedInitAbstract is
      * @dev Allows `msg.sender` to renounce their own `role`. The `callerConfirmation`
      * parameter must equal `msg.sender` to prevent accidental renouncement (OZ pattern).
      * Renouncing triggers data cleanup per BASE-09.
+     *
+     * @custom:info Roles are often managed via {grantRole} and {revokeRole}.
+     * This function's purpose is to provide a mechanism for accounts to lose their privileges
+     * if they are compromised (such as when a trusted device is misplaced).
+     *
+     * If the calling account had been revoked `role`, emits a {RoleRevoked}
+     * event.
+     *
      */
     function renounceRole(
         bytes32 role,
         address callerConfirmation
     ) public virtual {
-        if (callerConfirmation != msg.sender) {
-            revert AccessControlExtendedCanOnlyRenounceForSelf(
+        require(
+            callerConfirmation == msg.sender,
+            AccessControlExtendedCanOnlyRenounceForSelf(
                 msg.sender,
                 callerConfirmation
-            );
-        }
+            )
+        );
         _revokeRole(role, msg.sender);
     }
 
@@ -237,8 +245,7 @@ abstract contract AccessControlExtendedInitAbstract is
         bytes32 role,
         address account,
         bytes calldata data
-    ) public virtual {
-        _checkRole(getRoleAdmin(role));
+    ) public virtual onlyRole(getRoleAdmin(role)) {
         _grantRole(role, account);
         if (data.length > 0) {
             _roleData[role][account] = data;
@@ -256,8 +263,7 @@ abstract contract AccessControlExtendedInitAbstract is
         bytes32 role,
         address account,
         bytes calldata data
-    ) public virtual {
-        _checkRole(getRoleAdmin(role));
+    ) public virtual onlyRole(getRoleAdmin(role)) {
         _roleData[role][account] = data;
         emit RoleDataChanged(role, account, data);
     }
@@ -278,11 +284,10 @@ abstract contract AccessControlExtendedInitAbstract is
      *
      * @custom:events {RoleGranted} if the role was newly granted.
      */
-    function _grantRole(
-        bytes32 role,
-        address account
-    ) internal virtual {
-        if (_roleMembers[role].add(account)) {
+    function _grantRole(bytes32 role, address account) internal virtual {
+        bool added = _roleMembers[role].add(account);
+
+        if (added) {
             _addressRoles[account].add(role);
             emit RoleGranted(role, account, msg.sender);
         }
@@ -296,11 +301,10 @@ abstract contract AccessControlExtendedInitAbstract is
      * - {RoleRevoked} if the role was revoked.
      * - {RoleDataChanged} if auxiliary data was cleared.
      */
-    function _revokeRole(
-        bytes32 role,
-        address account
-    ) internal virtual {
-        if (_roleMembers[role].remove(account)) {
+    function _revokeRole(bytes32 role, address account) internal virtual {
+        bool removed = _roleMembers[role].remove(account);
+
+        if (removed) {
             _addressRoles[account].remove(role);
             emit RoleRevoked(role, account, msg.sender);
 
@@ -322,16 +326,15 @@ abstract contract AccessControlExtendedInitAbstract is
 
     /**
      * @dev Checks that `account` has `role`, with three bypass paths:
+     *
+     * @custom:requirements
      * 1. `account == owner()` -- owner implicitly passes all checks
      * 2. `account` holds `DEFAULT_ADMIN_ROLE` -- root admin for all roles
      * 3. `account` holds `role` -- standard role check
      *
      * Reverts with {AccessControlExtendedUnauthorized} if none of the above hold.
      */
-    function _checkRole(
-        bytes32 role,
-        address account
-    ) internal view virtual {
+    function _checkRole(bytes32 role, address account) internal view virtual {
         // Owner implicitly passes all checks
         if (account == owner()) return;
 
@@ -339,9 +342,10 @@ abstract contract AccessControlExtendedInitAbstract is
         if (hasRole(DEFAULT_ADMIN_ROLE, account)) return;
 
         // Standard role check
-        if (!hasRole(role, account)) {
-            revert AccessControlExtendedUnauthorized(account, role);
-        }
+        require(
+            hasRole(role, account),
+            AccessControlExtendedUnauthorized(account, role)
+        );
     }
 
     /**
@@ -350,10 +354,7 @@ abstract contract AccessControlExtendedInitAbstract is
      *
      * @custom:events {RoleAdminChanged} with the previous and new admin roles.
      */
-    function _setRoleAdmin(
-        bytes32 role,
-        bytes32 adminRole
-    ) internal virtual {
+    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
         bytes32 previousAdminRole = getRoleAdmin(role);
         _roleAdmins[role] = adminRole;
         emit RoleAdminChanged(role, previousAdminRole, adminRole);
@@ -365,14 +366,16 @@ abstract contract AccessControlExtendedInitAbstract is
      * @dev Overrides `_transferOwnership` to automatically sync `DEFAULT_ADMIN_ROLE`
      * with the contract owner. Revokes from the old owner and grants to the new owner.
      */
-    function _transferOwnership(
-        address newOwner
-    ) internal virtual override {
+    function _transferOwnership(address newOwner) internal virtual override {
         address oldOwner = owner();
         super._transferOwnership(newOwner);
+
+        // case where initial owner is set
         if (oldOwner != address(0)) {
             _revokeRole(DEFAULT_ADMIN_ROLE, oldOwner);
         }
+
+        // case if we are renouncing ownership
         if (newOwner != address(0)) {
             _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
         }

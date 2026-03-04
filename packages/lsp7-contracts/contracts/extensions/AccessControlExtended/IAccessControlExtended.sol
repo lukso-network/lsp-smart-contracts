@@ -12,9 +12,6 @@ import {
  * and auxiliary data storage per role-address pair.
  *
  * Inherits all functions from {IAccessControl} and {IAccessControlEnumerable}:
- * - `hasRole(bytes32, address)`, `getRoleAdmin(bytes32)`, `grantRole(bytes32, address)`,
- *   `revokeRole(bytes32, address)`, `renounceRole(bytes32, address)`
- * - `getRoleMember(bytes32, uint256)`, `getRoleMemberCount(bytes32)`
  */
 interface IAccessControlExtended is IAccessControlEnumerable {
     /**
@@ -35,14 +32,13 @@ interface IAccessControlExtended is IAccessControlEnumerable {
      * @param account The address to query roles for.
      * @return An array of role identifiers assigned to the account.
      */
-    function rolesOf(
-        address account
-    ) external view returns (bytes32[] memory);
+    function rolesOf(address account) external view returns (bytes32[] memory);
 
     /**
-     * @notice Grants `role` to `account` and stores auxiliary `data` atomically.
-     * @dev Requires the caller to have the admin role for `role`.
-     * If `account` already holds the role, only the data is updated.
+     * @notice Grants `role` to `account` and stores auxiliary `data` associated .
+     * @dev If `account` already holds the role, only the data is updated.
+     *
+     * @custom:requirements Caller must have the admin role for `role`.
      *
      * @param role The role identifier to grant.
      * @param account The address to grant the role to.
@@ -59,13 +55,14 @@ interface IAccessControlExtended is IAccessControlEnumerable {
     ) external;
 
     /**
-     * @notice Sets auxiliary data for a role-address pair.
-     * @dev Requires the caller to have the admin role for `role`.
-     * Does NOT revert if `account` does not hold the role (allows pre-configuration).
+     * @notice Sets auxiliary `data` for a `role` assigned to an `account` address.
+     * @dev Does NOT revert if `account` does not hold the role (allows pre-configuration).
+     *
+     * @custom:requirements Caller must have the admin role for `role`.
      *
      * @param role The role identifier.
      * @param account The address to set data for.
-     * @param data The data to store.
+     * @param data The auxiliarydata to store.
      *
      * @custom:events {RoleDataChanged} event.
      */

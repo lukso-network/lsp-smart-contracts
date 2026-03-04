@@ -5,9 +5,7 @@ pragma solidity ^0.8.27;
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
 
 // interfaces
-import {
-    IAccessControlExtended
-} from "./IAccessControlExtended.sol";
+import {IAccessControlExtended} from "./IAccessControlExtended.sol";
 import {
     IAccessControl
 } from "@openzeppelin/contracts/access/IAccessControl.sol";
@@ -35,7 +33,6 @@ import {
  * @title AccessControlExtendedAbstract
  * @dev Abstract contract implementing OZ-compatible role management with reverse lookups
  * and auxiliary data storage. Uses EnumerableSet composition (NOT OZ AccessControl inheritance)
- * to avoid ERC165 diamond conflicts with the LSP7 -> ERC725Y -> Ownable chain.
  *
  * Provides:
  * - Standard OZ {IAccessControl} functions: hasRole, grantRole, revokeRole, renounceRole, getRoleAdmin
@@ -44,9 +41,6 @@ import {
  * - Owner-as-implicit-admin: contract owner() bypasses all _checkRole checks
  * - DEFAULT_ADMIN_ROLE as root admin: holders bypass all _checkRole checks
  * - Automatic DEFAULT_ADMIN_ROLE sync on ownership transfer
- *
- * @custom:info This is the constructor-based variant. For proxy/initializable deployments,
- * use {AccessControlExtendedInitAbstract}.
  */
 abstract contract AccessControlExtendedAbstract is
     IAccessControlExtended,
@@ -63,16 +57,19 @@ abstract contract AccessControlExtendedAbstract is
     // --- Storage
 
     /// @dev Mapping from role to its admin role.
-    mapping(bytes32 => bytes32) private _roleAdmins;
+    mapping(bytes32 role => bytes32 adminRole) private _roleAdmins;
 
     /// @dev Forward lookup: role -> set of member addresses.
-    mapping(bytes32 => EnumerableSet.AddressSet) private _roleMembers;
+    mapping(bytes32 role => EnumerableSet.AddressSet members)
+        private _roleMembers;
 
     /// @dev Reverse lookup: address -> set of roles held.
-    mapping(address => EnumerableSet.Bytes32Set) private _addressRoles;
+    mapping(address account => EnumerableSet.Bytes32Set rolesAssigned)
+        private _addressRoles;
 
     /// @dev Auxiliary data: role -> address -> bytes.
-    mapping(bytes32 => mapping(address => bytes)) private _roleData;
+    mapping(bytes32 role => mapping(address account => bytes roleData))
+        private _roleData;
 
     // --- Modifier
 
@@ -91,10 +88,10 @@ abstract contract AccessControlExtendedAbstract is
      * @dev Grants `DEFAULT_ADMIN_ROLE` to the initial owner so they appear in
      * enumeration (getRoleMember, rolesOf).
      *
-     * @param newOwner_ The initial owner who receives DEFAULT_ADMIN_ROLE.
+     * @param initialOwner_ The initial owner who receives DEFAULT_ADMIN_ROLE.
      */
-    constructor(address newOwner_) {
-        _grantRole(DEFAULT_ADMIN_ROLE, newOwner_);
+    constructor(address initialOwner_) {
+        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
     }
 
     // --- ERC-165
@@ -124,22 +121,20 @@ abstract contract AccessControlExtendedAbstract is
     }
 
     /// @inheritdoc IAccessControl
-    function getRoleAdmin(
-        bytes32 role
-    ) public view virtual returns (bytes32) {
+    function getRoleAdmin(bytes32 role) public view virtual returns (bytes32) {
         return _roleAdmins[role];
     }
 
     /**
      * @inheritdoc IAccessControl
-     * @dev Grants `role` to `account`. The caller must hold the admin role for `role`
-     * (or be the contract owner / DEFAULT_ADMIN_ROLE holder).
+     * @dev Grants `role` to `account`.
+     *
+     * @custom:requirements The caller must hold the admin role for `role` (or be the contract owner. which has DEFAULT_ADMIN_ROLE by default).
      */
     function grantRole(
         bytes32 role,
         address account
-    ) public virtual {
-        _checkRole(getRoleAdmin(role));
+    ) public virtual onlyRole(getRoleAdmin(role)) {
         _grantRole(role, account);
     }
 
@@ -151,8 +146,7 @@ abstract contract AccessControlExtendedAbstract is
     function revokeRole(
         bytes32 role,
         address account
-    ) public virtual {
-        _checkRole(getRoleAdmin(role));
+    ) public virtual onlyRole(getRoleAdmin(role)) {
         _revokeRole(role, account);
     }
 
@@ -161,17 +155,26 @@ abstract contract AccessControlExtendedAbstract is
      * @dev Allows `msg.sender` to renounce their own `role`. The `callerConfirmation`
      * parameter must equal `msg.sender` to prevent accidental renouncement (OZ pattern).
      * Renouncing triggers data cleanup per BASE-09.
+     *
+     * @custom:info Roles are often managed via {grantRole} and {revokeRole}.
+     * This function's purpose is to provide a mechanism for accounts to lose their privileges
+     * if they are compromised (such as when a trusted device is misplaced).
+     *
+     * If the calling account had been revoked `role`, emits a {RoleRevoked}
+     * event.
+     *
      */
     function renounceRole(
         bytes32 role,
         address callerConfirmation
     ) public virtual {
-        if (callerConfirmation != msg.sender) {
-            revert AccessControlExtendedCanOnlyRenounceForSelf(
+        require(
+            callerConfirmation == msg.sender,
+            AccessControlExtendedCanOnlyRenounceForSelf(
                 msg.sender,
                 callerConfirmation
-            );
-        }
+            )
+        );
         _revokeRole(role, msg.sender);
     }
 
@@ -211,8 +214,7 @@ abstract contract AccessControlExtendedAbstract is
         bytes32 role,
         address account,
         bytes calldata data
-    ) public virtual {
-        _checkRole(getRoleAdmin(role));
+    ) public virtual onlyRole(getRoleAdmin(role)) {
         _grantRole(role, account);
         if (data.length > 0) {
             _roleData[role][account] = data;
@@ -230,8 +232,7 @@ abstract contract AccessControlExtendedAbstract is
         bytes32 role,
         address account,
         bytes calldata data
-    ) public virtual {
-        _checkRole(getRoleAdmin(role));
+    ) public virtual onlyRole(getRoleAdmin(role)) {
         _roleData[role][account] = data;
         emit RoleDataChanged(role, account, data);
     }
@@ -252,11 +253,10 @@ abstract contract AccessControlExtendedAbstract is
      *
      * @custom:events {RoleGranted} if the role was newly granted.
      */
-    function _grantRole(
-        bytes32 role,
-        address account
-    ) internal virtual {
-        if (_roleMembers[role].add(account)) {
+    function _grantRole(bytes32 role, address account) internal virtual {
+        bool added = _roleMembers[role].add(account);
+
+        if (added) {
             _addressRoles[account].add(role);
             emit RoleGranted(role, account, msg.sender);
         }
@@ -270,11 +270,10 @@ abstract contract AccessControlExtendedAbstract is
      * - {RoleRevoked} if the role was revoked.
      * - {RoleDataChanged} if auxiliary data was cleared.
      */
-    function _revokeRole(
-        bytes32 role,
-        address account
-    ) internal virtual {
-        if (_roleMembers[role].remove(account)) {
+    function _revokeRole(bytes32 role, address account) internal virtual {
+        bool removed = _roleMembers[role].remove(account);
+
+        if (removed) {
             _addressRoles[account].remove(role);
             emit RoleRevoked(role, account, msg.sender);
 
@@ -296,16 +295,15 @@ abstract contract AccessControlExtendedAbstract is
 
     /**
      * @dev Checks that `account` has `role`, with three bypass paths:
+     *
+     * @custom:requirements
      * 1. `account == owner()` -- owner implicitly passes all checks
      * 2. `account` holds `DEFAULT_ADMIN_ROLE` -- root admin for all roles
      * 3. `account` holds `role` -- standard role check
      *
      * Reverts with {AccessControlExtendedUnauthorized} if none of the above hold.
      */
-    function _checkRole(
-        bytes32 role,
-        address account
-    ) internal view virtual {
+    function _checkRole(bytes32 role, address account) internal view virtual {
         // Owner implicitly passes all checks
         if (account == owner()) return;
 
@@ -313,9 +311,10 @@ abstract contract AccessControlExtendedAbstract is
         if (hasRole(DEFAULT_ADMIN_ROLE, account)) return;
 
         // Standard role check
-        if (!hasRole(role, account)) {
-            revert AccessControlExtendedUnauthorized(account, role);
-        }
+        require(
+            hasRole(role, account),
+            AccessControlExtendedUnauthorized(account, role)
+        );
     }
 
     /**
@@ -324,10 +323,7 @@ abstract contract AccessControlExtendedAbstract is
      *
      * @custom:events {RoleAdminChanged} with the previous and new admin roles.
      */
-    function _setRoleAdmin(
-        bytes32 role,
-        bytes32 adminRole
-    ) internal virtual {
+    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
         bytes32 previousAdminRole = getRoleAdmin(role);
         _roleAdmins[role] = adminRole;
         emit RoleAdminChanged(role, previousAdminRole, adminRole);
@@ -339,14 +335,16 @@ abstract contract AccessControlExtendedAbstract is
      * @dev Overrides `_transferOwnership` to automatically sync `DEFAULT_ADMIN_ROLE`
      * with the contract owner. Revokes from the old owner and grants to the new owner.
      */
-    function _transferOwnership(
-        address newOwner
-    ) internal virtual override {
+    function _transferOwnership(address newOwner) internal virtual override {
         address oldOwner = owner();
         super._transferOwnership(newOwner);
+
+        // case where initial owner is set
         if (oldOwner != address(0)) {
             _revokeRole(DEFAULT_ADMIN_ROLE, oldOwner);
         }
+
+        // case if we are renouncing ownership
         if (newOwner != address(0)) {
             _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
         }
