@@ -12,7 +12,7 @@ contract FirstCallReturnExpandedInvalidValue {
     address public target;
 
     function lsp20VerifyCall(
-        address requestor,
+        address requester,
         address targetContract,
         address caller,
         uint256 value,
@@ -22,7 +22,7 @@ contract FirstCallReturnExpandedInvalidValue {
 
         return
             keccak256(
-                abi.encode(requestor, targetContract, caller, value, data)
+                abi.encode(requester, targetContract, caller, value, data)
             );
     }
 

@@ -92,7 +92,7 @@ contract Extension4337 is LSP17Extension, IAccount {
 
         // verify that the recovered address can execute the userOp.callData
         bytes4 returnedStatus = ILSP20CallVerifier(owner).lsp20VerifyCall({
-            requestor: _ENTRY_POINT,
+            requester: _ENTRY_POINT,
             target: msg.sender,
             caller: recovered,
             value: 0,

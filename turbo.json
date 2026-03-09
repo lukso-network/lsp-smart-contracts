@@ -29,6 +29,11 @@
       "outputs": ["dist/**"],
       "cache": true
     },
+    "build:docs": {
+      "dependsOn": ["build"],
+      "outputs": ["docs/**"],
+      "cache": true
+    },
     "lint": {
       "env": [
         "CONTRACT_VERIFICATION_TESTNET_PK",

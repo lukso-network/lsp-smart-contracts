@@ -2,17 +2,13 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    LSP8AllowlistInitAbstract
-} from "../LSP8Allowlist/LSP8AllowlistInitAbstract.sol";
+import {LSP8AllowlistInitAbstract} from "../LSP8Allowlist/LSP8AllowlistInitAbstract.sol";
 
 // interfaces
 import {ILSP8NonTransferable} from "./ILSP8NonTransferable.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {

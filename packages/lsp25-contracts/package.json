@@ -50,6 +50,7 @@
     "build": "hardhat compile --show-stack-traces",
     "build:js": "unbuild",
     "build:types": "wagmi generate",
+    "build:docs": "hardhat docs",
     "build:package": "hardhat prepare-package",
     "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
@@ -63,6 +64,7 @@
   },
   "devDependencies": {
     "@lukso/eip191-signer.js": "^0.2.5",
+    "@lukso/hardhat-natspec-docs": "*",
     "@lukso/hardhat-packager-v3": "*",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "eslint-config-custom": "*",

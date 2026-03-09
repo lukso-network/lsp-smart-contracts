@@ -6,7 +6,7 @@ pragma solidity ^0.8.4;
  */
 contract SecondCallReturnFailureValue {
     function lsp20VerifyCall(
-        address /* requestor */,
+        address /* requester */,
         address /* targetContract */,
         address /* caller */,
         uint256 /* value */,

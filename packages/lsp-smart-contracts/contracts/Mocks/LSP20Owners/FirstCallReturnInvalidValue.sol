@@ -11,7 +11,7 @@ contract FirstCallReturnInvalidValue {
     address public target;
 
     function lsp20VerifyCall(
-        address /* requestor */,
+        address /* requester */,
         address /* targetContract */,
         address /* caller */,
         uint256 /* value */,

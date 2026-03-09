@@ -41,6 +41,7 @@
     "build:foundry": "turbo build:foundry",
     "build:js": "turbo build:js",
     "build:types": "turbo build:types",
+    "build:docs": "turbo build:docs && bash scripts/centralize-docs.sh",
     "build:package": "turbo build:package",
     "clean": "turbo clean && rm -Rf .turbo/ cache/",
     "format": "prettier --write .",

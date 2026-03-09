@@ -317,7 +317,7 @@ abstract contract LSP6KeyManagerCore is
      *  - `0x1a238001`: LSP20 success value **with** post-verification (last byte is `0x01`).
      */
     function lsp20VerifyCall(
-        address /* requestor */,
+        address /* requester */,
         address targetContract,
         address caller,
         uint256 msgValue,

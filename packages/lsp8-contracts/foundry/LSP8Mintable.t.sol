@@ -5,28 +5,18 @@ pragma solidity ^0.8.27;
 import "forge-std/Test.sol";
 
 // modules
-import {
-    LSP8MintableAbstract
-} from "../contracts/extensions/LSP8Mintable/LSP8MintableAbstract.sol";
-import {
-    LSP8IdentifiableDigitalAsset
-} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
+import {LSP8MintableAbstract} from "../contracts/extensions/LSP8Mintable/LSP8MintableAbstract.sol";
+import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 
 // interfaces
-import {
-    ILSP8Mintable
-} from "../contracts/extensions/LSP8Mintable/ILSP8Mintable.sol";
+import {ILSP8Mintable} from "../contracts/extensions/LSP8Mintable/ILSP8Mintable.sol";
 
 // errors
-import {
-    LSP8MintDisabled
-} from "../contracts/extensions/LSP8Mintable/LSP8MintableErrors.sol";
+import {LSP8MintDisabled} from "../contracts/extensions/LSP8Mintable/LSP8MintableErrors.sol";
 import {LSP8TokenIdAlreadyMinted} from "../contracts/LSP8Errors.sol";
 
 // constants
-import {
-    _LSP4_TOKEN_TYPE_NFT
-} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
 
 // Mock contract to test LSP8MintableAbstract functionality

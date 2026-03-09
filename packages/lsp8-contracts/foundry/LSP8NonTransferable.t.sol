@@ -5,20 +5,12 @@ pragma solidity ^0.8.27;
 import "forge-std/Test.sol";
 
 // modules
-import {
-    LSP8IdentifiableDigitalAsset
-} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
-import {
-    LSP8AllowlistAbstract
-} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
-import {
-    LSP8NonTransferableAbstract
-} from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol";
+import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
+import {LSP8AllowlistAbstract} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
+import {LSP8NonTransferableAbstract} from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol";
 
 // interfaces
-import {
-    ILSP8NonTransferable
-} from "../contracts/extensions/LSP8NonTransferable/ILSP8NonTransferable.sol";
+import {ILSP8NonTransferable} from "../contracts/extensions/LSP8NonTransferable/ILSP8NonTransferable.sol";
 
 // errors
 import {
@@ -29,9 +21,7 @@ import {
 } from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableErrors.sol";
 
 // constants
-import {
-    _LSP4_TOKEN_TYPE_NFT
-} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
 
 contract MockLSP8NonTransferable is LSP8NonTransferableAbstract {

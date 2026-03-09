@@ -1,8 +1,15 @@
 import type { HardhatUserConfig } from 'hardhat/config';
 import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
+import natspecDocsPlugin from '@lukso/hardhat-natspec-docs';
 
 const config: HardhatUserConfig = {
-  plugins: [hardhatToolboxMochaEthers],
+  plugins: [hardhatToolboxMochaEthers, natspecDocsPlugin],
+  natspecDocs: {
+    outputDir: 'docs',
+    include: ['contracts/**/*'],
+    exclude: ['contracts/Mocks/**/*', 'contracts/mock/**/*', 'contracts/foundry_artifacts/**/*'],
+    runOnCompile: false,
+  },
   solidity: {
     version: '0.8.17',
     settings: {
@@ -18,7 +25,7 @@ const config: HardhatUserConfig = {
       },
       outputSelection: {
         '*': {
-          '*': ['storageLayout'],
+          '*': ['storageLayout', 'devdoc', 'userdoc'],
         },
       },
     },

@@ -138,6 +138,7 @@ gas_benchmark.md
 /**/contracts.ts
 /**/devdocs
 /**/userdocs
+/packages/**/docs
 
 # test temporary folder
 /.test
@@ -155,3 +156,6 @@ abi.ts
 
 # VSCode settings
 .vscode/
+
+# GSD planning artifacts
+.planning/

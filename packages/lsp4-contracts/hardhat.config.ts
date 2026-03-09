@@ -2,6 +2,7 @@ import type { HardhatUserConfig } from 'hardhat/config';
 import type { SolidityUserConfig } from 'hardhat/types/config';
 import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
 import hardhatPackager from '@lukso/hardhat-packager-v3';
+import natspecDocsPlugin from '@lukso/hardhat-natspec-docs';
 
 const DEFAULT_COMPILER_SETTINGS: SolidityUserConfig = {
   version: '0.8.17',
@@ -18,7 +19,7 @@ const DEFAULT_COMPILER_SETTINGS: SolidityUserConfig = {
     },
     outputSelection: {
       '*': {
-        '*': ['storageLayout'],
+        '*': ['storageLayout', 'devdoc', 'userdoc'],
       },
     },
   },
@@ -40,14 +41,21 @@ const VIA_IR_SETTINGS: SolidityUserConfig = {
     },
     outputSelection: {
       '*': {
-        '*': ['storageLayout'],
+        '*': ['storageLayout', 'devdoc', 'userdoc'],
       },
     },
   },
 };
 
 const config: HardhatUserConfig = {
-  plugins: [hardhatToolboxMochaEthers, hardhatPackager],
+  plugins: [hardhatToolboxMochaEthers, hardhatPackager, natspecDocsPlugin],
+  natspecDocs: {
+    outputDir: 'docs',
+    include: ['contracts/**/*'],
+    exclude: ['contracts/Mocks/**/*', 'contracts/mock/**/*', 'contracts/foundry_artifacts/**/*'],
+    runOnCompile: false,
+    libraries: ['LSP4Utils'],
+  },
   packager: {
     contracts: ['LSP4DigitalAssetMetadata', 'LSP4DigitalAssetMetadataInitAbstract'],
   },

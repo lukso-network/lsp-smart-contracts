@@ -39,6 +39,7 @@
   "scripts": {
     "build": "hardhat compile --show-stack-traces",
     "build:types": "wagmi generate",
+    "build:docs": "hardhat docs",
     "build:package": "hardhat prepare-package",
     "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
@@ -62,6 +63,7 @@
     "solidity-bytes-utils": "0.8.4"
   },
   "devDependencies": {
+    "@lukso/hardhat-natspec-docs": "*",
     "@lukso/hardhat-packager-v3": "*",
     "@lukso/hardhat-verify-balance": "*",
     "@nomicfoundation/hardhat-ignition-ethers": "^3.0.0",
