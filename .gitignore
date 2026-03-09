@@ -112,7 +112,8 @@ node_modules
 # Hardhat folders
 cache
 artifacts
-deployments
+deployments/
+!deployments/contracts.json
 
 .idea
 
