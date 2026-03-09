@@ -17,28 +17,24 @@ export default solidityHooks;
  */
 export async function generateDocsIfEnabled(hre: HardhatRuntimeEnvironment): Promise<void> {
   const config = hre.config.natspecDocs;
-  
+
   if (!config.runOnCompile) {
     return;
   }
-  
+
   console.log('[hardhat-natspec-docs] Generating documentation (runOnCompile enabled)...');
-  
+
   // Dynamic import to avoid circular dependencies
   const { extractNatSpec } = await import('../extractor/index.js');
   const { writeDocumentation } = await import('../generator/index.js');
-  
+
   const artifactsPath = hre.config.paths.artifacts;
-  
-  const contracts = await extractNatSpec(
-    hre.artifacts,
-    artifactsPath,
-    {
-      include: config.include,
-      exclude: config.exclude,
-    },
-  );
-  
+
+  const contracts = await extractNatSpec(hre.artifacts, artifactsPath, {
+    include: config.include,
+    exclude: config.exclude,
+  });
+
   if (contracts.length > 0) {
     await writeDocumentation(contracts, config.outputDir, config.libraries);
   }

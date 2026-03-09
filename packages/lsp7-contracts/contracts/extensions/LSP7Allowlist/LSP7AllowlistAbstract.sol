@@ -8,9 +8,7 @@ import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
 import {ILSP7Allowlist} from "./ILSP7Allowlist.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {

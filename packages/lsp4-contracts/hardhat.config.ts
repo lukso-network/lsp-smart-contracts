@@ -19,7 +19,7 @@ const DEFAULT_COMPILER_SETTINGS: SolidityUserConfig = {
     },
     outputSelection: {
       '*': {
-          '*': ['storageLayout', 'devdoc', 'userdoc'],
+        '*': ['storageLayout', 'devdoc', 'userdoc'],
       },
     },
   },
@@ -41,7 +41,7 @@ const VIA_IR_SETTINGS: SolidityUserConfig = {
     },
     outputSelection: {
       '*': {
-          '*': ['storageLayout', 'devdoc', 'userdoc'],
+        '*': ['storageLayout', 'devdoc', 'userdoc'],
       },
     },
   },
