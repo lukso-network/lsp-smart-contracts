@@ -2,25 +2,39 @@
 pragma solidity ^0.8.22;
 
 // foundry
-import "forge-std/Test.sol";
+import {Test, Vm} from "forge-std/Test.sol";
 
 // modules
-import {AccessControlExtendedAbstract} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // interfaces
-import {IAccessControlExtended} from "../contracts/extensions/AccessControlExtended/IAccessControlExtended.sol";
-import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
-import {IAccessControlEnumerable} from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
+import {
+    IAccessControlExtended
+} from "../contracts/extensions/AccessControlExtended/IAccessControlExtended.sol";
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {
+    IAccessControlEnumerable
+} from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
-import {_INTERFACEID_ACCESSCONTROLEXTENDED} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedConstants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _INTERFACEID_ACCESSCONTROL,
+    _INTERFACEID_ACCESSCONTROLENUMERABLE,
+    _INTERFACEID_ACCESSCONTROLEXTENDED
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedConstants.sol";
 
 // errors
 import {
-    AccessControlExtendedUnauthorized,
-    AccessControlExtendedCanOnlyRenounceForSelf
+    AccessControlUnauthorizedAccount,
+    AccessControlBadConfirmation
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 
 // Mock contract for testing
@@ -32,11 +46,22 @@ contract MockAccessControlExtended is AccessControlExtendedAbstract {
         uint256 lsp4TokenType_,
         bool isNonDivisible_
     )
-        LSP7DigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_)
+        LSP7DigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        )
         AccessControlExtendedAbstract(newOwner_)
     {}
 
-    function mint(address to, uint256 amount, bool force, bytes memory data) public {
+    function mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) public {
         _mint(to, amount, force, data);
     }
 
@@ -162,7 +187,7 @@ contract AccessControlExtendedTest is Test {
         vm.prank(nonOwner);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlExtendedUnauthorized.selector,
+                AccessControlUnauthorizedAccount.selector,
                 nonOwner,
                 DEFAULT_ADMIN_ROLE
             )
@@ -234,7 +259,7 @@ contract AccessControlExtendedTest is Test {
         vm.prank(nonOwner);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlExtendedUnauthorized.selector,
+                AccessControlUnauthorizedAccount.selector,
                 nonOwner,
                 DEFAULT_ADMIN_ROLE
             )
@@ -264,11 +289,7 @@ contract AccessControlExtendedTest is Test {
 
         vm.prank(account1);
         vm.expectRevert(
-            abi.encodeWithSelector(
-                AccessControlExtendedCanOnlyRenounceForSelf.selector,
-                account1,
-                account2
-            )
+            abi.encodeWithSelector(AccessControlBadConfirmation.selector)
         );
         token.renounceRole(TEST_ROLE, account2);
     }
@@ -470,7 +491,7 @@ contract AccessControlExtendedTest is Test {
         vm.prank(nonOwner);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlExtendedUnauthorized.selector,
+                AccessControlUnauthorizedAccount.selector,
                 nonOwner,
                 DEFAULT_ADMIN_ROLE
             )
@@ -652,16 +673,14 @@ contract AccessControlExtendedTest is Test {
 
     function test_SupportsIAccessControl() public {
         assertTrue(
-            token.supportsInterface(type(IAccessControl).interfaceId),
+            token.supportsInterface(_INTERFACEID_ACCESSCONTROL),
             "Should support IAccessControl"
         );
     }
 
     function test_SupportsIAccessControlEnumerable() public {
         assertTrue(
-            token.supportsInterface(
-                type(IAccessControlEnumerable).interfaceId
-            ),
+            token.supportsInterface(_INTERFACEID_ACCESSCONTROLENUMERABLE),
             "Should support IAccessControlEnumerable"
         );
     }
@@ -721,11 +740,7 @@ contract AccessControlExtendedTest is Test {
         vm.expectEmit(true, true, true, true, address(token));
         emit IAccessControl.RoleRevoked(DEFAULT_ADMIN_ROLE, owner, owner);
         vm.expectEmit(true, true, true, true, address(token));
-        emit IAccessControl.RoleGranted(
-            DEFAULT_ADMIN_ROLE,
-            newOwner,
-            owner
-        );
+        emit IAccessControl.RoleGranted(DEFAULT_ADMIN_ROLE, newOwner, owner);
 
         token.transferOwnership(newOwner);
     }
@@ -739,23 +754,23 @@ contract AccessControlExtendedTest is Test {
 
         vm.prank(account1);
         bool result = token.restrictedFunction();
-        assertTrue(result, "Role holder should be able to call restricted function");
+        assertTrue(
+            result,
+            "Role holder should be able to call restricted function"
+        );
     }
 
     function test_OnlyRoleAllowsOwner() public {
         // Owner can call restrictedFunction without TEST_ROLE (implicit admin)
         bool result = token.restrictedFunction();
-        assertTrue(
-            result,
-            "Owner should be able to call restricted function"
-        );
+        assertTrue(result, "Owner should be able to call restricted function");
     }
 
     function test_OnlyRoleRevertsForNonHolder() public {
         vm.prank(nonOwner);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlExtendedUnauthorized.selector,
+                AccessControlUnauthorizedAccount.selector,
                 nonOwner,
                 TEST_ROLE
             )
@@ -778,10 +793,7 @@ contract AccessControlExtendedTest is Test {
 
         // Grant
         token.grantRole(role, addr);
-        assertTrue(
-            token.hasRole(role, addr),
-            "Should have role after grant"
-        );
+        assertTrue(token.hasRole(role, addr), "Should have role after grant");
 
         // Verify enumeration
         uint256 count = token.getRoleMemberCount(role);
@@ -828,11 +840,7 @@ contract AccessControlExtendedTest is Test {
         // Grant with data
         token.grantRoleWithData(TEST_ROLE, addr, data);
         assertTrue(token.hasRole(TEST_ROLE, addr), "Should have role");
-        assertEq(
-            token.getRoleData(TEST_ROLE, addr),
-            data,
-            "Data should match"
-        );
+        assertEq(token.getRoleData(TEST_ROLE, addr), data, "Data should match");
 
         // Revoke (should clear data)
         token.revokeRole(TEST_ROLE, addr);

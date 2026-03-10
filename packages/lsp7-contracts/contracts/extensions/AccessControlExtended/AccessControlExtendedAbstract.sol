@@ -20,6 +20,8 @@ import {
 
 // constants
 import {
+    _INTERFACEID_ACCESSCONTROL,
+    _INTERFACEID_ACCESSCONTROLENUMERABLE,
     _INTERFACEID_ACCESSCONTROLEXTENDED
 } from "./AccessControlExtendedConstants.sol";
 
@@ -104,8 +106,8 @@ abstract contract AccessControlExtendedAbstract is
         bytes4 interfaceId
     ) public view virtual override returns (bool) {
         return
-            interfaceId == type(IAccessControl).interfaceId ||
-            interfaceId == type(IAccessControlEnumerable).interfaceId ||
+            interfaceId == _INTERFACEID_ACCESSCONTROL ||
+            interfaceId == _INTERFACEID_ACCESSCONTROLENUMERABLE ||
             interfaceId == _INTERFACEID_ACCESSCONTROLEXTENDED ||
             super.supportsInterface(interfaceId);
     }
