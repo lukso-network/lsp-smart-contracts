@@ -25,8 +25,8 @@ import {
 
 // errors
 import {
-    AccessControlExtendedUnauthorized,
-    AccessControlExtendedCanOnlyRenounceForSelf
+    AccessControlUnauthorizedAccount,
+    AccessControlBadConfirmation
 } from "./AccessControlExtendedErrors.sol";
 
 /**
@@ -170,10 +170,7 @@ abstract contract AccessControlExtendedAbstract is
     ) public virtual {
         require(
             callerConfirmation == msg.sender,
-            AccessControlExtendedCanOnlyRenounceForSelf(
-                msg.sender,
-                callerConfirmation
-            )
+            AccessControlBadConfirmation()
         );
         _revokeRole(role, msg.sender);
     }
@@ -287,7 +284,9 @@ abstract contract AccessControlExtendedAbstract is
 
     /**
      * @dev Checks that `msg.sender` has `role`. Reverts with
-     * {AccessControlExtendedUnauthorized} if the check fails.
+     * {AccessControlUnauthorizedAccount} if the check fails.
+     *
+     * @custom:warning Overriding this function changes the behavior of the {onlyRole} modifier.
      */
     function _checkRole(bytes32 role) internal view virtual {
         _checkRole(role, msg.sender);
@@ -301,7 +300,7 @@ abstract contract AccessControlExtendedAbstract is
      * 2. `account` holds `DEFAULT_ADMIN_ROLE` -- root admin for all roles
      * 3. `account` holds `role` -- standard role check
      *
-     * Reverts with {AccessControlExtendedUnauthorized} if none of the above hold.
+     * Reverts with {AccessControlUnauthorizedAccount} if none of the above hold.
      */
     function _checkRole(bytes32 role, address account) internal view virtual {
         // Owner implicitly passes all checks
@@ -313,7 +312,7 @@ abstract contract AccessControlExtendedAbstract is
         // Standard role check
         require(
             hasRole(role, account),
-            AccessControlExtendedUnauthorized(account, role)
+            AccessControlUnauthorizedAccount(account, role)
         );
     }
 
