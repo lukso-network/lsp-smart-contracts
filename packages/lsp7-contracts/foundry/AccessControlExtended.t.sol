@@ -38,7 +38,7 @@ import {
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 
 // Mock contract for testing
-contract MockAccessControlExtended is AccessControlExtendedAbstract {
+contract MockTokenWithAccessControlExtended is AccessControlExtendedAbstract {
     constructor(
         string memory name_,
         string memory symbol_,
@@ -71,7 +71,12 @@ contract MockAccessControlExtended is AccessControlExtendedAbstract {
     }
 
     // Expose a restrictedFunction for onlyRole modifier testing
-    function restrictedFunction() public onlyRole(TEST_ROLE) returns (bool) {
+    function restrictedFunction()
+        public
+        view
+        onlyRole(TEST_ROLE)
+        returns (bool)
+    {
         return true;
     }
 
@@ -94,10 +99,10 @@ contract AccessControlExtendedTest is Test {
     bytes32 constant TEST_ROLE = bytes32(bytes("TestRole"));
     bytes32 constant ANOTHER_ROLE = bytes32(bytes("AnotherRole"));
 
-    MockAccessControlExtended token;
+    MockTokenWithAccessControlExtended token;
 
     function setUp() public {
-        token = new MockAccessControlExtended(
+        token = new MockTokenWithAccessControlExtended(
             name,
             symbol,
             owner,
@@ -145,6 +150,11 @@ contract AccessControlExtendedTest is Test {
     // ============================================================
 
     function test_OwnerCanGrantRole() public {
+        assertFalse(
+            token.hasRole(TEST_ROLE, account1),
+            "Account1 should not have TEST_ROLE initially"
+        );
+
         vm.expectEmit(true, true, true, true, address(token));
         emit IAccessControl.RoleGranted(TEST_ROLE, account1, owner);
         token.grantRole(TEST_ROLE, account1);
@@ -153,6 +163,31 @@ contract AccessControlExtendedTest is Test {
             token.hasRole(TEST_ROLE, account1),
             "Account1 should have TEST_ROLE"
         );
+    }
+
+    function test_NonOwnerCannotGrantRole() public {
+        vm.prank(nonOwner);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                nonOwner,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.grantRole(TEST_ROLE, account1);
+    }
+
+    function testFuzz_NonOwnerCannotGrantRole(address randomAccount) public {
+        vm.assume(randomAccount != owner);
+        vm.prank(randomAccount);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                randomAccount,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.grantRole(TEST_ROLE, account1);
     }
 
     function test_DefaultAdminCanGrantRole() public {
@@ -169,11 +204,31 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
-    function test_OwnerImplicitAdminBypass() public {
-        // Set ANOTHER_ROLE as admin for TEST_ROLE
-        token.setRoleAdmin(TEST_ROLE, ANOTHER_ROLE);
+    function test_NonDefaultAdminRoleCannotGrantRole(
+        bytes32 adminRoleForRole
+    ) public {
+        vm.assume(adminRoleForRole != DEFAULT_ADMIN_ROLE);
 
-        // Owner can still grant TEST_ROLE even though they don't have ANOTHER_ROLE
+        // Grant a random role to account1 and test it cannot set a role
+        token.grantRole(adminRoleForRole, account1);
+
+        vm.prank(account1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                account1,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.grantRole(TEST_ROLE, account2);
+    }
+
+    function test_OwnerCanImplicitlyBypassAdminRoleChecks() public {
+        // Set ADMIN_TEST_ROLE as admin for TEST_ROLE
+        bytes32 adminTestRole = bytes32(bytes("AdminTestRole"));
+        token.setRoleAdmin(TEST_ROLE, adminTestRole);
+
+        // Owner can still grant TEST_ROLE even though they don't have ADMIN_TEST_ROLE
         // because owner bypasses _checkRole completely
         token.grantRole(TEST_ROLE, account1);
 
@@ -181,27 +236,84 @@ contract AccessControlExtendedTest is Test {
             token.hasRole(TEST_ROLE, account1),
             "Owner should be able to grant despite custom admin"
         );
+        assertFalse(
+            token.hasRole(adminTestRole, owner),
+            "Account1 should not have adminTestRole"
+        );
     }
 
-    function test_NonAdminCannotGrantRole() public {
-        vm.prank(nonOwner);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                AccessControlUnauthorizedAccount.selector,
-                nonOwner,
-                DEFAULT_ADMIN_ROLE
-            )
-        );
+    function testFuzz_OwnerCanImplicitlyBypassAdminRoleChecks(
+        bytes32 adminTestRole
+    ) public {
+        vm.assume(adminTestRole != DEFAULT_ADMIN_ROLE);
+
+        token.setRoleAdmin(TEST_ROLE, adminTestRole);
+
+        // Owner can grant TEST_ROLE even though they don't have adminTestRole
         token.grantRole(TEST_ROLE, account1);
+
+        assertTrue(
+            token.hasRole(TEST_ROLE, account1),
+            "Owner should be able to grant despite custom admin"
+        );
+        assertFalse(
+            token.hasRole(adminTestRole, owner),
+            "Account1 should not have adminTestRole"
+        );
+    }
+
+    function test_OwnerCanGrantRoleEvenWithoutDefaultAdminRole() public {
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, owner),
+            "Owner should have DEFAULT_ADMIN_ROLE"
+        );
+
+        // This also test that owner (or any address can renounce the role for itself)
+        token.renounceRole(DEFAULT_ADMIN_ROLE, owner);
+
+        assertFalse(
+            token.hasRole(DEFAULT_ADMIN_ROLE, owner),
+            "Owner should not have DEFAULT_ADMIN_ROLE after revocation"
+        );
+
+        // Owner should not have any roles after renouncing DEFAULT_ADMIN_ROLE
+        bytes32[] memory roles = token.rolesOf(owner);
+        assertEq(
+            roles.length,
+            0,
+            "Owner should have 0 roles after renouncing DEFAULT_ADMIN_ROLE"
+        );
+
+        // CHECK that owner can still grant roles without DEFAULT_ADMIN_ROLE
+        token.grantRole(TEST_ROLE, account1);
+        assertTrue(
+            token.hasRole(TEST_ROLE, account1),
+            "Account1 should have TEST_ROLE"
+        );
     }
 
     function test_GrantRoleEmitsEvent() public {
         vm.expectEmit(true, true, true, true, address(token));
         emit IAccessControl.RoleGranted(TEST_ROLE, account1, owner);
         token.grantRole(TEST_ROLE, account1);
+
+        assertTrue(
+            token.hasRole(TEST_ROLE, account1),
+            "Account1 should have TEST_ROLE"
+        );
     }
 
-    function test_GrantRoleIdempotent() public {
+    function testFuzz_GrantRoleEmitsEvent(bytes32 role) public {
+        vm.assume(role != DEFAULT_ADMIN_ROLE);
+
+        vm.expectEmit(true, true, true, true, address(token));
+        emit IAccessControl.RoleGranted(role, account1, owner);
+        token.grantRole(role, account1);
+
+        assertTrue(token.hasRole(role, account1), "Account1 should have role");
+    }
+
+    function test_GrantSameRoleTwiceDoesNotEmitEventSecondTx() public {
         token.grantRole(TEST_ROLE, account1);
 
         // Second grant should be a no-op (no event emitted)
@@ -222,13 +334,26 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
-    function test_OwnerCanRevokeRole() public {
+    function test_OwnerCanRevokeAnyoneRole() public {
         token.grantRole(TEST_ROLE, account1);
         assertTrue(token.hasRole(TEST_ROLE, account1));
 
         token.revokeRole(TEST_ROLE, account1);
         assertFalse(
             token.hasRole(TEST_ROLE, account1),
+            "Account1 should not have TEST_ROLE after revocation"
+        );
+    }
+
+    function testFuzz_OwnerCanRevokeAnyoneRole(address randomAccount) public {
+        vm.assume(randomAccount != owner);
+
+        token.grantRole(TEST_ROLE, randomAccount);
+        assertTrue(token.hasRole(TEST_ROLE, randomAccount));
+
+        token.revokeRole(TEST_ROLE, randomAccount);
+        assertFalse(
+            token.hasRole(TEST_ROLE, randomAccount),
             "Account1 should not have TEST_ROLE after revocation"
         );
     }
@@ -267,6 +392,30 @@ contract AccessControlExtendedTest is Test {
         token.revokeRole(TEST_ROLE, account1);
     }
 
+    function testFuzz_NonAdminCannotRevokeRole(address randomAccount) public {
+        vm.assume(randomAccount != owner);
+
+        assertFalse(
+            token.hasRole(DEFAULT_ADMIN_ROLE, randomAccount),
+            "Random account should not have DEFAULT_ADMIN_ROLE"
+        );
+
+        token.grantRole(TEST_ROLE, randomAccount);
+        assertTrue(token.hasRole(TEST_ROLE, randomAccount));
+
+        vm.prank(randomAccount);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                randomAccount,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.revokeRole(TEST_ROLE, randomAccount);
+
+        assertTrue(token.hasRole(TEST_ROLE, randomAccount));
+    }
+
     // ============================================================
     // Section 3: renounceRole (TEST-01)
     // ============================================================
@@ -284,7 +433,9 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
-    function test_RenounceRoleRequiresCallerConfirmation() public {
+    function test_RenounceRoleRequiresCallerConfirmationParamAsMsgSender()
+        public
+    {
         token.grantRole(TEST_ROLE, account1);
 
         vm.prank(account1);
@@ -292,6 +443,23 @@ contract AccessControlExtendedTest is Test {
             abi.encodeWithSelector(AccessControlBadConfirmation.selector)
         );
         token.renounceRole(TEST_ROLE, account2);
+    }
+
+    function testFuzz_RenounceRoleRequiresCallerConfirmationParamAsMsgSender(
+        address randomCaller,
+        address incorrectCallerConfirmation
+    ) public {
+        vm.assume(randomCaller != owner);
+        vm.assume(randomCaller != incorrectCallerConfirmation);
+
+        token.grantRole(TEST_ROLE, randomCaller);
+        assertTrue(token.hasRole(TEST_ROLE, randomCaller));
+
+        vm.prank(randomCaller);
+        vm.expectRevert(
+            abi.encodeWithSelector(AccessControlBadConfirmation.selector)
+        );
+        token.renounceRole(TEST_ROLE, incorrectCallerConfirmation);
     }
 
     function test_RenounceDefaultAdminRoleAllowed() public {
@@ -355,6 +523,18 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
+    function test_HasRoleReturnsFalseAfterRenouncing() public {
+        token.grantRole(TEST_ROLE, account1);
+        assertTrue(token.hasRole(TEST_ROLE, account1));
+
+        vm.prank(account1);
+        token.renounceRole(TEST_ROLE, account1);
+        assertFalse(
+            token.hasRole(TEST_ROLE, account1),
+            "hasRole should return false after renouncing"
+        );
+    }
+
     // ============================================================
     // Section 5: Enumeration - forward lookup (TEST-01)
     // ============================================================
@@ -381,6 +561,46 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
+    function test_GetRoleMemberNonExistentRoleErrorWithArrayOutOfBounds()
+        public
+    {
+        bytes32 nonExistentRole = bytes32(bytes("NonExistentRole"));
+
+        //  bytes4(keccak256("Panic(uint256)"));
+        bytes4 panicErrorSelector = 0x4e487b71;
+        uint256 outOfBoundsErrorCode = 0x32;
+
+        bytes memory panicErrorData = abi.encodeWithSelector(
+            panicErrorSelector,
+            outOfBoundsErrorCode
+        );
+
+        vm.expectRevert(panicErrorData);
+        token.getRoleMember(nonExistentRole, 0);
+    }
+
+    function test_GetRoleMemberIncorrectIndexErrorWithArrayOutOfBounds()
+        public
+    {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+        token.grantRole(TEST_ROLE, account3);
+
+        bytes4 panicErrorSelector = 0x4e487b71;
+        uint256 outOfBoundsErrorCode = 0x32;
+
+        bytes memory panicErrorData = abi.encodeWithSelector(
+            panicErrorSelector,
+            outOfBoundsErrorCode
+        );
+
+        vm.expectRevert(panicErrorData);
+        token.getRoleMember(TEST_ROLE, 3);
+
+        vm.expectRevert(panicErrorData);
+        token.getRoleMember(TEST_ROLE, 4);
+    }
+
     function test_GetRoleMemberCountReflectsGrantsAndRevocations() public {
         token.grantRole(TEST_ROLE, account1);
         token.grantRole(TEST_ROLE, account2);
@@ -402,7 +622,15 @@ contract AccessControlExtendedTest is Test {
     function test_GetRoleMemberRevertsOnOutOfBounds() public {
         token.grantRole(TEST_ROLE, account1);
 
-        vm.expectRevert();
+        bytes4 panicErrorSelector = 0x4e487b71;
+        uint256 outOfBoundsErrorCode = 0x32;
+
+        bytes memory panicErrorData = abi.encodeWithSelector(
+            panicErrorSelector,
+            outOfBoundsErrorCode
+        );
+
+        vm.expectRevert(panicErrorData);
         token.getRoleMember(TEST_ROLE, 1);
     }
 
@@ -416,6 +644,9 @@ contract AccessControlExtendedTest is Test {
 
         bytes32[] memory roles = token.rolesOf(account1);
         assertEq(roles.length, 2, "Account1 should have 2 roles");
+
+        assertEq(roles[0], TEST_ROLE);
+        assertEq(roles[1], ANOTHER_ROLE);
     }
 
     function test_RolesOfReturnsEmptyForNoRoles() public {
@@ -427,14 +658,24 @@ contract AccessControlExtendedTest is Test {
         token.grantRole(TEST_ROLE, account1);
         token.grantRole(ANOTHER_ROLE, account1);
 
+        bytes32[] memory roles = token.rolesOf(account1);
+        assertEq(
+            roles.length,
+            2,
+            "Account1 should have 2 roles before revocation"
+        );
+        assertEq(roles[0], TEST_ROLE);
+        assertEq(roles[1], ANOTHER_ROLE);
+
         token.revokeRole(TEST_ROLE, account1);
 
-        bytes32[] memory roles = token.rolesOf(account1);
+        roles = token.rolesOf(account1);
         assertEq(
             roles.length,
             1,
             "Account1 should have 1 role after revocation"
         );
+        assertEq(roles[0], ANOTHER_ROLE);
     }
 
     function test_RolesOfReturnsConsistentWithHasRole() public {
@@ -455,9 +696,14 @@ contract AccessControlExtendedTest is Test {
     // ============================================================
 
     function test_SetRoleDataStoresData() public {
-        bytes memory data = abi.encodePacked(uint256(100));
+        token.grantRole(TEST_ROLE, account1);
+        assertTrue(token.hasRole(TEST_ROLE, account1));
+        assertEq(token.getRoleData(TEST_ROLE, account1).length, 0);
+
+        bytes memory data = bytes("some role data");
         token.setRoleData(TEST_ROLE, account1, data);
 
+        assertTrue(token.hasRole(TEST_ROLE, account1));
         assertEq(
             token.getRoleData(TEST_ROLE, account1),
             data,
@@ -474,10 +720,14 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_SetRoleDataAllowedWithoutRole() public {
-        // Per CONTEXT.md, setRoleData does NOT revert if account lacks role
-        bytes memory data = abi.encodePacked(uint256(300));
+        // setRoleData does NOT revert if account lacks role
+        assertFalse(token.hasRole(TEST_ROLE, account1));
+        assertEq(token.getRoleData(TEST_ROLE, account1).length, 0);
+
+        bytes memory data = bytes("some role data");
         token.setRoleData(TEST_ROLE, account1, data);
 
+        assertFalse(token.hasRole(TEST_ROLE, account1));
         assertEq(
             token.getRoleData(TEST_ROLE, account1),
             data,
@@ -485,8 +735,8 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
-    function test_SetRoleDataRequiresAdminAuthority() public {
-        bytes memory data = abi.encodePacked(uint256(400));
+    function test_SetRoleDataOnlyCallableByOwnerOrRoleAdmin() public {
+        bytes memory data = bytes("some role data");
 
         vm.prank(nonOwner);
         vm.expectRevert(
@@ -497,6 +747,31 @@ contract AccessControlExtendedTest is Test {
             )
         );
         token.setRoleData(TEST_ROLE, account1, data);
+
+        // test with owner
+        vm.prank(owner);
+        token.setRoleData(TEST_ROLE, account1, data);
+
+        assertEq(
+            token.getRoleData(TEST_ROLE, account1),
+            data,
+            "Data should be stored"
+        );
+
+        // test with role admin
+        bytes32 roleAdmin = keccak256("Test role admin");
+        token.setRoleAdmin(TEST_ROLE, roleAdmin);
+        token.grantRole(roleAdmin, account1);
+        assertTrue(token.hasRole(roleAdmin, account1));
+
+        vm.prank(account1);
+        token.setRoleData(TEST_ROLE, account2, data);
+
+        assertEq(
+            token.getRoleData(TEST_ROLE, account2),
+            data,
+            "Data should be stored"
+        );
     }
 
     function test_GetRoleDataReturnsEmptyForNoData() public {
@@ -505,7 +780,7 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_GrantRoleWithDataStoresRoleAndData() public {
-        bytes memory data = abi.encodePacked(uint256(500));
+        bytes memory data = bytes("some role data");
         token.grantRoleWithData(TEST_ROLE, account1, data);
 
         assertTrue(
@@ -520,7 +795,7 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_GrantRoleWithDataEmitsBothEvents() public {
-        bytes memory data = abi.encodePacked(uint256(600));
+        bytes memory data = bytes("some role data");
 
         vm.expectEmit(true, true, true, true, address(token));
         emit IAccessControl.RoleGranted(TEST_ROLE, account1, owner);
@@ -530,7 +805,7 @@ contract AccessControlExtendedTest is Test {
         token.grantRoleWithData(TEST_ROLE, account1, data);
     }
 
-    function test_GrantRoleWithDataUpdateDataIfRoleAlreadyHeld() public {
+    function test_GrantRoleWithDataUpdateDataOnlyIfRoleAlreadyHeld() public {
         // First grant without data
         token.grantRole(TEST_ROLE, account1);
 
@@ -543,6 +818,10 @@ contract AccessControlExtendedTest is Test {
 
         // Should have exactly 1 event: RoleDataChanged (no RoleGranted since role already held)
         assertEq(entries.length, 1, "Should emit only RoleDataChanged");
+        assertEq(
+            entries[0].topics[0],
+            IAccessControlExtended.RoleDataChanged.selector
+        );
 
         assertEq(
             token.getRoleData(TEST_ROLE, account1),
@@ -559,6 +838,7 @@ contract AccessControlExtendedTest is Test {
 
         // Should have exactly 1 event: RoleGranted (no RoleDataChanged since data is empty)
         assertEq(entries.length, 1, "Should emit only RoleGranted");
+        assertEq(entries[0].topics[0], IAccessControl.RoleGranted.selector);
 
         assertTrue(
             token.hasRole(TEST_ROLE, account1),
@@ -571,11 +851,18 @@ contract AccessControlExtendedTest is Test {
     // ============================================================
 
     function test_RevokeRoleClearsAssociatedData() public {
-        bytes memory data = abi.encodePacked(uint256(800));
+        bytes memory data = bytes("some data");
         token.grantRoleWithData(TEST_ROLE, account1, data);
+        assertTrue(token.hasRole(TEST_ROLE, account1));
+        assertEq(
+            token.getRoleData(TEST_ROLE, account1),
+            data,
+            "Data should be stored"
+        );
 
         token.revokeRole(TEST_ROLE, account1);
 
+        assertFalse(token.hasRole(TEST_ROLE, account1));
         assertEq(
             token.getRoleData(TEST_ROLE, account1).length,
             0,
@@ -584,7 +871,7 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_RevokeRoleEmitsRoleDataChangedWhenDataExists() public {
-        bytes memory data = abi.encodePacked(uint256(900));
+        bytes memory data = bytes("some data");;
         token.grantRoleWithData(TEST_ROLE, account1, data);
 
         vm.expectEmit(true, true, false, true, address(token));
@@ -602,6 +889,7 @@ contract AccessControlExtendedTest is Test {
 
         // Should have exactly 1 event: RoleRevoked (no RoleDataChanged since no data existed)
         assertEq(entries.length, 1, "Should emit only RoleRevoked");
+        assertEq(entries[0].topics[0], IAccessControl.RoleRevoked.selector);
     }
 
     // ============================================================
@@ -617,29 +905,33 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_SetRoleAdminChangesAdmin() public {
+        bytes32 roleAdmin = keccak256("Test role admin");
+
         vm.expectEmit(true, true, true, true, address(token));
         emit IAccessControl.RoleAdminChanged(
             TEST_ROLE,
             DEFAULT_ADMIN_ROLE,
             ANOTHER_ROLE
         );
-        token.setRoleAdmin(TEST_ROLE, ANOTHER_ROLE);
+        token.setRoleAdmin(TEST_ROLE, roleAdmin);
 
         assertEq(
             token.getRoleAdmin(TEST_ROLE),
-            ANOTHER_ROLE,
-            "Admin for TEST_ROLE should be ANOTHER_ROLE"
+            roleAdmin,
+            "Admin for TEST_ROLE should be roleAdmin"
         );
     }
 
-    function test_CustomAdminCanGrantItsRole() public {
-        // Set ANOTHER_ROLE as admin for TEST_ROLE
-        token.setRoleAdmin(TEST_ROLE, ANOTHER_ROLE);
+    function test_CustomAdminCanGrantThisRole() public {
+        bytes32 roleAdmin = keccak256("Test role admin");
 
-        // Grant ANOTHER_ROLE to account1
-        token.grantRole(ANOTHER_ROLE, account1);
+        // Set "roleAdmin" as admin for TEST_ROLE
+        token.setRoleAdmin(TEST_ROLE, roleAdmin);
 
-        // account1 (holder of ANOTHER_ROLE, which is admin of TEST_ROLE) can grant TEST_ROLE
+        // Grant "roleAdmin" to account1
+        token.grantRole(roleAdmin, account1);
+
+        // account1 (holder of "roleAdmin", which is admin of TEST_ROLE) can grant TEST_ROLE
         vm.prank(account1);
         token.grantRole(TEST_ROLE, account2);
 
@@ -650,14 +942,15 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_DefaultAdminCanAlwaysGrantRegardlessOfCustomAdmin() public {
-        // Set ANOTHER_ROLE as admin for TEST_ROLE
-        token.setRoleAdmin(TEST_ROLE, ANOTHER_ROLE);
+        bytes32 roleAdmin = keccak256("Test role admin");
+        // Set "roleAdmin" as admin for TEST_ROLE
+        token.setRoleAdmin(TEST_ROLE, roleAdmin);
 
         // Grant DEFAULT_ADMIN_ROLE to account1
         token.grantRole(DEFAULT_ADMIN_ROLE, account1);
 
         // account1 (DEFAULT_ADMIN_ROLE holder) can still grant TEST_ROLE
-        // even though custom admin is ANOTHER_ROLE
+        // even though custom admin is "roleAdmin"
         vm.prank(account1);
         token.grantRole(TEST_ROLE, account2);
 
@@ -692,9 +985,13 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
-    function test_DoesNotSupportRandomInterface() public {
+    function testFuzz_DoesNotSupportRandomInterface(bytes interfaceId) public {
+        vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROL);
+        vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLENUMERABLE);
+        vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLEXTENDED);
+
         assertFalse(
-            token.supportsInterface(0xdeadbeef),
+            token.supportsInterface(interfaceId),
             "Should not support random interface"
         );
     }
