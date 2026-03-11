@@ -3,7 +3,12 @@ pragma solidity ^0.8.27;
 
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
-import {LSP7MintableAbstract} from "../extensions/LSP7Mintable/LSP7MintableAbstract.sol";
+import {
+    LSP7MintableAbstract
+} from "../extensions/LSP7Mintable/LSP7MintableAbstract.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 /**
  * @title LSP7DigitalAsset deployable preset contract with a public {mint} function callable only by the contract {owner}.
@@ -30,6 +35,7 @@ contract LSP7Mintable is LSP7MintableAbstract {
             lsp4TokenType_,
             isNonDivisible_
         )
+        AccessControlExtendedAbstract(newOwner_)
         LSP7MintableAbstract(mintable_)
     {}
 }

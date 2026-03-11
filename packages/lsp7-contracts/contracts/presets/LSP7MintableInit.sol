@@ -2,8 +2,12 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
-import {LSP7MintableInitAbstract} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../LSP7DigitalAssetInitAbstract.sol";
+import {
+    LSP7MintableInitAbstract
+} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
 
 /**
  * @dev LSP7DigitalAsset deployable preset contract (proxy version) with a public {mint} function callable only by the contract {owner}.
@@ -30,6 +34,13 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
         bool mintable_
     ) external virtual initializer {
         LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
+        __AccessControlExtended_init(
             name_,
             symbol_,
             newOwner_,

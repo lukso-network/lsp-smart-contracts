@@ -3,6 +3,10 @@ pragma solidity ^0.8.27;
 
 // modules
 import {
+    AccessControlExtendedInitAbstract
+} from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+
+import {
     LSP7DigitalAssetInitAbstract
 } from "../../LSP7DigitalAssetInitAbstract.sol";
 
@@ -16,10 +20,12 @@ import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 /// @dev Abstract contract implementing a isMintable LSP7 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP7DigitalAsset to provide core token functionality.
 abstract contract LSP7MintableInitAbstract is
     ILSP7Mintable,
-    LSP7DigitalAssetInitAbstract
+    AccessControlExtendedInitAbstract
 {
     /// @notice Indicates whether minting is currently enabled or not.
     bool public isMintable;
+
+    bytes32 public constant MINTER_ROLE = bytes32("MINTER_ROLE");
 
     /// @notice Initializes the LSP7Mintable contract with base token params and minting status.
     /// @dev Initializes the LSP7DigitalAsset base and sets the minting status.
@@ -45,6 +51,13 @@ abstract contract LSP7MintableInitAbstract is
             lsp4TokenType_,
             isNonDivisible_
         );
+        __AccessControlExtended_init(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
         __LSP7Mintable_init_unchained(mintable_);
     }
 
@@ -56,6 +69,8 @@ abstract contract LSP7MintableInitAbstract is
     ) internal virtual onlyInitializing {
         isMintable = mintable_;
         emit MintingStatusChanged(mintable_);
+
+        _grantRole(MINTER_ROLE, owner());
     }
 
     /// @inheritdoc ILSP7Mintable
@@ -71,7 +86,7 @@ abstract contract LSP7MintableInitAbstract is
         uint256 amount,
         bool force,
         bytes memory data
-    ) public virtual override onlyOwner {
+    ) public virtual override onlyRole(MINTER_ROLE) {
         _mint(to, amount, force, data);
     }
 
