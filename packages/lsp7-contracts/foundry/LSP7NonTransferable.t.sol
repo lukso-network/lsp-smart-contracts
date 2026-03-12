@@ -7,8 +7,8 @@ import "forge-std/Test.sol";
 // modules
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 import {
-    LSP7AllowlistAbstract
-} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+    AccessControlExtendedAbstract
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 import {
     LSP7NonTransferableAbstract
 } from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
@@ -49,7 +49,7 @@ contract MockLSP7NonTransferable is LSP7NonTransferableAbstract {
             isNonDivisible_
         )
         LSP7NonTransferableAbstract(transferLockStart_, transferLockEnd_)
-        LSP7AllowlistAbstract(newOwner_)
+        AccessControlExtendedAbstract(newOwner_)
     {}
 
     function mint(
@@ -98,6 +98,8 @@ contract LSP7NonTransferableTest is Test {
     MockLSP7NonTransferable lsp7NonTransferable;
     MockLSP7NonTransferable lsp7TransferableWithLockPeriod;
 
+    bytes32 nonTransferableBypassRole;
+
     function setUp() public {
         // Token that's always non-transferable (start=0, end=max)
         lsp7NonTransferable = new MockLSP7NonTransferable(
@@ -121,6 +123,9 @@ contract LSP7NonTransferableTest is Test {
             lockPeriodEnd
         );
 
+        nonTransferableBypassRole = lsp7NonTransferable
+            .NON_TRANSFERABLE_BYPASS_ROLE();
+
         lsp7NonTransferable.mint(owner, 100, true, "");
         lsp7NonTransferable.mint(randomCaller, 100, true, "");
         lsp7NonTransferable.mint(allowlistedUser, 100, true, "");
@@ -136,7 +141,10 @@ contract LSP7NonTransferableTest is Test {
         vm.label(randomCaller, "randomCaller");
         vm.label(allowlistedUser, "allowlistedUser");
 
-        lsp7NonTransferable.addToAllowlist(allowlistedUser);
+        lsp7NonTransferable.grantRole(
+            nonTransferableBypassRole,
+            allowlistedUser
+        );
     }
 
     // Constructor and Initial State
@@ -277,14 +285,14 @@ contract LSP7NonTransferableTest is Test {
         uint256 transferLockEndBlock = transferLockStartBlock;
 
         MockLSP7NonTransferable lsp7NonTransferableToken = new MockLSP7NonTransferable(
-                "Test Non Transferable Token",
-                "TNTT",
-                msg.sender,
-                _LSP4_TOKEN_TYPE_TOKEN,
-                false, // isNonDivisible
-                transferLockStartBlock,
-                transferLockEndBlock
-            );
+            "Test Non Transferable Token",
+            "TNTT",
+            msg.sender,
+            _LSP4_TOKEN_TYPE_TOKEN,
+            false, // isNonDivisible
+            transferLockStartBlock,
+            transferLockEndBlock
+        );
 
         lsp7NonTransferableToken.mint(tokenSender, 100, true, "");
         assertEq(lsp7NonTransferableToken.balanceOf(tokenSender), 100);

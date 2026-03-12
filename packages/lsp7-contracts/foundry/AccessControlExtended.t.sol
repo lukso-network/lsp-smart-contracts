@@ -871,7 +871,7 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_RevokeRoleEmitsRoleDataChangedWhenDataExists() public {
-        bytes memory data = bytes("some data");;
+        bytes memory data = bytes("some data");
         token.grantRoleWithData(TEST_ROLE, account1, data);
 
         vm.expectEmit(true, true, false, true, address(token));
@@ -985,7 +985,7 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
-    function testFuzz_DoesNotSupportRandomInterface(bytes interfaceId) public {
+    function testFuzz_DoesNotSupportRandomInterface(bytes4 interfaceId) public {
         vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROL);
         vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLENUMERABLE);
         vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLEXTENDED);
