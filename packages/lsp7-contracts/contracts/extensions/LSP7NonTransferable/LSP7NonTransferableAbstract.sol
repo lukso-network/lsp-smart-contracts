@@ -3,8 +3,8 @@ pragma solidity ^0.8.27;
 
 // modules
 import {
-    LSP7AllowlistAbstract
-} from "../LSP7Allowlist/LSP7AllowlistAbstract.sol";
+    AccessControlExtendedAbstract
+} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
@@ -26,10 +26,12 @@ import {
 /// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods and allowlist support.
 abstract contract LSP7NonTransferableAbstract is
     ILSP7NonTransferable,
-    LSP7AllowlistAbstract
+    AccessControlExtendedAbstract
 {
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
+
+    bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE = bytes32("NON_TRANSFERABLE_BYPASS_ROLE");
 
     /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockStart;
@@ -49,6 +51,8 @@ abstract contract LSP7NonTransferableAbstract is
         transferLockEnd = transferLockEnd_;
 
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
+
+        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, owner());
     }
 
     /// @inheritdoc ILSP7NonTransferable
@@ -150,7 +154,7 @@ abstract contract LSP7NonTransferableAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (isAllowlisted(from)) return;
+        if (hasRole(NON_TRANSFERABLE_BYPASS_ROLE, from)) return;
         _nonTransferableCheck(from, to, amount, force, data);
     }
 }

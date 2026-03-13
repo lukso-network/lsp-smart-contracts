@@ -2,15 +2,33 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {
+    OwnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {LSP7DigitalAssetInitAbstract} from "./LSP7DigitalAssetInitAbstract.sol";
-import {LSP7MintableInitAbstract} from "./extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
-import {LSP7NonTransferableInitAbstract} from "./extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
-import {LSP7CappedBalanceInitAbstract} from "./extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
-import {LSP7CappedSupplyInitAbstract} from "./extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
-import {LSP7BurnableInitAbstract} from "./extensions/LSP7BurnableInitAbstract.sol";
+import {
+    LSP7MintableInitAbstract
+} from "./extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
+import {
+    LSP7NonTransferableInitAbstract
+} from "./extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
+import {
+    LSP7CappedBalanceInitAbstract
+} from "./extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
+import {
+    LSP7CappedSupplyInitAbstract
+} from "./extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
+import {
+    LSP7BurnableInitAbstract
+} from "./extensions/LSP7BurnableInitAbstract.sol";
+import {
+    AccessControlExtendedInitAbstract
+} from "./extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
 // errors
-import {LSP7MintDisabled} from "./extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {
+    LSP7MintDisabled
+} from "./extensions/LSP7Mintable/LSP7MintableErrors.sol";
 
 /// @dev Deployment configuration for minting feature.
 /// @param isMintable True to enable minting after deployment, false to disable it forever.
@@ -100,7 +118,7 @@ contract LSP7CustomizableTokenInit is
             lsp4TokenType_,
             isNonDivisible_
         );
-        __LSP7Allowlist_init_unchained(newOwner_);
+        __AccessControlExtended_init_unchained(newOwner_);
         __LSP7Mintable_init_unchained(mintableParams.isMintable);
         __LSP7NonTransferable_init_unchained(
             nonTransferableParams.transferLockStart,
@@ -165,19 +183,31 @@ contract LSP7CustomizableTokenInit is
             LSP7CappedBalanceInitAbstract
         )
     {
-        LSP7NonTransferableInitAbstract._beforeTokenTransfer(
-            from,
-            to,
-            amount,
-            force,
-            data
-        );
-        LSP7CappedBalanceInitAbstract._beforeTokenTransfer(
-            from,
-            to,
-            amount,
-            force,
-            data
-        );
+        super._beforeTokenTransfer(from, to, amount, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    )
+        internal
+        virtual
+        override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
+    {
+        super._transferOwnership(newOwner);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            LSP7DigitalAssetInitAbstract,
+            AccessControlExtendedInitAbstract
+        )
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }

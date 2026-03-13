@@ -4,8 +4,12 @@ pragma solidity ^0.8.4;
 
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
-import {LSP7CappedBalanceAbstract} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
-import {LSP7AllowlistAbstract} from "../extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {
+    LSP7CappedBalanceAbstract
+} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 contract LSP7CappedBalance is LSP7CappedBalanceAbstract {
     /// @notice Deploying a `LSP7CappedBalance` token contract.
@@ -31,6 +35,6 @@ contract LSP7CappedBalance is LSP7CappedBalanceAbstract {
             isNonDivisible_
         )
         LSP7CappedBalanceAbstract(tokenBalanceCap_)
-        LSP7AllowlistAbstract(newOwner_)
+        AccessControlExtendedAbstract(newOwner_)
     {}
 }

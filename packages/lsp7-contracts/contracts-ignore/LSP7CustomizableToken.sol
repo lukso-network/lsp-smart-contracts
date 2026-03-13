@@ -2,29 +2,16 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {LSP7DigitalAsset} from "./LSP7DigitalAsset.sol";
-import {
-    LSP7CappedSupplyAbstract
-} from "./extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
+import {LSP7CappedSupplyAbstract} from "./extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
 import {LSP7Burnable} from "./extensions/LSP7Burnable.sol";
-import {
-    LSP7CappedBalanceAbstract
-} from "./extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
-import {
-    LSP7MintableAbstract
-} from "./extensions/LSP7Mintable/LSP7MintableAbstract.sol";
-import {
-    LSP7NonTransferableAbstract
-} from "./extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
-import {
-    AccessControlExtendedAbstract
-} from "./extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {LSP7CappedBalanceAbstract} from "./extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
+import {LSP7MintableAbstract} from "./extensions/LSP7Mintable/LSP7MintableAbstract.sol";
+import {LSP7NonTransferableAbstract} from "./extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
+import {LSP7AllowlistAbstract} from "./extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
 
 // errors
-import {
-    LSP7MintDisabled
-} from "./extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {LSP7MintDisabled} from "./extensions/LSP7Mintable/LSP7MintableErrors.sol";
 
 /// @dev Deployment configuration for minting feature.
 /// @param mintable True to enable minting after deployment, false to disable it forever.
@@ -91,7 +78,7 @@ contract LSP7CustomizableToken is
             lsp4TokenType_,
             isNonDivisible_
         )
-        AccessControlExtendedAbstract(newOwner_)
+        LSP7AllowlistAbstract(newOwner_)
         LSP7MintableAbstract(mintableParams.mintable)
         LSP7NonTransferableAbstract(
             nonTransferableParams.transferLockStart,
@@ -154,24 +141,19 @@ contract LSP7CustomizableToken is
             LSP7NonTransferableAbstract
         )
     {
-        super._beforeTokenTransfer(from, to, amount, force, data);
-    }
-
-    function _transferOwnership(
-        address newOwner
-    ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
-        super._transferOwnership(newOwner);
-    }
-
-    function supportsInterface(
-        bytes4 interfaceId
-    )
-        public
-        view
-        virtual
-        override(LSP7DigitalAsset, AccessControlExtendedAbstract)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
+        LSP7NonTransferableAbstract._beforeTokenTransfer(
+            from,
+            to,
+            amount,
+            force,
+            data
+        );
+        LSP7CappedBalanceAbstract._beforeTokenTransfer(
+            from,
+            to,
+            amount,
+            force,
+            data
+        );
     }
 }

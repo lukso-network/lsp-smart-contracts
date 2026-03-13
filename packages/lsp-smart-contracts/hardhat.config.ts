@@ -114,13 +114,6 @@ const config: HardhatUserConfig = {
       '@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7BurnableInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7Allowlist/ILSP7Allowlist.sol':
-        LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol':
-        LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7AllowlistAbstract.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7Allowlist/LSP7AllowlistInitAbstract.sol':
-        LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedBalance/ILSP7CappedBalance.sol':
         LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol':
@@ -181,12 +174,6 @@ const config: HardhatUserConfig = {
       'contracts/LSP7DigitalAsset/presets/LSP7NonTransferableInit.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7BurnableInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7Allowlist/ILSP7Allowlist.sol':
-        LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol':
-        LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7Allowlist/LSP7AllowlistInitAbstract.sol':
-        LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7CappedBalance/ILSP7CappedBalance.sol':
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol':

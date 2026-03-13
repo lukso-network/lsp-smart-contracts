@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 import {LSP7NonTransferableAbstract} from "../extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
-import {LSP7AllowlistAbstract} from "../extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {AccessControlExtendedAbstract} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 contract LSP7NonTransferable is LSP7NonTransferableAbstract {
     /// @notice Deploying a `LSP7NonTransferable` token contract.
@@ -33,6 +33,6 @@ contract LSP7NonTransferable is LSP7NonTransferableAbstract {
             isNonDivisible_
         )
         LSP7NonTransferableAbstract(transferLockStart_, transferLockEnd_)
-        LSP7AllowlistAbstract(newOwner_)
+        AccessControlExtendedAbstract(newOwner_)
     {}
 }
