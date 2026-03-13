@@ -5,15 +5,23 @@ pragma solidity ^0.8.22;
 import "forge-std/Test.sol";
 
 // modules
-import {LSP7CappedBalanceAbstract} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
-import {LSP7AllowlistAbstract} from "../contracts/extensions/LSP7Allowlist/LSP7AllowlistAbstract.sol";
+import {
+    LSP7CappedBalanceAbstract
+} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // errors
-import {LSP7CappedBalanceExceeded} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
+import {
+    LSP7CappedBalanceExceeded
+} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 // Mock contract to test LSP7CappedBalanceAbstract functionality
 contract MockLSP7CappedBalance is LSP7CappedBalanceAbstract {
@@ -32,8 +40,8 @@ contract MockLSP7CappedBalance is LSP7CappedBalanceAbstract {
             lsp4TokenType_,
             isNonDivisible_
         )
-        LSP7AllowlistAbstract(newOwner_)
         LSP7CappedBalanceAbstract(tokenBalanceCap_)
+        AccessControlExtendedAbstract(newOwner_)
     {}
 
     // Helper function to mint tokens for testing
@@ -71,6 +79,8 @@ contract LSP7CappedBalanceTest is Test {
 
     MockLSP7CappedBalance lsp7CappedBalance;
 
+    bytes32 uncappedBalanceRole;
+
     function setUp() public {
         lsp7CappedBalance = new MockLSP7CappedBalance(
             name,
@@ -81,24 +91,53 @@ contract LSP7CappedBalanceTest is Test {
             tokenBalanceCap
         );
 
-        lsp7CappedBalance.addToAllowlist(allowlistedUser);
-        lsp7CappedBalance.addToAllowlist(allowlistedUserExtra);
+        uncappedBalanceRole = lsp7CappedBalance.UNCAPPED_ROLE();
+
+        lsp7CappedBalance.grantRole(uncappedBalanceRole, allowlistedUser);
+        lsp7CappedBalance.grantRole(uncappedBalanceRole, allowlistedUserExtra);
     }
 
     // Test constructor initialization
-    function test_ConstructorSetsBalanceCap() public {
+    function test_ConstructorSetsBalanceCapAndBypassRoles() public {
         assertEq(
             lsp7CappedBalance.tokenBalanceCap(),
             tokenBalanceCap,
             "Balance cap should be set correctly"
         );
+
+        // Default addresses set in constructor
         assertTrue(
-            lsp7CappedBalance.isAllowlisted(owner),
-            "Owner should be allowlisted"
+            lsp7CappedBalance.hasRole(uncappedBalanceRole, owner),
+            "Owner should have uncapped balance role"
         );
         assertTrue(
-            lsp7CappedBalance.isAllowlisted(zeroAddress),
-            "Zero address should be allowlisted"
+            lsp7CappedBalance.hasRole(uncappedBalanceRole, zeroAddress),
+            "Zero address should have uncapped balance role"
+        );
+        // check for dead address (alternative address used to burn tokens)
+        assertTrue(
+            lsp7CappedBalance.hasRole(
+                uncappedBalanceRole,
+                0x000000000000000000000000000000000000dEaD
+            ),
+            "Dead address should have uncapped balance role"
+        );
+
+        // Extra addresses allowed to bypass balance cap after deployment
+        assertTrue(
+            lsp7CappedBalance.hasRole(uncappedBalanceRole, allowlistedUser),
+            "Allowlisted user should have uncapped balance role"
+        );
+        assertTrue(
+            lsp7CappedBalance.hasRole(
+                uncappedBalanceRole,
+                allowlistedUserExtra
+            ),
+            "Allowlisted user extra should have uncapped balance role"
+        );
+        assertFalse(
+            lsp7CappedBalance.hasRole(uncappedBalanceRole, nonAllowlistedUser),
+            "Non allowlisted user should not have uncapped balance role"
         );
     }
 
