@@ -96,5 +96,6 @@ abstract contract LSP7CappedBalanceAbstract is
         bytes memory data
     ) internal virtual override {
         _tokenBalanceCapCheck(from, to, amount, force, data);
+        super._beforeTokenTransfer(from, to, amount, force, data);
     }
 }

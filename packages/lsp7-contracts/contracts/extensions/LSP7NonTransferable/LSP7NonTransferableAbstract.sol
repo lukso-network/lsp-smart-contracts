@@ -31,7 +31,8 @@ abstract contract LSP7NonTransferableAbstract is
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE = bytes32("NON_TRANSFERABLE_BYPASS_ROLE");
+    bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE =
+        bytes32("NON_TRANSFERABLE_BYPASS_ROLE");
 
     /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockStart;
@@ -154,7 +155,9 @@ abstract contract LSP7NonTransferableAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (hasRole(NON_TRANSFERABLE_BYPASS_ROLE, from)) return;
-        _nonTransferableCheck(from, to, amount, force, data);
+        if (!hasRole(NON_TRANSFERABLE_BYPASS_ROLE, from)) {
+            _nonTransferableCheck(from, to, amount, force, data);
+        }
+        super._beforeTokenTransfer(from, to, amount, force, data);
     }
 }
