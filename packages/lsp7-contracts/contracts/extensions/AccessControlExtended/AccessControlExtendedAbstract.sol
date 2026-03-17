@@ -144,6 +144,9 @@ abstract contract AccessControlExtendedAbstract is
      * @inheritdoc IAccessControl
      * @dev Revokes `role` from `account`. The caller must hold the admin role for `role`
      * (or be the contract owner / DEFAULT_ADMIN_ROLE holder).
+     * 
+     * @custom:warning Revoking `DEFAULT_ADMIN_ROLE` from the current owner does NOT remove
+     * the owner's effective authority. The contract owner can still bypass `_checkRole(...)`.
      */
     function revokeRole(
         bytes32 role,
@@ -162,9 +165,10 @@ abstract contract AccessControlExtendedAbstract is
      * This function's purpose is to provide a mechanism for accounts to lose their privileges
      * if they are compromised (such as when a trusted device is misplaced).
      *
-     * If the calling account had been revoked `role`, emits a {RoleRevoked}
-     * event.
-     *
+     * If the calling account had been revoked `role`, emits a {RoleRevoked} event.
+     * 
+     * @custom:warning If `role` is `DEFAULT_ADMIN_ROLE` and `callerConfirmation` is the current contract owner,
+     * renouncing the role does NOT remove the owner's effective authority. The contract owner can still bypass `_checkRole(...)`.
      */
     function renounceRole(
         bytes32 role,
@@ -303,6 +307,8 @@ abstract contract AccessControlExtendedAbstract is
      * 3. `account` holds `role` -- standard role check
      *
      * Reverts with {AccessControlUnauthorizedAccount} if none of the above hold.
+     * 
+     * @custom:warning If `account` is the contract owner, it will bypass all role checks, even if not present in role enumeration.
      */
     function _checkRole(bytes32 role, address account) internal view virtual {
         // Owner implicitly passes all checks
@@ -322,6 +328,8 @@ abstract contract AccessControlExtendedAbstract is
      * @dev Sets `adminRole` as the admin of `role`. Available for extensions
      * to configure custom admin hierarchies.
      *
+     * @custom:warning DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
+     * 
      * @custom:events {RoleAdminChanged} with the previous and new admin roles.
      */
     function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
@@ -345,7 +353,7 @@ abstract contract AccessControlExtendedAbstract is
             _revokeRole(DEFAULT_ADMIN_ROLE, oldOwner);
         }
 
-        // case if we are renouncing ownership
+        // case if we are not renouncing ownership
         if (newOwner != address(0)) {
             _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
         }

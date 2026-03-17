@@ -35,6 +35,7 @@ abstract contract LSP7MintableAbstract is
     }
 
     /// @inheritdoc ILSP7Mintable
+    /// @custom:warning Once this function is called, any address holding the `MINTER_ROLE` will be inoperable.
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP7MintDisabled());
         isMintable = false;
@@ -57,6 +58,9 @@ abstract contract LSP7MintableAbstract is
     /// @param amount The number of tokens to mint.
     /// @param force When true, allows minting to any address; when false, requires `to` to support LSP1 UniversalReceiver.
     /// @param data Additional data included in the Transfer event and sent to `to`’s UniversalReceiver hook, if applicable.
+    ///
+    /// @custom:warning This internal function does not check for `MINTER_ROLE` access control. 
+    /// Derived contracts that expose this function publicly and want to gate it by `MINTER_ROLE` must enforce it with `onlyRole(MINTER_ROLE)`.
     function _mint(
         address to,
         uint256 amount,
