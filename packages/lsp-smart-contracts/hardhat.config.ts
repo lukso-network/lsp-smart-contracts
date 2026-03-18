@@ -139,8 +139,9 @@ const config: HardhatUserConfig = {
         LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7VotesInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Votes/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Votes/LSP7VotesInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol': LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAssetInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
@@ -199,8 +200,9 @@ const config: HardhatUserConfig = {
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7VotesInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Votes/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Votes/LSP7VotesInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol':
         LSP8_COMPILER_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol':

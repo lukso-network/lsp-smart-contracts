@@ -5,8 +5,12 @@ pragma solidity ^0.8.27;
 import {IERC5805} from "@openzeppelin/contracts/interfaces/IERC5805.sol";
 
 // modules
-import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
+import {
+    EIP712Upgradeable
+} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../../LSP7DigitalAssetInitAbstract.sol";
 
 // libraries
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
@@ -45,7 +49,11 @@ import {
  * For any contract intended to be deployed in production that inherits from this extension, it is recommended to conduct
  * an independent security audit, including this extension in the audit scope.
  */
-abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
+abstract contract LSP7VotesInitAbstract is
+    LSP7DigitalAssetInitAbstract,
+    EIP712Upgradeable,
+    IERC5805
+{
     using Counters for Counters.Counter;
     mapping(address => Counters.Counter) private _nonces;
 
@@ -61,6 +69,24 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
     mapping(address => address) private _delegates;
     mapping(address => Checkpoint[]) private _checkpoints;
     Checkpoint[] private _totalSupplyCheckpoints;
+
+    function _initialize(
+        string memory name_,
+        string memory symbol_,
+        address newOwner_,
+        uint256 lsp4TokenType_,
+        bool isNonDivisible_,
+        string memory version_
+    ) internal virtual onlyInitializing {
+        LSP7DigitalAssetInitAbstract._initialize(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
+        __EIP712_init(name_, version_);
+    }
 
     /**
      * @dev Clock used for flagging checkpoints. Can be overridden to implement timestamp based checkpoints (and voting).
@@ -334,7 +360,7 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
      * @dev Moves voting power from one address to another.
      *
      * @custom:events
-     * - {DelegateVotesChanged} when voting power is removed from source address.
+     * - {DelegateVotesChanged} when voting power is removed from source address
      * - {DelegateVotesChanged} when voting power is added to destination address
      */
     function _moveVotingPower(

@@ -15,7 +15,7 @@ import {
 import {
     _TYPEID_LSP7_VOTESDELEGATOR,
     _TYPEID_LSP7_VOTESDELEGATEE
-} from "@lukso/lsp7-contracts/contracts/extensions/LSP7VotesConstants.sol";
+} from "@lukso/lsp7-contracts/contracts/extensions/LSP7Votes/LSP7VotesConstants.sol";
 import {
     _TYPEID_LSP8_TOKENSSENDER,
     _TYPEID_LSP8_TOKENSRECIPIENT,
