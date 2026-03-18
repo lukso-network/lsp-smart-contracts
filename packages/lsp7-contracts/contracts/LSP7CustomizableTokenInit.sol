@@ -20,7 +20,7 @@ import {
 } from "./extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
 import {
     LSP7BurnableInitAbstract
-} from "./extensions/LSP7BurnableInitAbstract.sol";
+} from "./extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol";
 import {
     AccessControlExtendedInitAbstract
 } from "./extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";

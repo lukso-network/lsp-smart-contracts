@@ -7,7 +7,7 @@ import {LSP7DigitalAsset} from "./LSP7DigitalAsset.sol";
 import {
     LSP7CappedSupplyAbstract
 } from "./extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
-import {LSP7Burnable} from "./extensions/LSP7Burnable.sol";
+import {LSP7Burnable} from "./extensions/LSP7Burnable/LSP7Burnable.sol";
 import {
     LSP7CappedBalanceAbstract
 } from "./extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
