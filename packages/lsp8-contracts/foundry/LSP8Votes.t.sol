@@ -5,17 +5,21 @@ pragma solidity ^0.8.27;
 import "forge-std/Test.sol";
 
 // modules
-import {LSP8Votes} from "../contracts/extensions/LSP8Votes.sol";
-import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
+import {LSP8Votes} from "../contracts/extensions/LSP8Votes/LSP8Votes.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_NFT
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
 import {
     _TYPEID_LSP8_VOTESDELEGATOR,
     _TYPEID_LSP8_VOTESDELEGATEE
-} from "../contracts/extensions/LSP8VotesConstants.sol";
+} from "../contracts/extensions/LSP8Votes/LSP8VotesConstants.sol";
 
 // Mock contract to test LSP8Votes functionality
 contract MockLSP8Votes is LSP8Votes {

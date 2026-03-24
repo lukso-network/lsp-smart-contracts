@@ -2,8 +2,12 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8IdentifiableDigitalAssetInitAbstract} from "@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAssetInitAbstract.sol";
-import {LSP8BurnableInitAbstract} from "@lukso/lsp8-contracts/contracts/extensions/LSP8BurnableInitAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAssetInitAbstract
+} from "@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {
+    LSP8BurnableInitAbstract
+} from "@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol";
 
 contract LSP8InitTester is
     LSP8IdentifiableDigitalAssetInitAbstract,

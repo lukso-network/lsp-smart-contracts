@@ -149,8 +149,9 @@ const config: HardhatUserConfig = {
       '@lukso/lsp8-contracts/contracts/presets/LSP8MintableInit.sol': LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/presets/LSP8MintableInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8BurnableInitAbstract.sol':
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8Burnable.sol':
+        LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply.sol': LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupplyInitAbstract.sol':
@@ -211,8 +212,9 @@ const config: HardhatUserConfig = {
       'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInit.sol': LSP8_COMPILER_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8BurnableInitAbstract.sol':
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable/LSP8Burnable.sol':
+        LSP8_COMPILER_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol':
         LSP8_COMPILER_SETTINGS,

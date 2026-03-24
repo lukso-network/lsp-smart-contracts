@@ -5,11 +5,17 @@ pragma solidity ^0.8.27;
 import "forge-std/Test.sol";
 
 // modules
-import {LSP8Enumerable} from "../contracts/extensions/LSP8Enumerable.sol";
-import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8Enumerable
+} from "../contracts/extensions/LSP8Enumerable/LSP8Enumerable.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_NFT
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
 
 // Mock contract to test LSP8Enumerable functionality
