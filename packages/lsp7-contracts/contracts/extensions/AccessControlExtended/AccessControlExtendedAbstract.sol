@@ -343,17 +343,19 @@ abstract contract AccessControlExtendedAbstract is
     /**
      * @dev Overrides `_transferOwnership` to automatically sync `DEFAULT_ADMIN_ROLE`
      * with the contract owner. Revokes from the old owner and grants to the new owner.
+     *
+     * @custom:warning Be aware that despite transferring ownership to self is a no-op operation, it will still clear the `owner()`'s auxiliary role data.
      */
     function _transferOwnership(address newOwner) internal virtual override {
         address oldOwner = owner();
         super._transferOwnership(newOwner);
 
-        // case where initial owner is set
+        // case when transferring ownership (excluding initial deployment / initialization)
         if (oldOwner != address(0)) {
             _revokeRole(DEFAULT_ADMIN_ROLE, oldOwner);
         }
 
-        // case if we are not renouncing ownership
+        // exclude case when renouncing ownership
         if (newOwner != address(0)) {
             _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
         }
