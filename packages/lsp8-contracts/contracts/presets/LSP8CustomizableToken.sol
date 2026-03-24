@@ -2,16 +2,30 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8IdentifiableDigitalAsset} from "./LSP8IdentifiableDigitalAsset.sol";
-import {LSP8CappedSupplyAbstract} from "./extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol";
-import {LSP8Burnable} from "./extensions/LSP8Burnable.sol";
-import {LSP8CappedBalanceAbstract} from "./extensions/LSP8CappedBalance/LSP8CappedBalanceAbstract.sol";
-import {LSP8MintableAbstract} from "./extensions/LSP8Mintable/LSP8MintableAbstract.sol";
-import {LSP8NonTransferableAbstract} from "./extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol";
-import {LSP8AllowlistAbstract} from "./extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8CappedSupplyAbstract
+} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol";
+import {LSP8Burnable} from "../extensions/LSP8Burnable/LSP8Burnable.sol";
+import {
+    LSP8CappedBalanceAbstract
+} from "../extensions/LSP8CappedBalance/LSP8CappedBalanceAbstract.sol";
+import {
+    LSP8MintableAbstract
+} from "../extensions/LSP8Mintable/LSP8MintableAbstract.sol";
+import {
+    LSP8NonTransferableAbstract
+} from "../extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol";
+import {
+    LSP8AllowlistAbstract
+} from "../extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
 
 // errors
-import {LSP8MintDisabled} from "./extensions/LSP8Mintable/LSP8MintableErrors.sol";
+import {
+    LSP8MintDisabled
+} from "../extensions/LSP8Mintable/LSP8MintableErrors.sol";
 
 /// @dev Deployment configuration for minting feature.
 /// @param mintable True to enable minting after deployment, false to disable it forever.

@@ -10,19 +10,27 @@ import {
     MintableParams,
     NonTransferableParams,
     CappedParams
-} from "../contracts/LSP8CustomizableToken.sol";
+} from "../contracts/presets/LSP8CustomizableToken.sol";
 
 // errors
-import {LSP8MintDisabled} from "../contracts/extensions/LSP8Mintable/LSP8MintableErrors.sol";
-import {LSP8CappedBalanceExceeded} from "../contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceErrors.sol";
+import {
+    LSP8MintDisabled
+} from "../contracts/extensions/LSP8Mintable/LSP8MintableErrors.sol";
+import {
+    LSP8CappedBalanceExceeded
+} from "../contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceErrors.sol";
 import {
     LSP8TransferDisabled,
     LSP8InvalidTransferLockPeriod
 } from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableErrors.sol";
-import {LSP8CappedSupplyCannotMintOverCap} from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
+import {
+    LSP8CappedSupplyCannotMintOverCap
+} from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_NFT
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract LSP8CustomizableTokenTest is Test {
     string name = "Custom NFT";
@@ -200,11 +208,10 @@ contract LSP8CustomizableTokenTest is Test {
             initialTokenIds
         );
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams(
-                200,
-                100 // End before start - invalid
-            );
+        NonTransferableParams memory nonTransferableParams = NonTransferableParams(
+            200,
+            100 // End before start - invalid
+        );
 
         CappedParams memory cappedParams = CappedParams(
             tokenBalanceCap,
@@ -406,11 +413,10 @@ contract LSP8CustomizableTokenTest is Test {
             emptyTokenIds
         );
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams(
-                0,
-                type(uint256).max // non-transferable
-            );
+        NonTransferableParams memory nonTransferableParams = NonTransferableParams(
+            0,
+            type(uint256).max // non-transferable
+        );
 
         CappedParams memory cappedParams = CappedParams(0, 0);
 
@@ -447,11 +453,10 @@ contract LSP8CustomizableTokenTest is Test {
             emptyTokenIds
         );
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams(
-                0,
-                type(uint256).max // non-transferable
-            );
+        NonTransferableParams memory nonTransferableParams = NonTransferableParams(
+            0,
+            type(uint256).max // non-transferable
+        );
 
         CappedParams memory cappedParams = CappedParams(0, 0);
 
@@ -499,11 +504,10 @@ contract LSP8CustomizableTokenTest is Test {
             emptyTokenIds
         );
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams(
-                0,
-                type(uint256).max // non-transferable
-            );
+        NonTransferableParams memory nonTransferableParams = NonTransferableParams(
+            0,
+            type(uint256).max // non-transferable
+        );
 
         CappedParams memory cappedParams = CappedParams(0, 0);
 

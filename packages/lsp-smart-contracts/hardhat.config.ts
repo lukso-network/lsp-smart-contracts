@@ -237,11 +237,13 @@ const config: HardhatUserConfig = {
         LSP8_COMPILER_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8NonTransferable/ILSP8NonTransferable.sol':
         LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/LSP8CustomizableToken.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/LSP8CustomizableTokenInit.sol':
+      'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CustomizableToken.sol':
         LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/LSP8CustomizableToken.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/LSP8CustomizableTokenInit.sol': LSP8_COMPILER_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CustomizableTokenInit.sol':
+        LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/presets/LSP8CustomizableToken.sol': LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/presets/LSP8CustomizableTokenInit.sol':
+        LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8Allowlist/ILSP8Allowlist.sol':
         LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol':
