@@ -104,7 +104,7 @@ const config: HardhatUserConfig = {
       '@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/LSP7DigitalAssetInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/presets/LSP7MintableInit.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7Mintabl§eInit.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7CappedBalance.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7CappedBalanceInit.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7CappedSupply.sol': LSP7_VIA_IR_SETTINGS,
@@ -153,15 +153,18 @@ const config: HardhatUserConfig = {
         LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupplyInitAbstract.sol':
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol':
         LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8EnumerableInitAbstract.sol':
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8VotesConstants.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8VotesInitAbstract.sol':
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable/LSP8Enumerable.sol':
+        LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable/LSP8EnumerableInitAbstract.sol':
+        LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes/LSP8Votes.sol': LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes/LSP8VotesConstants.sol':
+        LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes/LSP8VotesInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
       // imports into lsp-smart-contracts package
       'contracts/LSP4DigitalAssetMetadata/LSP4Utils.sol': VIA_IR_SETTINGS,

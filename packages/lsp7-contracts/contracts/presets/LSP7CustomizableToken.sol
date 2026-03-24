@@ -3,7 +3,7 @@ pragma solidity ^0.8.27;
 
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {LSP7DigitalAsset} from "./LSP7DigitalAsset.sol";
+import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 import {
     LSP7CappedSupplyAbstract
 } from "../extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";

@@ -24,7 +24,7 @@ import {
 import {
     _TYPEID_LSP8_VOTESDELEGATOR,
     _TYPEID_LSP8_VOTESDELEGATEE
-} from "@lukso/lsp8-contracts/contracts/extensions/LSP8VotesConstants.sol";
+} from "@lukso/lsp8-contracts/contracts/extensions/LSP8Votes/LSP8VotesConstants.sol";
 import {
     _TYPEID_LSP9_VALUE_RECEIVED,
     _TYPEID_LSP9_OwnershipTransferStarted,
