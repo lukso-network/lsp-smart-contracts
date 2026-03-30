@@ -43,6 +43,9 @@ abstract contract LSP7NonTransferableAbstract is
     /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockEnd;
 
+    /// @inheritdoc ILSP7NonTransferable
+    bool public transferLockEnabled;
+
     /// @notice Initializes the contract with non-transferable locking period.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
@@ -53,6 +56,7 @@ abstract contract LSP7NonTransferableAbstract is
         );
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
+        transferLockEnabled = true;
 
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
         _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
@@ -76,22 +80,10 @@ abstract contract LSP7NonTransferableAbstract is
             LSP7DigitalAsset.supportsInterface(interfaceId);
     }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    )
-        public
-        view
-        virtual
-        override(AccessControlExtendedAbstract, LSP7DigitalAsset)
-        returns (bool)
-    {
-        return
-            AccessControlExtendedAbstract.supportsInterface(interfaceId) ||
-            LSP7DigitalAsset.supportsInterface(interfaceId);
-    }
-
     /// @inheritdoc ILSP7NonTransferable
     function isTransferable() public view virtual override returns (bool) {
+        if (!transferLockEnabled) return true;
+
         bool isTransferLockStartEnabled = transferLockStart != 0;
         bool isTransferLockEndEnabled = transferLockEnd != 0;
 
@@ -118,11 +110,9 @@ abstract contract LSP7NonTransferableAbstract is
 
     /// @inheritdoc ILSP7NonTransferable
     function makeTransferable() public virtual override onlyOwner {
-        require(
-            transferLockStart != 0 || transferLockEnd != 0,
-            LSP7TokenAlreadyTransferable()
-        );
+        require(transferLockEnabled, LSP7TokenAlreadyTransferable());
 
+        transferLockEnabled = false;
         transferLockStart = 0;
         transferLockEnd = 0;
 
@@ -134,22 +124,14 @@ abstract contract LSP7NonTransferableAbstract is
         uint256 newTransferLockStart,
         uint256 newTransferLockEnd
     ) public virtual override onlyOwner {
+        require(transferLockEnabled, LSP7CannotUpdateTransferLockPeriod());
+
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
         require(
             newTransferLockEnd == 0 ||
                 newTransferLockEnd >= newTransferLockStart,
             LSP7InvalidTransferLockPeriod()
-        );
-
-        require(
-            newTransferLockStart == 0 || block.timestamp < transferLockStart,
-            LSP7CannotUpdateTransferLockPeriod()
-        );
-
-        require(
-            newTransferLockEnd == 0 || block.timestamp < transferLockEnd,
-            LSP7CannotUpdateTransferLockPeriod()
         );
 
         transferLockStart = newTransferLockStart;
