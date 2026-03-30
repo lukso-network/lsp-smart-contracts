@@ -209,6 +209,9 @@ describe('When deploying LSP7 with LSP6 as owner', () => {
 
     it('should allow the new owner to call mint(..)', async () => {
       const LSP7 = context.token as LSP7Mintable;
+      const minterRole = await LSP7.MINTER_ROLE();
+
+      await LSP7.connect(newOwner).grantRole(minterRole, newOwner.address);
 
       await LSP7.connect(newOwner).mint(context.mainController.address, 1, true, '0x');
 

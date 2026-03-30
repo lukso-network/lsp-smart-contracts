@@ -5,7 +5,9 @@ pragma solidity ^0.8.27;
 import {
     OwnableUpgradeable
 } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../LSP7DigitalAssetInitAbstract.sol";
 import {
     LSP7MintableInitAbstract
 } from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";

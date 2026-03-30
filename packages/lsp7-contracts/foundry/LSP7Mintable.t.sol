@@ -60,6 +60,7 @@ contract LSP7MintableTest is Test {
     string symbol = "TT";
     uint256 tokenType = _LSP4_TOKEN_TYPE_TOKEN;
     bool isNonDivisible = false;
+    bytes32 constant DEFAULT_ADMIN_ROLE = 0x00;
 
     address owner = address(this);
     address randomOwner;
@@ -91,6 +92,7 @@ contract LSP7MintableTest is Test {
             isNonDivisible,
             true
         );
+
         Vm.Log[] memory logs = vm.getRecordedLogs();
 
         for (uint256 ii = 0; ii < logs.length; ii++) {
@@ -173,6 +175,20 @@ contract LSP7MintableTest is Test {
         assertEq(lsp7NonMintable.owner(), owner);
     }
 
+    function test_OwnerStartsWithMinterRole() public {
+        assertTrue(
+            lsp7Mintable.hasRole(lsp7Mintable.MINTER_ROLE(), owner),
+            "Owner should start with MINTER_ROLE"
+        );
+        assertTrue(
+            lsp7MintableRandomOwner.hasRole(
+                lsp7MintableRandomOwner.MINTER_ROLE(),
+                randomOwner
+            ),
+            "Random owner should start with MINTER_ROLE"
+        );
+    }
+
     function test_MintableOwnerCanMint() public {
         assertEq(lsp7Mintable.balanceOf(recipient), 0);
         lsp7Mintable.mint(recipient, 100, true, "");
@@ -201,13 +217,75 @@ contract LSP7MintableTest is Test {
         assertEq(lsp7Mintable.balanceOf(recipient), 0);
     }
 
+    function test_DefaultAdminCannotMintWithoutMinterRole() public {
+        bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
+        address defaultAdmin = vm.addr(102);
+
+        vm.prank(randomOwner);
+        lsp7MintableRandomOwner.grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
+
+        assertTrue(
+            lsp7MintableRandomOwner.hasRole(DEFAULT_ADMIN_ROLE, defaultAdmin)
+        );
+        assertFalse(lsp7MintableRandomOwner.hasRole(minterRole, defaultAdmin));
+
+        vm.prank(defaultAdmin);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                defaultAdmin,
+                minterRole
+            )
+        );
+        lsp7MintableRandomOwner.mint(recipient, 100, true, "");
+    }
+
+    function test_DefaultAdminCanGrantItselfMinterRoleAndMint() public {
+        bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
+        address defaultAdmin = vm.addr(103);
+
+        vm.prank(randomOwner);
+        lsp7MintableRandomOwner.grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
+
+        vm.prank(defaultAdmin);
+        lsp7MintableRandomOwner.grantRole(minterRole, defaultAdmin);
+
+        vm.prank(defaultAdmin);
+        lsp7MintableRandomOwner.mint(recipient, 100, true, "");
+
+        assertEq(lsp7MintableRandomOwner.balanceOf(recipient), 100);
+    }
+
+    function test_OwnerCanReGrantItselfMinterRoleAfterRevocation() public {
+        bytes32 minterRole = lsp7Mintable.MINTER_ROLE();
+
+        lsp7Mintable.revokeRole(minterRole, owner);
+        assertFalse(lsp7Mintable.hasRole(minterRole, owner));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                owner,
+                minterRole
+            )
+        );
+        lsp7Mintable.mint(recipient, 100, true, "");
+
+        lsp7Mintable.grantRole(minterRole, owner);
+        lsp7Mintable.mint(recipient, 100, true, "");
+
+        assertEq(lsp7Mintable.balanceOf(recipient), 100);
+    }
+
     function testFuzz_MintableNonOwnerCannotMint(address nonOwner) public {
         vm.assume(nonOwner != lsp7MintableRandomOwner.owner());
 
         // TODO: there is a big bug, where the deployer is stillk granted the MINTER_ROLE
         // here `address(this)` was the deployer and can still mint the deployer (test contract)
         // retains DEFAULT_ADMIN_ROLE on lsp7MintableRandomOwner, which likely allows it to bypass the MINTER_ROLE check.
-        vm.assume(nonOwner != address(this));
+
+        // UPDATE: this comment might be out of date
+        /// vm.assume(nonOwner != address(this));
 
         assertEq(lsp7MintableRandomOwner.balanceOf(recipient), 0);
 

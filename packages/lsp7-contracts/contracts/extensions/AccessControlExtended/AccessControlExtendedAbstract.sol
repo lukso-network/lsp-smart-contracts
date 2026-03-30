@@ -40,8 +40,8 @@ import {
  * - Standard OZ {IAccessControl} functions: hasRole, grantRole, revokeRole, renounceRole, getRoleAdmin
  * - Standard OZ {IAccessControlEnumerable} functions: getRoleMember, getRoleMemberCount
  * - Extended functions: rolesOf, grantRoleWithData, setRoleData, getRoleData
- * - Owner-as-implicit-admin: contract owner() bypasses all _checkRole checks
- * - DEFAULT_ADMIN_ROLE as root admin: holders bypass all _checkRole checks
+ * - Explicit role checks for every role-gated function
+ * - DEFAULT_ADMIN_ROLE as root admin for granting and revoking roles
  * - Automatic DEFAULT_ADMIN_ROLE sync on ownership transfer
  */
 abstract contract AccessControlExtendedAbstract is
@@ -76,7 +76,7 @@ abstract contract AccessControlExtendedAbstract is
     // --- Modifier
 
     /**
-     * @dev Modifier that checks the caller has `role` (or is owner / DEFAULT_ADMIN_ROLE holder).
+     * @dev Modifier that checks the caller has `role`.
      * Reverts with {AccessControlUnauthorizedAccount} if the check fails.
      */
     modifier onlyRole(bytes32 role) {
@@ -88,7 +88,7 @@ abstract contract AccessControlExtendedAbstract is
 
     /**
      * @dev Grants `DEFAULT_ADMIN_ROLE` to the initial owner so they appear in
-     * enumeration (getRoleMember, rolesOf).
+     * enumeration (getRoleMember, rolesOf) and can administer roles from deployment.
      *
      * @param initialOwner_ The initial owner who receives DEFAULT_ADMIN_ROLE.
      */
@@ -119,7 +119,7 @@ abstract contract AccessControlExtendedAbstract is
         bytes32 role,
         address account
     ) public view virtual returns (bool) {
-        return _roleMembers[role].contains(account);
+        return _hasRole(role, account);
     }
 
     /// @inheritdoc IAccessControl
@@ -131,7 +131,7 @@ abstract contract AccessControlExtendedAbstract is
      * @inheritdoc IAccessControl
      * @dev Grants `role` to `account`.
      *
-     * @custom:requirements The caller must hold the admin role for `role` (or be the contract owner. which has DEFAULT_ADMIN_ROLE by default).
+     * @custom:requirements The caller must hold the admin role for `role`.
      */
     function grantRole(
         bytes32 role,
@@ -142,16 +142,18 @@ abstract contract AccessControlExtendedAbstract is
 
     /**
      * @inheritdoc IAccessControl
-     * @dev Revokes `role` from `account`. The caller must hold the admin role for `role`
-     * (or be the contract owner / DEFAULT_ADMIN_ROLE holder).
+     * @dev Revokes `role` from `account`. The caller must hold the admin role for `role`.
      *
-     * @custom:warning Revoking `DEFAULT_ADMIN_ROLE` from the current owner does NOT remove
-     * the owner's effective authority. The contract owner can still bypass `_checkRole(...)`.
+     * @custom:warning `DEFAULT_ADMIN_ROLE` cannot be removed from the current owner to prevent lockout.
      */
     function revokeRole(
         bytes32 role,
         address account
     ) public virtual onlyRole(getRoleAdmin(role)) {
+        require(
+            !(role == DEFAULT_ADMIN_ROLE && account == owner()),
+            AccessControlUnauthorizedAccount(account, role)
+        );
         _revokeRole(role, account);
     }
 
@@ -167,8 +169,8 @@ abstract contract AccessControlExtendedAbstract is
      *
      * If the calling account had been revoked `role`, emits a {RoleRevoked} event.
      *
-     * @custom:warning If `role` is `DEFAULT_ADMIN_ROLE` and `callerConfirmation` is the current contract owner,
-     * renouncing the role does NOT remove the owner's effective authority. The contract owner can still bypass `_checkRole(...)`.
+     * @custom:warning The current owner cannot renounce `DEFAULT_ADMIN_ROLE`
+     * to prevent locking the contract out of role administration.
      */
     function renounceRole(
         bytes32 role,
@@ -177,6 +179,10 @@ abstract contract AccessControlExtendedAbstract is
         require(
             callerConfirmation == msg.sender,
             AccessControlBadConfirmation()
+        );
+        require(
+            !(role == DEFAULT_ADMIN_ROLE && msg.sender == owner()),
+            AccessControlUnauthorizedAccount(msg.sender, role)
         );
         _revokeRole(role, msg.sender);
     }
@@ -299,29 +305,23 @@ abstract contract AccessControlExtendedAbstract is
     }
 
     /**
-     * @dev Checks that `account` has `role`, with three bypass paths:
+     * @dev Checks that `account` has `role`.
      *
-     * @custom:requirements
-     * 1. `account == owner()` -- owner implicitly passes all checks
-     * 2. `account` holds `DEFAULT_ADMIN_ROLE` -- root admin for all roles
-     * 3. `account` holds `role` -- standard role check
-     *
-     * Reverts with {AccessControlUnauthorizedAccount} if none of the above hold.
-     *
-     * @custom:warning If `account` is the contract owner, it will bypass all role checks, even if not present in role enumeration.
+     * Reverts with {AccessControlUnauthorizedAccount} if the account does not
+     * explicitly hold the role.
      */
     function _checkRole(bytes32 role, address account) internal view virtual {
-        // Owner implicitly passes all checks
-        if (account == owner()) return;
-
-        // DEFAULT_ADMIN_ROLE is root admin for ALL roles
-        if (hasRole(DEFAULT_ADMIN_ROLE, account)) return;
-
-        // Standard role check
         require(
-            hasRole(role, account),
+            _hasRole(role, account),
             AccessControlUnauthorizedAccount(account, role)
         );
+    }
+
+    function _hasRole(
+        bytes32 role,
+        address account
+    ) internal view virtual returns (bool) {
+        return _roleMembers[role].contains(account);
     }
 
     /**
