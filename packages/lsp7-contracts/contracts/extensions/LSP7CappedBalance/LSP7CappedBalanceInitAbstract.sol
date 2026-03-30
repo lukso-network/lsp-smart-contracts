@@ -3,6 +3,12 @@ pragma solidity ^0.8.27;
 
 // modules
 import {
+    OwnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../../LSP7DigitalAssetInitAbstract.sol";
+import {
     AccessControlExtendedInitAbstract
 } from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
@@ -21,7 +27,8 @@ import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 /// @dev Abstract contract implementing a per-address balance cap for LSP7 tokens, with exemptions for allowlisted addresses. Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
 abstract contract LSP7CappedBalanceInitAbstract is
     ILSP7CappedBalance,
-    AccessControlExtendedInitAbstract
+    AccessControlExtendedInitAbstract,
+    LSP7DigitalAssetInitAbstract
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -50,13 +57,14 @@ abstract contract LSP7CappedBalanceInitAbstract is
         bool isNonDivisible_,
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
-        __AccessControlExtended_init(
+        LSP7DigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
             isNonDivisible_
         );
+        __AccessControlExtended_init(newOwner_);
         __LSP7CappedBalance_init_unchained(tokenBalanceCap_);
     }
 
@@ -77,6 +85,23 @@ abstract contract LSP7CappedBalanceInitAbstract is
     /// @inheritdoc ILSP7CappedBalance
     function tokenBalanceCap() public view virtual override returns (uint256) {
         return _tokenBalanceCap;
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            AccessControlExtendedInitAbstract,
+            LSP7DigitalAssetInitAbstract
+        )
+        returns (bool)
+    {
+        return
+            AccessControlExtendedInitAbstract.supportsInterface(interfaceId) ||
+            LSP7DigitalAssetInitAbstract.supportsInterface(interfaceId);
     }
 
     /// @notice Checks if a token transfer complies with the balance cap.
@@ -127,5 +152,15 @@ abstract contract LSP7CappedBalanceInitAbstract is
     ) internal virtual override {
         _tokenBalanceCapCheck(from, to, amount, force, data);
         super._beforeTokenTransfer(from, to, amount, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    )
+        internal
+        virtual
+        override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
+    {
+        super._transferOwnership(newOwner);
     }
 }

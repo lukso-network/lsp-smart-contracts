@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.27;
 
-// modules
-import {
-    LSP7DigitalAssetInitAbstract
-} from "../../LSP7DigitalAssetInitAbstract.sol";
-
 // interfaces
-import {IAccessControlExtended} from "./IAccessControlExtended.sol";
 import {
     IAccessControl
 } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {
     IAccessControlEnumerable
 } from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
+import {IAccessControlExtended} from "./IAccessControlExtended.sol";
+
+// modules
+import {
+    OwnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 // libraries
 import {
@@ -32,6 +32,9 @@ import {
     AccessControlUnauthorizedAccount,
     AccessControlBadConfirmation
 } from "./AccessControlExtendedErrors.sol";
+import {
+    Initializable
+} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /**
  * @title AccessControlExtendedInitAbstract
@@ -46,7 +49,7 @@ import {
  */
 abstract contract AccessControlExtendedInitAbstract is
     IAccessControlExtended,
-    LSP7DigitalAssetInitAbstract
+    OwnableUpgradeable
 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -87,29 +90,14 @@ abstract contract AccessControlExtendedInitAbstract is
     // --- Initializer
 
     /**
-     * @dev Chained initializer. Initializes the LSP7 base and grants DEFAULT_ADMIN_ROLE to the initial owner,
+     * @dev Chained initializer that grants DEFAULT_ADMIN_ROLE to the initial owner,
      * so they appear in enumeration (getRoleMember, rolesOf) and can administer roles from initialization.
      *
-     * @param name_ Token name.
-     * @param symbol_ Token symbol.
      * @param initialOwner_ Initial contract owner who also receives DEFAULT_ADMIN_ROLE.
-     * @param lsp4TokenType_ The LSP4 token type.
-     * @param isNonDivisible_ Whether the token is non-divisible.
      */
     function __AccessControlExtended_init(
-        string memory name_,
-        string memory symbol_,
-        address initialOwner_,
-        uint256 lsp4TokenType_,
-        bool isNonDivisible_
+        address initialOwner_
     ) internal virtual onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            initialOwner_,
-            lsp4TokenType_,
-            isNonDivisible_
-        );
         __AccessControlExtended_init_unchained(initialOwner_);
     }
 
@@ -128,17 +116,15 @@ abstract contract AccessControlExtendedInitAbstract is
     // --- ERC-165
 
     /**
-     * @dev Returns true for {IAccessControl}, {IAccessControlEnumerable},
-     * {IAccessControlExtended}, and all interfaces supported by {LSP7DigitalAssetInitAbstract}.
+     * @dev Returns true for {IAccessControl}, {IAccessControlEnumerable} and {IAccessControlExtended}.
      */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override returns (bool) {
+    ) public view virtual returns (bool) {
         return
             interfaceId == _INTERFACEID_ACCESSCONTROL ||
             interfaceId == _INTERFACEID_ACCESSCONTROLENUMERABLE ||
-            interfaceId == _INTERFACEID_ACCESSCONTROLEXTENDED ||
-            super.supportsInterface(interfaceId);
+            interfaceId == _INTERFACEID_ACCESSCONTROLEXTENDED;
     }
 
     // --- IAccessControl

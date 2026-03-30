@@ -6,6 +6,12 @@ import "forge-std/Test.sol";
 
 // modules
 import {
+    OwnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../contracts/LSP7DigitalAssetInitAbstract.sol";
+import {
     AccessControlExtendedInitAbstract
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
@@ -40,7 +46,10 @@ import {
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 
 // Mock contract for testing the InitAbstract variant
-contract MockAccessControlExtendedInit is AccessControlExtendedInitAbstract {
+contract MockAccessControlExtendedInit is
+    LSP7DigitalAssetInitAbstract,
+    AccessControlExtendedInitAbstract
+{
     bytes32 public constant TEST_ROLE = bytes32(bytes("TestRole"));
 
     function initialize(
@@ -50,13 +59,14 @@ contract MockAccessControlExtendedInit is AccessControlExtendedInitAbstract {
         uint256 lsp4TokenType_,
         bool isNonDivisible_
     ) external initializer {
-        __AccessControlExtended_init(
+        LSP7DigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
             isNonDivisible_
         );
+        __AccessControlExtended_init(newOwner_);
     }
 
     function mint(
@@ -75,6 +85,33 @@ contract MockAccessControlExtendedInit is AccessControlExtendedInitAbstract {
         returns (bool)
     {
         return true;
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            LSP7DigitalAssetInitAbstract,
+            AccessControlExtendedInitAbstract
+        )
+        returns (bool)
+    {
+        return
+            LSP7DigitalAssetInitAbstract.supportsInterface(interfaceId) ||
+            AccessControlExtendedInitAbstract.supportsInterface(interfaceId);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    )
+        internal
+        virtual
+        override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
+    {
+        AccessControlExtendedInitAbstract._transferOwnership(newOwner);
     }
 }
 

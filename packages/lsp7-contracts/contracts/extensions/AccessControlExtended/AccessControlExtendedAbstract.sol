@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.27;
 
-// modules
-import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
-
 // interfaces
 import {IAccessControlExtended} from "./IAccessControlExtended.sol";
 import {
@@ -12,6 +9,9 @@ import {
 import {
     IAccessControlEnumerable
 } from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
+
+// modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 // libraries
 import {
@@ -46,7 +46,7 @@ import {
  */
 abstract contract AccessControlExtendedAbstract is
     IAccessControlExtended,
-    LSP7DigitalAsset
+    Ownable
 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -99,17 +99,15 @@ abstract contract AccessControlExtendedAbstract is
     // --- ERC-165
 
     /**
-     * @dev Returns true for {IAccessControl}, {IAccessControlEnumerable},
-     * {IAccessControlExtended}, and all interfaces supported by {LSP7DigitalAsset}.
+     * @dev Returns true for {IAccessControl}, {IAccessControlEnumerable} and {IAccessControlExtended}.
      */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override returns (bool) {
+    ) public view virtual returns (bool) {
         return
             interfaceId == _INTERFACEID_ACCESSCONTROL ||
             interfaceId == _INTERFACEID_ACCESSCONTROLENUMERABLE ||
-            interfaceId == _INTERFACEID_ACCESSCONTROLEXTENDED ||
-            super.supportsInterface(interfaceId);
+            interfaceId == _INTERFACEID_ACCESSCONTROLEXTENDED;
     }
 
     // --- IAccessControl

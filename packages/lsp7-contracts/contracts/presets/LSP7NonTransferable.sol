@@ -4,8 +4,12 @@ pragma solidity ^0.8.4;
 
 // modules
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
-import {LSP7NonTransferableAbstract} from "../extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
-import {AccessControlExtendedAbstract} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {
+    LSP7NonTransferableAbstract
+} from "../extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 contract LSP7NonTransferable is LSP7NonTransferableAbstract {
     /// @notice Deploying a `LSP7NonTransferable` token contract.
