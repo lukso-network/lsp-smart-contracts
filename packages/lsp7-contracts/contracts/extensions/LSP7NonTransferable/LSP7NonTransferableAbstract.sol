@@ -76,6 +76,20 @@ abstract contract LSP7NonTransferableAbstract is
             LSP7DigitalAsset.supportsInterface(interfaceId);
     }
 
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(AccessControlExtendedAbstract, LSP7DigitalAsset)
+        returns (bool)
+    {
+        return
+            AccessControlExtendedAbstract.supportsInterface(interfaceId) ||
+            LSP7DigitalAsset.supportsInterface(interfaceId);
+    }
+
     /// @inheritdoc ILSP7NonTransferable
     function isTransferable() public view virtual override returns (bool) {
         bool isTransferLockStartEnabled = transferLockStart != 0;
