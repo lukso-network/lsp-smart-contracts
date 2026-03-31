@@ -54,6 +54,9 @@ abstract contract LSP7NonTransferableAbstract is
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
 
         _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, owner());
+
+        // grant role to allow minting tokens (`from == address(0)`)
+        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
     }
 
     /// @inheritdoc ILSP7NonTransferable
@@ -137,7 +140,7 @@ abstract contract LSP7NonTransferableAbstract is
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        // Allow burning or transferring tokens only if the transferability status is enabled
+        // Allow minting, burning or transferring tokens only if the transferability status is enabled
         require(to == address(0) || isTransferable(), LSP7TransferDisabled());
     }
 

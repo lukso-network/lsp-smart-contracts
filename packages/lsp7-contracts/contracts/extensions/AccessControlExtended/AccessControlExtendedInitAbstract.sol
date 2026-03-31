@@ -43,8 +43,6 @@ import {
  * The only differences are:
  * 1. Inherits {LSP7DigitalAssetInitAbstract} instead of {LSP7DigitalAsset}
  * 2. Uses initializer functions instead of a constructor
- *
- * @custom:info No storage gaps needed since all storage is mapping-based (hashed slots).
  */
 abstract contract AccessControlExtendedInitAbstract is
     IAccessControlExtended,
@@ -175,7 +173,7 @@ abstract contract AccessControlExtendedInitAbstract is
      * @inheritdoc IAccessControl
      * @dev Revokes `role` from `account`. The caller must hold the admin role for `role`
      * (or be the contract owner / DEFAULT_ADMIN_ROLE holder).
-     * 
+     *
      * @custom:warning Revoking `DEFAULT_ADMIN_ROLE` from the current owner does NOT remove
      * the owner's effective authority. The contract owner can still bypass `_checkRole(...)`.
      */
@@ -197,7 +195,7 @@ abstract contract AccessControlExtendedInitAbstract is
      * if they are compromised (such as when a trusted device is misplaced).
      *
      * If the calling account had been revoked `role`, emits a {RoleRevoked} event.
-     * 
+     *
      * @custom:warning If `role` is `DEFAULT_ADMIN_ROLE` and `callerConfirmation` is the current contract owner,
      * renouncing the role does NOT remove the owner's effective authority. The contract owner can still bypass `_checkRole(...)`.
      */
@@ -338,7 +336,7 @@ abstract contract AccessControlExtendedInitAbstract is
      * 3. `account` holds `role` -- standard role check
      *
      * Reverts with {AccessControlUnauthorizedAccount} if none of the above hold.
-     * 
+     *
      * @custom:warning If `account` is the contract owner, it will bypass all role checks, even if not present in role enumeration.
      */
     function _checkRole(bytes32 role, address account) internal view virtual {
@@ -358,7 +356,7 @@ abstract contract AccessControlExtendedInitAbstract is
     /**
      * @dev Sets `adminRole` as the admin of `role`. Available for extensions
      * to configure custom admin hierarchies.
-     * 
+     *
      * @custom:warning DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
      *
      * @custom:events {RoleAdminChanged} with the previous and new admin roles.
@@ -389,4 +387,11 @@ abstract contract AccessControlExtendedInitAbstract is
             _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
         }
     }
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     */
+    uint256[49] private __gap;
 }

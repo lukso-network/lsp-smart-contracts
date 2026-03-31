@@ -5,18 +5,30 @@ pragma solidity ^0.8.22;
 import "forge-std/Test.sol";
 
 // modules
-import {AccessControlExtendedInitAbstract} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+import {
+    AccessControlExtendedInitAbstract
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
 // proxy
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {
+    ERC1967Proxy
+} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 // interfaces
-import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
-import {IAccessControlEnumerable} from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
-import {IAccessControlExtended} from "../contracts/extensions/AccessControlExtended/IAccessControlExtended.sol";
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {
+    IAccessControlEnumerable
+} from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
+import {
+    IAccessControlExtended
+} from "../contracts/extensions/AccessControlExtended/IAccessControlExtended.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {
     _INTERFACEID_ACCESSCONTROL,
     _INTERFACEID_ACCESSCONTROLENUMERABLE,
@@ -207,10 +219,22 @@ contract AccessControlExtendedInitTest is Test {
 
         // Read all state back through proxy and verify consistency
         // hasRole
-        assertTrue(token.hasRole(roleA, account1), "account1 should have roleA");
-        assertTrue(token.hasRole(roleA, account2), "account2 should have roleA");
-        assertTrue(token.hasRole(roleB, account1), "account1 should have roleB");
-        assertTrue(token.hasRole(roleB, account3), "account3 should have roleB");
+        assertTrue(
+            token.hasRole(roleA, account1),
+            "account1 should have roleA"
+        );
+        assertTrue(
+            token.hasRole(roleA, account2),
+            "account2 should have roleA"
+        );
+        assertTrue(
+            token.hasRole(roleB, account1),
+            "account1 should have roleB"
+        );
+        assertTrue(
+            token.hasRole(roleB, account3),
+            "account3 should have roleB"
+        );
         assertFalse(
             token.hasRole(roleA, account3),
             "account3 should not have roleA"
@@ -242,11 +266,7 @@ contract AccessControlExtendedInitTest is Test {
 
         // rolesOf (reverse lookup)
         bytes32[] memory account1Roles = token.rolesOf(account1);
-        assertEq(
-            account1Roles.length,
-            2,
-            "account1 should have 2 roles"
-        );
+        assertEq(account1Roles.length, 2, "account1 should have 2 roles");
 
         // getRoleData
         assertEq(
@@ -373,16 +393,16 @@ contract AccessControlExtendedInitTest is Test {
         );
     }
 
-    function testFuzz_DoesNotSupportRandomInterface(bytes4 interfaceId) public {
-        // TODO: test fails currently. Should be fixed once we remove LSP7 from inheritance chain.
-        vm.skip(true);
-        vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROL);
-        vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLENUMERABLE);
-        vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLEXTENDED);
+    // function testFuzz_DoesNotSupportRandomInterface(bytes4 interfaceId) public {
+    //     // TODO: test fails currently. Should be fixed once we remove LSP7 from inheritance chain.
+    //     // vm.skip(true);
+    //     vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROL);
+    //     vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLENUMERABLE);
+    //     vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLEXTENDED);
 
-        assertFalse(
-            token.supportsInterface(interfaceId),
-            "Should not support random interface"
-        );
-    }
+    //     assertFalse(
+    //         token.supportsInterface(interfaceId),
+    //         "Should not support random interface"
+    //     );
+    // }
 }

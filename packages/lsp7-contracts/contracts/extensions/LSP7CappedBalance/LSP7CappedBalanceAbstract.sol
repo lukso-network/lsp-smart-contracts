@@ -18,7 +18,8 @@ import {
 import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 
 /// @title LSP7CappedBalanceAbstract
-/// @dev Abstract contract implementing a per-address balance cap for LSP7 tokens, with exemptions for allowlisted addresses. Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
+/// @dev Abstract contract implementing a per-address balance cap for LSP7 tokens, with role base access control and exemptions.
+/// Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
 abstract contract LSP7CappedBalanceAbstract is
     ILSP7CappedBalance,
     AccessControlExtendedAbstract

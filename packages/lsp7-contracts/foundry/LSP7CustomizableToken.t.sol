@@ -13,16 +13,24 @@ import {
 } from "../contracts/LSP7CustomizableToken.sol";
 
 // errors
-import {LSP7MintDisabled} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
-import {LSP7CappedBalanceExceeded} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
+import {
+    LSP7MintDisabled
+} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {
+    LSP7CappedBalanceExceeded
+} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
 import {
     LSP7TransferDisabled,
     LSP7InvalidTransferLockPeriod
 } from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableErrors.sol";
-import {LSP7CappedSupplyCannotMintOverCap} from "../contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
+import {
+    LSP7CappedSupplyCannotMintOverCap
+} from "../contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract LSP7CustomizableTokenTest is Test {
     string name = "Custom Token";
@@ -108,12 +116,10 @@ contract LSP7CustomizableTokenTest is Test {
             "Supply cap should be set"
         );
 
-        // TODO: replace with AccessControlExtended tests
-        // assertTrue(token.isAllowlisted(owner), "Owner should be allowlisted");
-        // assertTrue(
-        //     token.isAllowlisted(zeroAddress),
-        //     "Zero address should be allowlisted"
-        // );
+        assertTrue(
+            token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner),
+            "Owner should have DEFAULT_ADMIN_ROLE"
+        );
     }
 
     function test_ConstructorRevertsIfInitialMintExceedsSupplyCap() public {
@@ -352,7 +358,6 @@ contract LSP7CustomizableTokenTest is Test {
 
     // Minting Tests
     function test_OwnerCanMintToNonAllowlistedAddress() public {
-        
         // TODO: replace with AccessControlExtended tests
         // assertFalse(
         //     token.isAllowlisted(user1),

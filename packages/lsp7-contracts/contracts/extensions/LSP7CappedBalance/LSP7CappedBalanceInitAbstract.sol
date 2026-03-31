@@ -34,8 +34,8 @@ abstract contract LSP7CappedBalanceInitAbstract is
     /// @notice The immutable maximum token balance allowed per address.
     uint256 private _tokenBalanceCap;
 
-    /// @notice Initializes the LSP7CappedBalance contract with base token params, allowlist, and balance cap.
-    /// @dev Initializes the LSP7Allowlist (which initializes LSP7DigitalAsset) and sets the balance cap.
+    /// @notice Initializes the LSP7CappedBalance contract with base token params, balance cap per address,
+    /// and `UNCAPPED_ROLE` exemptions for token contract `owner()`, `address(0)` and `0x...dead` addresses (for burning).
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param newOwner_ The owner of the contract, added to the allowlist.

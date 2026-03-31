@@ -35,7 +35,7 @@ interface IAccessControlExtended is IAccessControlEnumerable {
     function rolesOf(address account) external view returns (bytes32[] memory);
 
     /**
-     * @notice Grants `role` to `account` and stores auxiliary `data` associated .
+     * @notice Grants `role` to `account` and stores auxiliary `data` associated with the role-address pair.
      * @dev If `account` already holds the role, only the data is updated.
      *
      * @custom:requirements Caller must have the admin role for `role`.
@@ -62,7 +62,7 @@ interface IAccessControlExtended is IAccessControlEnumerable {
      *
      * @param role The role identifier.
      * @param account The address to set data for.
-     * @param data The auxiliarydata to store.
+     * @param data The auxiliary data to store.
      *
      * @custom:events {RoleDataChanged} event.
      */

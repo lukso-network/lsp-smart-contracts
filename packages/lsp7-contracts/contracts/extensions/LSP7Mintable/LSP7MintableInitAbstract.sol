@@ -17,7 +17,8 @@ import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 
 /// @title LSP7MintableInitAbstract
-/// @dev Abstract contract implementing a isMintable LSP7 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP7DigitalAsset to provide core token functionality.
+/// @dev Abstract contract implementing a isMintable LSP7 token extension, allowing any address granted the `MINTER_ROLE` to mint new tokens until minting is disabled.
+/// Inherits from LSP7DigitalAsset to provide core token functionality.
 abstract contract LSP7MintableInitAbstract is
     ILSP7Mintable,
     AccessControlExtendedInitAbstract
@@ -98,7 +99,7 @@ abstract contract LSP7MintableInitAbstract is
     /// @param force When true, allows minting to any address; when false, requires `to` to support LSP1 UniversalReceiver.
     /// @param data Additional data included in the Transfer event and sent to `to`’s UniversalReceiver hook, if applicable.
     ///
-    /// @custom:warning This internal function does not check for `MINTER_ROLE` access control. 
+    /// @custom:warning This internal function does not check for `MINTER_ROLE` access control.
     /// Derived contracts that expose this function publicly and want to gate it by `MINTER_ROLE` must enforce it with `onlyRole(MINTER_ROLE)`.
     function _mint(
         address to,

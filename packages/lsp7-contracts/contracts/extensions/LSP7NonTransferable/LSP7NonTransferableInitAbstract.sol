@@ -88,6 +88,9 @@ abstract contract LSP7NonTransferableInitAbstract is
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
 
         _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, owner());
+
+        // grant role to allow minting tokens (`from == address(0)`)
+        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
     }
 
     /// @inheritdoc ILSP7NonTransferable

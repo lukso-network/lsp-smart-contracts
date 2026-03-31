@@ -77,7 +77,7 @@ abstract contract AccessControlExtendedAbstract is
 
     /**
      * @dev Modifier that checks the caller has `role` (or is owner / DEFAULT_ADMIN_ROLE holder).
-     * Reverts with {AccessControlExtendedUnauthorized} if the check fails.
+     * Reverts with {AccessControlUnauthorizedAccount} if the check fails.
      */
     modifier onlyRole(bytes32 role) {
         _checkRole(role);
@@ -144,7 +144,7 @@ abstract contract AccessControlExtendedAbstract is
      * @inheritdoc IAccessControl
      * @dev Revokes `role` from `account`. The caller must hold the admin role for `role`
      * (or be the contract owner / DEFAULT_ADMIN_ROLE holder).
-     * 
+     *
      * @custom:warning Revoking `DEFAULT_ADMIN_ROLE` from the current owner does NOT remove
      * the owner's effective authority. The contract owner can still bypass `_checkRole(...)`.
      */
@@ -166,7 +166,7 @@ abstract contract AccessControlExtendedAbstract is
      * if they are compromised (such as when a trusted device is misplaced).
      *
      * If the calling account had been revoked `role`, emits a {RoleRevoked} event.
-     * 
+     *
      * @custom:warning If `role` is `DEFAULT_ADMIN_ROLE` and `callerConfirmation` is the current contract owner,
      * renouncing the role does NOT remove the owner's effective authority. The contract owner can still bypass `_checkRole(...)`.
      */
@@ -307,7 +307,7 @@ abstract contract AccessControlExtendedAbstract is
      * 3. `account` holds `role` -- standard role check
      *
      * Reverts with {AccessControlUnauthorizedAccount} if none of the above hold.
-     * 
+     *
      * @custom:warning If `account` is the contract owner, it will bypass all role checks, even if not present in role enumeration.
      */
     function _checkRole(bytes32 role, address account) internal view virtual {
@@ -329,7 +329,7 @@ abstract contract AccessControlExtendedAbstract is
      * to configure custom admin hierarchies.
      *
      * @custom:warning DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
-     * 
+     *
      * @custom:events {RoleAdminChanged} with the previous and new admin roles.
      */
     function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {

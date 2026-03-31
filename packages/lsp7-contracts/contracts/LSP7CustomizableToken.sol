@@ -51,13 +51,12 @@ struct CappedParams {
 }
 
 /// @title LSP7CustomizableToken
-/// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and allowlist exemptions.
+/// @dev A customizable LSP7 token (proxy version) implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
 /// Implements {LSP7Mintable} to allow minting.
 /// Implements {LSP7Burnable} to allow burning
 /// Implements {LSP7CappedBalance} to set balance caps.
 /// Implements {LSP7NonTransferable} to restrict transfers.
 /// Implements {LSP7CappedSupply} to set total supply cap.
-/// Implements {LSP7Allowlist} to create allowlist exemptions
 contract LSP7CustomizableToken is
     LSP7MintableAbstract,
     LSP7NonTransferableAbstract,

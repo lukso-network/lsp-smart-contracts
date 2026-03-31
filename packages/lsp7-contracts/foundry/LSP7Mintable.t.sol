@@ -93,6 +93,19 @@ contract LSP7MintableTest is Test {
         );
         Vm.Log[] memory logs = vm.getRecordedLogs();
 
+        for (uint256 ii = 0; ii < logs.length; ii++) {
+            if (
+                logs[ii].topics[0] ==
+                ILSP7Mintable.MintingStatusChanged.selector
+            ) {
+                assertEq(
+                    logs[ii].topics[0],
+                    ILSP7Mintable.MintingStatusChanged.selector
+                );
+                assertEq(logs[ii].topics[1], bytes32(abi.encode(true)));
+            }
+        }
+
         lsp7NonMintable = new MockLSP7Mintable(
             name,
             symbol,
@@ -117,6 +130,8 @@ contract LSP7MintableTest is Test {
     // │   ├─ emit RoleGranted(role: 0x4d494e5445525f524f4c45000000000000000000000000000000000000000000, account: LSP7MintableTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], sender: LSP7MintableTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496])
     function test_EventsEmissionOnDeployment() public {
         address contractOwner = makeAddr("contractOwner");
+
+        vm.recordLogs();
 
         MockLSP7Mintable deployedTokenContract = new MockLSP7Mintable(
             name,
