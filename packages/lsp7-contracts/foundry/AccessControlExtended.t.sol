@@ -145,6 +145,16 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
+    function testFuzz_ConstructorDoesNotGrantArbitraryRolesToOwner(
+        bytes32 role
+    ) public {
+        vm.assume(role != DEFAULT_ADMIN_ROLE);
+        assertFalse(
+            token.hasRole(role, owner),
+            "Owner should not have any other role aside of DEFAULT_ADMIN_ROLE unless explicitly granted"
+        );
+    }
+
     // ============================================================
     // Section 2: grantRole / revokeRole (TEST-01)
     // ============================================================
@@ -223,73 +233,62 @@ contract AccessControlExtendedTest is Test {
         token.grantRole(TEST_ROLE, account2);
     }
 
-    function test_OwnerCanImplicitlyBypassAdminRoleChecks() public {
+    function test_OwnerCannotGrantRoleWithoutCustomAdminRole() public {
         // Set ADMIN_TEST_ROLE as admin for TEST_ROLE
         bytes32 adminTestRole = bytes32(bytes("AdminTestRole"));
         token.setRoleAdmin(TEST_ROLE, adminTestRole);
 
-        // Owner can still grant TEST_ROLE even though they don't have ADMIN_TEST_ROLE
-        // because owner bypasses _checkRole completely
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                owner,
+                adminTestRole
+            )
+        );
         token.grantRole(TEST_ROLE, account1);
 
-        assertTrue(
-            token.hasRole(TEST_ROLE, account1),
-            "Owner should be able to grant despite custom admin"
-        );
-        assertFalse(
-            token.hasRole(adminTestRole, owner),
-            "Account1 should not have adminTestRole"
-        );
+        assertFalse(token.hasRole(adminTestRole, owner));
+        assertFalse(token.hasRole(TEST_ROLE, account1));
     }
 
-    function testFuzz_OwnerCanImplicitlyBypassAdminRoleChecks(
+    function testFuzz_OwnerCannotGrantRoleWithoutCustomAdminRole(
         bytes32 adminTestRole
     ) public {
         vm.assume(adminTestRole != DEFAULT_ADMIN_ROLE);
 
         token.setRoleAdmin(TEST_ROLE, adminTestRole);
 
-        // Owner can grant TEST_ROLE even though they don't have adminTestRole
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                owner,
+                adminTestRole
+            )
+        );
         token.grantRole(TEST_ROLE, account1);
 
-        assertTrue(
-            token.hasRole(TEST_ROLE, account1),
-            "Owner should be able to grant despite custom admin"
-        );
-        assertFalse(
-            token.hasRole(adminTestRole, owner),
-            "Account1 should not have adminTestRole"
-        );
+        assertFalse(token.hasRole(adminTestRole, owner));
+        assertFalse(token.hasRole(TEST_ROLE, account1));
     }
 
-    function test_OwnerCanGrantRoleEvenWithoutDefaultAdminRole() public {
+    function test_OwnerCannotRenounceDefaultAdminRole() public {
         assertTrue(
             token.hasRole(DEFAULT_ADMIN_ROLE, owner),
             "Owner should have DEFAULT_ADMIN_ROLE"
         );
 
-        // This also test that owner (or any address can renounce the role for itself)
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                owner,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
         token.renounceRole(DEFAULT_ADMIN_ROLE, owner);
 
-        assertFalse(
-            token.hasRole(DEFAULT_ADMIN_ROLE, owner),
-            "Owner should not have DEFAULT_ADMIN_ROLE after revocation"
-        );
-
-        // Owner should not have any roles after renouncing DEFAULT_ADMIN_ROLE
         bytes32[] memory roles = token.rolesOf(owner);
-        assertEq(
-            roles.length,
-            0,
-            "Owner should have 0 roles after renouncing DEFAULT_ADMIN_ROLE"
-        );
-
-        // CHECK that owner can still grant roles without DEFAULT_ADMIN_ROLE
-        token.grantRole(TEST_ROLE, account1);
-        assertTrue(
-            token.hasRole(TEST_ROLE, account1),
-            "Account1 should have TEST_ROLE"
-        );
+        assertEq(roles.length, 1, "Owner should keep DEFAULT_ADMIN_ROLE");
+        assertEq(roles[0], DEFAULT_ADMIN_ROLE);
     }
 
     function test_GrantRoleEmitsEvent() public {
@@ -356,6 +355,22 @@ contract AccessControlExtendedTest is Test {
             token.hasRole(TEST_ROLE, randomAccount),
             "Account1 should not have TEST_ROLE after revocation"
         );
+    }
+
+    function test_DefaultAdminCannotRevokeDefaultAdminRoleFromOwner() public {
+        token.grantRole(DEFAULT_ADMIN_ROLE, account1);
+
+        vm.prank(account1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                owner,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.revokeRole(DEFAULT_ADMIN_ROLE, owner);
+
+        assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, owner));
     }
 
     function test_RevokeRoleEmitsEvent() public {
@@ -462,7 +477,7 @@ contract AccessControlExtendedTest is Test {
         token.renounceRole(TEST_ROLE, incorrectCallerConfirmation);
     }
 
-    function test_RenounceDefaultAdminRoleAllowed() public {
+    function test_NonOwnerDefaultAdminCanRenounceDefaultAdminRole() public {
         token.grantRole(DEFAULT_ADMIN_ROLE, account1);
         assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, account1));
 
@@ -923,16 +938,38 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_CustomAdminCanGrantThisRole() public {
+        address addressWithDefaultAdminRole = makeAddr(
+            "addressWithDefaultAdminRole"
+        );
+        token.grantRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole);
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole)
+        );
+
         bytes32 roleAdmin = keccak256("Test role admin");
+        assertFalse(token.hasRole(roleAdmin, account1));
 
         // Set "roleAdmin" as admin for TEST_ROLE
         token.setRoleAdmin(TEST_ROLE, roleAdmin);
+        assertEq(token.getRoleAdmin(TEST_ROLE), roleAdmin);
 
         // Grant "roleAdmin" to account1
         token.grantRole(roleAdmin, account1);
+        assertTrue(token.hasRole(roleAdmin, account1));
 
         // account1 (holder of "roleAdmin", which is admin of TEST_ROLE) can grant TEST_ROLE
         vm.prank(account1);
+        token.grantRole(TEST_ROLE, account2);
+
+        // an address with `DEFAULT_ADMIN_ROLE` cannot grant `TEST_ROLE` anymore since role admin is now `roleAdmin`
+        vm.prank(addressWithDefaultAdminRole);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                addressWithDefaultAdminRole,
+                roleAdmin
+            )
+        );
         token.grantRole(TEST_ROLE, account2);
 
         assertTrue(
@@ -941,7 +978,7 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
-    function test_DefaultAdminCanAlwaysGrantRegardlessOfCustomAdmin() public {
+    function test_DefaultAdminCannotGrantIfCustomAdmin() public {
         bytes32 roleAdmin = keccak256("Test role admin");
         // Set "roleAdmin" as admin for TEST_ROLE
         token.setRoleAdmin(TEST_ROLE, roleAdmin);
@@ -952,11 +989,18 @@ contract AccessControlExtendedTest is Test {
         // account1 (DEFAULT_ADMIN_ROLE holder) can still grant TEST_ROLE
         // even though custom admin is "roleAdmin"
         vm.prank(account1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                account1,
+                roleAdmin
+            )
+        );
         token.grantRole(TEST_ROLE, account2);
 
-        assertTrue(
+        assertFalse(
             token.hasRole(TEST_ROLE, account2),
-            "DEFAULT_ADMIN_ROLE holder should always be able to grant"
+            "DEFAULT_ADMIN_ROLE holder should not have been able to grant"
         );
     }
 
@@ -1005,11 +1049,16 @@ contract AccessControlExtendedTest is Test {
 
     // function testFuzz_DoesNotSupportRandomInterface(bytes4 interfaceId) public {
     //     // TODO: test fails currently. Should be fixed once we remove LSP7 from inheritance chain.
-    //     // vm.skip(true);
+    //     vm.skip(true);
     //     vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROL);
     //     vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLENUMERABLE);
     //     vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLEXTENDED);
 
+    //     assertFalse(
+    //         token.supportsInterface(interfaceId),
+    //         "Should not support random interface"
+    //     );
+    // }
     //     assertFalse(
     //         token.supportsInterface(interfaceId),
     //         "Should not support random interface"
@@ -1077,10 +1126,15 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
-    function test_OnlyRoleAllowsOwner() public {
-        // Owner can call restrictedFunction without TEST_ROLE (implicit admin)
-        bool result = token.restrictedFunction();
-        assertTrue(result, "Owner should be able to call restricted function");
+    function test_OnlyRoleDoesNotBypassOwner() public {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                owner,
+                TEST_ROLE
+            )
+        );
+        token.restrictedFunction();
     }
 
     function test_OnlyRoleRevertsForNonHolder() public {

@@ -238,6 +238,16 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         .connect(context.accounts[0])
         .transferOwnership(await context.universalProfile.getAddress());
 
+      await context.universalProfile.connect(context.accounts[0]).execute(
+        OPERATION_TYPES.CALL,
+        await lsp7Contract.getAddress(),
+        0,
+        lsp7Contract.interface.encodeFunctionData('grantRole', [
+          await lsp7Contract.MINTER_ROLE(),
+          await context.universalProfile.getAddress(),
+        ]),
+      );
+
       const permissionsKeys = [
         ERC725YDataKeys.LSP6['AddressPermissions:Permissions'] +
           (await addressCanCallOnlyTransferOnLSP8.getAddress()).substring(2),

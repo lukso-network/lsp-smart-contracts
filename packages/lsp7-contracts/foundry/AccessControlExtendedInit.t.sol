@@ -24,7 +24,6 @@ import {
 import {
     IAccessControlExtended
 } from "../contracts/extensions/AccessControlExtended/IAccessControlExtended.sol";
-
 // constants
 import {
     _LSP4_TOKEN_TYPE_TOKEN
@@ -35,8 +34,15 @@ import {
     _INTERFACEID_ACCESSCONTROLEXTENDED
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedConstants.sol";
 
+// errors
+import {
+    AccessControlUnauthorizedAccount
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
+
 // Mock contract for testing the InitAbstract variant
 contract MockAccessControlExtendedInit is AccessControlExtendedInitAbstract {
+    bytes32 public constant TEST_ROLE = bytes32(bytes("TestRole"));
+
     function initialize(
         string memory name_,
         string memory symbol_,
@@ -60,6 +66,15 @@ contract MockAccessControlExtendedInit is AccessControlExtendedInitAbstract {
         bytes memory data
     ) public {
         _mint(to, amount, force, data);
+    }
+
+    function restrictedFunction()
+        public
+        view
+        onlyRole(TEST_ROLE)
+        returns (bool)
+    {
+        return true;
     }
 }
 
@@ -113,6 +128,13 @@ contract AccessControlExtendedInitTest is Test {
         assertTrue(
             token.hasRole(DEFAULT_ADMIN_ROLE, tokenOwner),
             "Owner should have DEFAULT_ADMIN_ROLE after initialize"
+        );
+    }
+
+    function test_InitializeDoesNotGrantArbitraryRolesToOwner() public {
+        assertFalse(
+            token.hasRole(TEST_ROLE, tokenOwner),
+            "Owner should not have TEST_ROLE unless explicitly granted"
         );
     }
 
@@ -198,6 +220,28 @@ contract AccessControlExtendedInitTest is Test {
             token.hasRole(TEST_ROLE, account1),
             "Account1 should not have TEST_ROLE after renounce"
         );
+    }
+
+    function test_InitOwnerCannotRenounceDefaultAdminRole() public {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                tokenOwner,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.renounceRole(DEFAULT_ADMIN_ROLE, tokenOwner);
+    }
+
+    function test_InitOnlyRoleDoesNotBypassOwner() public {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                tokenOwner,
+                TEST_ROLE
+            )
+        );
+        token.restrictedFunction();
     }
 
     // ============================================================
@@ -395,11 +439,16 @@ contract AccessControlExtendedInitTest is Test {
 
     // function testFuzz_DoesNotSupportRandomInterface(bytes4 interfaceId) public {
     //     // TODO: test fails currently. Should be fixed once we remove LSP7 from inheritance chain.
-    //     // vm.skip(true);
+    //     vm.skip(true);
     //     vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROL);
     //     vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLENUMERABLE);
     //     vm.assume(interfaceId != _INTERFACEID_ACCESSCONTROLEXTENDED);
 
+    //     assertFalse(
+    //         token.supportsInterface(interfaceId),
+    //         "Should not support random interface"
+    //     );
+    // }
     //     assertFalse(
     //         token.supportsInterface(interfaceId),
     //         "Should not support random interface"

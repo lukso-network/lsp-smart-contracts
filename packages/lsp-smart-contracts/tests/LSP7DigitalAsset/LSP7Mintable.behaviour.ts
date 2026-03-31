@@ -12,10 +12,10 @@ import { type LSP6KeyManagerInit } from '../../../lsp6-contracts/types/ethers-co
 import { setupProfileWithKeyManagerWithURD } from '../utils/fixtures.js';
 
 import { ERC725YDataKeys } from '../../constants.js';
-import { OPERATION_TYPES } from '@lukso/lsp0-contracts';
+import { OPERATION_TYPES } from '@lukso/lsp0-contracts/constants';
 import { PERMISSIONS, CALLTYPE } from '@lukso/lsp6-contracts';
 import { combineAllowedCalls, combinePermissions } from '../utils/helpers.js';
-import { toBigInt } from 'ethers';
+import { toBigInt, toUtf8Bytes, zeroPadBytes } from 'ethers';
 
 export type LSP7MintableTestAccounts = {
   owner: HardhatEthersSigner;
@@ -108,9 +108,20 @@ export const shouldBehaveLikeLSP7Mintable = (
       universalProfile = UP as UniversalProfileInit;
       lsp6KeyManager = KM as LSP6KeyManagerInit;
 
-      await context.lsp7Mintable
-        .connect(context.accounts.owner)
-        .transferOwnership(await universalProfile.getAddress());
+      const newOwnerAddress = await universalProfile.getAddress();
+
+      await context.lsp7Mintable.connect(context.accounts.owner).transferOwnership(newOwnerAddress);
+
+      // Get the new owner to give itself the `MINTER` role
+      await universalProfile.execute(
+        OPERATION_TYPES.CALL,
+        await context.lsp7Mintable.getAddress(),
+        0,
+        context.lsp7Mintable.interface.encodeFunctionData('grantRole', [
+          zeroPadBytes(toUtf8Bytes('MINTER_ROLE'), 32),
+          newOwnerAddress,
+        ]),
+      );
 
       const URDTokenReentrant = (await new UniversalReceiverDelegateTokenReentrant__factory(
         context.accounts.profileOwner,
