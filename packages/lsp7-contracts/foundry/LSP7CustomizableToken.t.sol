@@ -13,16 +13,24 @@ import {
 } from "../contracts/LSP7CustomizableToken.sol";
 
 // errors
-import {LSP7MintDisabled} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
-import {LSP7CappedBalanceExceeded} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
+import {
+    LSP7MintDisabled
+} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {
+    LSP7CappedBalanceExceeded
+} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
 import {
     LSP7TransferDisabled,
     LSP7InvalidTransferLockPeriod
 } from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableErrors.sol";
-import {LSP7CappedSupplyCannotMintOverCap} from "../contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
+import {
+    LSP7CappedSupplyCannotMintOverCap
+} from "../contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract LSP7CustomizableTokenTest is Test {
     string name = "Custom Token";
@@ -107,10 +115,10 @@ contract LSP7CustomizableTokenTest is Test {
             tokenSupplyCap,
             "Supply cap should be set"
         );
-        assertTrue(token.isAllowlisted(owner), "Owner should be allowlisted");
+
         assertTrue(
-            token.isAllowlisted(zeroAddress),
-            "Zero address should be allowlisted"
+            token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner),
+            "Owner should have DEFAULT_ADMIN_ROLE"
         );
     }
 
@@ -350,10 +358,11 @@ contract LSP7CustomizableTokenTest is Test {
 
     // Minting Tests
     function test_OwnerCanMintToNonAllowlistedAddress() public {
-        assertFalse(
-            token.isAllowlisted(user1),
-            "User1 should not be allowlisted"
-        );
+        // TODO: replace with AccessControlExtended tests
+        // assertFalse(
+        //     token.isAllowlisted(user1),
+        //     "User1 should not be allowlisted"
+        // );
         token.mint(user1, 500, true, "");
         assertEq(token.balanceOf(user1), 500, "User1 should have 500 tokens");
     }

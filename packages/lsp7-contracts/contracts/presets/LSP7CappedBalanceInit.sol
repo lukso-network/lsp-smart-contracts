@@ -3,8 +3,12 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
-import {LSP7CappedBalanceInitAbstract} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../LSP7DigitalAssetInitAbstract.sol";
+import {
+    LSP7CappedBalanceInitAbstract
+} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
 
 contract LSP7CappedBalanceInit is LSP7CappedBalanceInitAbstract {
     /// @dev initialize (= lock) base implementation contract on deployment
@@ -35,6 +39,6 @@ contract LSP7CappedBalanceInit is LSP7CappedBalanceInitAbstract {
             isNonDivisible_
         );
         __LSP7CappedBalance_init_unchained(tokenBalanceCap_);
-        __LSP7Allowlist_init_unchained(newOwner_);
+        __AccessControlExtended_init_unchained(newOwner_);
     }
 }

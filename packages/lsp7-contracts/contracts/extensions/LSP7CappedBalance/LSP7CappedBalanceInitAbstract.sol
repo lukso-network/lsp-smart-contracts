@@ -2,13 +2,17 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP7AllowlistInitAbstract} from "../LSP7Allowlist/LSP7AllowlistInitAbstract.sol";
+import {
+    AccessControlExtendedInitAbstract
+} from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
 // interfaces
 import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";
 
 // libraries
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    EnumerableSet
+} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
@@ -17,15 +21,21 @@ import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 /// @dev Abstract contract implementing a per-address balance cap for LSP7 tokens, with exemptions for allowlisted addresses. Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
 abstract contract LSP7CappedBalanceInitAbstract is
     ILSP7CappedBalance,
-    LSP7AllowlistInitAbstract
+    AccessControlExtendedInitAbstract
 {
     using EnumerableSet for EnumerableSet.AddressSet;
+
+    /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
+    address internal constant _DEAD_ADDRESS =
+        0x000000000000000000000000000000000000dEaD;
+
+    bytes32 public constant UNCAPPED_ROLE = bytes32("UNCAPPED_ROLE");
 
     /// @notice The immutable maximum token balance allowed per address.
     uint256 private _tokenBalanceCap;
 
-    /// @notice Initializes the LSP7CappedBalance contract with base token params, allowlist, and balance cap.
-    /// @dev Initializes the LSP7Allowlist (which initializes LSP7DigitalAsset) and sets the balance cap.
+    /// @notice Initializes the LSP7CappedBalance contract with base token params, balance cap per address,
+    /// and `UNCAPPED_ROLE` exemptions for token contract `owner()`, `address(0)` and `0x...dead` addresses (for burning).
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param newOwner_ The owner of the contract, added to the allowlist.
@@ -40,7 +50,7 @@ abstract contract LSP7CappedBalanceInitAbstract is
         bool isNonDivisible_,
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
-        __LSP7Allowlist_init(
+        __AccessControlExtended_init(
             name_,
             symbol_,
             newOwner_,
@@ -57,6 +67,11 @@ abstract contract LSP7CappedBalanceInitAbstract is
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
         _tokenBalanceCap = tokenBalanceCap_;
+
+        // Address(0) and 0x0000...dead addresses are used for burning tokens
+        _grantRole(UNCAPPED_ROLE, address(0));
+        _grantRole(UNCAPPED_ROLE, _DEAD_ADDRESS);
+        _grantRole(UNCAPPED_ROLE, owner());
     }
 
     /// @inheritdoc ILSP7CappedBalance
@@ -77,8 +92,9 @@ abstract contract LSP7CappedBalanceInitAbstract is
         /* force */
         bytes memory /* data */
     ) internal virtual {
-        // Do not check for balance cap if we are burning tokens
-        if (to == address(0)) return;
+        // Do not check for balance cap if a specific address has the uncapped balance role
+        // (including address(0) and 0x0000...dead addresses)
+        if (hasRole(UNCAPPED_ROLE, to)) return;
 
         uint256 maxBalanceAllowed = tokenBalanceCap();
         bool isBalanceCapEnabled = maxBalanceAllowed != 0;
@@ -109,7 +125,7 @@ abstract contract LSP7CappedBalanceInitAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (isAllowlisted(to)) return;
         _tokenBalanceCapCheck(from, to, amount, force, data);
+        super._beforeTokenTransfer(from, to, amount, force, data);
     }
 }

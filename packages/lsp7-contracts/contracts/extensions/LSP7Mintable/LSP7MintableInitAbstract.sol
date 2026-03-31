@@ -3,6 +3,10 @@ pragma solidity ^0.8.27;
 
 // modules
 import {
+    AccessControlExtendedInitAbstract
+} from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+
+import {
     LSP7DigitalAssetInitAbstract
 } from "../../LSP7DigitalAssetInitAbstract.sol";
 
@@ -13,13 +17,16 @@ import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 
 /// @title LSP7MintableInitAbstract
-/// @dev Abstract contract implementing a isMintable LSP7 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP7DigitalAsset to provide core token functionality.
+/// @dev Abstract contract implementing a isMintable LSP7 token extension, allowing any address granted the `MINTER_ROLE` to mint new tokens until minting is disabled.
+/// Inherits from LSP7DigitalAsset to provide core token functionality.
 abstract contract LSP7MintableInitAbstract is
     ILSP7Mintable,
-    LSP7DigitalAssetInitAbstract
+    AccessControlExtendedInitAbstract
 {
     /// @notice Indicates whether minting is currently enabled or not.
     bool public isMintable;
+
+    bytes32 public constant MINTER_ROLE = bytes32("MINTER_ROLE");
 
     /// @notice Initializes the LSP7Mintable contract with base token params and minting status.
     /// @dev Initializes the LSP7DigitalAsset base and sets the minting status.
@@ -45,6 +52,13 @@ abstract contract LSP7MintableInitAbstract is
             lsp4TokenType_,
             isNonDivisible_
         );
+        __AccessControlExtended_init(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            isNonDivisible_
+        );
         __LSP7Mintable_init_unchained(mintable_);
     }
 
@@ -56,9 +70,12 @@ abstract contract LSP7MintableInitAbstract is
     ) internal virtual onlyInitializing {
         isMintable = mintable_;
         emit MintingStatusChanged(mintable_);
+
+        _grantRole(MINTER_ROLE, owner());
     }
 
     /// @inheritdoc ILSP7Mintable
+    /// @custom:warning Once this function is called, any address holding the `MINTER_ROLE` will be inoperable.
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP7MintDisabled());
         isMintable = false;
@@ -71,7 +88,7 @@ abstract contract LSP7MintableInitAbstract is
         uint256 amount,
         bool force,
         bytes memory data
-    ) public virtual override onlyOwner {
+    ) public virtual override onlyRole(MINTER_ROLE) {
         _mint(to, amount, force, data);
     }
 
@@ -81,6 +98,9 @@ abstract contract LSP7MintableInitAbstract is
     /// @param amount The number of tokens to mint.
     /// @param force When true, allows minting to any address; when false, requires `to` to support LSP1 UniversalReceiver.
     /// @param data Additional data included in the Transfer event and sent to `to`’s UniversalReceiver hook, if applicable.
+    ///
+    /// @custom:warning This internal function does not check for `MINTER_ROLE` access control.
+    /// Derived contracts that expose this function publicly and want to gate it by `MINTER_ROLE` must enforce it with `onlyRole(MINTER_ROLE)`.
     function _mint(
         address to,
         uint256 amount,

@@ -40,6 +40,6 @@ contract LSP7NonTransferableInit is LSP7NonTransferableInitAbstract {
             transferLockStart_,
             transferLockEnd_
         );
-        __LSP7Allowlist_init_unchained(newOwner_);
+        __AccessControlExtended_init_unchained(newOwner_);
     }
 }
