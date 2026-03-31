@@ -104,7 +104,7 @@ const config: HardhatUserConfig = {
       '@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/LSP7DigitalAssetInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/presets/LSP7Mintabl§eInit.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7MintableInit.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7CappedBalance.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7CappedBalanceInit.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7CappedSupply.sol': LSP7_VIA_IR_SETTINGS,
