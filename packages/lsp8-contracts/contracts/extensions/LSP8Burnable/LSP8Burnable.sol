@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.27;
 
-import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../../LSP8IdentifiableDigitalAsset.sol";
 
 // errors
-import {LSP8NotTokenOperator} from "../LSP8Errors.sol";
+import {LSP8NotTokenOperator} from "../../LSP8Errors.sol";
 
 /**
  * @dev LSP8 token extension that allows token holders to destroy both

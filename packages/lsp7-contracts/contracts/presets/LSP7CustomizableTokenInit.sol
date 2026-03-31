@@ -5,30 +5,30 @@ pragma solidity ^0.8.27;
 import {
     OwnableUpgradeable
 } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {LSP7DigitalAssetInitAbstract} from "./LSP7DigitalAssetInitAbstract.sol";
+import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
 import {
     LSP7MintableInitAbstract
-} from "./extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
+} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
 import {
     LSP7NonTransferableInitAbstract
-} from "./extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
+} from "../extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
 import {
     LSP7CappedBalanceInitAbstract
-} from "./extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
+} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
 import {
     LSP7CappedSupplyInitAbstract
-} from "./extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
+} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
 import {
     LSP7BurnableInitAbstract
-} from "./extensions/LSP7BurnableInitAbstract.sol";
+} from "../extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol";
 import {
     AccessControlExtendedInitAbstract
-} from "./extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+} from "../extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
 // errors
 import {
     LSP7MintDisabled
-} from "./extensions/LSP7Mintable/LSP7MintableErrors.sol";
+} from "../extensions/LSP7Mintable/LSP7MintableErrors.sol";
 
 /// @dev Deployment configuration for minting feature.
 /// @param isMintable True to enable minting after deployment, false to disable it forever.

@@ -111,8 +111,9 @@ const config: HardhatUserConfig = {
       '@lukso/lsp7-contracts/contracts/presets/LSP7CappedSupplyInit.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7NonTransferable.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7NonTransferableInit.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7BurnableInitAbstract.sol':
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable/LSP7Burnable.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedBalance/ILSP7CappedBalance.sol':
         LSP7_VIA_IR_SETTINGS,
@@ -138,8 +139,9 @@ const config: HardhatUserConfig = {
         LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7VotesInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Votes/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Votes/LSP7VotesInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol': LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAssetInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
@@ -147,18 +149,22 @@ const config: HardhatUserConfig = {
       '@lukso/lsp8-contracts/contracts/presets/LSP8MintableInit.sol': LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/presets/LSP8MintableInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8BurnableInitAbstract.sol':
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8Burnable.sol':
         LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupplyInitAbstract.sol':
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8EnumerableInitAbstract.sol':
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol':
         LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8VotesConstants.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8VotesInitAbstract.sol':
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyInitAbstract.sol':
+        LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable/LSP8Enumerable.sol':
+        LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable/LSP8EnumerableInitAbstract.sol':
+        LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes/LSP8Votes.sol': LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes/LSP8VotesConstants.sol':
+        LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes/LSP8VotesInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
       // imports into lsp-smart-contracts package
       'contracts/LSP4DigitalAssetMetadata/LSP4Utils.sol': VIA_IR_SETTINGS,
@@ -172,8 +178,9 @@ const config: HardhatUserConfig = {
       'contracts/LSP7DigitalAsset/presets/LSP7CappedSupplyInit.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/presets/LSP7NonTransferable.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/presets/LSP7NonTransferableInit.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7Burnable.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7BurnableInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Burnable/LSP7Burnable.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7CappedBalance/ILSP7CappedBalance.sol':
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol':
@@ -197,8 +204,9 @@ const config: HardhatUserConfig = {
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7VotesInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Votes/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Votes/LSP7VotesInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol':
         LSP8_COMPILER_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol':
@@ -207,8 +215,9 @@ const config: HardhatUserConfig = {
       'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInit.sol': LSP8_COMPILER_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8BurnableInitAbstract.sol':
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable/LSP8Burnable.sol':
+        LSP8_COMPILER_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol':
         LSP8_COMPILER_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol':
         LSP8_COMPILER_SETTINGS,
@@ -231,11 +240,13 @@ const config: HardhatUserConfig = {
         LSP8_COMPILER_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8NonTransferable/ILSP8NonTransferable.sol':
         LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/LSP8CustomizableToken.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/LSP8CustomizableTokenInit.sol':
+      'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CustomizableToken.sol':
         LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/LSP8CustomizableToken.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/LSP8CustomizableTokenInit.sol': LSP8_COMPILER_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CustomizableTokenInit.sol':
+        LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/presets/LSP8CustomizableToken.sol': LSP8_COMPILER_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/presets/LSP8CustomizableTokenInit.sol':
+        LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8Allowlist/ILSP8Allowlist.sol':
         LSP8_COMPILER_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol':

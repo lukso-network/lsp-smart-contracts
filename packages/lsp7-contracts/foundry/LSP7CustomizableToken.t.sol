@@ -10,7 +10,7 @@ import {
     MintableParams,
     NonTransferableParams,
     CappedParams
-} from "../contracts/LSP7CustomizableToken.sol";
+} from "../contracts/presets/LSP7CustomizableToken.sol";
 
 // errors
 import {

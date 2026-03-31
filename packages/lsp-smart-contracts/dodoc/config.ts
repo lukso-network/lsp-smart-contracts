@@ -25,13 +25,13 @@ export const dodocConfig = {
     // tokens
     '@lukso/lsp4-contracts/contracts/LSP4DigitalAssetMetadata.sol',
     '@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol',
-    '@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable.sol',
-    '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply.sol',
+    '@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable/LSP7Burnable.sol',
+    '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol',
     '@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol',
     '@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol',
-    '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable.sol',
-    '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply.sol',
-    '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable.sol',
+    '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8Burnable.sol',
+    '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol',
+    '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable/LSP8Enumerable.sol',
     '@lukso/lsp8-contracts/contracts/presets/LSP8Mintable.sol',
 
     // libraries --------------------

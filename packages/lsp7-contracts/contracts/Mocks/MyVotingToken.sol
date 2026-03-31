@@ -2,7 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-import {LSP7Votes, LSP7DigitalAsset} from "../extensions/LSP7Votes.sol";
+import {
+    LSP7Votes,
+    LSP7DigitalAsset
+} from "../extensions/LSP7Votes/LSP7Votes.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
 /**

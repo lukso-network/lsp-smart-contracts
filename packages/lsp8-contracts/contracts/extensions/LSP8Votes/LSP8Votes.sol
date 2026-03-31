@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.27;
 
-import {LSP8IdentifiableDigitalAssetInitAbstract} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
-import {VotesUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../../LSP8IdentifiableDigitalAsset.sol";
+import {Votes} from "@openzeppelin/contracts/governance/utils/Votes.sol";
 import {
     _TYPEID_LSP8_VOTESDELEGATOR,
     _TYPEID_LSP8_VOTESDELEGATEE
@@ -21,32 +23,11 @@ import {LSP1Utils} from "@lukso/lsp1-contracts/contracts/LSP1Utils.sol";
  * For any contract intended to be deployed in production that inherits from this extension, it is recommended to conduct
  * an independent security audit, including this extension in the audit scope.
  */
-abstract contract LSP8VotesInitAbstract is
-    LSP8IdentifiableDigitalAssetInitAbstract,
-    VotesUpgradeable
-{
-    function _initialize(
-        string memory name_,
-        string memory symbol_,
-        address newOwner_,
-        uint256 tokenIdType_,
-        uint256 tokenIdFormat_,
-        string memory version_
-    ) internal virtual onlyInitializing {
-        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_,
-            tokenIdType_,
-            tokenIdFormat_
-        );
-        __EIP712_init(name_, version_);
-    }
-
+abstract contract LSP8Votes is LSP8IdentifiableDigitalAsset, Votes {
     /**
      * @dev Adjusts votes when tokens are transferred.
      *
-     * Emits a {IVotes-DelegateVotesChanged} event.
+     * @custom:events {DelegateVotesChanged} event.
      */
     function _afterTokenTransfer(
         address from,

@@ -2,14 +2,16 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8IdentifiableDigitalAssetInitAbstract
+} from "../../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 
 /**
- * @dev LSP8 extension that enables to enumerate over all the `tokenIds` ever minted.
- *
- * @custom:warning Note that in this extension contract, any `tokenId` that been burnt is removed from the set of the enumerable tokenIds.
+ * @dev LSP8 extension.
  */
-abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
+abstract contract LSP8EnumerableInitAbstract is
+    LSP8IdentifiableDigitalAssetInitAbstract
+{
     // Mapping from token index to token id
     mapping(uint256 => bytes32) private _indexToken;
 
@@ -28,12 +30,11 @@ abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
     }
 
     /**
-     * @inheritdoc LSP8IdentifiableDigitalAsset
+     * @inheritdoc LSP8IdentifiableDigitalAssetInitAbstract
      *
      * @param from The address sending the `tokenId` (`address(0)` when `tokenId` is being minted).
      * @param to The address receiving the `tokenId` (`address(0)` when `tokenId` is being burnt).
      * @param tokenId The bytes32 identifier of the token being transferred.
-     * @param force A boolean that describe if transfer to a `to` address that does not support LSP1 is allowed or not.
      * @param data The data sent alongside the the token transfer.
      */
     function _beforeTokenTransfer(
@@ -43,15 +44,11 @@ abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
         bool force,
         bytes memory data
     ) internal virtual override {
-        // `tokenId` being minted
         if (from == address(0)) {
             uint256 index = totalSupply();
             _indexToken[index] = tokenId;
             _tokenIndex[tokenId] = index;
-        }
-
-        // `tokenId` being burnt
-        if (to == address(0)) {
+        } else if (to == address(0)) {
             uint256 lastIndex = totalSupply() - 1;
             uint256 index = _tokenIndex[tokenId];
             if (index < lastIndex) {
@@ -62,7 +59,6 @@ abstract contract LSP8Enumerable is LSP8IdentifiableDigitalAsset {
             delete _indexToken[lastIndex];
             delete _tokenIndex[tokenId];
         }
-
         super._beforeTokenTransfer(from, to, tokenId, force, data);
     }
 }
