@@ -61,16 +61,14 @@ abstract contract LSP7RevokableInitAbstract is
             isNonDivisible_
         );
         __AccessControlExtended_init(newOwner_);
-        __LSP7Revokable_init_unchained();
+        __LSP7Revokable_init_unchained(newOwner_);
     }
 
     /// @notice Unchained initializer for LSP7Revokable.
-    function __LSP7Revokable_init_unchained()
-        internal
-        virtual
-        onlyInitializing
-    {
-        _grantRole(REVOKER_ROLE, owner());
+    function __LSP7Revokable_init_unchained(
+        address newOwner_
+    ) internal virtual onlyInitializing {
+        _grantRole(REVOKER_ROLE, newOwner_);
     }
 
     /// @inheritdoc ILSP7Revokable
@@ -113,7 +111,7 @@ abstract contract LSP7RevokableInitAbstract is
             LSP7DigitalAssetInitAbstract.supportsInterface(interfaceId);
     }
 
-    /// @dev Overriden function to ensure previous revokers do not persist after contract ownership has been transferred.
+    /// @dev Overridden function to ensure previous revokers do not persist after contract ownership has been transferred.
     function _transferOwnership(
         address newOwner
     )

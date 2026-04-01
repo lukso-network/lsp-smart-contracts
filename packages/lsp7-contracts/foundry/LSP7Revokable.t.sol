@@ -5,7 +5,9 @@ pragma solidity ^0.8.27;
 import "forge-std/Test.sol";
 
 // modules
-import {LSP7RevokableAbstract} from "../contracts/extensions/LSP7Revokable/LSP7RevokableAbstract.sol";
+import {
+    LSP7RevokableAbstract
+} from "../contracts/extensions/LSP7Revokable/LSP7RevokableAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 import {
     AccessControlExtendedAbstract
@@ -18,7 +20,9 @@ import {
 import {LSP7AmountExceedsBalance} from "../contracts/LSP7Errors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 /// @dev Mock contract to test LSP7RevokableAbstract functionality
 contract MockLSP7Revokable is LSP7RevokableAbstract {
@@ -37,6 +41,7 @@ contract MockLSP7Revokable is LSP7RevokableAbstract {
             isNonDivisible_
         )
         AccessControlExtendedAbstract(newOwner_)
+        LSP7RevokableAbstract(newOwner_)
     {}
 
     /// @dev Helper function to mint tokens for testing
@@ -195,8 +200,16 @@ contract LSP7RevokableTest is Test {
 
         lsp7Revokable.revoke(user1, owner, 500, "");
 
-        assertEq(lsp7Revokable.balanceOf(user1), 500, "User1 should have 500 tokens");
-        assertEq(lsp7Revokable.balanceOf(owner), 500, "Owner should receive revoked tokens");
+        assertEq(
+            lsp7Revokable.balanceOf(user1),
+            500,
+            "User1 should have 500 tokens"
+        );
+        assertEq(
+            lsp7Revokable.balanceOf(owner),
+            500,
+            "Owner should receive revoked tokens"
+        );
     }
 
     function test_RevokeAsDelegatedRevokerToOwner() public {
@@ -208,8 +221,16 @@ contract LSP7RevokableTest is Test {
         vm.prank(revoker1);
         lsp7Revokable.revoke(user1, owner, 300, "");
 
-        assertEq(lsp7Revokable.balanceOf(user1), 700, "User1 should have 700 tokens");
-        assertEq(lsp7Revokable.balanceOf(owner), 300, "Owner should have 300 tokens");
+        assertEq(
+            lsp7Revokable.balanceOf(user1),
+            700,
+            "User1 should have 700 tokens"
+        );
+        assertEq(
+            lsp7Revokable.balanceOf(owner),
+            300,
+            "Owner should have 300 tokens"
+        );
     }
 
     function test_RevokeAsDelegatedRevokerToAnotherRevoker() public {
@@ -222,7 +243,11 @@ contract LSP7RevokableTest is Test {
         vm.prank(revoker1);
         lsp7Revokable.revoke(user1, revoker2, 300, "");
 
-        assertEq(lsp7Revokable.balanceOf(user1), 700, "User1 should have 700 tokens");
+        assertEq(
+            lsp7Revokable.balanceOf(user1),
+            700,
+            "User1 should have 700 tokens"
+        );
         assertEq(
             lsp7Revokable.balanceOf(revoker2),
             300,
@@ -239,7 +264,11 @@ contract LSP7RevokableTest is Test {
         vm.prank(revoker1);
         lsp7Revokable.revoke(user1, revoker1, 400, "");
 
-        assertEq(lsp7Revokable.balanceOf(user1), 600, "User1 should have 600 tokens");
+        assertEq(
+            lsp7Revokable.balanceOf(user1),
+            600,
+            "User1 should have 600 tokens"
+        );
         assertEq(
             lsp7Revokable.balanceOf(revoker1),
             400,
@@ -311,15 +340,25 @@ contract LSP7RevokableTest is Test {
 
         lsp7Revokable.revoke(user1, owner, 0, "");
 
-        assertEq(lsp7Revokable.balanceOf(user1), 1000, "User1 should still have 1000 tokens");
-        assertEq(lsp7Revokable.balanceOf(owner), 0, "Owner should still have 0 tokens");
+        assertEq(
+            lsp7Revokable.balanceOf(user1),
+            1000,
+            "User1 should still have 1000 tokens"
+        );
+        assertEq(
+            lsp7Revokable.balanceOf(owner),
+            0,
+            "Owner should still have 0 tokens"
+        );
     }
 
     // =========================================================================
     // Ownership Transfer Tests
     // =========================================================================
 
-    function test_TransferOwnershipClearsRevokerListAndGrantsNewOwnerRole() public {
+    function test_TransferOwnershipClearsRevokerListAndGrantsNewOwnerRole()
+        public
+    {
         bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
         address newOwner = vm.addr(200);
 
@@ -329,6 +368,7 @@ contract LSP7RevokableTest is Test {
 
         lsp7Revokable.transferOwnership(newOwner);
 
+        // CHECK old owner + revokers have been removed their roles
         assertFalse(
             lsp7Revokable.hasRole(revokerRole, owner),
             "Old owner should lose REVOKER_ROLE after ownership transfer"
@@ -337,16 +377,8 @@ contract LSP7RevokableTest is Test {
             lsp7Revokable.hasRole(revokerRole, revoker1),
             "Existing delegated revokers should be cleared"
         );
-        assertTrue(
-            lsp7Revokable.hasRole(revokerRole, newOwner),
-            "New owner should receive REVOKER_ROLE"
-        );
-        assertEq(
-            lsp7Revokable.getRoleMemberCount(revokerRole),
-            1,
-            "Only the new owner should remain as revoker after transfer"
-        );
 
+        // CHECK previous revokers cannot revoke tokens anymore
         vm.prank(revoker1);
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -357,12 +389,29 @@ contract LSP7RevokableTest is Test {
         );
         lsp7Revokable.revoke(user1, newOwner, 100, "");
 
+        // new owner should grant itself the `REVOKER_ROLE` first to be able to revoke tokens
+        // (extension specific roles are not passed between old and new owners)
+        vm.prank(newOwner);
+        lsp7Revokable.grantRole(revokerRole, newOwner);
+
         vm.prank(newOwner);
         lsp7Revokable.revoke(user1, newOwner, 500, "");
 
-        assertEq(lsp7Revokable.balanceOf(user1), 500, "User1 should have 500 tokens");
-        assertEq(lsp7Revokable.balanceOf(newOwner), 500, "New owner should have 500 tokens");
-        assertEq(lsp7Revokable.balanceOf(owner), 0, "Old owner should have 0 tokens");
+        assertEq(
+            lsp7Revokable.balanceOf(user1),
+            500,
+            "User1 should have 500 tokens"
+        );
+        assertEq(
+            lsp7Revokable.balanceOf(newOwner),
+            500,
+            "New owner should have 500 tokens"
+        );
+        assertEq(
+            lsp7Revokable.balanceOf(owner),
+            0,
+            "Old owner should have 0 tokens"
+        );
     }
 
     // =========================================================================
@@ -436,7 +485,9 @@ contract LSP7RevokableTest is Test {
         lsp7Revokable.revoke(user1, owner, 500, "");
     }
 
-    function testFuzz_DelegatedRevokerCanRevoke(address delegatedRevoker) public {
+    function testFuzz_DelegatedRevokerCanRevoke(
+        address delegatedRevoker
+    ) public {
         bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
 
         vm.assume(delegatedRevoker != owner);
@@ -450,7 +501,11 @@ contract LSP7RevokableTest is Test {
         vm.prank(delegatedRevoker);
         lsp7Revokable.revoke(user1, delegatedRevoker, 500, "");
 
-        assertEq(lsp7Revokable.balanceOf(user1), 500, "User1 should have 500 tokens");
+        assertEq(
+            lsp7Revokable.balanceOf(user1),
+            500,
+            "User1 should have 500 tokens"
+        );
         assertEq(
             lsp7Revokable.balanceOf(delegatedRevoker),
             500,

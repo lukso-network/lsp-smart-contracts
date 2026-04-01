@@ -33,6 +33,10 @@ abstract contract LSP7RevokableAbstract is
 {
     bytes32 public constant REVOKER_ROLE = bytes32("REVOKER_ROLE");
 
+    constructor(address newOwner_) {
+        _grantRole(REVOKER_ROLE, newOwner_);
+    }
+
     /// @inheritdoc ILSP7Revokable
     function revoke(
         address from,
@@ -76,10 +80,6 @@ abstract contract LSP7RevokableAbstract is
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
         _clearRevokers();
         super._transferOwnership(newOwner);
-
-        if (newOwner != address(0)) {
-            _grantRole(REVOKER_ROLE, newOwner);
-        }
     }
 
     function _clearRevokers() internal virtual {

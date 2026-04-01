@@ -107,8 +107,6 @@ contract MockTokenWithAccessControlExtended is
     function _transferOwnership(
         address newOwner
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
-        address previousOwner = owner();
-
         AccessControlExtendedAbstract._transferOwnership(newOwner);
     }
 

@@ -3,16 +3,13 @@ pragma solidity ^0.8.27;
 
 // modules
 import {
-    LSP7DigitalAssetInitAbstract
-} from "../LSP7DigitalAssetInitAbstract.sol";
-import {
     LSP7RevokableInitAbstract
 } from "../extensions/LSP7Revokable/LSP7RevokableInitAbstract.sol";
 
 /**
  * @title LSP7DigitalAsset deployable preset contract (proxy version) with revokable functionality.
  * @dev Allows the token issuer (owner) and delegated revokers to revoke tokens from any holder
- * back to the owner, or burn tokens from any holder.
+ * back to the owner or another authorized revoker.
  *
  * Use cases include:
  * - Memberships: Revoke membership tokens when they expire or are terminated

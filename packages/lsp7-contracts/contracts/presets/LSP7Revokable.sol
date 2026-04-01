@@ -43,5 +43,6 @@ contract LSP7Revokable is LSP7RevokableAbstract {
             isNonDivisible_
         )
         AccessControlExtendedAbstract(newOwner_)
+        LSP7RevokableAbstract(newOwner_)
     {}
 }
