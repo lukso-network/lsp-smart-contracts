@@ -334,4 +334,170 @@ contract LSP8MusicNFTTest is Test {
         vm.expectRevert("MockLSP7: reverted");
         lsp8.setDataForTokenId(tokenId1, _LSP4_METADATA_KEY, hex"fa110000");
     }
+
+    // --- Batch Operations with Linked LSP7s ---
+
+    function test_GetDataBatchForTokenIdsWithLinkedLSP7() public {
+        // Link LSP7 to tokenId1
+        lsp8.setDataForTokenId(
+            tokenId1,
+            _LSP33_OWNABLE_TRACK_TOKEN_KEY,
+            abi.encodePacked(address(lsp7))
+        );
+
+        // Set metadata on LSP7
+        lsp7.setData(_LSP4_METADATA_KEY, hex"ba7c000001");
+
+        // Batch read: one linked (metadata proxied), one unlinked
+        bytes32[] memory tokenIds = new bytes32[](2);
+        bytes32[] memory dataKeys = new bytes32[](2);
+        tokenIds[0] = tokenId1;
+        tokenIds[1] = tokenId1;
+        dataKeys[0] = _LSP4_METADATA_KEY;
+        dataKeys[1] = keccak256("CustomKey");
+
+        // Set local custom key
+        lsp8.setDataForTokenId(tokenId1, keccak256("CustomKey"), hex"10ca10");
+
+        bytes[] memory results = lsp8.getDataBatchForTokenIds(
+            tokenIds,
+            dataKeys
+        );
+        assertEq(results[0], hex"ba7c000001"); // proxied from LSP7
+        assertEq(results[1], hex"10ca10"); // local storage
+    }
+
+    function test_SetDataBatchForTokenIdsWithLinkedLSP7() public {
+        // Link LSP7 to tokenId1
+        lsp8.setDataForTokenId(
+            tokenId1,
+            _LSP33_OWNABLE_TRACK_TOKEN_KEY,
+            abi.encodePacked(address(lsp7))
+        );
+
+        // Batch write: metadata (forwarded to LSP7) + custom key (local)
+        bytes32[] memory tokenIds = new bytes32[](2);
+        bytes32[] memory dataKeys = new bytes32[](2);
+        bytes[] memory dataValues = new bytes[](2);
+        tokenIds[0] = tokenId1;
+        tokenIds[1] = tokenId1;
+        dataKeys[0] = _LSP4_METADATA_KEY;
+        dataKeys[1] = keccak256("CustomKey");
+        dataValues[0] = hex"ffd00001";
+        dataValues[1] = hex"10ca1001";
+
+        lsp8.setDataBatchForTokenIds(tokenIds, dataKeys, dataValues);
+
+        // Verify metadata was forwarded to LSP7
+        assertEq(lsp7.getData(_LSP4_METADATA_KEY), hex"ffd00001");
+        // Verify custom key stored locally
+        assertEq(
+            lsp8.getDataForTokenId(tokenId1, keccak256("CustomKey")),
+            hex"10ca1001"
+        );
+    }
+
+    // --- Unlinking (setting LSP33OwnableTrackToken to address(0)) ---
+
+    function test_UnlinkBySettingTrackTokenToEmpty() public {
+        // Link first
+        lsp8.setDataForTokenId(
+            tokenId1,
+            _LSP33_OWNABLE_TRACK_TOKEN_KEY,
+            abi.encodePacked(address(lsp7))
+        );
+
+        // Set metadata on LSP7
+        lsp7.setData(_LSP4_METADATA_KEY, hex"11cc0000");
+
+        // Verify proxied read works
+        assertEq(
+            lsp8.getDataForTokenId(tokenId1, _LSP4_METADATA_KEY),
+            hex"11cc0000"
+        );
+
+        // Unlink by setting to empty bytes (address(0) as empty)
+        lsp8.setDataForTokenId(
+            tokenId1,
+            _LSP33_OWNABLE_TRACK_TOKEN_KEY,
+            ""
+        );
+
+        // After unlinking, reads should return local storage (empty)
+        assertEq(lsp8.getDataForTokenId(tokenId1, _LSP4_METADATA_KEY), "");
+    }
+
+    // --- Multiple Tracks with Different LSP7s ---
+
+    function test_MultipleTracksWithDifferentLSP7s() public {
+        // Mint tokenId2
+        lsp8.mint(user1, tokenId2, true, "");
+
+        // Create second LSP7 for tokenId2
+        MockLSP7TrackToken lsp7b = new MockLSP7TrackToken(
+            address(lsp8),
+            tokenId2
+        );
+
+        // Link each tokenId to its LSP7
+        lsp8.setDataForTokenId(
+            tokenId1,
+            _LSP33_OWNABLE_TRACK_TOKEN_KEY,
+            abi.encodePacked(address(lsp7))
+        );
+        lsp8.setDataForTokenId(
+            tokenId2,
+            _LSP33_OWNABLE_TRACK_TOKEN_KEY,
+            abi.encodePacked(address(lsp7b))
+        );
+
+        // Set different metadata on each LSP7
+        lsp7.setData(_LSP4_METADATA_KEY, hex"71ac0001");
+        lsp7b.setData(_LSP4_METADATA_KEY, hex"71ac0002");
+
+        // Verify each tokenId reads from its own LSP7
+        assertEq(
+            lsp8.getDataForTokenId(tokenId1, _LSP4_METADATA_KEY),
+            hex"71ac0001"
+        );
+        assertEq(
+            lsp8.getDataForTokenId(tokenId2, _LSP4_METADATA_KEY),
+            hex"71ac0002"
+        );
+
+        // Batch read across both tokenIds
+        bytes32[] memory tokenIds = new bytes32[](2);
+        bytes32[] memory dataKeys = new bytes32[](2);
+        tokenIds[0] = tokenId1;
+        tokenIds[1] = tokenId2;
+        dataKeys[0] = _LSP4_METADATA_KEY;
+        dataKeys[1] = _LSP4_METADATA_KEY;
+
+        bytes[] memory results = lsp8.getDataBatchForTokenIds(
+            tokenIds,
+            dataKeys
+        );
+        assertEq(results[0], hex"71ac0001");
+        assertEq(results[1], hex"71ac0002");
+    }
+
+    // --- abi.encode (32-byte) address encoding ---
+
+    function test_SetOwnableTrackTokenWithAbiEncode() public {
+        // Use abi.encode (32-byte left-padded) instead of abi.encodePacked (20-byte)
+        lsp8.setDataForTokenId(
+            tokenId1,
+            _LSP33_OWNABLE_TRACK_TOKEN_KEY,
+            abi.encode(address(lsp7))
+        );
+
+        // Set metadata on LSP7
+        lsp7.setData(_LSP4_METADATA_KEY, hex"e0c32b17");
+
+        // Read should still proxy correctly
+        assertEq(
+            lsp8.getDataForTokenId(tokenId1, _LSP4_METADATA_KEY),
+            hex"e0c32b17"
+        );
+    }
 }

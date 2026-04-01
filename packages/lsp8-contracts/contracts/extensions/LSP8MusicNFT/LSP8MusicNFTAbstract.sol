@@ -68,7 +68,7 @@ abstract contract LSP8MusicNFTAbstract is
             linkedLSP7.length >= 20 &&
             (dataKey == _LSP4_METADATA_KEY || dataKey == _LSP33_METADATA_KEY)
         ) {
-            address lsp7Address = address(bytes20(linkedLSP7));
+            address lsp7Address = _extractAddress(linkedLSP7);
 
             // Try reading from the linked LSP7
             try IERC725Y(lsp7Address).getData(dataKey) returns (
@@ -96,7 +96,7 @@ abstract contract LSP8MusicNFTAbstract is
         // Bidirectional link verification when setting LSP33OwnableTrackToken
         if (dataKey == _LSP33_OWNABLE_TRACK_TOKEN_KEY) {
             if (dataValue.length >= 20) {
-                address lsp7Address = address(bytes20(dataValue));
+                address lsp7Address = _extractAddress(dataValue);
                 _verifyBidirectionalLink(lsp7Address, tokenId);
             }
             super._setDataForTokenId(tokenId, dataKey, dataValue);
@@ -113,7 +113,7 @@ abstract contract LSP8MusicNFTAbstract is
             linkedLSP7.length >= 20 &&
             (dataKey == _LSP4_METADATA_KEY || dataKey == _LSP33_METADATA_KEY)
         ) {
-            address lsp7Address = address(bytes20(linkedLSP7));
+            address lsp7Address = _extractAddress(linkedLSP7);
 
             // Forward the write to the linked LSP7 (reverts if external call reverts)
             IERC725Y(lsp7Address).setData(dataKey, dataValue);
@@ -125,6 +125,17 @@ abstract contract LSP8MusicNFTAbstract is
     }
 
     // --- Bidirectional Link Verification ---
+
+    /// @dev Extracts an address from encoded bytes. Handles both 20-byte
+    /// (abi.encodePacked) and 32-byte (abi.encode / left-padded) formats.
+    function _extractAddress(
+        bytes memory data
+    ) internal pure returns (address) {
+        if (data.length == 20) {
+            return address(bytes20(data));
+        }
+        return abi.decode(data, (address));
+    }
 
     /// @dev Verifies that the LSP7 contract points back to this LSP8 contract and tokenId.
     function _verifyBidirectionalLink(

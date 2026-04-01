@@ -41,6 +41,9 @@ import {
 /// @dev LSP33 Music NFT extension for LSP7 track tokens. Implements LSP34 external
 /// ownership resolution and parent collection authorization for metadata writes.
 abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
+    /// @dev Cached parent LSP8 collection address (set once in constructor, saves SLOAD on every call).
+    address internal immutable _parentCollection;
+
     /// @param name_ Token name.
     /// @param symbol_ Token symbol.
     /// @param lsp8Contract_ The parent LSP8 collection address.
@@ -61,6 +64,8 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
             isNonDivisible_
         )
     {
+        _parentCollection = lsp8Contract_;
+
         // Set LSP34OwnershipSource to (lsp8Contract, tokenId)
         ERC725Y._setData(
             _LSP34_OWNERSHIP_SOURCE_KEY,
@@ -85,22 +90,25 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
         override
         returns (address)
     {
-        bytes memory ownershipSource = _getData(_LSP34_OWNERSHIP_SOURCE_KEY);
-
-        if (ownershipSource.length >= 52) {
-            (address lsp8Address, bytes32 tokenId) = abi.decode(
-                ownershipSource,
-                (address, bytes32)
+        if (_parentCollection != address(0)) {
+            bytes memory ownershipSource = _getData(
+                _LSP34_OWNERSHIP_SOURCE_KEY
             );
 
-            try
-                ILSP8IdentifiableDigitalAsset(lsp8Address).tokenOwnerOf(
-                    tokenId
-                )
-            returns (address tokenOwner) {
-                return tokenOwner;
-            } catch {
-                return super.owner();
+            if (ownershipSource.length >= 52) {
+                (, bytes32 tokenId) = abi.decode(
+                    ownershipSource,
+                    (address, bytes32)
+                );
+
+                try
+                    ILSP8IdentifiableDigitalAsset(_parentCollection)
+                        .tokenOwnerOf(tokenId)
+                returns (address tokenOwner) {
+                    return tokenOwner;
+                } catch {
+                    return super.owner();
+                }
             }
         }
 
@@ -108,39 +116,31 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
     }
 
     /// @dev Reverts when LSP34 external ownership is active.
+    /// Falls back to super when LSP34 is not active.
     function transferOwnership(
-        address /* newOwner */
+        address newOwner
     ) public virtual override {
         if (_hasExternalOwnership()) {
             revert LSP34ExternalOwnershipActive();
         }
-        // This branch won't be reached when LSP34 is active,
-        // but we still revert to be safe since onlyOwner is checked in parent
-        revert LSP34ExternalOwnershipActive();
+        super.transferOwnership(newOwner);
     }
 
     /// @dev Reverts when LSP34 external ownership is active.
+    /// Falls back to super when LSP34 is not active.
     function renounceOwnership() public virtual override {
         if (_hasExternalOwnership()) {
             revert LSP34ExternalOwnershipActive();
         }
-        revert LSP34ExternalOwnershipActive();
+        super.renounceOwnership();
     }
 
     // --- Parent Collection Authorization ---
 
     /// @dev Modifier that allows calls from the resolved owner (via LSP34) or the parent LSP8 collection contract.
     modifier onlyOwnerOrParentCollection() {
-        if (msg.sender != owner()) {
-            bytes memory refData = _getData(_LSP8_REFERENCE_CONTRACT_KEY);
-            if (refData.length >= 20) {
-                (address lsp8Address, ) = abi.decode(refData, (address, bytes32));
-                if (msg.sender != lsp8Address) {
-                    revert LSP7MusicNFTUnauthorized(msg.sender);
-                }
-            } else {
-                revert LSP7MusicNFTUnauthorized(msg.sender);
-            }
+        if (msg.sender != owner() && msg.sender != _parentCollection) {
+            revert LSP7MusicNFTUnauthorized(msg.sender);
         }
         _;
     }
