@@ -129,14 +129,27 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
 
     // --- Parent Collection Authorization ---
 
+    /// @dev Modifier that allows calls from the resolved owner (via LSP34) or the parent LSP8 collection contract.
+    modifier onlyOwnerOrParentCollection() {
+        if (msg.sender != owner()) {
+            bytes memory refData = _getData(_LSP8_REFERENCE_CONTRACT_KEY);
+            if (refData.length >= 20) {
+                (address lsp8Address, ) = abi.decode(refData, (address, bytes32));
+                if (msg.sender != lsp8Address) {
+                    revert LSP7MusicNFTUnauthorized(msg.sender);
+                }
+            } else {
+                revert LSP7MusicNFTUnauthorized(msg.sender);
+            }
+        }
+        _;
+    }
+
     /// @dev Override setData to allow calls from both the owner (via LSP34) and the parent LSP8 contract.
     function setData(
         bytes32 dataKey,
         bytes memory dataValue
-    ) public payable virtual override {
-        if (!_isAuthorizedCaller()) {
-            revert LSP7MusicNFTUnauthorized(msg.sender);
-        }
+    ) public payable virtual override onlyOwnerOrParentCollection {
         if (msg.value != 0) {
             revert ERC725Y_MsgValueDisallowed();
         }
@@ -147,10 +160,7 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
     function setDataBatch(
         bytes32[] memory dataKeys,
         bytes[] memory dataValues
-    ) public payable virtual override {
-        if (!_isAuthorizedCaller()) {
-            revert LSP7MusicNFTUnauthorized(msg.sender);
-        }
+    ) public payable virtual override onlyOwnerOrParentCollection {
         if (msg.value != 0) {
             revert ERC725Y_MsgValueDisallowed();
         }
@@ -181,19 +191,6 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
     }
 
     // --- Internal Helpers ---
-
-    /// @dev Checks whether the caller is authorized (owner or parent LSP8 collection).
-    function _isAuthorizedCaller() internal view returns (bool) {
-        if (msg.sender == owner()) return true;
-
-        bytes memory refData = _getData(_LSP8_REFERENCE_CONTRACT_KEY);
-        if (refData.length >= 20) {
-            (address lsp8Address, ) = abi.decode(refData, (address, bytes32));
-            if (msg.sender == lsp8Address) return true;
-        }
-
-        return false;
-    }
 
     /// @dev Returns true if LSP34 external ownership is active.
     function _hasExternalOwnership() internal view returns (bool) {
