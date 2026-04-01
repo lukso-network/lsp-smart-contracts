@@ -36,7 +36,8 @@ abstract contract LSP7CappedBalanceInitAbstract is
     address internal constant _DEAD_ADDRESS =
         0x000000000000000000000000000000000000dEaD;
 
-    bytes32 public constant UNCAPPED_ROLE = bytes32("UNCAPPED_ROLE");
+    /// @dev utf8 hex (zero padded on the right to 32 bytes) = 'UNCAPPED_ROLE'
+    bytes32 public constant UNCAPPED_ROLE = 0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
 
     /// @notice The immutable maximum token balance allowed per address.
     uint256 private _tokenBalanceCap;

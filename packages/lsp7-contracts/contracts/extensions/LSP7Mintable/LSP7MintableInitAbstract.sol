@@ -30,7 +30,8 @@ abstract contract LSP7MintableInitAbstract is
     /// @notice Indicates whether minting is currently enabled or not.
     bool public isMintable;
 
-    bytes32 public constant MINTER_ROLE = bytes32("MINTER_ROLE");
+    /// @dev utf8 hex (zero padded on the right to 32 bytes) = 'MINTER_ROLE'
+    bytes32 public constant MINTER_ROLE = 0x4d494e5445525f524f4c45000000000000000000000000000000000000000000;
 
     /// @notice Initializes the LSP7Mintable contract with base token params and minting status.
     /// @dev Initializes the LSP7DigitalAsset base and sets the minting status.

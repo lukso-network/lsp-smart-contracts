@@ -36,7 +36,8 @@ abstract contract LSP7CappedBalanceAbstract is
     /// @notice The immutable maximum token balance allowed per address.
     uint256 internal immutable _TOKEN_BALANCE_CAP;
 
-    bytes32 public constant UNCAPPED_ROLE = bytes32("UNCAPPED_ROLE");
+    /// @dev utf8 hex (zero padded on the right to 32 bytes) = 'UNCAPPED_ROLE'
+    bytes32 public constant UNCAPPED_ROLE = 0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
 
     /// @notice Initializes the contract with a token balance cap.
     /// @dev Sets the immutable balance cap and reverts if the cap is zero. Inherits LSP7AllowlistAbstract constructor logic.
