@@ -5,16 +5,20 @@ export const INTERFACE_ID_LSP7_PREVIOUS = {
   'v0.12.0': '0xdaa746b7',
 };
 
-// --- LSP7 Roles Constants ---
-// Role constants used across LSP7 extensions for AccessControl
-// utf8 hex (zero padded on the right to 32 bytes) = 'MINTER_ROLE'
-export const MINTER_ROLE = '0x4d494e5445525f524f4c45000000000000000000000000000000000000000000';
+// Role constants used across LSP7 extensions for AccessControlExtended
+export const ROLES = {
+    // `"MINTER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    MINTER: "0x4d494e5445525f524f4c45000000000000000000000000000000000000000000",
+    // `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    UNCAPPED: "0x554e4341505045445f524f4c4500000000000000000000000000000000000000",
+    // `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    NON_TRANSFERABLE_BYPASS: "0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000"
+} as const;
 
-// utf8 hex (zero padded on the right to 32 bytes) = 'UNCAPPED_ROLE'
-export const UNCAPPED_ROLE = '0x554e4341505045445f524f4c4500000000000000000000000000000000000000';
-
-// utf8 hex (zero padded on the right to 32 bytes) = 'NON_TRANSFERABLE_BYPASS_ROLE'
-export const NON_TRANSFERABLE_BYPASS_ROLE = '0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000';
+// Export individual constants for backward compatibility
+export const MINTER_ROLE = ROLES.MINTER;
+export const UNCAPPED_ROLE = ROLES.UNCAPPED;
+export const NON_TRANSFERABLE_BYPASS_ROLE = ROLES.NON_TRANSFERABLE_BYPASS;
 
 export const LSP7_TYPE_IDS = {
   // keccak256('LSP7Tokens_SenderNotification')
