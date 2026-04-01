@@ -37,7 +37,8 @@ abstract contract LSP7RevokableInitAbstract is
     AccessControlExtendedInitAbstract,
     LSP7DigitalAssetInitAbstract
 {
-    bytes32 public constant REVOKER_ROLE = bytes32("REVOKER_ROLE");
+    /// @dev `"REVOKER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    bytes32 public constant REVOKER_ROLE = 0x5245564f4b45525f524f4c450000000000000000000000000000000000000000;
 
     /// @notice Initializes the LSP7Revokable contract with base token params.
     /// @dev Initializes the LSP7DigitalAsset base contract.

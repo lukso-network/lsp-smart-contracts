@@ -12,13 +12,16 @@ export const ROLES = {
     // `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
     UNCAPPED: "0x554e4341505045445f524f4c4500000000000000000000000000000000000000",
     // `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    NON_TRANSFERABLE_BYPASS: "0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000"
+    NON_TRANSFERABLE_BYPASS: "0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000",
+    // `"REVOKER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    REVOKER: "0x5245564f4b45525f524f4c450000000000000000000000000000000000000000"
 } as const;
 
 // Export individual constants for backward compatibility
 export const MINTER_ROLE = ROLES.MINTER;
 export const UNCAPPED_ROLE = ROLES.UNCAPPED;
 export const NON_TRANSFERABLE_BYPASS_ROLE = ROLES.NON_TRANSFERABLE_BYPASS;
+export const REVOKER_ROLE = ROLES.REVOKER;
 
 export const LSP7_TYPE_IDS = {
   // keccak256('LSP7Tokens_SenderNotification')
