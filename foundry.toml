@@ -64,3 +64,4 @@ src = 'packages/lsp-smart-contracts/contracts'
 test = 'packages/lsp-smart-contracts/tests/foundry'
 out = 'packages/lsp-smart-contracts/contracts/foundry_artifacts'
 solc = "0.8.27"
+via_ir = true

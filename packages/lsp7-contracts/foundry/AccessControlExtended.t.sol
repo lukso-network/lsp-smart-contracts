@@ -109,43 +109,13 @@ contract MockTokenWithAccessControlExtended is
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
         address previousOwner = owner();
 
-        // #region agent log
-        _writeOwnershipDebugLog(
-            "H1-H4",
-            "packages/lsp7-contracts/foundry/AccessControlExtended.t.sol:108",
-            "before transferOwnership super call",
-            previousOwner,
-            newOwner
-        );
-        // #endregion
-
         AccessControlExtendedAbstract._transferOwnership(newOwner);
-
-        // #region agent log
-        _writeOwnershipDebugLog(
-            "H1-H4",
-            "packages/lsp7-contracts/foundry/AccessControlExtended.t.sol:118",
-            "after transferOwnership super call",
-            previousOwner,
-            newOwner
-        );
-        // #endregion
     }
 
     function _grantRole(
         bytes32 role,
         address account
     ) internal virtual override {
-        // #region agent log
-        _writeRoleDebugLog(
-            "H2-H4",
-            "packages/lsp7-contracts/foundry/AccessControlExtended.t.sol:129",
-            "grantRole reached",
-            role,
-            account
-        );
-        // #endregion
-
         super._grantRole(role, account);
     }
 
@@ -153,91 +123,7 @@ contract MockTokenWithAccessControlExtended is
         bytes32 role,
         address account
     ) internal virtual override {
-        // #region agent log
-        _writeRoleDebugLog(
-            "H1-H4",
-            "packages/lsp7-contracts/foundry/AccessControlExtended.t.sol:145",
-            "revokeRole reached",
-            role,
-            account
-        );
-        // #endregion
-
         super._revokeRole(role, account);
-    }
-
-    function _writeOwnershipDebugLog(
-        string memory hypothesisId,
-        string memory location,
-        string memory message,
-        address previousOwner,
-        address newOwner
-    ) internal {
-        string memory line = string.concat(
-            '{"sessionId":"',
-            DEBUG_SESSION_ID,
-            '","runId":"',
-            DEBUG_RUN_ID,
-            '","hypothesisId":"',
-            hypothesisId,
-            '","location":"',
-            location,
-            '","message":"',
-            message,
-            '","data":{"msgSender":"',
-            DEBUG_VM.toString(msg.sender),
-            '","previousOwner":"',
-            DEBUG_VM.toString(previousOwner),
-            '","newOwner":"',
-            DEBUG_VM.toString(newOwner),
-            '","currentOwner":"',
-            DEBUG_VM.toString(owner()),
-            '","previousOwnerHasDefaultAdmin":',
-            DEBUG_VM.toString(hasRole(DEFAULT_ADMIN_ROLE, previousOwner)),
-            ',"newOwnerHasDefaultAdmin":',
-            DEBUG_VM.toString(hasRole(DEFAULT_ADMIN_ROLE, newOwner)),
-            ',"previousOwnerRoleCount":',
-            DEBUG_VM.toString(rolesOf(previousOwner).length),
-            ',"newOwnerRoleCount":',
-            DEBUG_VM.toString(rolesOf(newOwner).length),
-            '},"timestamp":',
-            DEBUG_VM.toString(block.timestamp),
-            "}"
-        );
-        DEBUG_VM.writeLine(DEBUG_LOG_PATH, line);
-    }
-
-    function _writeRoleDebugLog(
-        string memory hypothesisId,
-        string memory location,
-        string memory message,
-        bytes32 role,
-        address account
-    ) internal {
-        string memory line = string.concat(
-            '{"sessionId":"',
-            DEBUG_SESSION_ID,
-            '","runId":"',
-            DEBUG_RUN_ID,
-            '","hypothesisId":"',
-            hypothesisId,
-            '","location":"',
-            location,
-            '","message":"',
-            message,
-            '","data":{"msgSender":"',
-            DEBUG_VM.toString(msg.sender),
-            '","role":"',
-            DEBUG_VM.toString(role),
-            '","account":"',
-            DEBUG_VM.toString(account),
-            '","accountHasRoleBeforeMutation":',
-            DEBUG_VM.toString(hasRole(role, account)),
-            '},"timestamp":',
-            DEBUG_VM.toString(block.timestamp),
-            "}"
-        );
-        DEBUG_VM.writeLine(DEBUG_LOG_PATH, line);
     }
 
     bytes32 public constant TEST_ROLE = bytes32(bytes("TestRole"));
