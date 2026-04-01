@@ -15,13 +15,17 @@ interface ILSP7NonTransferable {
     /// @notice The end timestamp of the transfer lock period, at which point the token becomes transferable again.
     function transferLockEnd() external view returns (uint256);
 
+    /// @notice Returns whether the transfer lock feature is still enabled.
+    /// @dev When this returns `false`, the token has been permanently made transferable and the lock period can no longer be updated.
+    function transferLockEnabled() external view returns (bool);
+
     /// @notice Checks if the token is currently transferable.
-    /// @dev Returns true if the token is transferable (based on the lock period). Note that transfers from allowlisted addresses and burning (transfers to address(0)) is always allowed, regardless of transferability status.
+    /// @dev Returns true if the token is currently transferable. When `transferLockEnabled` is true, this is derived from the configured lock period. When `transferLockEnabled` is false, this always returns true. Note that transfers from allowlisted addresses and burning (transfers to address(0)) is always allowed, regardless of transferability status.
     /// @return A `true` or `false` boolean indicating if the token is transferable or not.
     function isTransferable() external view returns (bool);
 
     /// @notice Removes all transfer lock periods, enabling token transfers for non-allowlisted addresses.
-    /// @dev Can only be called by the contract owner. Sets both lock periods to 0.
+    /// @dev Can only be called by the contract owner. Permanently disables the transfer lock feature, sets both lock periods to 0, and prevents any future lock period updates.
     /// @custom:emits {TransferLockPeriodChanged} event.
     function makeTransferable() external;
 
@@ -32,7 +36,7 @@ interface ILSP7NonTransferable {
     /// - To make the token always non-transferable, set `transferLockStart` to 0 and `transferLockEnd` to type(uint256).max.
     /// - To disable completely the non-transferable feature (= make the token always transferable), set both `transferLockStart` and `transferLockEnd` to 0.
     ///
-    /// @dev Can only be called by the contract owner. Reverts if the current lock period has already started or ended.
+    /// @dev Can only be called by the contract owner. Reverts once {makeTransferable} has been called.
     ///
     /// @custom:emits {TransferLockPeriodChanged} event.
     /// @param newTransferLockStart The new start timestamp for the transfer lock period.
