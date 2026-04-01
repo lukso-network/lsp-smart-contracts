@@ -2,8 +2,12 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
-import {LSP7RevokableInitAbstract} from "../extensions/LSP7Revokable/LSP7RevokableInitAbstract.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../LSP7DigitalAssetInitAbstract.sol";
+import {
+    LSP7RevokableInitAbstract
+} from "../extensions/LSP7Revokable/LSP7RevokableInitAbstract.sol";
 
 /**
  * @title LSP7DigitalAsset deployable preset contract (proxy version) with revokable functionality.
@@ -42,20 +46,5 @@ contract LSP7RevokableInit is LSP7RevokableInitAbstract {
             lsp4TokenType_,
             isNonDivisible_
         );
-    }
-
-    /// @notice Mints `amount` of tokens and transfers them to `to`.
-    /// @dev Only the contract owner can mint tokens.
-    /// @param to The address to mint tokens for.
-    /// @param amount The amount of tokens to mint.
-    /// @param force Set to `true` to allow minting to addresses that don't implement LSP1.
-    /// @param data Additional data to include in the transfer notification.
-    function mint(
-        address to,
-        uint256 amount,
-        bool force,
-        bytes memory data
-    ) public virtual onlyOwner {
-        _mint(to, amount, force, data);
     }
 }

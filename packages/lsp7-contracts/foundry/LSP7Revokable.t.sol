@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.27;
 
 // foundry
 import "forge-std/Test.sol";
@@ -7,15 +7,14 @@ import "forge-std/Test.sol";
 // modules
 import {LSP7RevokableAbstract} from "../contracts/extensions/LSP7Revokable/LSP7RevokableAbstract.sol";
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
-
-// interfaces
-import {ILSP7Revokable} from "../contracts/extensions/LSP7Revokable/ILSP7Revokable.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // errors
 import {
-    LSP7NotAuthorizedRevoker,
-    LSP7InvalidRevokerIndexRange
-} from "../contracts/extensions/LSP7Revokable/LSP7RevokableErrors.sol";
+    AccessControlUnauthorizedAccount
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 import {LSP7AmountExceedsBalance} from "../contracts/LSP7Errors.sol";
 
 // constants
@@ -37,6 +36,7 @@ contract MockLSP7Revokable is LSP7RevokableAbstract {
             lsp4TokenType_,
             isNonDivisible_
         )
+        AccessControlExtendedAbstract(newOwner_)
     {}
 
     /// @dev Helper function to mint tokens for testing
@@ -51,6 +51,8 @@ contract MockLSP7Revokable is LSP7RevokableAbstract {
 }
 
 contract LSP7RevokableTest is Test {
+    bytes32 constant DEFAULT_ADMIN_ROLE = 0x00;
+
     string name = "Revokable Token";
     string symbol = "RT";
     uint256 tokenType = _LSP4_TOKEN_TYPE_TOKEN;
@@ -62,7 +64,6 @@ contract LSP7RevokableTest is Test {
     address user2 = vm.addr(102);
     address revoker1 = vm.addr(103);
     address revoker2 = vm.addr(104);
-    address zeroAddress = address(0);
 
     MockLSP7Revokable lsp7Revokable;
 
@@ -89,232 +90,99 @@ contract LSP7RevokableTest is Test {
     // Constructor / Initialization Tests
     // =========================================================================
 
-    function test_ConstructorInitializesCorrectly() public {
-        // Owner should be implicitly a revoker
-        assertTrue(
-            lsp7Revokable.isRevoker(owner),
-            "Owner should be a revoker"
-        );
-        // No delegated revokers initially
-        assertEq(
-            lsp7Revokable.getRevokersCount(),
-            0,
-            "No delegated revokers initially"
-        );
-        // Non-owner should not be a revoker
-        assertFalse(
-            lsp7Revokable.isRevoker(nonOwner),
-            "Non-owner should not be a revoker"
-        );
-    }
-
-    // =========================================================================
-    // Revoker Management Tests
-    // =========================================================================
-
-    function test_AddRevokerAsOwner() public {
-        vm.expectEmit(true, false, false, true, address(lsp7Revokable));
-        emit ILSP7Revokable.RevokerAdded(revoker1);
-
-        lsp7Revokable.addRevoker(revoker1);
+    function test_ConstructorInitializesRolesCorrectly() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
 
         assertTrue(
-            lsp7Revokable.isRevoker(revoker1),
-            "Revoker1 should be a revoker"
+            lsp7Revokable.hasRole(revokerRole, owner),
+            "Owner should start with REVOKER_ROLE"
         );
         assertEq(
-            lsp7Revokable.getRevokersCount(),
+            lsp7Revokable.getRoleMemberCount(revokerRole),
             1,
-            "Should have 1 delegated revoker"
+            "Only owner should hold REVOKER_ROLE initially"
         );
-    }
-
-    function test_AddRevokerAlreadyAdded() public {
-        lsp7Revokable.addRevoker(revoker1);
         assertTrue(
-            lsp7Revokable.isRevoker(revoker1),
-            "Revoker1 should be a revoker"
+            lsp7Revokable.hasRole(DEFAULT_ADMIN_ROLE, owner),
+            "Owner should start with DEFAULT_ADMIN_ROLE"
         );
-
-        // Adding again should not emit event
-        vm.recordLogs();
-        lsp7Revokable.addRevoker(revoker1);
-        Vm.Log[] memory entries = vm.getRecordedLogs();
-        assertEq(entries.length, 0, "No event should be emitted for duplicate add");
-
-        assertTrue(
-            lsp7Revokable.isRevoker(revoker1),
-            "Revoker1 should still be a revoker"
-        );
-        assertEq(
-            lsp7Revokable.getRevokersCount(),
-            1,
-            "Should still have 1 delegated revoker"
-        );
-    }
-
-    function test_NonOwnerCannotAddRevoker() public {
-        vm.prank(nonOwner);
-        vm.expectRevert("Ownable: caller is not the owner");
-        lsp7Revokable.addRevoker(revoker1);
-
         assertFalse(
-            lsp7Revokable.isRevoker(revoker1),
-            "Revoker1 should not be a revoker"
+            lsp7Revokable.hasRole(revokerRole, nonOwner),
+            "Non-owner should not start with REVOKER_ROLE"
         );
-    }
-
-    function test_RemoveRevokerAsOwner() public {
-        lsp7Revokable.addRevoker(revoker1);
-        assertTrue(
-            lsp7Revokable.isRevoker(revoker1),
-            "Revoker1 should be a revoker initially"
-        );
-
-        vm.expectEmit(true, false, false, true, address(lsp7Revokable));
-        emit ILSP7Revokable.RevokerRemoved(revoker1);
-
-        lsp7Revokable.removeRevoker(revoker1);
-
-        assertFalse(
-            lsp7Revokable.isRevoker(revoker1),
-            "Revoker1 should not be a revoker"
-        );
-        assertEq(
-            lsp7Revokable.getRevokersCount(),
-            0,
-            "Should have 0 delegated revokers"
-        );
-    }
-
-    function test_RemoveRevokerNotAdded() public {
-        assertFalse(
-            lsp7Revokable.isRevoker(revoker1),
-            "Revoker1 should not be a revoker initially"
-        );
-
-        // Removing a non-revoker should not emit event
-        vm.recordLogs();
-        lsp7Revokable.removeRevoker(revoker1);
-        Vm.Log[] memory entries = vm.getRecordedLogs();
-        assertEq(entries.length, 0, "No event should be emitted");
-
-        assertFalse(
-            lsp7Revokable.isRevoker(revoker1),
-            "Revoker1 should still not be a revoker"
-        );
-    }
-
-    function test_NonOwnerCannotRemoveRevoker() public {
-        lsp7Revokable.addRevoker(revoker1);
-
-        vm.prank(nonOwner);
-        vm.expectRevert("Ownable: caller is not the owner");
-        lsp7Revokable.removeRevoker(revoker1);
-
-        assertTrue(
-            lsp7Revokable.isRevoker(revoker1),
-            "Revoker1 should still be a revoker"
-        );
-    }
-
-    function test_MultipleRevokers() public {
-        lsp7Revokable.addRevoker(revoker1);
-        lsp7Revokable.addRevoker(revoker2);
-
-        assertTrue(lsp7Revokable.isRevoker(revoker1), "Revoker1 should be a revoker");
-        assertTrue(lsp7Revokable.isRevoker(revoker2), "Revoker2 should be a revoker");
-        assertEq(lsp7Revokable.getRevokersCount(), 2, "Should have 2 delegated revokers");
-
-        // Remove one
-        lsp7Revokable.removeRevoker(revoker1);
-        assertFalse(lsp7Revokable.isRevoker(revoker1), "Revoker1 should not be a revoker");
-        assertTrue(lsp7Revokable.isRevoker(revoker2), "Revoker2 should still be a revoker");
-        assertEq(lsp7Revokable.getRevokersCount(), 1, "Should have 1 delegated revoker");
     }
 
     // =========================================================================
-    // getRevokersByIndex Tests
+    // Revoker Role Management Tests
     // =========================================================================
 
-    function test_GetRevokersByIndex() public {
-        lsp7Revokable.addRevoker(revoker1);
-        lsp7Revokable.addRevoker(revoker2);
+    function test_DefaultAdminCanGrantMultipleRevokers() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
 
-        address[] memory revokers = lsp7Revokable.getRevokersByIndex(0, 2);
-        assertEq(revokers.length, 2, "Should return 2 revokers");
-        assertEq(revokers[0], revoker1, "First revoker should be revoker1");
-        assertEq(revokers[1], revoker2, "Second revoker should be revoker2");
+        lsp7Revokable.grantRole(revokerRole, revoker1);
+        lsp7Revokable.grantRole(revokerRole, revoker2);
+
+        assertEq(
+            lsp7Revokable.getRoleMemberCount(revokerRole),
+            3,
+            "Owner and both delegated revokers should be enumerated"
+        );
+        assertTrue(
+            lsp7Revokable.hasRole(revokerRole, revoker1),
+            "Revoker1 should have REVOKER_ROLE"
+        );
+        assertEq(
+            lsp7Revokable.getRoleMember(revokerRole, 0),
+            owner,
+            "Owner should be the first role member"
+        );
+        assertEq(
+            lsp7Revokable.getRoleMember(revokerRole, 1),
+            revoker1,
+            "Revoker1 should be enumerable"
+        );
+        assertEq(
+            lsp7Revokable.getRoleMember(revokerRole, 2),
+            revoker2,
+            "Revoker2 should be enumerable"
+        );
     }
 
-    function test_GetRevokersByIndexPartialRange() public {
-        lsp7Revokable.addRevoker(revoker1);
-        lsp7Revokable.addRevoker(revoker2);
-
-        address[] memory revokers = lsp7Revokable.getRevokersByIndex(0, 1);
-        assertEq(revokers.length, 1, "Should return 1 revoker");
-        assertEq(revokers[0], revoker1, "Should return revoker1");
-    }
-
-    function test_GetRevokersByIndexInvalidRange() public {
-        lsp7Revokable.addRevoker(revoker1);
-
-        // startIndex >= endIndex
+    function test_DefaultAdminCanDelegateRevokerManagement() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+        vm.prank(nonOwner);
         vm.expectRevert(
             abi.encodeWithSelector(
-                LSP7InvalidRevokerIndexRange.selector,
-                1,
-                1,
-                1
+                AccessControlUnauthorizedAccount.selector,
+                nonOwner,
+                DEFAULT_ADMIN_ROLE
             )
         );
-        lsp7Revokable.getRevokersByIndex(1, 1);
+        lsp7Revokable.grantRole(revokerRole, revoker1);
 
-        // endIndex > count
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                LSP7InvalidRevokerIndexRange.selector,
-                0,
-                5,
-                1
-            )
-        );
-        lsp7Revokable.getRevokersByIndex(0, 5);
-    }
+        lsp7Revokable.grantRole(DEFAULT_ADMIN_ROLE, nonOwner);
 
-    // =========================================================================
-    // isRevoker Tests
-    // =========================================================================
-
-    function test_IsRevokerForOwner() public {
-        assertTrue(
-            lsp7Revokable.isRevoker(owner),
-            "Owner should always be a revoker"
-        );
-    }
-
-    function test_IsRevokerForDelegatedRevoker() public {
-        assertFalse(
-            lsp7Revokable.isRevoker(revoker1),
-            "Revoker1 should not be a revoker initially"
-        );
-
-        lsp7Revokable.addRevoker(revoker1);
+        vm.prank(nonOwner);
+        lsp7Revokable.grantRole(revokerRole, revoker1);
 
         assertTrue(
-            lsp7Revokable.isRevoker(revoker1),
-            "Revoker1 should be a revoker after addition"
+            lsp7Revokable.hasRole(revokerRole, revoker1),
+            "Delegated admin should be able to grant REVOKER_ROLE"
         );
     }
 
-    function test_IsRevokerForNonRevoker() public {
+    function test_RevokerCanRenounceRoleForItself() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
+        lsp7Revokable.grantRole(revokerRole, revoker1);
+        assertTrue(lsp7Revokable.hasRole(revokerRole, revoker1));
+
+        vm.prank(revoker1);
+        lsp7Revokable.renounceRole(revokerRole, revoker1);
+
         assertFalse(
-            lsp7Revokable.isRevoker(nonOwner),
-            "Non-owner should not be a revoker"
-        );
-        assertFalse(
-            lsp7Revokable.isRevoker(user1),
-            "User1 should not be a revoker"
+            lsp7Revokable.hasRole(revokerRole, revoker1),
+            "Revoker should be able to renounce its own role"
         );
     }
 
@@ -323,62 +191,96 @@ contract LSP7RevokableTest is Test {
     // =========================================================================
 
     function test_RevokeAsOwner() public {
-        // Mint tokens to user1
-        lsp7Revokable.mint(user1, 1000, true, "");
-        assertEq(lsp7Revokable.balanceOf(user1), 1000, "User1 should have 1000 tokens");
-        assertEq(lsp7Revokable.balanceOf(owner), 0, "Owner should have 0 tokens");
+        _mintTo(user1, 1000);
 
-        // Revoke tokens
-        lsp7Revokable.revoke(user1, 500, "");
+        lsp7Revokable.revoke(user1, owner, 500, "");
 
         assertEq(lsp7Revokable.balanceOf(user1), 500, "User1 should have 500 tokens");
-        assertEq(lsp7Revokable.balanceOf(owner), 500, "Owner should have 500 tokens");
+        assertEq(lsp7Revokable.balanceOf(owner), 500, "Owner should receive revoked tokens");
     }
 
-    function test_RevokeAsDelegatedRevoker() public {
-        lsp7Revokable.addRevoker(revoker1);
-        lsp7Revokable.mint(user1, 1000, true, "");
+    function test_RevokeAsDelegatedRevokerToOwner() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
+        lsp7Revokable.grantRole(revokerRole, revoker1);
+        _mintTo(user1, 1000);
 
         vm.prank(revoker1);
-        lsp7Revokable.revoke(user1, 300, "");
+        lsp7Revokable.revoke(user1, owner, 300, "");
 
         assertEq(lsp7Revokable.balanceOf(user1), 700, "User1 should have 700 tokens");
         assertEq(lsp7Revokable.balanceOf(owner), 300, "Owner should have 300 tokens");
     }
 
-    function test_RevokeAllTokens() public {
-        lsp7Revokable.mint(user1, 1000, true, "");
+    function test_RevokeAsDelegatedRevokerToAnotherRevoker() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
 
-        lsp7Revokable.revoke(user1, 1000, "");
+        lsp7Revokable.grantRole(revokerRole, revoker1);
+        lsp7Revokable.grantRole(revokerRole, revoker2);
+        _mintTo(user1, 1000);
 
-        assertEq(lsp7Revokable.balanceOf(user1), 0, "User1 should have 0 tokens");
-        assertEq(lsp7Revokable.balanceOf(owner), 1000, "Owner should have 1000 tokens");
+        vm.prank(revoker1);
+        lsp7Revokable.revoke(user1, revoker2, 300, "");
+
+        assertEq(lsp7Revokable.balanceOf(user1), 700, "User1 should have 700 tokens");
+        assertEq(
+            lsp7Revokable.balanceOf(revoker2),
+            300,
+            "Another revoker should receive revoked tokens"
+        );
     }
 
-    function test_RevokeZeroAmount() public {
-        lsp7Revokable.mint(user1, 1000, true, "");
+    function test_RevokeAsDelegatedRevokerToSelf() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
 
-        // Zero amount should succeed (no-op)
-        lsp7Revokable.revoke(user1, 0, "");
+        lsp7Revokable.grantRole(revokerRole, revoker1);
+        _mintTo(user1, 1000);
 
-        assertEq(lsp7Revokable.balanceOf(user1), 1000, "User1 should still have 1000 tokens");
-        assertEq(lsp7Revokable.balanceOf(owner), 0, "Owner should still have 0 tokens");
+        vm.prank(revoker1);
+        lsp7Revokable.revoke(user1, revoker1, 400, "");
+
+        assertEq(lsp7Revokable.balanceOf(user1), 600, "User1 should have 600 tokens");
+        assertEq(
+            lsp7Revokable.balanceOf(revoker1),
+            400,
+            "Revoker should be able to revoke tokens to itself"
+        );
     }
 
     function test_RevokeFailsForNonRevoker() public {
-        lsp7Revokable.mint(user1, 1000, true, "");
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
+        _mintTo(user1, 1000);
 
         vm.prank(nonOwner);
         vm.expectRevert(
-            abi.encodeWithSelector(LSP7NotAuthorizedRevoker.selector, nonOwner)
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                nonOwner,
+                revokerRole
+            )
         );
-        lsp7Revokable.revoke(user1, 500, "");
+        lsp7Revokable.revoke(user1, owner, 500, "");
+    }
 
-        assertEq(lsp7Revokable.balanceOf(user1), 1000, "User1 should still have 1000 tokens");
+    function test_RevokeFailsWhenDestinationHasNoRevokerRole() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
+        lsp7Revokable.grantRole(revokerRole, revoker1);
+        _mintTo(user1, 1000);
+
+        vm.prank(revoker1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                user2,
+                revokerRole
+            )
+        );
+        lsp7Revokable.revoke(user1, user2, 500, "");
     }
 
     function test_RevokeFailsForUserWithoutTokens() public {
-        // User1 has no tokens
         vm.expectRevert(
             abi.encodeWithSelector(
                 LSP7AmountExceedsBalance.selector,
@@ -387,11 +289,11 @@ contract LSP7RevokableTest is Test {
                 500
             )
         );
-        lsp7Revokable.revoke(user1, 500, "");
+        lsp7Revokable.revoke(user1, owner, 500, "");
     }
 
     function test_RevokeFailsWhenAmountExceedsBalance() public {
-        lsp7Revokable.mint(user1, 100, true, "");
+        _mintTo(user1, 100);
 
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -401,129 +303,62 @@ contract LSP7RevokableTest is Test {
                 500
             )
         );
-        lsp7Revokable.revoke(user1, 500, "");
+        lsp7Revokable.revoke(user1, owner, 500, "");
     }
 
-    function test_RevokeSelfTokensAsOwner() public {
-        // Owner has tokens and revokes from themselves (edge case)
-        lsp7Revokable.mint(owner, 1000, true, "");
+    function test_RevokeZeroAmount() public {
+        _mintTo(user1, 1000);
 
-        lsp7Revokable.revoke(owner, 500, "");
-
-        // Tokens go back to owner, so balance should remain the same
-        assertEq(lsp7Revokable.balanceOf(owner), 1000, "Owner balance should remain 1000");
-    }
-
-    // =========================================================================
-    // RevokeAndBurn Tests
-    // =========================================================================
-
-    function test_RevokeAndBurnAsOwner() public {
-        lsp7Revokable.mint(user1, 1000, true, "");
-        uint256 initialSupply = lsp7Revokable.totalSupply();
-
-        lsp7Revokable.revokeAndBurn(user1, 500, "");
-
-        assertEq(lsp7Revokable.balanceOf(user1), 500, "User1 should have 500 tokens");
-        assertEq(lsp7Revokable.totalSupply(), initialSupply - 500, "Total supply should decrease");
-    }
-
-    function test_RevokeAndBurnAsDelegatedRevoker() public {
-        lsp7Revokable.addRevoker(revoker1);
-        lsp7Revokable.mint(user1, 1000, true, "");
-        uint256 initialSupply = lsp7Revokable.totalSupply();
-
-        vm.prank(revoker1);
-        lsp7Revokable.revokeAndBurn(user1, 400, "");
-
-        assertEq(lsp7Revokable.balanceOf(user1), 600, "User1 should have 600 tokens");
-        assertEq(lsp7Revokable.totalSupply(), initialSupply - 400, "Total supply should decrease");
-    }
-
-    function test_RevokeAndBurnAllTokens() public {
-        lsp7Revokable.mint(user1, 1000, true, "");
-
-        lsp7Revokable.revokeAndBurn(user1, 1000, "");
-
-        assertEq(lsp7Revokable.balanceOf(user1), 0, "User1 should have 0 tokens");
-    }
-
-    function test_RevokeAndBurnZeroAmount() public {
-        lsp7Revokable.mint(user1, 1000, true, "");
-        uint256 initialSupply = lsp7Revokable.totalSupply();
-
-        lsp7Revokable.revokeAndBurn(user1, 0, "");
+        lsp7Revokable.revoke(user1, owner, 0, "");
 
         assertEq(lsp7Revokable.balanceOf(user1), 1000, "User1 should still have 1000 tokens");
-        assertEq(lsp7Revokable.totalSupply(), initialSupply, "Total supply should remain");
-    }
-
-    function test_RevokeAndBurnFailsForNonRevoker() public {
-        lsp7Revokable.mint(user1, 1000, true, "");
-
-        vm.prank(nonOwner);
-        vm.expectRevert(
-            abi.encodeWithSelector(LSP7NotAuthorizedRevoker.selector, nonOwner)
-        );
-        lsp7Revokable.revokeAndBurn(user1, 500, "");
-
-        assertEq(lsp7Revokable.balanceOf(user1), 1000, "User1 should still have 1000 tokens");
-    }
-
-    function test_RevokeAndBurnFailsWhenAmountExceedsBalance() public {
-        lsp7Revokable.mint(user1, 100, true, "");
-
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                LSP7AmountExceedsBalance.selector,
-                100,
-                user1,
-                500
-            )
-        );
-        lsp7Revokable.revokeAndBurn(user1, 500, "");
+        assertEq(lsp7Revokable.balanceOf(owner), 0, "Owner should still have 0 tokens");
     }
 
     // =========================================================================
     // Ownership Transfer Tests
     // =========================================================================
 
-    function test_NewOwnerBecomesRevoker() public {
+    function test_TransferOwnershipClearsRevokerListAndGrantsNewOwnerRole() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
         address newOwner = vm.addr(200);
 
-        // Initially, newOwner is not a revoker
-        assertFalse(
-            lsp7Revokable.isRevoker(newOwner),
-            "New owner should not be a revoker initially"
-        );
+        lsp7Revokable.grantRole(revokerRole, revoker1);
+        lsp7Revokable.grantRole(revokerRole, revoker2);
+        _mintTo(user1, 1000);
 
-        // Transfer ownership
         lsp7Revokable.transferOwnership(newOwner);
 
-        // Old owner should no longer be a revoker (unless explicitly added)
         assertFalse(
-            lsp7Revokable.isRevoker(owner),
-            "Old owner should not be a revoker after transfer"
+            lsp7Revokable.hasRole(revokerRole, owner),
+            "Old owner should lose REVOKER_ROLE after ownership transfer"
         );
-
-        // New owner should be a revoker
+        assertFalse(
+            lsp7Revokable.hasRole(revokerRole, revoker1),
+            "Existing delegated revokers should be cleared"
+        );
         assertTrue(
-            lsp7Revokable.isRevoker(newOwner),
-            "New owner should be a revoker"
+            lsp7Revokable.hasRole(revokerRole, newOwner),
+            "New owner should receive REVOKER_ROLE"
         );
-    }
+        assertEq(
+            lsp7Revokable.getRoleMemberCount(revokerRole),
+            1,
+            "Only the new owner should remain as revoker after transfer"
+        );
 
-    function test_RevokeGoesToCurrentOwner() public {
-        address newOwner = vm.addr(200);
-        lsp7Revokable.addRevoker(revoker1);
-        lsp7Revokable.mint(user1, 1000, true, "");
-
-        // Transfer ownership
-        lsp7Revokable.transferOwnership(newOwner);
-
-        // Revoker1 revokes - tokens should go to NEW owner
         vm.prank(revoker1);
-        lsp7Revokable.revoke(user1, 500, "");
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                revoker1,
+                revokerRole
+            )
+        );
+        lsp7Revokable.revoke(user1, newOwner, 100, "");
+
+        vm.prank(newOwner);
+        lsp7Revokable.revoke(user1, newOwner, 500, "");
 
         assertEq(lsp7Revokable.balanceOf(user1), 500, "User1 should have 500 tokens");
         assertEq(lsp7Revokable.balanceOf(newOwner), 500, "New owner should have 500 tokens");
@@ -534,38 +369,24 @@ contract LSP7RevokableTest is Test {
     // Fuzzing Tests
     // =========================================================================
 
-    function testFuzz_RevokerManagement(address addr, bool add) public {
+    function testFuzz_DefaultAdminCanGrantRevokerRole(address addr) public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
         vm.assume(addr != address(0));
         vm.assume(addr != owner);
 
-        if (add) {
-            vm.expectEmit(true, false, false, true, address(lsp7Revokable));
-            emit ILSP7Revokable.RevokerAdded(addr);
-            lsp7Revokable.addRevoker(addr);
-            assertTrue(
-                lsp7Revokable.isRevoker(addr),
-                "Address should be a revoker"
-            );
-        } else {
-            // First add, then remove
-            lsp7Revokable.addRevoker(addr);
-            vm.expectEmit(true, false, false, true, address(lsp7Revokable));
-            emit ILSP7Revokable.RevokerRemoved(addr);
-            lsp7Revokable.removeRevoker(addr);
-            assertFalse(
-                lsp7Revokable.isRevoker(addr),
-                "Address should not be a revoker"
-            );
-        }
-
-        // Non-owner should revert
         vm.prank(addr);
-        vm.expectRevert("Ownable: caller is not the owner");
-        if (add) {
-            lsp7Revokable.addRevoker(addr);
-        } else {
-            lsp7Revokable.removeRevoker(addr);
-        }
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                addr,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        lsp7Revokable.grantRole(revokerRole, addr);
+
+        lsp7Revokable.grantRole(revokerRole, addr);
+        assertTrue(lsp7Revokable.hasRole(revokerRole, addr));
     }
 
     function testFuzz_RevokeAmount(
@@ -582,7 +403,7 @@ contract LSP7RevokableTest is Test {
 
         lsp7Revokable.mint(from, mintAmount, true, "");
 
-        lsp7Revokable.revoke(from, revokeAmount, "");
+        lsp7Revokable.revoke(from, owner, revokeAmount, "");
 
         assertEq(
             lsp7Revokable.balanceOf(from),
@@ -596,58 +417,48 @@ contract LSP7RevokableTest is Test {
         );
     }
 
-    function testFuzz_RevokeAndBurnAmount(
-        address from,
-        uint256 mintAmount,
-        uint256 burnAmount
-    ) public {
-        vm.assume(from != address(0));
-        vm.assume(uint160(from) > 10); // Exclude precompile addresses (0x1-0x9)
-        vm.assume(mintAmount > 0);
-        vm.assume(mintAmount <= type(uint128).max);
-        vm.assume(burnAmount <= mintAmount);
-
-        lsp7Revokable.mint(from, mintAmount, true, "");
-        uint256 initialSupply = lsp7Revokable.totalSupply();
-
-        lsp7Revokable.revokeAndBurn(from, burnAmount, "");
-
-        assertEq(
-            lsp7Revokable.balanceOf(from),
-            mintAmount - burnAmount,
-            "From balance should decrease"
-        );
-        assertEq(
-            lsp7Revokable.totalSupply(),
-            initialSupply - burnAmount,
-            "Total supply should decrease"
-        );
-    }
-
     function testFuzz_NonRevokerCannotRevoke(address caller) public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
         vm.assume(caller != owner);
         vm.assume(caller != address(0));
 
-        lsp7Revokable.mint(user1, 1000, true, "");
+        _mintTo(user1, 1000);
 
         vm.prank(caller);
         vm.expectRevert(
-            abi.encodeWithSelector(LSP7NotAuthorizedRevoker.selector, caller)
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                caller,
+                revokerRole
+            )
         );
-        lsp7Revokable.revoke(user1, 500, "");
+        lsp7Revokable.revoke(user1, owner, 500, "");
     }
 
     function testFuzz_DelegatedRevokerCanRevoke(address delegatedRevoker) public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
         vm.assume(delegatedRevoker != owner);
         vm.assume(delegatedRevoker != address(0));
+        vm.assume(delegatedRevoker != user1);
+        vm.assume(uint160(delegatedRevoker) > 10);
 
-        lsp7Revokable.addRevoker(delegatedRevoker);
-        lsp7Revokable.mint(user1, 1000, true, "");
+        lsp7Revokable.grantRole(revokerRole, delegatedRevoker);
+        _mintTo(user1, 1000);
 
         vm.prank(delegatedRevoker);
-        lsp7Revokable.revoke(user1, 500, "");
+        lsp7Revokable.revoke(user1, delegatedRevoker, 500, "");
 
         assertEq(lsp7Revokable.balanceOf(user1), 500, "User1 should have 500 tokens");
-        assertEq(lsp7Revokable.balanceOf(owner), 500, "Owner should have 500 tokens");
+        assertEq(
+            lsp7Revokable.balanceOf(delegatedRevoker),
+            500,
+            "Delegated revoker should receive revoked tokens"
+        );
+    }
+
+    function _mintTo(address to, uint256 amount) internal {
+        lsp7Revokable.mint(to, amount, true, "");
     }
 }
