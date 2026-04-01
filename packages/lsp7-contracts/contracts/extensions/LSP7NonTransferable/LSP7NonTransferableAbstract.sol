@@ -126,8 +126,9 @@ abstract contract LSP7NonTransferableAbstract is
     ) public virtual override onlyOwner {
         require(transferLockEnabled, LSP7CannotUpdateTransferLockPeriod());
 
-        // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
-        // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
+        // When `transferLockEnd` is 0, it means no end time is set (transfers locked indefinitely since `transferLockStart`)
+        // When `transferLockStart` is 0, it means no start time is set (transfers locked up until `transferLockEnd`)
+        // Allow to make the token always non-transferable, or ensure the end period for locking transfers is always later than the starting period
         require(
             newTransferLockEnd == 0 ||
                 newTransferLockEnd >= newTransferLockStart,
