@@ -38,8 +38,9 @@ abstract contract LSP7NonTransferableInitAbstract is
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    /// @dev `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
     bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE =
-        bytes32("NON_TRANSFERABLE_BYPASS_ROLE");
+        0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000;
 
     /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockStart;
