@@ -3,6 +3,9 @@ pragma solidity ^0.8.27;
 
 // modules
 import {
+    OwnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {
     AccessControlExtendedInitAbstract
 } from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
@@ -21,7 +24,8 @@ import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 /// Inherits from LSP7DigitalAsset to provide core token functionality.
 abstract contract LSP7MintableInitAbstract is
     ILSP7Mintable,
-    AccessControlExtendedInitAbstract
+    AccessControlExtendedInitAbstract,
+    LSP7DigitalAssetInitAbstract
 {
     /// @notice Indicates whether minting is currently enabled or not.
     bool public isMintable;
@@ -52,13 +56,7 @@ abstract contract LSP7MintableInitAbstract is
             lsp4TokenType_,
             isNonDivisible_
         );
-        __AccessControlExtended_init(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            isNonDivisible_
-        );
+        __AccessControlExtended_init(newOwner_);
         __LSP7Mintable_init_unchained(mintable_);
     }
 
@@ -91,6 +89,23 @@ abstract contract LSP7MintableInitAbstract is
         _mint(to, amount, force, data);
     }
 
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            AccessControlExtendedInitAbstract,
+            LSP7DigitalAssetInitAbstract
+        )
+        returns (bool)
+    {
+        return
+            AccessControlExtendedInitAbstract.supportsInterface(interfaceId) ||
+            LSP7DigitalAssetInitAbstract.supportsInterface(interfaceId);
+    }
+
     /// @notice Internal function to mint tokens, overridden to enforce minting status.
     /// @dev Checks if minting is enabled, reverting with LSP7MintDisabled if not. Calls the parent _mint function from LSP7DigitalAsset.
     /// @param to The address to receive the minted tokens.
@@ -108,5 +123,15 @@ abstract contract LSP7MintableInitAbstract is
     ) internal virtual override {
         require(isMintable, LSP7MintDisabled());
         super._mint(to, amount, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    )
+        internal
+        virtual
+        override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
+    {
+        super._transferOwnership(newOwner);
     }
 }

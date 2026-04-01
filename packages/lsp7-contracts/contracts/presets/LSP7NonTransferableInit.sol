@@ -3,8 +3,12 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
-import {LSP7NonTransferableInitAbstract} from "../extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../LSP7DigitalAssetInitAbstract.sol";
+import {
+    LSP7NonTransferableInitAbstract
+} from "../extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
 
 contract LSP7NonTransferableInit is LSP7NonTransferableInitAbstract {
     /// @dev initialize (= lock) base implementation contract on deployment

@@ -192,7 +192,12 @@ contract LSP7CustomizableTokenInit is
     )
         internal
         virtual
-        override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
+        override(
+            OwnableUpgradeable,
+            LSP7CappedBalanceInitAbstract,
+            LSP7MintableInitAbstract,
+            LSP7NonTransferableInitAbstract
+        )
     {
         super._transferOwnership(newOwner);
     }
@@ -205,7 +210,9 @@ contract LSP7CustomizableTokenInit is
         virtual
         override(
             LSP7DigitalAssetInitAbstract,
-            AccessControlExtendedInitAbstract
+            LSP7CappedBalanceInitAbstract,
+            LSP7MintableInitAbstract,
+            LSP7NonTransferableInitAbstract
         )
         returns (bool)
     {

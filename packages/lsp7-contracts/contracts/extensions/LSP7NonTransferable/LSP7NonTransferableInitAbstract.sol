@@ -3,6 +3,12 @@ pragma solidity ^0.8.4;
 
 // modules
 import {
+    OwnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {
+    LSP7DigitalAssetInitAbstract
+} from "../../LSP7DigitalAssetInitAbstract.sol";
+import {
     AccessControlExtendedInitAbstract
 } from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
@@ -26,7 +32,8 @@ import {
 /// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods and allowlist support.
 abstract contract LSP7NonTransferableInitAbstract is
     ILSP7NonTransferable,
-    AccessControlExtendedInitAbstract
+    AccessControlExtendedInitAbstract,
+    LSP7DigitalAssetInitAbstract
 {
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -58,13 +65,14 @@ abstract contract LSP7NonTransferableInitAbstract is
         uint256 transferLockStart_,
         uint256 transferLockEnd_
     ) internal virtual onlyInitializing {
-        __AccessControlExtended_init(
+        LSP7DigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
             isNonDivisible_
         );
+        __AccessControlExtended_init(newOwner_);
         __LSP7NonTransferable_init_unchained(
             transferLockStart_,
             transferLockEnd_
@@ -91,6 +99,23 @@ abstract contract LSP7NonTransferableInitAbstract is
 
         // grant role to allow minting tokens (`from == address(0)`)
         _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            AccessControlExtendedInitAbstract,
+            LSP7DigitalAssetInitAbstract
+        )
+        returns (bool)
+    {
+        return
+            AccessControlExtendedInitAbstract.supportsInterface(interfaceId) ||
+            LSP7DigitalAssetInitAbstract.supportsInterface(interfaceId);
     }
 
     /// @inheritdoc ILSP7NonTransferable
@@ -196,5 +221,15 @@ abstract contract LSP7NonTransferableInitAbstract is
             _nonTransferableCheck(from, to, amount, force, data);
         }
         super._beforeTokenTransfer(from, to, amount, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    )
+        internal
+        virtual
+        override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
+    {
+        super._transferOwnership(newOwner);
     }
 }

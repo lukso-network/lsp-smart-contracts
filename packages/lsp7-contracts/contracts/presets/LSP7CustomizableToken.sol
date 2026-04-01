@@ -158,7 +158,16 @@ contract LSP7CustomizableToken is
 
     function _transferOwnership(
         address newOwner
-    ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+    )
+        internal
+        virtual
+        override(
+            Ownable,
+            LSP7CappedBalanceAbstract,
+            LSP7MintableAbstract,
+            LSP7NonTransferableAbstract
+        )
+    {
         super._transferOwnership(newOwner);
     }
 
@@ -168,7 +177,12 @@ contract LSP7CustomizableToken is
         public
         view
         virtual
-        override(LSP7DigitalAsset, AccessControlExtendedAbstract)
+        override(
+            LSP7DigitalAsset,
+            LSP7CappedBalanceAbstract,
+            LSP7MintableAbstract,
+            LSP7NonTransferableAbstract
+        )
         returns (bool)
     {
         return super.supportsInterface(interfaceId);

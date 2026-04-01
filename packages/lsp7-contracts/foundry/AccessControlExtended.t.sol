@@ -5,6 +5,7 @@ pragma solidity ^0.8.22;
 import {Test, Vm} from "forge-std/Test.sol";
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {
     AccessControlExtendedAbstract
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
@@ -38,7 +39,16 @@ import {
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 
 // Mock contract for testing
-contract MockTokenWithAccessControlExtended is AccessControlExtendedAbstract {
+contract MockTokenWithAccessControlExtended is
+    LSP7DigitalAsset,
+    AccessControlExtendedAbstract
+{
+    string internal constant DEBUG_LOG_PATH = ".cursor/debug-4b5b04.log";
+    string internal constant DEBUG_SESSION_ID = "4b5b04";
+    string internal constant DEBUG_RUN_ID = "access-control-transfer";
+    Vm private constant DEBUG_VM =
+        Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
+
     constructor(
         string memory name_,
         string memory symbol_,
@@ -78,6 +88,42 @@ contract MockTokenWithAccessControlExtended is AccessControlExtendedAbstract {
         returns (bool)
     {
         return true;
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(LSP7DigitalAsset, AccessControlExtendedAbstract)
+        returns (bool)
+    {
+        return
+            LSP7DigitalAsset.supportsInterface(interfaceId) ||
+            AccessControlExtendedAbstract.supportsInterface(interfaceId);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        address previousOwner = owner();
+
+        AccessControlExtendedAbstract._transferOwnership(newOwner);
+    }
+
+    function _grantRole(
+        bytes32 role,
+        address account
+    ) internal virtual override {
+        super._grantRole(role, account);
+    }
+
+    function _revokeRole(
+        bytes32 role,
+        address account
+    ) internal virtual override {
+        super._revokeRole(role, account);
     }
 
     bytes32 public constant TEST_ROLE = bytes32(bytes("TestRole"));
@@ -1107,7 +1153,6 @@ contract AccessControlExtendedTest is Test {
         emit IAccessControl.RoleRevoked(DEFAULT_ADMIN_ROLE, owner, owner);
         vm.expectEmit(true, true, true, true, address(token));
         emit IAccessControl.RoleGranted(DEFAULT_ADMIN_ROLE, newOwner, owner);
-
         token.transferOwnership(newOwner);
     }
 

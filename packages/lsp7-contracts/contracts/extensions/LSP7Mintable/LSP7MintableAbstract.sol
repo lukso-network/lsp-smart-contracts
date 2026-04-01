@@ -2,6 +2,8 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
 import {
     AccessControlExtendedAbstract
 } from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
@@ -17,7 +19,8 @@ import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 /// Inherits from LSP7DigitalAsset to provide core token functionality.
 abstract contract LSP7MintableAbstract is
     ILSP7Mintable,
-    AccessControlExtendedAbstract
+    AccessControlExtendedAbstract,
+    LSP7DigitalAsset
 {
     /// @notice Indicates whether minting is currently enabled or not.
     bool public isMintable;
@@ -52,6 +55,20 @@ abstract contract LSP7MintableAbstract is
         _mint(to, amount, force, data);
     }
 
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(AccessControlExtendedAbstract, LSP7DigitalAsset)
+        returns (bool)
+    {
+        return
+            AccessControlExtendedAbstract.supportsInterface(interfaceId) ||
+            LSP7DigitalAsset.supportsInterface(interfaceId);
+    }
+
     /// @notice Internal function to mint tokens, overridden to enforce minting status.
     /// @dev Checks if minting is enabled, reverting with LSP7MintDisabled if not. Calls the parent _mint function from LSP7DigitalAsset.
     /// @param to The address to receive the minted tokens.
@@ -69,5 +86,11 @@ abstract contract LSP7MintableAbstract is
     ) internal virtual override {
         require(isMintable, LSP7MintDisabled());
         super._mint(to, amount, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        super._transferOwnership(newOwner);
     }
 }

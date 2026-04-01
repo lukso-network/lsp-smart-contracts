@@ -2,6 +2,8 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
 import {
     AccessControlExtendedAbstract
 } from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
@@ -26,7 +28,8 @@ import {
 /// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods and allowlist support.
 abstract contract LSP7NonTransferableAbstract is
     ILSP7NonTransferable,
-    AccessControlExtendedAbstract
+    AccessControlExtendedAbstract,
+    LSP7DigitalAsset
 {
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -57,6 +60,20 @@ abstract contract LSP7NonTransferableAbstract is
 
         // grant role to allow minting tokens (`from == address(0)`)
         _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(AccessControlExtendedAbstract, LSP7DigitalAsset)
+        returns (bool)
+    {
+        return
+            AccessControlExtendedAbstract.supportsInterface(interfaceId) ||
+            LSP7DigitalAsset.supportsInterface(interfaceId);
     }
 
     /// @inheritdoc ILSP7NonTransferable
@@ -162,5 +179,11 @@ abstract contract LSP7NonTransferableAbstract is
             _nonTransferableCheck(from, to, amount, force, data);
         }
         super._beforeTokenTransfer(from, to, amount, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        super._transferOwnership(newOwner);
     }
 }

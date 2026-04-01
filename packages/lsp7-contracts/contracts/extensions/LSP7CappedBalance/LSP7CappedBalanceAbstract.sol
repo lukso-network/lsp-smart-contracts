@@ -2,6 +2,8 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
 import {
     AccessControlExtendedAbstract
 } from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
@@ -22,7 +24,8 @@ import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 /// Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
 abstract contract LSP7CappedBalanceAbstract is
     ILSP7CappedBalance,
-    AccessControlExtendedAbstract
+    AccessControlExtendedAbstract,
+    LSP7DigitalAsset
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -50,6 +53,20 @@ abstract contract LSP7CappedBalanceAbstract is
     /// @inheritdoc ILSP7CappedBalance
     function tokenBalanceCap() public view virtual override returns (uint256) {
         return _TOKEN_BALANCE_CAP;
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(AccessControlExtendedAbstract, LSP7DigitalAsset)
+        returns (bool)
+    {
+        return
+            AccessControlExtendedAbstract.supportsInterface(interfaceId) ||
+            LSP7DigitalAsset.supportsInterface(interfaceId);
     }
 
     /// @notice Checks if a token transfer complies with the balance cap.
@@ -98,5 +115,11 @@ abstract contract LSP7CappedBalanceAbstract is
     ) internal virtual override {
         _tokenBalanceCapCheck(from, to, amount, force, data);
         super._beforeTokenTransfer(from, to, amount, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        super._transferOwnership(newOwner);
     }
 }
