@@ -215,8 +215,8 @@ abstract contract AccessControlExtendedAbstract is
      *
      * @custom:warning This function copies the entire role membership set into memory.
      * For roles with a large number of members, this may consume a significant amount of gas
-     * and could exceed the block gas limit. Consider using {getRoleMember} with pagination
-     * for large sets when calling from other contracts. This is primarily intended for
+     * and could exceed the block gas limit. Consider calling `{getRoleMember}` repeatedly
+     * off-chain for large role sets. This is primarily intended for
      * off-chain / view-context usage.
      */
     function getRoleMembers(
@@ -378,6 +378,9 @@ abstract contract AccessControlExtendedAbstract is
      * - Auxiliary role data for the old owner is cleared upon revocation.
      * - Transferring ownership to self will still clear the old owner's auxiliary role data
      *   (revoke then re-grant cycle).
+     * - If the old owner holds a large number of roles, the transaction may approach or exceed
+     *   the block gas limit and fail. Avoid assigning too many roles to the owner to ensure
+     *   ownership transfers remain callable.
      */
     function _transferOwnership(address newOwner) internal virtual override {
         address oldOwner = owner();
