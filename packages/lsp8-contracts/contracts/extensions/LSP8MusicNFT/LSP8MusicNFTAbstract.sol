@@ -34,8 +34,14 @@ import {
 
 // errors
 import {
-    LSP33BidirectionalLinkMismatch
+    LSP33BidirectionalLinkMismatch,
+    LSP33NotTokenOwner
 } from "./LSP8MusicNFTErrors.sol";
+
+import {
+    LSP8TokenIdsDataLengthMismatch,
+    LSP8TokenIdsDataEmptyArray
+} from "../../LSP8Errors.sol";
 
 /// @title LSP8MusicNFTAbstract
 /// @dev LSP33 Music NFT extension for LSP8 collections. Proxies metadata reads/writes
@@ -49,6 +55,48 @@ abstract contract LSP8MusicNFTAbstract is
             _LSP33_SUPPORTED_STANDARDS_KEY,
             _LSP33_SUPPORTED_STANDARDS_VALUE
         );
+    }
+
+    // --- Access Control ---
+
+    /// @dev Override setDataForTokenId to require the caller is the tokenId owner
+    /// (not the contract owner). This is consistent with LSP7, where owner()
+    /// resolves to tokenOwnerOf(tokenId) via LSP34.
+    function setDataForTokenId(
+        bytes32 tokenId,
+        bytes32 dataKey,
+        bytes memory dataValue
+    ) public virtual override {
+        address tokenOwner = tokenOwnerOf(tokenId);
+        if (msg.sender != tokenOwner) {
+            revert LSP33NotTokenOwner(msg.sender, tokenId, tokenOwner);
+        }
+        _setDataForTokenId(tokenId, dataKey, dataValue);
+    }
+
+    /// @dev Override setDataBatchForTokenIds to require the caller is each tokenId's owner.
+    function setDataBatchForTokenIds(
+        bytes32[] memory tokenIds,
+        bytes32[] memory dataKeys,
+        bytes[] memory dataValues
+    ) public virtual override {
+        require(
+            tokenIds.length == dataKeys.length &&
+                dataKeys.length == dataValues.length,
+            LSP8TokenIdsDataLengthMismatch()
+        );
+        require(tokenIds.length != 0, LSP8TokenIdsDataEmptyArray());
+
+        for (uint256 i; i < tokenIds.length; ) {
+            address tokenOwner = tokenOwnerOf(tokenIds[i]);
+            if (msg.sender != tokenOwner) {
+                revert LSP33NotTokenOwner(msg.sender, tokenIds[i], tokenOwner);
+            }
+            _setDataForTokenId(tokenIds[i], dataKeys[i], dataValues[i]);
+            unchecked {
+                ++i;
+            }
+        }
     }
 
     // --- Read Proxy ---

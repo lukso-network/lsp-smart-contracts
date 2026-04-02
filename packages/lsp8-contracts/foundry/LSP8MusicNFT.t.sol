@@ -31,7 +31,8 @@ import {
 
 // errors
 import {
-    LSP33BidirectionalLinkMismatch
+    LSP33BidirectionalLinkMismatch,
+    LSP33NotTokenOwner
 } from "../contracts/extensions/LSP8MusicNFT/LSP8MusicNFTErrors.sol";
 
 // --- Mock Contracts ---
@@ -145,6 +146,7 @@ contract LSP8MusicNFTTest is Test {
     // --- Bidirectional Link Verification ---
 
     function test_SetOwnableTrackTokenWithValidLink() public {
+        vm.prank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -161,6 +163,7 @@ contract LSP8MusicNFTTest is Test {
     function test_RevertSetOwnableTrackTokenWithInvalidLink() public {
         MockLSP7NoRef badLsp7 = new MockLSP7NoRef();
 
+        vm.prank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
                 LSP33BidirectionalLinkMismatch.selector,
@@ -179,6 +182,7 @@ contract LSP8MusicNFTTest is Test {
         // lsp7 points to tokenId1, but we try to link it to tokenId2
         lsp8.mint(user1, tokenId2, true, "");
 
+        vm.prank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
                 LSP33BidirectionalLinkMismatch.selector,
@@ -193,10 +197,30 @@ contract LSP8MusicNFTTest is Test {
         );
     }
 
+    // --- Token Owner Access Control ---
+
+    function test_ContractOwnerCannotSetDataForTokenId() public {
+        // Contract owner (address(this)) is NOT the token owner (user1)
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP33NotTokenOwner.selector,
+                address(this),
+                tokenId1,
+                user1
+            )
+        );
+        lsp8.setDataForTokenId(
+            tokenId1,
+            _LSP33_OWNABLE_TRACK_TOKEN_KEY,
+            abi.encodePacked(address(lsp7))
+        );
+    }
+
     // --- Read Proxy ---
 
     function test_ReadProxyReturnsLSP7DataForLSP4Metadata() public {
         // Link LSP7 to tokenId1
+        vm.prank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -215,6 +239,7 @@ contract LSP8MusicNFTTest is Test {
     }
 
     function test_ReadProxyReturnsLSP7DataForLSP33Metadata() public {
+        vm.prank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -231,17 +256,13 @@ contract LSP8MusicNFTTest is Test {
     }
 
     function test_ReadProxyFallsBackWhenLSP7Reverts() public {
+        vm.prank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
             abi.encodePacked(address(lsp7))
         );
 
-        // Set local data first (before linking, we need to write directly)
-        // Actually, we write a non-metadata key to local storage, then make LSP7 revert
-        // For fallback test: set some local data for this tokenId's metadata
-        // We need to write locally. Since the link is already set, writes forward.
-        // So let's set data on LSP7 first, then make it revert
         lsp7.setData(_LSP4_METADATA_KEY, hex"ff00ff00");
 
         // Now make LSP7 revert on reads
@@ -256,6 +277,7 @@ contract LSP8MusicNFTTest is Test {
     }
 
     function test_ReadProxyReturnsLocalForNonMetadataKeys() public {
+        vm.startPrank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -265,6 +287,7 @@ contract LSP8MusicNFTTest is Test {
         // Set a non-metadata key locally
         bytes32 customKey = keccak256("CustomKey");
         lsp8.setDataForTokenId(tokenId1, customKey, hex"10ca1da7a0");
+        vm.stopPrank();
 
         bytes memory result = lsp8.getDataForTokenId(tokenId1, customKey);
         assertEq(result, hex"10ca1da7a0");
@@ -282,6 +305,7 @@ contract LSP8MusicNFTTest is Test {
     // --- Write Forwarding ---
 
     function test_WriteForwardsToLSP7ForLSP4Metadata() public {
+        vm.startPrank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -289,6 +313,7 @@ contract LSP8MusicNFTTest is Test {
         );
 
         lsp8.setDataForTokenId(tokenId1, _LSP4_METADATA_KEY, hex"aabb0000");
+        vm.stopPrank();
 
         // Verify it was set on LSP7
         bytes memory lsp7Data = lsp7.getData(_LSP4_METADATA_KEY);
@@ -296,6 +321,7 @@ contract LSP8MusicNFTTest is Test {
     }
 
     function test_WriteForwardsToLSP7ForLSP33Metadata() public {
+        vm.startPrank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -303,12 +329,14 @@ contract LSP8MusicNFTTest is Test {
         );
 
         lsp8.setDataForTokenId(tokenId1, _LSP33_METADATA_KEY, hex"ccdd0033");
+        vm.stopPrank();
 
         bytes memory lsp7Data = lsp7.getData(_LSP33_METADATA_KEY);
         assertEq(lsp7Data, hex"ccdd0033");
     }
 
     function test_WriteLocallyForNonMetadataKeys() public {
+        vm.startPrank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -317,12 +345,14 @@ contract LSP8MusicNFTTest is Test {
 
         bytes32 customKey = keccak256("CustomKey");
         lsp8.setDataForTokenId(tokenId1, customKey, hex"10ca1da7a1");
+        vm.stopPrank();
 
         bytes memory result = lsp8.getDataForTokenId(tokenId1, customKey);
         assertEq(result, hex"10ca1da7a1");
     }
 
     function test_WriteRevertsWhenLSP7Reverts() public {
+        vm.startPrank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -333,12 +363,14 @@ contract LSP8MusicNFTTest is Test {
 
         vm.expectRevert("MockLSP7: reverted");
         lsp8.setDataForTokenId(tokenId1, _LSP4_METADATA_KEY, hex"fa110000");
+        vm.stopPrank();
     }
 
     // --- Batch Operations with Linked LSP7s ---
 
     function test_GetDataBatchForTokenIdsWithLinkedLSP7() public {
         // Link LSP7 to tokenId1
+        vm.prank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -357,6 +389,7 @@ contract LSP8MusicNFTTest is Test {
         dataKeys[1] = keccak256("CustomKey");
 
         // Set local custom key
+        vm.prank(user1);
         lsp8.setDataForTokenId(tokenId1, keccak256("CustomKey"), hex"10ca10");
 
         bytes[] memory results = lsp8.getDataBatchForTokenIds(
@@ -369,6 +402,7 @@ contract LSP8MusicNFTTest is Test {
 
     function test_SetDataBatchForTokenIdsWithLinkedLSP7() public {
         // Link LSP7 to tokenId1
+        vm.startPrank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -387,6 +421,7 @@ contract LSP8MusicNFTTest is Test {
         dataValues[1] = hex"10ca1001";
 
         lsp8.setDataBatchForTokenIds(tokenIds, dataKeys, dataValues);
+        vm.stopPrank();
 
         // Verify metadata was forwarded to LSP7
         assertEq(lsp7.getData(_LSP4_METADATA_KEY), hex"ffd00001");
@@ -400,6 +435,7 @@ contract LSP8MusicNFTTest is Test {
     // --- Unlinking (setting LSP33OwnableTrackToken to address(0)) ---
 
     function test_UnlinkBySettingTrackTokenToEmpty() public {
+        vm.startPrank(user1);
         // Link first
         lsp8.setDataForTokenId(
             tokenId1,
@@ -422,6 +458,7 @@ contract LSP8MusicNFTTest is Test {
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
             ""
         );
+        vm.stopPrank();
 
         // After unlinking, reads should return local storage (empty)
         assertEq(lsp8.getDataForTokenId(tokenId1, _LSP4_METADATA_KEY), "");
@@ -439,7 +476,8 @@ contract LSP8MusicNFTTest is Test {
             tokenId2
         );
 
-        // Link each tokenId to its LSP7
+        // Link each tokenId to its LSP7 (both owned by user1)
+        vm.startPrank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -450,6 +488,7 @@ contract LSP8MusicNFTTest is Test {
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
             abi.encodePacked(address(lsp7b))
         );
+        vm.stopPrank();
 
         // Set different metadata on each LSP7
         lsp7.setData(_LSP4_METADATA_KEY, hex"71ac0001");
@@ -485,6 +524,7 @@ contract LSP8MusicNFTTest is Test {
 
     function test_SetOwnableTrackTokenWithAbiEncode() public {
         // Use abi.encode (32-byte left-padded) instead of abi.encodePacked (20-byte)
+        vm.prank(user1);
         lsp8.setDataForTokenId(
             tokenId1,
             _LSP33_OWNABLE_TRACK_TOKEN_KEY,
@@ -499,5 +539,41 @@ contract LSP8MusicNFTTest is Test {
             lsp8.getDataForTokenId(tokenId1, _LSP4_METADATA_KEY),
             hex"e0c32b17"
         );
+    }
+
+    // --- Access Control After Transfer ---
+
+    function test_NewOwnerCanSetDataAfterTransfer() public {
+        address user2 = vm.addr(102);
+
+        // user1 links LSP7
+        vm.prank(user1);
+        lsp8.setDataForTokenId(
+            tokenId1,
+            _LSP33_OWNABLE_TRACK_TOKEN_KEY,
+            abi.encodePacked(address(lsp7))
+        );
+
+        // Transfer tokenId1 from user1 to user2
+        vm.prank(user1);
+        lsp8.transfer(user1, user2, tokenId1, true, "");
+
+        // user1 can no longer set data
+        vm.prank(user1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP33NotTokenOwner.selector,
+                user1,
+                tokenId1,
+                user2
+            )
+        );
+        lsp8.setDataForTokenId(tokenId1, _LSP4_METADATA_KEY, hex"01d00e30");
+
+        // user2 CAN set data (forwards to LSP7)
+        vm.prank(user2);
+        lsp8.setDataForTokenId(tokenId1, _LSP4_METADATA_KEY, hex"1e770001");
+
+        assertEq(lsp7.getData(_LSP4_METADATA_KEY), hex"1e770001");
     }
 }
