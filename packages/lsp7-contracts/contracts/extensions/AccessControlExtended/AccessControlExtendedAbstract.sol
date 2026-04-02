@@ -202,6 +202,29 @@ abstract contract AccessControlExtendedAbstract is
         return _roleMembers[role].length();
     }
 
+    // --- IAccessControlEnumerable (extended)
+
+    /**
+     * @notice Returns all members that hold `role`.
+     *
+     * @dev Convenience function that returns the full membership array in a single call.
+     * Equivalent to calling {getRoleMember} for each index from `0` to `getRoleMemberCount(role) - 1`.
+     *
+     * @param role The role identifier to query members for.
+     * @return An array of addresses that currently hold the specified role.
+     *
+     * @custom:warning This function copies the entire role membership set into memory.
+     * For roles with a large number of members, this may consume a significant amount of gas
+     * and could exceed the block gas limit. Consider using {getRoleMember} with pagination
+     * for large sets when calling from other contracts. This is primarily intended for
+     * off-chain / view-context usage.
+     */
+    function getRoleMembers(
+        bytes32 role
+    ) public view virtual returns (address[] memory) {
+        return _roleMembers[role].values();
+    }
+
     // --- IAccessControlExtended
 
     /// @inheritdoc IAccessControlExtended
@@ -339,10 +362,22 @@ abstract contract AccessControlExtendedAbstract is
     // --- Ownership sync
 
     /**
-     * @dev Overrides `_transferOwnership` to automatically sync `DEFAULT_ADMIN_ROLE`
-     * with the contract owner. Revokes from the old owner and grants to the new owner.
+     * @dev Overrides `_transferOwnership` to automatically transfer ALL roles held by
+     * the old owner to the new owner. This includes `DEFAULT_ADMIN_ROLE` and any other
+     * custom roles the old owner was assigned.
      *
-     * @custom:warning Be aware that despite transferring ownership to self is a no-op operation, it will still clear the `owner()`'s auxiliary role data.
+     * For each role held by the old owner:
+     * 1. The role is revoked from the old owner (clearing auxiliary data per BASE-09).
+     * 2. The role is granted to the new owner (if not already held).
+     *
+     * When renouncing ownership (`newOwner == address(0)`), all roles are revoked from
+     * the old owner but NOT granted to the zero address.
+     *
+     * @custom:warning
+     * - Gas cost scales linearly with the number of roles the old owner holds.
+     * - Auxiliary role data for the old owner is cleared upon revocation.
+     * - Transferring ownership to self will still clear the old owner's auxiliary role data
+     *   (revoke then re-grant cycle).
      */
     function _transferOwnership(address newOwner) internal virtual override {
         address oldOwner = owner();
@@ -350,12 +385,25 @@ abstract contract AccessControlExtendedAbstract is
 
         // case when transferring ownership (excluding initial deployment / initialization)
         if (oldOwner != address(0)) {
-            _revokeRole(DEFAULT_ADMIN_ROLE, oldOwner);
-        }
+            // Snapshot the old owner's roles before revoking (values() returns a memory copy)
+            bytes32[] memory oldOwnerRoles = _addressRoles[oldOwner].values();
 
-        // exclude case when renouncing ownership
-        if (newOwner != address(0)) {
-            _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
+            // Revoke all roles from old owner
+            for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
+                _revokeRole(oldOwnerRoles[i], oldOwner);
+            }
+
+            // Grant all roles to new owner (skip if renouncing ownership)
+            if (newOwner != address(0)) {
+                for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
+                    _grantRole(oldOwnerRoles[i], newOwner);
+                }
+            }
+        } else {
+            // Initial deployment: only grant DEFAULT_ADMIN_ROLE if new owner is not zero
+            if (newOwner != address(0)) {
+                _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
+            }
         }
     }
 }

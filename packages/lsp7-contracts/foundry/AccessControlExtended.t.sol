@@ -1268,4 +1268,237 @@ contract AccessControlExtendedTest is Test {
             "Data should be cleared after revoke"
         );
     }
+
+    // ============================================================
+    // Section 14: _transferOwnership transfers ALL roles (Enhancement 1)
+    // ============================================================
+
+    function test_TransferOwnershipTransfersAllRoles() public {
+        bytes32 MINTER_ROLE = keccak256("MINTER");
+        bytes32 BURNER_ROLE = keccak256("BURNER");
+
+        // Grant multiple roles to owner
+        token.grantRole(MINTER_ROLE, owner);
+        token.grantRole(BURNER_ROLE, owner);
+
+        // Owner now holds: DEFAULT_ADMIN_ROLE, MINTER_ROLE, BURNER_ROLE
+        bytes32[] memory ownerRolesBefore = token.rolesOf(owner);
+        assertEq(ownerRolesBefore.length, 3, "Owner should have 3 roles before transfer");
+
+        address newOwner = account1;
+        token.transferOwnership(newOwner);
+
+        // New owner should have ALL 3 roles
+        assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, newOwner), "New owner should have DEFAULT_ADMIN_ROLE");
+        assertTrue(token.hasRole(MINTER_ROLE, newOwner), "New owner should have MINTER_ROLE");
+        assertTrue(token.hasRole(BURNER_ROLE, newOwner), "New owner should have BURNER_ROLE");
+
+        bytes32[] memory newOwnerRoles = token.rolesOf(newOwner);
+        assertEq(newOwnerRoles.length, 3, "New owner should have 3 roles after transfer");
+
+        // Old owner should have NO roles
+        assertFalse(token.hasRole(DEFAULT_ADMIN_ROLE, owner), "Old owner should not have DEFAULT_ADMIN_ROLE");
+        assertFalse(token.hasRole(MINTER_ROLE, owner), "Old owner should not have MINTER_ROLE");
+        assertFalse(token.hasRole(BURNER_ROLE, owner), "Old owner should not have BURNER_ROLE");
+
+        bytes32[] memory oldOwnerRoles = token.rolesOf(owner);
+        assertEq(oldOwnerRoles.length, 0, "Old owner should have 0 roles after transfer");
+    }
+
+    function test_TransferOwnershipDoesNotAffectOtherRoleHolders() public {
+        bytes32 MINTER_ROLE = keccak256("MINTER");
+
+        // Grant MINTER_ROLE to owner and account2
+        token.grantRole(MINTER_ROLE, owner);
+        token.grantRole(MINTER_ROLE, account2);
+
+        address newOwner = account1;
+        token.transferOwnership(newOwner);
+
+        // account2 should still have MINTER_ROLE
+        assertTrue(token.hasRole(MINTER_ROLE, account2), "account2 should still have MINTER_ROLE");
+
+        // newOwner should have MINTER_ROLE (transferred from old owner)
+        assertTrue(token.hasRole(MINTER_ROLE, newOwner), "New owner should have MINTER_ROLE");
+
+        // Old owner should NOT have MINTER_ROLE
+        assertFalse(token.hasRole(MINTER_ROLE, owner), "Old owner should not have MINTER_ROLE");
+    }
+
+    function test_TransferOwnershipClearsOldOwnerRoleData() public {
+        bytes32 MINTER_ROLE = keccak256("MINTER");
+
+        // Grant role with data to owner
+        token.grantRoleWithData(MINTER_ROLE, owner, hex"cafebabe");
+
+        assertEq(token.getRoleData(MINTER_ROLE, owner), hex"cafebabe", "Owner should have role data");
+
+        address newOwner = account1;
+        token.transferOwnership(newOwner);
+
+        // Old owner's role data should be cleared
+        assertEq(token.getRoleData(MINTER_ROLE, owner).length, 0, "Old owner role data should be cleared");
+
+        // New owner should have the role but NOT the old data (data is per-address, cleared on revoke)
+        assertTrue(token.hasRole(MINTER_ROLE, newOwner), "New owner should have MINTER_ROLE");
+        assertEq(token.getRoleData(MINTER_ROLE, newOwner).length, 0, "New owner should not inherit role data");
+    }
+
+    function test_TransferOwnershipEmitsAllRoleEvents() public {
+        bytes32 MINTER_ROLE = keccak256("MINTER");
+
+        // Grant MINTER_ROLE to owner
+        token.grantRole(MINTER_ROLE, owner);
+
+        address newOwner = account1;
+
+        // Expect events for both roles being revoked and granted
+        // Order: revoke DEFAULT_ADMIN from old, revoke MINTER from old,
+        //        grant DEFAULT_ADMIN to new, grant MINTER to new
+        // Note: exact ordering depends on EnumerableSet iteration order
+        vm.expectEmit(true, true, true, true, address(token));
+        emit IAccessControl.RoleRevoked(DEFAULT_ADMIN_ROLE, owner, owner);
+
+        token.transferOwnership(newOwner);
+
+        // Verify final state
+        assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, newOwner));
+        assertTrue(token.hasRole(MINTER_ROLE, newOwner));
+    }
+
+    function test_RenounceOwnershipRevokesAllRoles() public {
+        bytes32 MINTER_ROLE = keccak256("MINTER");
+
+        // Grant MINTER_ROLE to owner
+        token.grantRole(MINTER_ROLE, owner);
+
+        assertEq(token.rolesOf(owner).length, 2, "Owner should have 2 roles");
+
+        token.renounceOwnership();
+
+        // Owner should have NO roles
+        assertFalse(token.hasRole(DEFAULT_ADMIN_ROLE, owner), "Should not have DEFAULT_ADMIN_ROLE");
+        assertFalse(token.hasRole(MINTER_ROLE, owner), "Should not have MINTER_ROLE");
+        assertEq(token.rolesOf(owner).length, 0, "Owner should have 0 roles after renounce");
+    }
+
+    function test_TransferOwnershipNewOwnerAlreadyHasSomeRoles() public {
+        bytes32 MINTER_ROLE = keccak256("MINTER");
+        bytes32 BURNER_ROLE = keccak256("BURNER");
+
+        // Grant MINTER to owner, BURNER to both
+        token.grantRole(MINTER_ROLE, owner);
+        token.grantRole(BURNER_ROLE, owner);
+        token.grantRole(BURNER_ROLE, account1);
+
+        address newOwner = account1;
+        token.transferOwnership(newOwner);
+
+        // New owner should have: DEFAULT_ADMIN_ROLE, MINTER_ROLE, BURNER_ROLE
+        assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, newOwner), "New owner should have DEFAULT_ADMIN_ROLE");
+        assertTrue(token.hasRole(MINTER_ROLE, newOwner), "New owner should have MINTER_ROLE");
+        assertTrue(token.hasRole(BURNER_ROLE, newOwner), "New owner should have BURNER_ROLE");
+
+        // BURNER_ROLE member count should still be 1 (no duplication)
+        assertEq(token.getRoleMemberCount(BURNER_ROLE), 1, "BURNER_ROLE should have 1 member (no duplicate)");
+    }
+
+    // ============================================================
+    // Section 15: getRoleMembers (Enhancement 2)
+    // ============================================================
+
+    function test_GetRoleMembersReturnsEmptyForNoMembers() public {
+        bytes32 UNKNOWN_ROLE = keccak256("UNKNOWN");
+        address[] memory members = token.getRoleMembers(UNKNOWN_ROLE);
+        assertEq(members.length, 0, "Should return empty array for role with no members");
+    }
+
+    function test_GetRoleMembersReturnsSingleMember() public {
+        address[] memory members = token.getRoleMembers(DEFAULT_ADMIN_ROLE);
+        assertEq(members.length, 1, "DEFAULT_ADMIN_ROLE should have 1 member");
+        assertEq(members[0], owner, "Only member should be owner");
+    }
+
+    function test_GetRoleMembersReturnsMultipleMembers() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+        token.grantRole(TEST_ROLE, account3);
+
+        address[] memory members = token.getRoleMembers(TEST_ROLE);
+        assertEq(members.length, 3, "TEST_ROLE should have 3 members");
+
+        // Verify all members are present (order may vary with EnumerableSet)
+        bool found1;
+        bool found2;
+        bool found3;
+        for (uint256 i = 0; i < members.length; i++) {
+            if (members[i] == account1) found1 = true;
+            if (members[i] == account2) found2 = true;
+            if (members[i] == account3) found3 = true;
+        }
+        assertTrue(found1, "account1 should be in members");
+        assertTrue(found2, "account2 should be in members");
+        assertTrue(found3, "account3 should be in members");
+    }
+
+    function test_GetRoleMembersUpdatesAfterRevocation() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+
+        assertEq(token.getRoleMembers(TEST_ROLE).length, 2, "Should have 2 members");
+
+        token.revokeRole(TEST_ROLE, account1);
+
+        address[] memory members = token.getRoleMembers(TEST_ROLE);
+        assertEq(members.length, 1, "Should have 1 member after revocation");
+        assertEq(members[0], account2, "Remaining member should be account2");
+    }
+
+    function test_GetRoleMembersConsistentWithGetRoleMemberCount() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+
+        address[] memory members = token.getRoleMembers(TEST_ROLE);
+        uint256 count = token.getRoleMemberCount(TEST_ROLE);
+
+        assertEq(members.length, count, "getRoleMembers length should match getRoleMemberCount");
+    }
+
+    function test_GetRoleMembersConsistentWithGetRoleMember() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+        token.grantRole(TEST_ROLE, account3);
+
+        address[] memory allMembers = token.getRoleMembers(TEST_ROLE);
+
+        for (uint256 i = 0; i < allMembers.length; i++) {
+            assertEq(
+                allMembers[i],
+                token.getRoleMember(TEST_ROLE, i),
+                "getRoleMembers[i] should match getRoleMember(role, i)"
+            );
+        }
+    }
+
+    function testFuzz_GetRoleMembersAfterGrantAndRevoke(
+        address addr1,
+        address addr2
+    ) public {
+        vm.assume(addr1 != address(0) && addr2 != address(0));
+        vm.assume(addr1 != addr2);
+        vm.assume(addr1 != owner && addr2 != owner);
+        vm.assume(uint160(addr1) > 9 && uint160(addr2) > 9);
+
+        token.grantRole(TEST_ROLE, addr1);
+        token.grantRole(TEST_ROLE, addr2);
+
+        address[] memory membersAfterGrant = token.getRoleMembers(TEST_ROLE);
+        assertEq(membersAfterGrant.length, 2, "Should have 2 members after grants");
+
+        token.revokeRole(TEST_ROLE, addr1);
+
+        address[] memory membersAfterRevoke = token.getRoleMembers(TEST_ROLE);
+        assertEq(membersAfterRevoke.length, 1, "Should have 1 member after revoke");
+        assertEq(membersAfterRevoke[0], addr2, "Remaining member should be addr2");
+    }
 }
