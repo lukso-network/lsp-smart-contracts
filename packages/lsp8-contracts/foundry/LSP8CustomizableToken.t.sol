@@ -14,6 +14,9 @@ import {
 
 // errors
 import {
+    AccessControlUnauthorizedAccount
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
+import {
     LSP8MintDisabled
 } from "../contracts/extensions/LSP8Mintable/LSP8MintableErrors.sol";
 import {
@@ -48,6 +51,13 @@ contract LSP8CustomizableTokenTest is Test {
     address user1 = vm.addr(101);
     address user2 = vm.addr(102);
     address zeroAddress = address(0);
+
+    bytes32 constant MINTER_ROLE =
+        0x4d494e5445525f524f4c45000000000000000000000000000000000000000000;
+    bytes32 constant NON_TRANSFERABLE_BYPASS_ROLE =
+        0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000;
+    bytes32 constant UNCAPPED_ROLE =
+        0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
 
     // Initial token IDs to mint
     bytes32[] initialTokenIds;
@@ -123,10 +133,17 @@ contract LSP8CustomizableTokenTest is Test {
             tokenSupplyCap,
             "Supply cap should be set"
         );
-        assertTrue(token.isAllowlisted(owner), "Owner should be allowlisted");
         assertTrue(
-            token.isAllowlisted(zeroAddress),
-            "Zero address should be allowlisted"
+            token.hasRole(MINTER_ROLE, owner),
+            "Owner should have MINTER_ROLE"
+        );
+        assertTrue(
+            token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, zeroAddress),
+            "Zero address should have bypass role"
+        );
+        assertTrue(
+            token.hasRole(UNCAPPED_ROLE, zeroAddress),
+            "Zero address should have UNCAPPED_ROLE"
         );
     }
 
@@ -379,11 +396,7 @@ contract LSP8CustomizableTokenTest is Test {
     }
 
     // Minting Tests
-    function test_OwnerCanMintToNonAllowlistedAddress() public {
-        assertFalse(
-            token.isAllowlisted(user1),
-            "User1 should not be allowlisted"
-        );
+    function test_OwnerCanMintToRegularAddress() public {
         token.mint(user1, bytes32(uint256(100)), true, "");
         assertEq(token.balanceOf(user1), 1, "User1 should have 1 token");
         assertEq(
@@ -401,7 +414,13 @@ contract LSP8CustomizableTokenTest is Test {
 
     function test_NonOwnerCannotMint() public {
         vm.prank(nonOwner);
-        vm.expectRevert();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                nonOwner,
+                MINTER_ROLE
+            )
+        );
         token.mint(user1, bytes32(uint256(100)), true, "");
     }
 
@@ -431,10 +450,10 @@ contract LSP8CustomizableTokenTest is Test {
             cappedParams
         );
 
-        // Mint a token to user1 (not allowlisted)
+        // Mint a token to user1 (no bypass role)
         nonTransferableToken.mint(user1, bytes32(uint256(1)), true, "");
 
-        // user1 (not allowlisted) trying to transfer should fail
+        // user1 trying to transfer should fail
         vm.prank(user1);
         vm.expectRevert(LSP8TransferDisabled.selector);
         nonTransferableToken.transfer(
@@ -446,7 +465,7 @@ contract LSP8CustomizableTokenTest is Test {
         );
     }
 
-    function test_AllowlistedCanTransferWhenNonTransferable() public {
+    function test_BypassRoleCanTransferWhenNonTransferable() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
         MintableParams memory mintableParams = MintableParams(
             mintable,
@@ -471,10 +490,10 @@ contract LSP8CustomizableTokenTest is Test {
             cappedParams
         );
 
-        // Mint a token to owner (allowlisted)
+        // Mint a token to owner (has bypass role)
         nonTransferableToken.mint(owner, bytes32(uint256(1)), true, "");
 
-        // Owner (allowlisted) should be able to transfer
+        // Owner should be able to transfer
         nonTransferableToken.transfer(
             owner,
             user1,
@@ -484,7 +503,7 @@ contract LSP8CustomizableTokenTest is Test {
         );
         assertEq(nonTransferableToken.balanceOf(user1), 1);
 
-        // user1 (not allowlisted) should NOT be able to transfer
+        // user1 should NOT be able to transfer
         vm.prank(user1);
         vm.expectRevert(LSP8TransferDisabled.selector);
         nonTransferableToken.transfer(
@@ -532,23 +551,22 @@ contract LSP8CustomizableTokenTest is Test {
         assertEq(nonTransferableToken.balanceOf(user1), 0);
     }
 
-    // Allowlist Tests
-    function test_AddToAllowlist() public {
-        assertFalse(token.isAllowlisted(user1));
-        token.addToAllowlist(user1);
-        assertTrue(token.isAllowlisted(user1));
+    // Role-based exemption tests
+    function test_GrantNonTransferableBypassRole() public {
+        assertFalse(token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, user1));
+        token.grantRole(NON_TRANSFERABLE_BYPASS_ROLE, user1);
+        assertTrue(token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, user1));
     }
 
-    function test_RemoveFromAllowlist() public {
-        token.addToAllowlist(user1);
-        assertTrue(token.isAllowlisted(user1));
-        token.removeFromAllowlist(user1);
-        assertFalse(token.isAllowlisted(user1));
+    function test_RevokeNonTransferableBypassRole() public {
+        token.grantRole(NON_TRANSFERABLE_BYPASS_ROLE, user1);
+        assertTrue(token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, user1));
+        token.revokeRole(NON_TRANSFERABLE_BYPASS_ROLE, user1);
+        assertFalse(token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, user1));
     }
 
-    function test_AllowlistedBypassesBalanceCap() public {
-        // Add user1 to allowlist
-        token.addToAllowlist(user1);
+    function test_UncappedRoleBypassesBalanceCap() public {
+        token.grantRole(UNCAPPED_ROLE, user1);
 
         // Mint many NFTs directly to user1 (beyond the cap)
         for (uint256 i = 100; i <= 110; i++) {

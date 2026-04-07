@@ -2,9 +2,13 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {
-    LSP8AllowlistAbstract
-} from "../LSP8Allowlist/LSP8AllowlistAbstract.sol";
+    LSP8IdentifiableDigitalAsset
+} from "../../LSP8IdentifiableDigitalAsset.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {ILSP8NonTransferable} from "./ILSP8NonTransferable.sol";
@@ -23,13 +27,18 @@ import {
 } from "./LSP8NonTransferableErrors.sol";
 
 /// @title LSP8NonTransferableAbstract
-/// @dev Abstract contract implementing non-transferable LSP8 token functionality with transfer lock periods and allowlist support.
+/// @dev Abstract contract implementing non-transferable LSP8 token functionality with transfer lock periods and role-based bypass support.
 abstract contract LSP8NonTransferableAbstract is
     ILSP8NonTransferable,
-    LSP8AllowlistAbstract
+    AccessControlExtendedAbstract,
+    LSP8IdentifiableDigitalAsset
 {
     // solhint-disable not-rely-on-time
     using EnumerableSet for EnumerableSet.AddressSet;
+
+    /// @dev `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE =
+        0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000;
 
     /// @inheritdoc ILSP8NonTransferable
     uint256 public transferLockStart;
@@ -49,6 +58,22 @@ abstract contract LSP8NonTransferableAbstract is
         transferLockEnd = transferLockEnd_;
 
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
+        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
+        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, owner());
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(AccessControlExtendedAbstract, LSP8IdentifiableDigitalAsset)
+        returns (bool)
+    {
+        return
+            AccessControlExtendedAbstract.supportsInterface(interfaceId) ||
+            LSP8IdentifiableDigitalAsset.supportsInterface(interfaceId);
     }
 
     /// @inheritdoc ILSP8NonTransferable
@@ -135,7 +160,7 @@ abstract contract LSP8NonTransferableAbstract is
     }
 
     /// @notice Hook called before a token transfer to enforce transfer restrictions.
-    /// @dev Bypasses transfer restrictions for addresses in the allowlist, allowing them to transfer tokens even when {isTransferable} returns false. For non-allowlisted addresses, applies non-transferable checks.
+    /// @dev Bypasses transfer restrictions for addresses holding `NON_TRANSFERABLE_BYPASS_ROLE`, allowing them to transfer tokens even when {isTransferable} returns false. For all other addresses, applies non-transferable checks.
     /// @param from The address sending the token.
     /// @param to The address receiving the token.
     /// @param tokenId The unique identifier of the token being transferred.
@@ -148,7 +173,13 @@ abstract contract LSP8NonTransferableAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (isAllowlisted(from)) return;
+        if (hasRole(NON_TRANSFERABLE_BYPASS_ROLE, from)) return;
         _nonTransferableCheck(from, to, tokenId, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        super._transferOwnership(newOwner);
     }
 }

@@ -3,8 +3,14 @@ pragma solidity ^0.8.27;
 
 // modules
 import {
+    OwnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../../LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {
+    AccessControlExtendedInitAbstract
+} from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
 // interfaces
 import {ILSP8Mintable} from "./ILSP8Mintable.sol";
@@ -16,10 +22,14 @@ import {LSP8MintDisabled} from "./LSP8MintableErrors.sol";
 /// @dev Abstract contract implementing a mintable LSP8 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP8IdentifiableDigitalAssetInitAbstract to provide core token functionality.
 abstract contract LSP8MintableInitAbstract is
     ILSP8Mintable,
+    AccessControlExtendedInitAbstract,
     LSP8IdentifiableDigitalAssetInitAbstract
 {
     /// @notice Indicates whether minting is currently enabled.
     bool public isMintable;
+
+    /// @dev `"MINTER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    bytes32 public constant MINTER_ROLE = 0x4d494e5445525f524f4c45000000000000000000000000000000000000000000;
 
     /// @notice Initializes the LSP8Mintable contract with base token params and minting status.
     /// @dev Initializes the LSP8IdentifiableDigitalAsset base and sets the initial minting status.
@@ -45,6 +55,7 @@ abstract contract LSP8MintableInitAbstract is
             lsp4TokenType_,
             lsp8TokenIdFormat_
         );
+        __AccessControlExtended_init(newOwner_);
         __LSP8Mintable_init_unchained(mintable_);
     }
 
@@ -56,6 +67,7 @@ abstract contract LSP8MintableInitAbstract is
     ) internal virtual onlyInitializing {
         isMintable = mintable_;
         emit MintingStatusChanged(mintable_);
+        _grantRole(MINTER_ROLE, owner());
     }
 
     /// @inheritdoc ILSP8Mintable
@@ -71,8 +83,25 @@ abstract contract LSP8MintableInitAbstract is
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual override onlyOwner {
+    ) public virtual override onlyRole(MINTER_ROLE) {
         _mint(to, tokenId, force, data);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            AccessControlExtendedInitAbstract,
+            LSP8IdentifiableDigitalAssetInitAbstract
+        )
+        returns (bool)
+    {
+        return
+            AccessControlExtendedInitAbstract.supportsInterface(interfaceId) ||
+            LSP8IdentifiableDigitalAssetInitAbstract.supportsInterface(interfaceId);
     }
 
     /// @notice Internal function to mint tokens, overridden to enforce minting status.
@@ -90,5 +119,15 @@ abstract contract LSP8MintableInitAbstract is
         require(isMintable, LSP8MintDisabled());
 
         super._mint(to, tokenId, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    )
+        internal
+        virtual
+        override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
+    {
+        super._transferOwnership(newOwner);
     }
 }

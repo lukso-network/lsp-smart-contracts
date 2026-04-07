@@ -9,11 +9,11 @@ import {
     LSP8IdentifiableDigitalAsset
 } from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 import {
-    LSP8AllowlistAbstract
-} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
-import {
     LSP8NonTransferableAbstract
 } from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {
@@ -52,7 +52,7 @@ contract MockLSP8NonTransferable is LSP8NonTransferableAbstract {
             lsp8TokenIdFormat_
         )
         LSP8NonTransferableAbstract(transferLockStart_, transferLockEnd_)
-        LSP8AllowlistAbstract(newOwner_)
+        AccessControlExtendedAbstract(newOwner_)
     {}
 
     function mint(
@@ -89,6 +89,9 @@ contract LSP8NonTransferableTest is Test {
     address allowlistedUser = vm.addr(101);
     address nonAllowlistedUser = vm.addr(102);
     address recipient = vm.addr(103);
+
+    bytes32 constant NON_TRANSFERABLE_BYPASS_ROLE =
+        0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000;
 
     bytes32 tokenId1 = bytes32(uint256(1));
     bytes32 tokenId2 = bytes32(uint256(2));
@@ -140,7 +143,10 @@ contract LSP8NonTransferableTest is Test {
         vm.label(randomCaller, "randomCaller");
         vm.label(allowlistedUser, "allowlistedUser");
 
-        lsp8NonTransferable.addToAllowlist(allowlistedUser);
+        lsp8NonTransferable.grantRole(
+            NON_TRANSFERABLE_BYPASS_ROLE,
+            allowlistedUser
+        );
     }
 
     // Constructor and Initial State

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {
     LSP8IdentifiableDigitalAsset
 } from "../LSP8IdentifiableDigitalAsset.sol";
@@ -19,8 +20,8 @@ import {
     LSP8NonTransferableAbstract
 } from "../extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol";
 import {
-    LSP8AllowlistAbstract
-} from "../extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
+    AccessControlExtendedAbstract
+} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // errors
 import {
@@ -52,13 +53,12 @@ struct CappedParams {
 }
 
 /// @title LSP8CustomizableToken
-/// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and allowlist exemptions.
+/// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions.
 /// Implements {LSP8Mintable} to allow minting.
 /// Implements {LSP8Burnable} to allow burning
 /// Implements {LSP8CappedBalance} to set balance caps.
 /// Implements {LSP8NonTransferable} to restrict transfers.
 /// Implements {LSP8CappedSupply} to set total supply cap.
-/// Implements {LSP8Allowlist} to create allowlist exemptions
 contract LSP8CustomizableToken is
     LSP8MintableAbstract,
     LSP8NonTransferableAbstract,
@@ -67,10 +67,10 @@ contract LSP8CustomizableToken is
     LSP8Burnable
 {
     /// @notice Initializes the token with name, symbol, owner, and customizable features.
-    /// @dev Sets up minting, balance cap, transfer restrictions, allowlist, and supply cap. Mints initial tokens if specified. Reverts if initialMintTokenIds length exceeds tokenSupplyCap. Inherits constructor logic from parent contracts.
+    /// @dev Sets up minting, balance cap, transfer restrictions and supply cap. Mints initial tokens if specified. Reverts if initialMintTokenIds length exceeds tokenSupplyCap. Inherits constructor logic from parent contracts.
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
-    /// @param newOwner_ The initial owner of the token, added to the allowlist.
+    /// @param newOwner_ The initial owner of the token.
     /// @param lsp4TokenType_ The LSP4 token type (e.g., 1 for NFT, 2 for Collection).
     /// @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
     /// @param mintableParams Deployment configuration for minting feature (see above).
@@ -93,7 +93,7 @@ contract LSP8CustomizableToken is
             lsp4TokenType_,
             lsp8TokenIdFormat_
         )
-        LSP8AllowlistAbstract(newOwner_)
+        AccessControlExtendedAbstract(newOwner_)
         LSP8MintableAbstract(mintableParams.mintable)
         LSP8NonTransferableAbstract(
             nonTransferableParams.transferLockStart,
@@ -141,7 +141,7 @@ contract LSP8CustomizableToken is
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
-    /// @dev Combines checks from {LSP8CappedBalance} and {LSP8NonTransferable}. Bypasses all checks for allowlisted senders (from {LSP8NonTransferable}) or recipients (from {LSP8CappedBalance}). Allows burning to address(0) regardless of restrictions.
+    /// @dev Combines checks from {LSP8CappedBalance} and {LSP8NonTransferable}. Bypasses all checks for role holders configured by those extensions. Allows burning to address(0) regardless of restrictions.
     /// @param from The address sending the token.
     /// @param to The address receiving the token.
     /// @param tokenId The unique identifier of the token being transferred.
@@ -176,5 +176,37 @@ contract LSP8CustomizableToken is
             force,
             data
         );
+    }
+
+    function _transferOwnership(
+        address newOwner
+    )
+        internal
+        virtual
+        override(
+            Ownable,
+            LSP8CappedBalanceAbstract,
+            LSP8MintableAbstract,
+            LSP8NonTransferableAbstract
+        )
+    {
+        super._transferOwnership(newOwner);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            LSP8IdentifiableDigitalAsset,
+            LSP8CappedBalanceAbstract,
+            LSP8MintableAbstract,
+            LSP8NonTransferableAbstract
+        )
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }

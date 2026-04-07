@@ -9,6 +9,9 @@ import {
     LSP8MintableAbstract
 } from "../contracts/extensions/LSP8Mintable/LSP8MintableAbstract.sol";
 import {
+    AccessControlExtendedAbstract
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {
     LSP8IdentifiableDigitalAsset
 } from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 
@@ -18,6 +21,9 @@ import {
 } from "../contracts/extensions/LSP8Mintable/ILSP8Mintable.sol";
 
 // errors
+import {
+    AccessControlUnauthorizedAccount
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 import {
     LSP8MintDisabled
 } from "../contracts/extensions/LSP8Mintable/LSP8MintableErrors.sol";
@@ -46,6 +52,7 @@ contract MockLSP8Mintable is LSP8MintableAbstract {
             lsp4TokenType_,
             lsp8TokenIdFormat_
         )
+        AccessControlExtendedAbstract(newOwner_)
         LSP8MintableAbstract(mintable_)
     {}
 }
@@ -61,6 +68,9 @@ contract LSP8MintableTest is Test {
     address user1 = vm.addr(101);
     address user2 = vm.addr(102);
 
+    bytes32 constant MINTER_ROLE =
+        0x4d494e5445525f524f4c45000000000000000000000000000000000000000000;
+
     bytes32 tokenId1 = bytes32(uint256(1));
     bytes32 tokenId2 = bytes32(uint256(2));
     bytes32 tokenId3 = bytes32(uint256(3));
@@ -69,7 +79,6 @@ contract LSP8MintableTest is Test {
     MockLSP8Mintable lsp8NonMintable;
 
     function setUp() public {
-        vm.recordLogs();
         lsp8Mintable = new MockLSP8Mintable(
             name,
             symbol,
@@ -78,15 +87,8 @@ contract LSP8MintableTest is Test {
             tokenIdFormat,
             true // mintable
         );
-        Vm.Log[] memory logs = vm.getRecordedLogs();
-        uint256 lastEvent = logs.length - 1;
-        assertEq(
-            logs[lastEvent].topics[0],
-            ILSP8Mintable.MintingStatusChanged.selector
-        );
-        assertEq(logs[lastEvent].topics[1], bytes32(abi.encode(true)));
+        assertTrue(lsp8Mintable.hasRole(MINTER_ROLE, owner));
 
-        // vm.recordLogs();
         lsp8NonMintable = new MockLSP8Mintable(
             name,
             symbol,
@@ -95,13 +97,7 @@ contract LSP8MintableTest is Test {
             tokenIdFormat,
             false // not mintable
         );
-        logs = vm.getRecordedLogs();
-        lastEvent = logs.length - 1;
-        assertEq(
-            logs[lastEvent].topics[0],
-            ILSP8Mintable.MintingStatusChanged.selector
-        );
-        assertEq(logs[lastEvent].topics[1], bytes32(abi.encode(false)));
+        assertTrue(lsp8NonMintable.hasRole(MINTER_ROLE, owner));
     }
 
     // Test constructor initialization
@@ -110,6 +106,10 @@ contract LSP8MintableTest is Test {
         assertFalse(
             lsp8NonMintable.isMintable(),
             "Token should not be mintable"
+        );
+        assertTrue(
+            lsp8Mintable.hasRole(MINTER_ROLE, owner),
+            "Owner should have MINTER_ROLE"
         );
     }
 
@@ -135,13 +135,25 @@ contract LSP8MintableTest is Test {
     // Test non-owner cannot mint
     function test_NonOwnerCannotMint() public {
         vm.prank(nonOwner);
-        vm.expectRevert(); // Ownable: caller is not the owner
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                nonOwner,
+                MINTER_ROLE
+            )
+        );
         lsp8Mintable.mint(user1, tokenId1, true, "");
     }
 
     function test_UserCannotMint() public {
         vm.prank(user1);
-        vm.expectRevert(); // Ownable: caller is not the owner
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                user1,
+                MINTER_ROLE
+            )
+        );
         lsp8Mintable.mint(user1, tokenId1, true, "");
     }
 
@@ -282,7 +294,13 @@ contract LSP8MintableTest is Test {
         vm.assume(recipient != address(0));
 
         vm.prank(caller);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                caller,
+                MINTER_ROLE
+            )
+        );
         lsp8Mintable.mint(recipient, tokenId, true, "");
     }
 
