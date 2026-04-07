@@ -20,7 +20,7 @@ import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 
 /// @title LSP7MintableInitAbstract
-/// @dev Abstract contract implementing a isMintable LSP7 token extension, allowing any address granted the `MINTER_ROLE` to mint new tokens until minting is disabled.
+/// @dev Abstract contract implementing a mintable LSP7 token extension, allowing any address granted the `MINTER_ROLE` to mint new tokens until minting is disabled.
 /// Inherits from LSP7DigitalAsset to provide core token functionality.
 abstract contract LSP7MintableInitAbstract is
     ILSP7Mintable,
@@ -31,7 +31,8 @@ abstract contract LSP7MintableInitAbstract is
     bool public isMintable;
 
     /// @dev `"MINTER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    bytes32 public constant MINTER_ROLE = 0x4d494e5445525f524f4c45000000000000000000000000000000000000000000;
+    bytes32 public constant MINTER_ROLE =
+        0x4d494e5445525f524f4c45000000000000000000000000000000000000000000;
 
     /// @notice Initializes the LSP7Mintable contract with base token params and minting status.
     /// @dev Initializes the LSP7DigitalAsset base and sets the minting status.

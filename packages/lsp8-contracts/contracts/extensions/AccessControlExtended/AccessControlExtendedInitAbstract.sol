@@ -32,9 +32,6 @@ import {
     AccessControlUnauthorizedAccount,
     AccessControlBadConfirmation
 } from "./AccessControlExtendedErrors.sol";
-import {
-    Initializable
-} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /**
  * @title AccessControlExtendedInitAbstract

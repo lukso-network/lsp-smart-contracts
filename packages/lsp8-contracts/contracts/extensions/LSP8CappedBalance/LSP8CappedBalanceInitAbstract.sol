@@ -15,11 +15,6 @@ import {
 // interfaces
 import {ILSP8CappedBalance} from "./ILSP8CappedBalance.sol";
 
-// libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
 // errors
 import {LSP8CappedBalanceExceeded} from "./LSP8CappedBalanceErrors.sol";
 
@@ -30,8 +25,6 @@ abstract contract LSP8CappedBalanceInitAbstract is
     AccessControlExtendedInitAbstract,
     LSP8IdentifiableDigitalAssetInitAbstract
 {
-    using EnumerableSet for EnumerableSet.AddressSet;
-
     /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
     address internal constant _DEAD_ADDRESS =
         0x000000000000000000000000000000000000dEaD;

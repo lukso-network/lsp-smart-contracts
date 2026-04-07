@@ -11,11 +11,6 @@ import {
 // interfaces
 import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";
 
-// libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
 // errors
 import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 
@@ -27,8 +22,6 @@ abstract contract LSP7CappedBalanceAbstract is
     AccessControlExtendedAbstract,
     LSP7DigitalAsset
 {
-    using EnumerableSet for EnumerableSet.AddressSet;
-
     /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
     address internal constant _DEAD_ADDRESS =
         0x000000000000000000000000000000000000dEaD;
@@ -37,7 +30,8 @@ abstract contract LSP7CappedBalanceAbstract is
     uint256 internal immutable _TOKEN_BALANCE_CAP;
 
     /// @dev `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    bytes32 public constant UNCAPPED_ROLE = 0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
+    bytes32 public constant UNCAPPED_ROLE =
+        0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
 
     /// @notice Initializes the contract with a token balance cap.
     /// @dev Sets the immutable balance cap and reverts if the cap is zero. Inherits LSP7AllowlistAbstract constructor logic.

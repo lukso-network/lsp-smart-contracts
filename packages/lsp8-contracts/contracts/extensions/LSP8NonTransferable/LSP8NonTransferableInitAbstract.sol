@@ -15,11 +15,6 @@ import {
 // interfaces
 import {ILSP8NonTransferable} from "./ILSP8NonTransferable.sol";
 
-// libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
 // errors
 import {
     LSP8TransferDisabled,
@@ -35,9 +30,6 @@ abstract contract LSP8NonTransferableInitAbstract is
     AccessControlExtendedInitAbstract,
     LSP8IdentifiableDigitalAssetInitAbstract
 {
-    // solhint-disable not-rely-on-time
-    using EnumerableSet for EnumerableSet.AddressSet;
-
     /// @dev `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
     bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE =
         0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000;
@@ -114,7 +106,9 @@ abstract contract LSP8NonTransferableInitAbstract is
     {
         return
             AccessControlExtendedInitAbstract.supportsInterface(interfaceId) ||
-            LSP8IdentifiableDigitalAssetInitAbstract.supportsInterface(interfaceId);
+            LSP8IdentifiableDigitalAssetInitAbstract.supportsInterface(
+                interfaceId
+            );
     }
 
     /// @inheritdoc ILSP8NonTransferable
