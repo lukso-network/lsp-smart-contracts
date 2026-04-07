@@ -231,10 +231,8 @@ abstract contract AccessControlExtendedInitAbstract is
      * @return An array of addresses that currently hold the specified role.
      *
      * @custom:warning This function copies the entire role membership set into memory.
-     * For roles with a large number of members, this may consume a significant amount of gas
-     * and could exceed the block gas limit. Consider calling `{getRoleMember}` repeatedly
-     * off-chain for large role sets. This is primarily intended for
-     * off-chain / view-context usage.
+     * For roles with a large number of members, this may consume a significant amount of gas. If calling this function on-chain, consider calling `{getRoleMember}` repeatedly, using `getRoleMemberCount` to know as max index.
+     * This function is primarily intended for off-chain usage.
      */
     function getRoleMembers(
         bytes32 role
@@ -384,17 +382,15 @@ abstract contract AccessControlExtendedInitAbstract is
      * custom roles the old owner was assigned.
      *
      * For each role held by the old owner:
-     * 1. The role is revoked from the old owner (clearing auxiliary data per BASE-09).
+     * 1. The role is revoked from the old owner (including clearing auxiliary data).
      * 2. The role is granted to the new owner (if not already held).
      *
-     * When renouncing ownership (`newOwner == address(0)`), all roles are revoked from
-     * the old owner but NOT granted to the zero address.
+     * @custom:info When renouncing ownership, roles are only removed from the old owner. Roles are not passed to `address(0)` (being the `newOwner` in the case of renounce ownership).
      *
      * @custom:warning
      * - Gas cost scales linearly with the number of roles the old owner holds.
-     * - Auxiliary role data for the old owner is cleared upon revocation.
-     * - Transferring ownership to self will still clear the old owner's auxiliary role data
-     *   (revoke then re-grant cycle).
+     * - Auxiliary role data set on the old owner is transferred to the new owner if ownership is transferred.
+     * - Transferring ownership to self will still clear then restore the old owner's auxiliary role data.
      * - If the old owner holds a large number of roles, the transaction may approach or exceed
      *   the block gas limit and fail. Avoid assigning too many roles to the owner to ensure
      *   ownership transfers remain callable.
@@ -407,16 +403,31 @@ abstract contract AccessControlExtendedInitAbstract is
         if (oldOwner != address(0)) {
             // Snapshot the old owner's roles before revoking (values() returns a memory copy)
             bytes32[] memory oldOwnerRoles = _addressRoles[oldOwner].values();
+            bytes[] memory oldOwnerRolesData = new bytes[](oldOwnerRoles.length);
+
+            for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
+                oldOwnerRolesData[i] = _roleData[oldOwnerRoles[i]][oldOwner];
+            }
 
             // Revoke all roles from old owner
             for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
                 _revokeRole(oldOwnerRoles[i], oldOwner);
             }
 
-            // Grant all roles to new owner (skip if renouncing ownership)
+            // Grant all roles to new owner
+            // exclude case when renouncing ownership
             if (newOwner != address(0)) {
                 for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
                     _grantRole(oldOwnerRoles[i], newOwner);
+
+                    if (oldOwnerRolesData[i].length > 0) {
+                        _roleData[oldOwnerRoles[i]][newOwner] = oldOwnerRolesData[i];
+                        emit RoleDataChanged(
+                            oldOwnerRoles[i],
+                            newOwner,
+                            oldOwnerRolesData[i]
+                        );
+                    }
                 }
             }
         } else {

@@ -1346,7 +1346,7 @@ contract AccessControlExtendedTest is Test {
         assertFalse(token.hasRole(MINTER_ROLE, owner), "Old owner should not have MINTER_ROLE");
     }
 
-    function test_TransferOwnershipClearsOldOwnerRoleData() public {
+    function test_TransferOwnershipTransfersOldOwnerRoleData() public {
         bytes32 MINTER_ROLE = keccak256("MINTER");
 
         // Grant role with data to owner
@@ -1360,9 +1360,9 @@ contract AccessControlExtendedTest is Test {
         // Old owner's role data should be cleared
         assertEq(token.getRoleData(MINTER_ROLE, owner).length, 0, "Old owner role data should be cleared");
 
-        // New owner should have the role but NOT the old data (data is per-address, cleared on revoke)
+        // New owner should inherit the old owner's auxiliary data for the transferred role
         assertTrue(token.hasRole(MINTER_ROLE, newOwner), "New owner should have MINTER_ROLE");
-        assertEq(token.getRoleData(MINTER_ROLE, newOwner).length, 0, "New owner should not inherit role data");
+        assertEq(token.getRoleData(MINTER_ROLE, newOwner), hex"cafebabe", "New owner should inherit the transferred role data");
     }
 
     function test_TransferOwnershipEmitsAllRoleEvents() public {

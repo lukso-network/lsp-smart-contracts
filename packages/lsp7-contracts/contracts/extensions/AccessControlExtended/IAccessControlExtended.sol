@@ -37,9 +37,8 @@ interface IAccessControlExtended is IAccessControlEnumerable {
      * @return An array of addresses that currently hold the specified role.
      *
      * @custom:warning This function copies the entire role membership set into memory.
-     * For roles with a large number of members, this may consume a significant amount of gas
-     * and could exceed the block gas limit. Consider using {getRoleMember} with pagination
-     * for large sets. This is primarily intended for off-chain / view-context usage.
+     * For roles with a large number of members, this may consume a significant amount of gas. If calling this function on-chain, consider calling `{getRoleMember}` repeatedly, using `getRoleMemberCount` to know as max index.
+     * This function is primarily intended for off-chain usage.
      */
     function getRoleMembers(
         bytes32 role
