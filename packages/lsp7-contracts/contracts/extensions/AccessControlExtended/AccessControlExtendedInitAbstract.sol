@@ -38,11 +38,6 @@ import {
  * @dev Proxy/initializable variant of {AccessControlExtendedAbstract}. Uses
  * `__AccessControlExtended_init` / `__AccessControlExtended_init_unchained`
  * instead of a constructor, both guarded by `onlyInitializing`.
- *
- * All function implementations are identical to {AccessControlExtendedAbstract}.
- * The only differences are:
- * 1. Inherits {LSP7DigitalAssetInitAbstract} instead of {LSP7DigitalAsset}
- * 2. Uses initializer functions instead of a constructor
  */
 abstract contract AccessControlExtendedInitAbstract is
     IAccessControlExtended,

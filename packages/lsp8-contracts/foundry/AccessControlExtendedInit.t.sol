@@ -80,6 +80,7 @@ contract MockAccessControlExtendedInit is
 contract AccessControlExtendedInitTest is Test {
     bytes32 constant DEFAULT_ADMIN_ROLE = 0x00;
     bytes32 constant TEST_ROLE = bytes32(bytes("TestRole"));
+    bytes32 constant EXTRA_ROLE = bytes32(bytes("ExtraRole"));
 
     address owner = address(this);
     address account1 = vm.addr(101);
@@ -110,6 +111,44 @@ contract AccessControlExtendedInitTest is Test {
         assertTrue(token.hasRole(TEST_ROLE, account1));
         assertEq(token.getRoleMemberCount(TEST_ROLE), 1);
         assertEq(token.rolesOf(account1).length, 1);
+    }
+
+    function test_GetRoleMembersWorksThroughProxy() public {
+        token.grantRole(TEST_ROLE, account1);
+
+        address[] memory members = token.getRoleMembers(TEST_ROLE);
+
+        assertEq(members.length, 1);
+        assertEq(members[0], account1);
+    }
+
+    function test_TransferOwnershipTransfersAllRolesThroughProxy() public {
+        token.grantRole(EXTRA_ROLE, owner);
+        token.grantRoleWithData(TEST_ROLE, owner, hex"beef");
+
+        token.transferOwnership(account1);
+
+        assertFalse(token.hasRole(DEFAULT_ADMIN_ROLE, owner));
+        assertFalse(token.hasRole(EXTRA_ROLE, owner));
+        assertFalse(token.hasRole(TEST_ROLE, owner));
+        assertEq(token.rolesOf(owner).length, 0);
+        assertEq(token.getRoleData(TEST_ROLE, owner).length, 0);
+
+        assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, account1));
+        assertTrue(token.hasRole(EXTRA_ROLE, account1));
+        assertTrue(token.hasRole(TEST_ROLE, account1));
+        assertEq(token.rolesOf(account1).length, 3);
+        assertEq(token.getRoleData(TEST_ROLE, account1), hex"beef");
+    }
+
+    function test_RenounceOwnershipRevokesAllRolesThroughProxy() public {
+        token.grantRole(TEST_ROLE, owner);
+
+        token.renounceOwnership();
+
+        assertFalse(token.hasRole(DEFAULT_ADMIN_ROLE, owner));
+        assertFalse(token.hasRole(TEST_ROLE, owner));
+        assertEq(token.rolesOf(owner).length, 0);
     }
 
     function test_OwnerCannotRenounceDefaultAdminRole() public {

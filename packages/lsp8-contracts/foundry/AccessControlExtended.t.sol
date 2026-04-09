@@ -15,6 +15,12 @@ import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigital
 import {
     IAccessControlExtended
 } from "../contracts/extensions/AccessControlExtended/IAccessControlExtended.sol";
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {
+    IAccessControlEnumerable
+} from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
 
 // constants
 import {
@@ -163,6 +169,62 @@ contract AccessControlExtendedTest is Test {
         assertTrue(token.supportsInterface(_INTERFACEID_ACCESSCONTROL));
         assertTrue(token.supportsInterface(_INTERFACEID_ACCESSCONTROLENUMERABLE));
         assertTrue(token.supportsInterface(_INTERFACEID_ACCESSCONTROLEXTENDED));
+    }
+
+    function test_InterfaceIdConstantsMatchComputedSelectors() public {
+        assertEq(_INTERFACEID_ACCESSCONTROL, type(IAccessControl).interfaceId);
+        assertEq(
+            _INTERFACEID_ACCESSCONTROLENUMERABLE,
+            type(IAccessControlEnumerable).interfaceId
+        );
+        assertEq(
+            _INTERFACEID_ACCESSCONTROLEXTENDED,
+            type(IAccessControlExtended).interfaceId
+        );
+    }
+
+    function test_GetRoleMembersReturnsAllMembers() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+
+        address[] memory members = token.getRoleMembers(TEST_ROLE);
+
+        assertEq(members.length, 2);
+        assertEq(members[0], account1);
+        assertEq(members[1], account2);
+    }
+
+    function test_TransferOwnershipTransfersAllRoles() public {
+        bytes32 minterRole = keccak256("MINTER_ROLE");
+        bytes32 burnerRole = keccak256("BURNER_ROLE");
+
+        token.grantRole(minterRole, owner);
+        token.grantRoleWithData(burnerRole, owner, hex"cafe");
+
+        token.transferOwnership(account1);
+
+        assertFalse(token.hasRole(DEFAULT_ADMIN_ROLE, owner));
+        assertFalse(token.hasRole(minterRole, owner));
+        assertFalse(token.hasRole(burnerRole, owner));
+        assertEq(token.rolesOf(owner).length, 0);
+        assertEq(token.getRoleData(burnerRole, owner).length, 0);
+
+        assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, account1));
+        assertTrue(token.hasRole(minterRole, account1));
+        assertTrue(token.hasRole(burnerRole, account1));
+        assertEq(token.rolesOf(account1).length, 3);
+        assertEq(token.getRoleData(burnerRole, account1), hex"cafe");
+    }
+
+    function test_RenounceOwnershipRevokesAllRoles() public {
+        bytes32 minterRole = keccak256("MINTER_ROLE");
+
+        token.grantRole(minterRole, owner);
+        token.renounceOwnership();
+
+        assertFalse(token.hasRole(DEFAULT_ADMIN_ROLE, owner));
+        assertFalse(token.hasRole(minterRole, owner));
+        assertEq(token.rolesOf(owner).length, 0);
     }
 
     function test_NonAdminCannotGrantRole() public {

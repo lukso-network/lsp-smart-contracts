@@ -38,8 +38,6 @@ import {
  * @dev Proxy/initializable variant of {AccessControlExtendedAbstract}. Uses
  * `__AccessControlExtended_init` / `__AccessControlExtended_init_unchained`
  * instead of a constructor, both guarded by `onlyInitializing`.
- *
- * All function implementations are identical to {AccessControlExtendedAbstract}.
  */
 abstract contract AccessControlExtendedInitAbstract is
     IAccessControlExtended,
@@ -207,6 +205,27 @@ abstract contract AccessControlExtendedInitAbstract is
         return _roleMembers[role].length();
     }
 
+    // --- IAccessControlEnumerable (extended)
+
+    /**
+     * @notice Returns all members that hold `role`.
+     *
+     * @dev Convenience function that returns the full membership array in a single call.
+     * Equivalent to calling {getRoleMember} for each index from `0` to `getRoleMemberCount(role) - 1`.
+     *
+     * @param role The role identifier to query members for.
+     * @return An array of addresses that currently hold the specified role.
+     *
+     * @custom:warning This function copies the entire role membership set into memory.
+     * For roles with a large number of members, this may consume a significant amount of gas. If calling this function on-chain, consider calling `{getRoleMember}` repeatedly, using `getRoleMemberCount` to know as max index.
+     * This function is primarily intended for off-chain usage.
+     */
+    function getRoleMembers(
+        bytes32 role
+    ) public view virtual returns (address[] memory) {
+        return _roleMembers[role].values();
+    }
+
     // --- IAccessControlExtended
 
     /// @inheritdoc IAccessControlExtended
@@ -312,16 +331,54 @@ abstract contract AccessControlExtendedInitAbstract is
 
     // --- Ownership sync
 
+    /**
+     * @dev Overrides `_transferOwnership` to automatically transfer ALL roles held by
+     * the old owner to the new owner. This includes `DEFAULT_ADMIN_ROLE` and any other
+     * custom roles the old owner was assigned.
+     *
+     * For each role held by the old owner:
+     * 1. The role is revoked from the old owner (including clearing auxiliary data).
+     * 2. The role is granted to the new owner (if not already held).
+     *
+     * @custom:info When renouncing ownership, roles are only removed from the old owner. Roles are not passed to `address(0)` (being the `newOwner` in the case of renounce ownership).
+     *
+     * @custom:warning
+     * - Gas cost scales linearly with the number of roles the old owner holds.
+     * - Auxiliary role data set on the old owner is transferred to the new owner if ownership is transferred.
+     * - Transferring ownership to self will still clear then restore the old owner's auxiliary role data.
+     * - If the old owner holds a large number of roles, the transaction may approach or exceed
+     *   the block gas limit and fail. Avoid assigning too many roles to the owner to ensure
+     *   ownership transfers remain callable.
+     */
     function _transferOwnership(address newOwner) internal virtual override {
         address oldOwner = owner();
         super._transferOwnership(newOwner);
 
         if (oldOwner != address(0)) {
-            _revokeRole(DEFAULT_ADMIN_ROLE, oldOwner);
-        }
+            // Snapshot the old owner's roles before mutating storage (values() returns a memory copy)
+            bytes32[] memory oldOwnerRoles = _addressRoles[oldOwner].values();
 
-        if (newOwner != address(0)) {
-            _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
+            for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
+                bytes32 role = oldOwnerRoles[i];
+                bytes memory oldOwnerRoleData = _roleData[role][oldOwner];
+
+                _revokeRole(role, oldOwner);
+
+                // exclude case when renouncing ownership
+                if (newOwner != address(0)) {
+                    _grantRole(role, newOwner);
+
+                    if (oldOwnerRoleData.length > 0) {
+                        _roleData[role][newOwner] = oldOwnerRoleData;
+                        emit RoleDataChanged(role, newOwner, oldOwnerRoleData);
+                    }
+                }
+            }
+        } else {
+            // Initial deployment / initialization: only grant DEFAULT_ADMIN_ROLE if new owner is not zero
+            if (newOwner != address(0)) {
+                _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
+            }
         }
     }
 
