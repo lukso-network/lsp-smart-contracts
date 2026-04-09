@@ -14,19 +14,41 @@ const config: HardhatUserConfig = {
   ],
   packager: {
     contracts: [
-      'ILSP8IdentifiableDigitalAsset',
+      // Base
       'LSP8IdentifiableDigitalAsset',
-      'LSP8Burnable',
-      'LSP8CappedSupply',
-      'LSP8Enumerable',
-      'LSP8Votes',
-      'LSP8Mintable',
       'LSP8IdentifiableDigitalAssetInitAbstract',
-      'LSP8BurnableInitAbstract',
-      'LSP8CappedSupplyInitAbstract',
-      'LSP8EnumerableInitAbstract',
-      'LSP8VotesInitAbstract',
+
+      // Extensions
+      'LSP8Mintable',
+      'LSP8MintableAbstract',
       'LSP8MintableInit',
+      'LSP8MintableInitAbstract',
+      'LSP8Burnable',
+      'LSP8BurnableInitAbstract',
+      'LSP8CappedBalance',
+      'LSP8CappedBalanceAbstract',
+      'LSP8CappedBalanceInit',
+      'LSP8CappedBalanceInitAbstract',
+      'LSP8CappedSupply',
+      'LSP8CappedSupplyAbstract',
+      'LSP8CappedSupplyInit',
+      'LSP8CappedSupplyInitAbstract',
+      'LSP8NonTransferable',
+      'LSP8NonTransferableAbstract',
+      'LSP8NonTransferableInit',
+      'LSP8NonTransferableInitAbstract',
+      'LSP8Enumerable',
+      'LSP8EnumerableInitAbstract',
+      'LSP8Votes',
+      'LSP8VotesInitAbstract',
+
+      // Interfaces
+      'ILSP8IdentifiableDigitalAsset',
+      'ILSP8Mintable',
+      'ILSP8CappedBalance',
+      'ILSP8CappedSupply',
+      'ILSP8NonTransferable',
+      'IAccessControlExtended',
     ],
   },
   networks: {
@@ -92,8 +114,10 @@ const config: HardhatUserConfig = {
     },
   },
   solidity: {
-    version: '0.8.27',
+    version: '0.8.28',
     settings: {
+      evmVersion: 'prague',
+      viaIR: true,
       optimizer: {
         enabled: true,
         /**
@@ -102,7 +126,7 @@ const config: HardhatUserConfig = {
          * values will optimize more for high-frequency usage.
          * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
          */
-        runs: 1000,
+        runs: 25000,
       },
       outputSelection: {
         '*': {

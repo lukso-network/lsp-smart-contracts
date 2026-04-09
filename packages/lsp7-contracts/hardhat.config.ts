@@ -19,12 +19,12 @@ const config: HardhatUserConfig = {
       'LSP7DigitalAssetInitAbstract',
 
       // Extensions
-      'LSP7AllowlistAbstract',
-      'LSP7AllowlistInitAbstract',
       'LSP7Mintable',
       'LSP7MintableAbstract',
       'LSP7MintableInit',
       'LSP7MintableInitAbstract',
+      'LSP7Burnable',
+      'LSP7BurnableInitAbstract',
       'LSP7CappedBalance',
       'LSP7CappedBalanceAbstract',
       'LSP7CappedBalanceInit',
@@ -37,15 +37,12 @@ const config: HardhatUserConfig = {
       'LSP7NonTransferableAbstract',
       'LSP7NonTransferableInit',
       'LSP7NonTransferableInitAbstract',
-      'LSP7Burnable',
-      'LSP7BurnableInitAbstract',
       'LSP7Votes',
       'LSP7VotesInitAbstract',
 
       // Interfaces
       'ILSP7DigitalAsset',
       'ILSP7Mintable',
-      'ILSP7Allowlist',
       'ILSP7CappedBalance',
       'ILSP7CappedSupply',
       'ILSP7NonTransferable',
