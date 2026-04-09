@@ -52,11 +52,7 @@ abstract contract LSP7NonTransferableAbstract is
         transferLockEnabled = true;
 
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
-        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
         _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, owner());
-
-        // grant role to allow minting tokens (`from == address(0)`)
-        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
     }
 
     function supportsInterface(
@@ -141,14 +137,17 @@ abstract contract LSP7NonTransferableAbstract is
     /// @dev Allows burning to address(0) even when transfers are disabled, bypassing transferability restrictions. Reverts with {LSP7TransferDisabled} if the token is non-transferable and the destination is not address(0).
     /// @param to The address receiving the tokens.
     function _nonTransferableCheck(
-        address /* from */,
+        address from,
         address to,
         uint256 /* amount */,
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        // Allow minting, burning or transferring tokens only if the transferability status is enabled
-        require(to == address(0) || isTransferable(), LSP7TransferDisabled());
+        // Allow minting and burning
+        if (from == address(0) || to == address(0)) return;
+
+        // transferring tokens only if the transferability status is enabled
+        require(isTransferable(), LSP7TransferDisabled());
     }
 
     /// @notice Hook called before a token transfer to enforce transfer restrictions.
