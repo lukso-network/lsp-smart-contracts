@@ -102,6 +102,25 @@ contract AccessControlExtendedTest is Test {
         assertEq(token.getRoleMemberCount(DEFAULT_ADMIN_ROLE), 1);
     }
 
+    function test_ConstructorGrantsDefaultAdminRoleToInitialOwnerNotDeployer()
+        public
+    {
+        address initialOwner = vm.addr(200);
+        MockLSP8WithAccessControlExtended tokenWithExternalOwner =
+            new MockLSP8WithAccessControlExtended(initialOwner);
+
+        assertTrue(tokenWithExternalOwner.hasRole(DEFAULT_ADMIN_ROLE, initialOwner));
+        assertFalse(tokenWithExternalOwner.hasRole(DEFAULT_ADMIN_ROLE, owner));
+        assertEq(
+            tokenWithExternalOwner.getRoleMember(DEFAULT_ADMIN_ROLE, 0),
+            initialOwner
+        );
+        assertEq(
+            tokenWithExternalOwner.getRoleMemberCount(DEFAULT_ADMIN_ROLE),
+            1
+        );
+    }
+
     function test_GrantRoleAndEnumerate() public {
         token.grantRole(TEST_ROLE, account1);
 

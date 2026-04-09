@@ -93,6 +93,7 @@ abstract contract AccessControlExtendedAbstract is
      * @param initialOwner_ The initial owner who receives DEFAULT_ADMIN_ROLE.
      */
     constructor(address initialOwner_) {
+        _transferOwnership(initialOwner_);
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
     }
 

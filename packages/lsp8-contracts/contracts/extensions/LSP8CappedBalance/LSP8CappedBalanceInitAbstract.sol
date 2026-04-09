@@ -107,13 +107,19 @@ abstract contract LSP8CappedBalanceInitAbstract is
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
+        // Address(0) and 0x0000...dead addresses are used for burning tokens
+        if (to == address(0) || to == _DEAD_ADDRESS) return;
+
+        // Do not check for addresses exempted from balance cap
         if (hasRole(UNCAPPED_ROLE, to)) return;
 
+        uint256 maxBalanceAllowed = tokenBalanceCap();
+        bool isBalanceCapEnabled = maxBalanceAllowed != 0;
+
+        if (!isBalanceCapEnabled) return;
+
         require(
-            to == address(0) ||
-                to == _DEAD_ADDRESS ||
-                tokenBalanceCap() == 0 ||
-                balanceOf(to) + 1 <= tokenBalanceCap(),
+            (balanceOf(to) + 1) <= tokenBalanceCap(),
             LSP8CappedBalanceExceeded(to, balanceOf(to), tokenBalanceCap())
         );
     }
@@ -133,6 +139,7 @@ abstract contract LSP8CappedBalanceInitAbstract is
         bytes memory data
     ) internal virtual override {
         _tokenBalanceCapCheck(from, to, tokenId, force, data);
+        super._beforeTokenTransfer(from, to, tokenId, force, data);
     }
 
     function _transferOwnership(

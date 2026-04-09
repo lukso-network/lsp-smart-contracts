@@ -70,10 +70,6 @@ abstract contract LSP7CappedBalanceInitAbstract is
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
         _tokenBalanceCap = tokenBalanceCap_;
-
-        // Address(0) and 0x0000...dead addresses are used for burning tokens
-        _grantRole(UNCAPPED_ROLE, address(0));
-        _grantRole(UNCAPPED_ROLE, _DEAD_ADDRESS);
         _grantRole(UNCAPPED_ROLE, owner());
     }
 
@@ -112,16 +108,19 @@ abstract contract LSP7CappedBalanceInitAbstract is
         /* force */
         bytes memory /* data */
     ) internal virtual {
-        // Do not check for balance cap if a specific address has the uncapped balance role
-        // (including address(0) and 0x0000...dead addresses)
+        // Address(0) and 0x0000...dead addresses are used for burning tokens
+        if (to == address(0) || to == _DEAD_ADDRESS) return;
+
+        // Do not check for addresses exempted from balance cap
         if (hasRole(UNCAPPED_ROLE, to)) return;
 
         uint256 maxBalanceAllowed = tokenBalanceCap();
         bool isBalanceCapEnabled = maxBalanceAllowed != 0;
 
+        if (!isBalanceCapEnabled) return;
+
         require(
-            !isBalanceCapEnabled ||
-                (balanceOf(to) + amount) <= maxBalanceAllowed,
+            (balanceOf(to) + amount) <= maxBalanceAllowed,
             LSP7CappedBalanceExceeded(
                 to,
                 amount,

@@ -38,10 +38,6 @@ abstract contract LSP7CappedBalanceAbstract is
     /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
     constructor(uint256 tokenBalanceCap_) {
         _TOKEN_BALANCE_CAP = tokenBalanceCap_;
-
-        // Address(0) and 0x0000...dead addresses are used for burning tokens
-        _grantRole(UNCAPPED_ROLE, address(0));
-        _grantRole(UNCAPPED_ROLE, _DEAD_ADDRESS);
         _grantRole(UNCAPPED_ROLE, owner());
     }
 
@@ -75,16 +71,19 @@ abstract contract LSP7CappedBalanceAbstract is
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        // Do not check for balance cap if a specific address has the uncapped balance role
-        // (including address(0) and 0x0000...dead addresses)
+        // Address(0) and 0x0000...dead addresses are used for burning tokens
+        if (to == address(0) || to == _DEAD_ADDRESS) return;
+
+        // Do not check for addresses exempted from balance cap
         if (hasRole(UNCAPPED_ROLE, to)) return;
 
         uint256 maxBalanceAllowed = tokenBalanceCap();
         bool isBalanceCapEnabled = maxBalanceAllowed != 0;
 
+        if (!isBalanceCapEnabled) return;
+
         require(
-            !isBalanceCapEnabled ||
-                (balanceOf(to) + amount) <= maxBalanceAllowed,
+            (balanceOf(to) + amount) <= maxBalanceAllowed,
             LSP7CappedBalanceExceeded(
                 to,
                 amount,

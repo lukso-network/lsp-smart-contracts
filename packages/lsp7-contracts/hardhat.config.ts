@@ -37,15 +37,19 @@ const config: HardhatUserConfig = {
       'LSP7NonTransferableAbstract',
       'LSP7NonTransferableInit',
       'LSP7NonTransferableInitAbstract',
+      'LSP7RevokableAbstract',
+      'LSP7RevokableInitAbstract',
       'LSP7Votes',
       'LSP7VotesInitAbstract',
 
       // Interfaces
+      'IAccessControlExtended',
       'ILSP7DigitalAsset',
       'ILSP7Mintable',
       'ILSP7CappedBalance',
       'ILSP7CappedSupply',
       'ILSP7NonTransferable',
+      'ILSP7Revokable',
     ],
   },
   networks: {

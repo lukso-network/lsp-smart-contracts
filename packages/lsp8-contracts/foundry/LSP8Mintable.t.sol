@@ -68,15 +68,13 @@ contract LSP8MintableTest is Test {
     address user1 = vm.addr(101);
     address user2 = vm.addr(102);
 
-    bytes32 constant MINTER_ROLE =
-        0x4d494e5445525f524f4c45000000000000000000000000000000000000000000;
-
     bytes32 tokenId1 = bytes32(uint256(1));
     bytes32 tokenId2 = bytes32(uint256(2));
     bytes32 tokenId3 = bytes32(uint256(3));
 
     MockLSP8Mintable lsp8Mintable;
     MockLSP8Mintable lsp8NonMintable;
+    bytes32 minterRole;
 
     function setUp() public {
         lsp8Mintable = new MockLSP8Mintable(
@@ -87,7 +85,8 @@ contract LSP8MintableTest is Test {
             tokenIdFormat,
             true // mintable
         );
-        assertTrue(lsp8Mintable.hasRole(MINTER_ROLE, owner));
+        minterRole = lsp8Mintable.MINTER_ROLE();
+        assertTrue(lsp8Mintable.hasRole(minterRole, owner));
 
         lsp8NonMintable = new MockLSP8Mintable(
             name,
@@ -97,7 +96,7 @@ contract LSP8MintableTest is Test {
             tokenIdFormat,
             false // not mintable
         );
-        assertTrue(lsp8NonMintable.hasRole(MINTER_ROLE, owner));
+        assertTrue(lsp8NonMintable.hasRole(minterRole, owner));
     }
 
     // Test constructor initialization
@@ -108,7 +107,7 @@ contract LSP8MintableTest is Test {
             "Token should not be mintable"
         );
         assertTrue(
-            lsp8Mintable.hasRole(MINTER_ROLE, owner),
+            lsp8Mintable.hasRole(minterRole, owner),
             "Owner should have MINTER_ROLE"
         );
     }
@@ -139,7 +138,7 @@ contract LSP8MintableTest is Test {
             abi.encodeWithSelector(
                 AccessControlUnauthorizedAccount.selector,
                 nonOwner,
-                MINTER_ROLE
+                minterRole
             )
         );
         lsp8Mintable.mint(user1, tokenId1, true, "");
@@ -151,7 +150,7 @@ contract LSP8MintableTest is Test {
             abi.encodeWithSelector(
                 AccessControlUnauthorizedAccount.selector,
                 user1,
-                MINTER_ROLE
+                minterRole
             )
         );
         lsp8Mintable.mint(user1, tokenId1, true, "");
@@ -298,7 +297,7 @@ contract LSP8MintableTest is Test {
             abi.encodeWithSelector(
                 AccessControlUnauthorizedAccount.selector,
                 caller,
-                MINTER_ROLE
+                minterRole
             )
         );
         lsp8Mintable.mint(recipient, tokenId, true, "");

@@ -102,6 +102,7 @@ abstract contract AccessControlExtendedInitAbstract is
     function __AccessControlExtended_init_unchained(
         address initialOwner_
     ) internal virtual onlyInitializing {
+        _transferOwnership(initialOwner_);
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
     }
 

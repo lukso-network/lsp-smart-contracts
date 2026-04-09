@@ -83,15 +83,11 @@ contract LSP8NonTransferableTest is Test {
     uint256 lockPeriodStart = block.timestamp + 3600;
     uint256 lockPeriodEnd = lockPeriodStart + 3600;
 
-    address zeroAddress = address(0);
     address owner = address(this);
     address randomCaller = vm.addr(100);
     address allowlistedUser = vm.addr(101);
     address nonAllowlistedUser = vm.addr(102);
     address recipient = vm.addr(103);
-
-    bytes32 constant NON_TRANSFERABLE_BYPASS_ROLE =
-        0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000;
 
     bytes32 tokenId1 = bytes32(uint256(1));
     bytes32 tokenId2 = bytes32(uint256(2));
@@ -99,6 +95,7 @@ contract LSP8NonTransferableTest is Test {
 
     MockLSP8NonTransferable lsp8NonTransferable;
     MockLSP8NonTransferable lsp8TransferableWithLockPeriod;
+    bytes32 nonTransferableBypassRole;
 
     function setUp() public {
         // Token that's always non-transferable (start=0, end=max)
@@ -123,6 +120,9 @@ contract LSP8NonTransferableTest is Test {
             lockPeriodEnd
         );
 
+        nonTransferableBypassRole =
+            lsp8NonTransferable.NON_TRANSFERABLE_BYPASS_ROLE();
+
         lsp8NonTransferable.mint(owner, tokenId1, true, "");
         lsp8NonTransferable.mint(randomCaller, tokenId2, true, "");
         lsp8NonTransferable.mint(allowlistedUser, tokenId3, true, "");
@@ -144,7 +144,7 @@ contract LSP8NonTransferableTest is Test {
         vm.label(allowlistedUser, "allowlistedUser");
 
         lsp8NonTransferable.grantRole(
-            NON_TRANSFERABLE_BYPASS_ROLE,
+            nonTransferableBypassRole,
             allowlistedUser
         );
     }

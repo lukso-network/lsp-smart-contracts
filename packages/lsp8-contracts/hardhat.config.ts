@@ -39,16 +39,19 @@ const config: HardhatUserConfig = {
       'LSP8NonTransferableInitAbstract',
       'LSP8Enumerable',
       'LSP8EnumerableInitAbstract',
+      'LSP8RevokableAbstract',
+      'LSP8RevokableInitAbstract',
       'LSP8Votes',
       'LSP8VotesInitAbstract',
 
       // Interfaces
+      'IAccessControlExtended',
       'ILSP8IdentifiableDigitalAsset',
       'ILSP8Mintable',
       'ILSP8CappedBalance',
       'ILSP8CappedSupply',
       'ILSP8NonTransferable',
-      'IAccessControlExtended',
+      'ILSP8Revokable',
     ],
   },
   networks: {
