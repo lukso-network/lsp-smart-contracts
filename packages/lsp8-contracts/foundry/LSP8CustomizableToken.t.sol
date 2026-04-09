@@ -138,12 +138,12 @@ contract LSP8CustomizableTokenTest is Test {
             "Owner should have MINTER_ROLE"
         );
         assertTrue(
-            token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, zeroAddress),
-            "Zero address should have bypass role"
+            token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, owner),
+            "Owner should have bypass role"
         );
         assertTrue(
-            token.hasRole(UNCAPPED_ROLE, zeroAddress),
-            "Zero address should have UNCAPPED_ROLE"
+            token.hasRole(UNCAPPED_ROLE, owner),
+            "Owner should have UNCAPPED_ROLE"
         );
     }
 
