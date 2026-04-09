@@ -7,10 +7,6 @@ import {
 } from "../../LSP7DigitalAsset.sol";
 
 import {
-    ERC725Y
-} from "@erc725/smart-contracts-v8/contracts/ERC725Y.sol";
-
-import {
     ERC725Y_MsgValueDisallowed,
     ERC725Y_DataKeysValuesLengthMismatch,
     ERC725Y_DataKeysValuesEmptyArray
@@ -23,8 +19,7 @@ import {
 
 // constants
 import {
-    _LSP34_OWNERSHIP_SOURCE_KEY,
-    _LSP8_REFERENCE_CONTRACT_KEY
+    _LSP34_OWNERSHIP_SOURCE_KEY
 } from "./LSP7MusicNFTConstants.sol";
 
 import {
@@ -38,51 +33,39 @@ import {
 } from "./LSP7MusicNFTErrors.sol";
 
 /// @title LSP7MusicNFTAbstract
-/// @dev LSP33 Music NFT extension for LSP7 track tokens. Implements LSP34 external
-/// ownership resolution and parent collection authorization for metadata writes.
+/// @dev LSP33 Music NFT extension for LSP7 track tokens. Plug-and-play design:
+/// the LSP7 deploys as a plain ERC173-owned contract and becomes linked to a
+/// parent LSP8 collection lazily, when the artist writes `LSP34OwnershipSource`
+/// via `setData`. Once set, `owner()` resolves dynamically through
+/// `LSP8.tokenOwnerOf(tokenId)`, and the parent LSP8 contract is additionally
+/// authorized to write metadata (as a router on behalf of the artist).
 abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
-    /// @dev Cached parent LSP8 collection address (set once in constructor, saves SLOAD on every call).
-    address internal immutable _parentCollection;
-
     /// @param name_ Token name.
     /// @param symbol_ Token symbol.
-    /// @param lsp8Contract_ The parent LSP8 collection address.
-    /// @param tokenId_ The LSP8 tokenId this LSP7 represents.
+    /// @param initialOwner_ Initial ERC173 owner (the artist). Acts as `owner()`
+    /// until `LSP34OwnershipSource` is set, at which point ownership is
+    /// derived from the referenced LSP8 tokenId.
     /// @param isNonDivisible_ Whether the token is non-divisible.
     constructor(
         string memory name_,
         string memory symbol_,
-        address lsp8Contract_,
-        bytes32 tokenId_,
+        address initialOwner_,
         bool isNonDivisible_
     )
         LSP7DigitalAsset(
             name_,
             symbol_,
-            lsp8Contract_, // Initial owner is the LSP8 contract (will be resolved via LSP34)
+            initialOwner_,
             _LSP4_TOKEN_TYPE_NFT,
             isNonDivisible_
         )
-    {
-        _parentCollection = lsp8Contract_;
-
-        // Set LSP34OwnershipSource to (lsp8Contract, tokenId)
-        ERC725Y._setData(
-            _LSP34_OWNERSHIP_SOURCE_KEY,
-            abi.encode(lsp8Contract_, tokenId_)
-        );
-
-        // Set LSP8ReferenceContract to (lsp8Contract, tokenId)
-        ERC725Y._setData(
-            _LSP8_REFERENCE_CONTRACT_KEY,
-            abi.encode(lsp8Contract_, tokenId_)
-        );
-    }
+    {}
 
     // --- LSP34 External Ownership ---
 
-    /// @dev Resolves owner dynamically via LSP34. If LSP34OwnershipSource is set,
-    /// calls tokenOwnerOf on the parent LSP8 to get the current owner.
+    /// @dev Resolves owner dynamically via LSP34. If `LSP34OwnershipSource` is
+    /// set, calls `tokenOwnerOf` on the referenced LSP8 to get the current
+    /// owner. Otherwise falls back to the standard ERC173 owner.
     function owner()
         public
         view
@@ -90,25 +73,16 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
         override
         returns (address)
     {
-        if (_parentCollection != address(0)) {
-            bytes memory ownershipSource = _getData(
-                _LSP34_OWNERSHIP_SOURCE_KEY
-            );
+        (address parent, bytes32 tokenId, bool hasSource) =
+            _readOwnershipSource();
 
-            if (ownershipSource.length >= 52) {
-                (, bytes32 tokenId) = abi.decode(
-                    ownershipSource,
-                    (address, bytes32)
-                );
-
-                try
-                    ILSP8IdentifiableDigitalAsset(_parentCollection)
-                        .tokenOwnerOf(tokenId)
-                returns (address tokenOwner) {
-                    return tokenOwner;
-                } catch {
-                    return super.owner();
-                }
+        if (hasSource) {
+            try
+                ILSP8IdentifiableDigitalAsset(parent).tokenOwnerOf(tokenId)
+            returns (address tokenOwner) {
+                return tokenOwner;
+            } catch {
+                return super.owner();
             }
         }
 
@@ -137,15 +111,21 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
 
     // --- Parent Collection Authorization ---
 
-    /// @dev Modifier that allows calls from the resolved owner (via LSP34) or the parent LSP8 collection contract.
+    /// @dev Allows calls from the resolved owner (via LSP34 or ERC173) or, when
+    /// linked, from the parent LSP8 collection contract decoded from
+    /// `LSP34OwnershipSource`.
     modifier onlyOwnerOrParentCollection() {
-        if (msg.sender != owner() && msg.sender != _parentCollection) {
-            revert LSP7MusicNFTUnauthorized(msg.sender);
+        if (msg.sender != owner()) {
+            (address parent, , bool hasSource) = _readOwnershipSource();
+            if (!hasSource || msg.sender != parent) {
+                revert LSP7MusicNFTUnauthorized(msg.sender);
+            }
         }
         _;
     }
 
-    /// @dev Override setData to allow calls from both the owner (via LSP34) and the parent LSP8 contract.
+    /// @dev Override `setData` to allow calls from both the resolved owner and
+    /// the linked parent LSP8 contract.
     function setData(
         bytes32 dataKey,
         bytes memory dataValue
@@ -156,7 +136,8 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
         _setData(dataKey, dataValue);
     }
 
-    /// @dev Override setDataBatch to allow calls from both the owner and the parent LSP8 contract.
+    /// @dev Override `setDataBatch` to allow calls from both the resolved
+    /// owner and the linked parent LSP8 contract.
     function setDataBatch(
         bytes32[] memory dataKeys,
         bytes[] memory dataValues
@@ -180,7 +161,8 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
 
     // --- Minting ---
 
-    /// @dev Mint function restricted to owner (resolved via LSP34).
+    /// @dev Mint function restricted to the resolved owner (ERC173 while
+    /// standalone, or the LSP8 token owner via LSP34 once linked).
     function mint(
         address to,
         uint256 amount,
@@ -192,9 +174,23 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
 
     // --- Internal Helpers ---
 
+    /// @dev Decodes `LSP34OwnershipSource` from storage. Returns
+    /// `(parent, tokenId, hasSource)`. `hasSource` is true only when the data
+    /// is at least 52 bytes (20-byte address + 32-byte tokenId, abi.encoded).
+    function _readOwnershipSource()
+        internal
+        view
+        returns (address parent, bytes32 tokenId, bool hasSource)
+    {
+        bytes memory source = _getData(_LSP34_OWNERSHIP_SOURCE_KEY);
+        if (source.length >= 52) {
+            (parent, tokenId) = abi.decode(source, (address, bytes32));
+            hasSource = true;
+        }
+    }
+
     /// @dev Returns true if LSP34 external ownership is active.
     function _hasExternalOwnership() internal view returns (bool) {
-        bytes memory ownershipSource = _getData(_LSP34_OWNERSHIP_SOURCE_KEY);
-        return ownershipSource.length >= 52;
+        return _getData(_LSP34_OWNERSHIP_SOURCE_KEY).length >= 52;
     }
 }

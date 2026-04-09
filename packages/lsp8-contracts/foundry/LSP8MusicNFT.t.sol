@@ -520,6 +520,46 @@ contract LSP8MusicNFTTest is Test {
         assertEq(results[1], hex"71ac0002");
     }
 
+    // --- Link existing standalone LSP7 (track-first workflow) ---
+
+    function test_LinkExistingStandaloneLSP7() public {
+        // Mint a fresh tokenId the standalone track will later join.
+        lsp8.mint(user1, tokenId2, true, "");
+
+        // Simulate a standalone LSP7 deployed with no parent link.
+        MockLSP7TrackToken standalone = new MockLSP7TrackToken(
+            address(0),
+            bytes32(0)
+        );
+
+        // Linking: artist updates the LSP7's reference contract to point to
+        // the tokenId it is about to join. (In the real LSP7 extension this
+        // is `setData(LSP8ReferenceContract, ...)` by the artist.)
+        standalone.setReferenceContract(address(lsp8), tokenId2);
+
+        // Then the artist calls setDataForTokenId on the LSP8 to complete
+        // the link — bidirectional verification should now pass.
+        vm.prank(user1);
+        lsp8.setDataForTokenId(
+            tokenId2,
+            _LSP33_OWNABLE_TRACK_TOKEN_KEY,
+            abi.encodePacked(address(standalone))
+        );
+
+        // Verify the link is stored and data routing works.
+        bytes memory stored = lsp8.getDataForTokenId(
+            tokenId2,
+            _LSP33_OWNABLE_TRACK_TOKEN_KEY
+        );
+        assertEq(stored, abi.encodePacked(address(standalone)));
+
+        standalone.setData(_LSP4_METADATA_KEY, hex"5ca1e000");
+        assertEq(
+            lsp8.getDataForTokenId(tokenId2, _LSP4_METADATA_KEY),
+            hex"5ca1e000"
+        );
+    }
+
     // --- abi.encode (32-byte) address encoding ---
 
     function test_SetOwnableTrackTokenWithAbiEncode() public {
