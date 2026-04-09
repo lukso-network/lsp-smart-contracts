@@ -401,32 +401,22 @@ abstract contract AccessControlExtendedInitAbstract is
 
         // case when transferring ownership (excluding initial deployment / initialization)
         if (oldOwner != address(0)) {
-            // Snapshot the old owner's roles before revoking (values() returns a memory copy)
+            // Snapshot the old owner's roles before mutating storage (values() returns a memory copy)
             bytes32[] memory oldOwnerRoles = _addressRoles[oldOwner].values();
-            bytes[] memory oldOwnerRolesData = new bytes[](oldOwnerRoles.length);
 
             for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
-                oldOwnerRolesData[i] = _roleData[oldOwnerRoles[i]][oldOwner];
-            }
+                bytes32 role = oldOwnerRoles[i];
+                bytes memory oldOwnerRoleData = _roleData[role][oldOwner];
 
-            // Revoke all roles from old owner
-            for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
-                _revokeRole(oldOwnerRoles[i], oldOwner);
-            }
+                _revokeRole(role, oldOwner);
 
-            // Grant all roles to new owner
-            // exclude case when renouncing ownership
-            if (newOwner != address(0)) {
-                for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
-                    _grantRole(oldOwnerRoles[i], newOwner);
+                // exclude case when renouncing ownership
+                if (newOwner != address(0)) {
+                    _grantRole(role, newOwner);
 
-                    if (oldOwnerRolesData[i].length > 0) {
-                        _roleData[oldOwnerRoles[i]][newOwner] = oldOwnerRolesData[i];
-                        emit RoleDataChanged(
-                            oldOwnerRoles[i],
-                            newOwner,
-                            oldOwnerRolesData[i]
-                        );
+                    if (oldOwnerRoleData.length > 0) {
+                        _roleData[role][newOwner] = oldOwnerRoleData;
+                        emit RoleDataChanged(role, newOwner, oldOwnerRoleData);
                     }
                 }
             }
