@@ -9,7 +9,9 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {
     AccessControlExtendedAbstract
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
-import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 
 // interfaces
 import {
@@ -45,7 +47,9 @@ contract MockLSP8WithAccessControlExtended is
 {
     bytes32 public constant TEST_ROLE = bytes32(bytes("TestRole"));
 
-    constructor(address newOwner_)
+    constructor(
+        address newOwner_
+    )
         LSP8IdentifiableDigitalAsset(
             "Test NFT",
             "TNFT",
@@ -106,11 +110,13 @@ contract AccessControlExtendedTest is Test {
         public
     {
         address initialOwner = vm.addr(200);
-        MockLSP8WithAccessControlExtended tokenWithExternalOwner =
-            new MockLSP8WithAccessControlExtended(initialOwner);
+        MockLSP8WithAccessControlExtended tokenWithExternalOwner = new MockLSP8WithAccessControlExtended(
+                initialOwner
+            );
 
-        assertTrue(tokenWithExternalOwner.hasRole(DEFAULT_ADMIN_ROLE, initialOwner));
-        assertFalse(tokenWithExternalOwner.hasRole(DEFAULT_ADMIN_ROLE, owner));
+        assertTrue(
+            tokenWithExternalOwner.hasRole(DEFAULT_ADMIN_ROLE, initialOwner)
+        );
         assertEq(
             tokenWithExternalOwner.getRoleMember(DEFAULT_ADMIN_ROLE, 0),
             initialOwner
@@ -118,6 +124,11 @@ contract AccessControlExtendedTest is Test {
         assertEq(
             tokenWithExternalOwner.getRoleMemberCount(DEFAULT_ADMIN_ROLE),
             1
+        );
+
+        // CHECK the deployer is getting the DEFAULT_ADMIN_ROLE
+        assertFalse(
+            tokenWithExternalOwner.hasRole(DEFAULT_ADMIN_ROLE, address(this))
         );
     }
 
@@ -186,7 +197,9 @@ contract AccessControlExtendedTest is Test {
 
     function test_SupportsAccessControlInterfaces() public {
         assertTrue(token.supportsInterface(_INTERFACEID_ACCESSCONTROL));
-        assertTrue(token.supportsInterface(_INTERFACEID_ACCESSCONTROLENUMERABLE));
+        assertTrue(
+            token.supportsInterface(_INTERFACEID_ACCESSCONTROLENUMERABLE)
+        );
         assertTrue(token.supportsInterface(_INTERFACEID_ACCESSCONTROLEXTENDED));
     }
 

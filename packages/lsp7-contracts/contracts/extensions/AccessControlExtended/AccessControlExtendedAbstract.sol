@@ -93,7 +93,7 @@ abstract contract AccessControlExtendedAbstract is
      * @param initialOwner_ The initial owner who receives DEFAULT_ADMIN_ROLE.
      */
     constructor(address initialOwner_) {
-        _transferOwnership(initialOwner_);
+        Ownable._transferOwnership(initialOwner_);
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
     }
 
@@ -381,33 +381,25 @@ abstract contract AccessControlExtendedAbstract is
      */
     function _transferOwnership(address newOwner) internal virtual override {
         address oldOwner = owner();
-        super._transferOwnership(newOwner);
+        Ownable._transferOwnership(newOwner);
 
-        // case when transferring ownership (excluding initial deployment / initialization)
-        if (oldOwner != address(0)) {
-            // Snapshot the old owner's roles before mutating storage (values() returns a memory copy)
-            bytes32[] memory oldOwnerRoles = _addressRoles[oldOwner].values();
+        // Snapshot the old owner's roles before mutating storage (values() returns a memory copy)
+        bytes32[] memory oldOwnerRoles = _addressRoles[oldOwner].values();
 
-            for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
-                bytes32 role = oldOwnerRoles[i];
-                bytes memory oldOwnerRoleData = _roleData[role][oldOwner];
+        for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
+            bytes32 role = oldOwnerRoles[i];
+            bytes memory oldOwnerRoleData = _roleData[role][oldOwner];
 
-                _revokeRole(role, oldOwner);
+            _revokeRole(role, oldOwner);
 
-                // exclude case when renouncing ownership
-                if (newOwner != address(0)) {
-                    _grantRole(role, newOwner);
-
-                    if (oldOwnerRoleData.length > 0) {
-                        _roleData[role][newOwner] = oldOwnerRoleData;
-                        emit RoleDataChanged(role, newOwner, oldOwnerRoleData);
-                    }
-                }
-            }
-        } else {
-            // Initial deployment: only grant DEFAULT_ADMIN_ROLE if new owner is not zero
+            // exclude case when renouncing ownership
             if (newOwner != address(0)) {
-                _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
+                _grantRole(role, newOwner);
+
+                if (oldOwnerRoleData.length > 0) {
+                    _roleData[role][newOwner] = oldOwnerRoleData;
+                    emit RoleDataChanged(role, newOwner, oldOwnerRoleData);
+                }
             }
         }
     }
