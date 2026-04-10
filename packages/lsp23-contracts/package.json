@@ -22,9 +22,9 @@
     "dist",
     "./README.md"
   ],
-  "main": "./dist/constants.cjs",
-  "module": "./dist/constants.mjs",
-  "typings": "./dist/constants.d.ts",
+  "main": "./dist/abi.cjs",
+  "module": "./dist/abi.mjs",
+  "typings": "./dist/abi.d.ts",
   "exports": {
     "./abi": {
       "types": "./dist/abi.d.ts",
@@ -40,6 +40,7 @@
     "build": "hardhat compile --show-stack-traces",
     "build:types": "wagmi generate",
     "build:package": "hardhat prepare-package",
+    "build:js": "unbuild",
     "clean": "rm -Rf dist/ cache/ node_modules/ .turbo/ types/ build/ artifacts/ abi.ts",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.js",
