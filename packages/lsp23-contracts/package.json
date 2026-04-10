@@ -26,6 +26,11 @@
   "module": "./dist/abi.mjs",
   "typings": "./dist/abi.d.ts",
   "exports": {
+    ".": {
+      "types": "./dist/abi.d.ts",
+      "require": "./dist/abi.cjs",
+      "import": "./dist/abi.mjs"
+    },
     "./abi": {
       "types": "./dist/abi.d.ts",
       "require": "./dist/abi.cjs",
