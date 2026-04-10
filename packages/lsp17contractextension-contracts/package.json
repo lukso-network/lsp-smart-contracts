@@ -41,6 +41,11 @@
       "require": "./dist/constants.cjs",
       "import": "./dist/constants.mjs"
     },
+    "./abi": {
+      "types": "./dist/abi.d.ts",
+      "require": "./dist/abi.cjs",
+      "import": "./dist/abi.mjs"
+    },
     "./contracts/*": "./contracts/*",
     "./artifacts/*": "./artifacts/*",
     "./dist/*": "./dist/*",
