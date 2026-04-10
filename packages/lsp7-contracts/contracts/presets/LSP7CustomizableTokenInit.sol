@@ -6,26 +6,31 @@ import {
     OwnableUpgradeable
 } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {
+    AccessControlExtendedInitAbstract
+} from "../extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+import {
     LSP7DigitalAssetInitAbstract
 } from "../LSP7DigitalAssetInitAbstract.sol";
-import {
-    LSP7MintableInitAbstract
-} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
-import {
-    LSP7NonTransferableInitAbstract
-} from "../extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
-import {
-    LSP7CappedBalanceInitAbstract
-} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
-import {
-    LSP7CappedSupplyInitAbstract
-} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
+
+// extensions
 import {
     LSP7BurnableInitAbstract
 } from "../extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol";
 import {
-    AccessControlExtendedInitAbstract
-} from "../extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+    LSP7MintableInitAbstract
+} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
+import {
+    LSP7CappedSupplyInitAbstract
+} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
+import {
+    LSP7CappedBalanceInitAbstract
+} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
+import {
+    LSP7NonTransferableInitAbstract
+} from "../extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
+import {
+    LSP7RevokableInitAbstract
+} from "../extensions/LSP7Revokable/LSP7RevokableInitAbstract.sol";
 
 // errors
 import {
@@ -40,20 +45,20 @@ struct MintableParams {
     uint256 initialMintAmount;
 }
 
-/// @dev Deployment configuration for non-transferable feature.
-/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParams {
-    uint256 transferLockStart;
-    uint256 transferLockEnd;
-}
-
 /// @dev Deployment configuration for capped balance and capped supply features.
 /// @param tokenBalanceCap The maximum balance per address in wei, 0 to disable.
 /// @param tokenSupplyCap The maximum total supply in wei, 0 to disable.
 struct CappedParams {
     uint256 tokenBalanceCap;
     uint256 tokenSupplyCap;
+}
+
+/// @dev Deployment configuration for non-transferable feature.
+/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
+struct NonTransferableParams {
+    uint256 transferLockStart;
+    uint256 transferLockEnd;
 }
 
 /// @title LSP7CustomizableTokenInit
@@ -64,11 +69,12 @@ struct CappedParams {
 /// Implements {LSP7CappedSupplyInitAbstract} to set balance caps.
 /// Implements {LSP7BurnableInitAbstract} to set total supply cap.
 contract LSP7CustomizableTokenInit is
+    LSP7BurnableInitAbstract,
     LSP7MintableInitAbstract,
-    LSP7NonTransferableInitAbstract,
-    LSP7CappedBalanceInitAbstract,
     LSP7CappedSupplyInitAbstract,
-    LSP7BurnableInitAbstract
+    LSP7CappedBalanceInitAbstract,
+    LSP7NonTransferableInitAbstract,
+    LSP7RevokableInitAbstract
 {
     function initialize(
         string memory name_,
@@ -87,8 +93,8 @@ contract LSP7CustomizableTokenInit is
             lsp4TokenType_,
             isNonDivisible_,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
     }
 
@@ -100,8 +106,8 @@ contract LSP7CustomizableTokenInit is
     /// @param lsp4TokenType_ The LSP4 token type (e.g., 0 for token).
     /// @param isNonDivisible_ True if the token is non-divisible (e.g., for NDTs).
     /// @param mintableParams Deployment configuration for minting feature (see above).
-    /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
+    /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     function __LSP7CustomizableToken_init(
         string memory name_,
         string memory symbol_,
@@ -109,8 +115,8 @@ contract LSP7CustomizableTokenInit is
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
         MintableParams memory mintableParams,
-        NonTransferableParams memory nonTransferableParams,
-        CappedParams memory cappedParams
+        CappedParams memory cappedParams,
+        NonTransferableParams memory nonTransferableParams
     ) internal virtual onlyInitializing {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,
@@ -121,12 +127,14 @@ contract LSP7CustomizableTokenInit is
         );
         __AccessControlExtended_init_unchained(newOwner_);
         __LSP7Mintable_init_unchained(mintableParams.isMintable);
+        __LSP7CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
+        __LSP7CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
         __LSP7NonTransferable_init_unchained(
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         );
-        __LSP7CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
-        __LSP7CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
+        __LSP7Revokable_init_unchained(newOwner_);
+
         if (mintableParams.initialMintAmount > 0) {
             _mint(newOwner_, mintableParams.initialMintAmount, true, "");
         }
@@ -194,9 +202,10 @@ contract LSP7CustomizableTokenInit is
         virtual
         override(
             OwnableUpgradeable,
-            LSP7CappedBalanceInitAbstract,
             LSP7MintableInitAbstract,
-            LSP7NonTransferableInitAbstract
+            LSP7CappedBalanceInitAbstract,
+            LSP7NonTransferableInitAbstract,
+            LSP7RevokableInitAbstract
         )
     {
         super._transferOwnership(newOwner);
@@ -210,9 +219,10 @@ contract LSP7CustomizableTokenInit is
         virtual
         override(
             LSP7DigitalAssetInitAbstract,
-            LSP7CappedBalanceInitAbstract,
             LSP7MintableInitAbstract,
-            LSP7NonTransferableInitAbstract
+            LSP7CappedBalanceInitAbstract,
+            LSP7NonTransferableInitAbstract,
+            LSP7RevokableInitAbstract
         )
         returns (bool)
     {

@@ -58,16 +58,16 @@ contract LSP7CustomizableTokenTest is Test {
             initialMintAmount
         );
 
+        CappedParams memory cappedParams = CappedParams(
+            tokenBalanceCap,
+            tokenSupplyCap
+        );
+
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
                 transferLockStart,
                 transferLockEnd
             );
-
-        CappedParams memory cappedParams = CappedParams(
-            tokenBalanceCap,
-            tokenSupplyCap
-        );
 
         token = new LSP7CustomizableToken(
             name,
@@ -76,8 +76,8 @@ contract LSP7CustomizableTokenTest is Test {
             tokenType,
             isNonDivisible,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
     }
 
@@ -147,8 +147,8 @@ contract LSP7CustomizableTokenTest is Test {
             tokenType,
             isNonDivisible,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
     }
 
@@ -173,8 +173,8 @@ contract LSP7CustomizableTokenTest is Test {
             tokenType,
             isNonDivisible,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
         assertEq(
             zeroMintToken.balanceOf(owner),
@@ -206,8 +206,8 @@ contract LSP7CustomizableTokenTest is Test {
             tokenType,
             isNonDivisible,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
     }
 
@@ -269,8 +269,8 @@ contract LSP7CustomizableTokenTest is Test {
             tokenType,
             isNonDivisible,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
         unlimitedToken.mint(owner, type(uint256).max / 2, true, "");
         assertEq(
@@ -302,8 +302,8 @@ contract LSP7CustomizableTokenTest is Test {
             tokenType,
             isNonDivisible,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
 
         // Should be able to transfer up to the balance cap
@@ -347,8 +347,8 @@ contract LSP7CustomizableTokenTest is Test {
                 tokenType,
                 isNonDivisible,
                 mintableParams,
-                nonTransferableParams,
-                cappedParams
+                cappedParams,
+                nonTransferableParams
             );
 
         // Should be able to transfer any amount when balance cap is disabled

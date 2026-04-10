@@ -6,26 +6,31 @@ import {
     OwnableUpgradeable
 } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {
+    AccessControlExtendedInitAbstract
+} from "../extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
-import {
-    LSP8CappedSupplyInitAbstract
-} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyInitAbstract.sol";
+
+// extensions
 import {
     LSP8BurnableInitAbstract
 } from "../extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol";
 import {
-    LSP8CappedBalanceInitAbstract
-} from "../extensions/LSP8CappedBalance/LSP8CappedBalanceInitAbstract.sol";
-import {
     LSP8MintableInitAbstract
 } from "../extensions/LSP8Mintable/LSP8MintableInitAbstract.sol";
+import {
+    LSP8CappedSupplyInitAbstract
+} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyInitAbstract.sol";
+import {
+    LSP8CappedBalanceInitAbstract
+} from "../extensions/LSP8CappedBalance/LSP8CappedBalanceInitAbstract.sol";
 import {
     LSP8NonTransferableInitAbstract
 } from "../extensions/LSP8NonTransferable/LSP8NonTransferableInitAbstract.sol";
 import {
-    AccessControlExtendedInitAbstract
-} from "../extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+    LSP8RevokableInitAbstract
+} from "../extensions/LSP8Revokable/LSP8RevokableInitAbstract.sol";
 
 // errors
 import {
@@ -40,20 +45,20 @@ struct MintableParamsInit {
     bytes32[] initialMintTokenIds;
 }
 
-/// @dev Deployment configuration for non-transferable feature.
-/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParamsInit {
-    uint256 transferLockStart;
-    uint256 transferLockEnd;
-}
-
 /// @dev Deployment configuration for capped balance and capped supply features.
 /// @param tokenBalanceCap The maximum number of NFTs per address, 0 to disable.
 /// @param tokenSupplyCap The maximum total supply of NFTs, 0 to disable.
 struct CappedParamsInit {
     uint256 tokenBalanceCap;
     uint256 tokenSupplyCap;
+}
+
+/// @dev Deployment configuration for non-transferable feature.
+/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
+struct NonTransferableParamsInit {
+    uint256 transferLockStart;
+    uint256 transferLockEnd;
 }
 
 /// @title LSP8CustomizableTokenInit
@@ -64,11 +69,12 @@ struct CappedParamsInit {
 /// Implements {LSP8NonTransferable} to restrict transfers.
 /// Implements {LSP8CappedSupply} to set total supply cap.
 contract LSP8CustomizableTokenInit is
+    LSP8BurnableInitAbstract,
     LSP8MintableInitAbstract,
-    LSP8NonTransferableInitAbstract,
     LSP8CappedBalanceInitAbstract,
     LSP8CappedSupplyInitAbstract,
-    LSP8BurnableInitAbstract
+    LSP8NonTransferableInitAbstract,
+    LSP8RevokableInitAbstract
 {
     /// @dev Locks the base implementation contract from being initialized.
     constructor() {
@@ -127,20 +133,21 @@ contract LSP8CustomizableTokenInit is
         );
         __AccessControlExtended_init_unchained(newOwner_);
         __LSP8Mintable_init_unchained(mintableParams.mintable);
+        __LSP8CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
+        __LSP8CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
         __LSP8NonTransferable_init_unchained(
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         );
-        __LSP8CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
-        __LSP8CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
+        __LSP8Revokable_init_unchained(newOwner_);
 
         // Mint initial tokens
         for (
-            uint256 i = 0;
-            i < mintableParams.initialMintTokenIds.length;
-            i++
+            uint256 ii = 0;
+            ii < mintableParams.initialMintTokenIds.length;
+            ii++
         ) {
-            _mint(newOwner_, mintableParams.initialMintTokenIds[i], true, "");
+            _mint(newOwner_, mintableParams.initialMintTokenIds[ii], true, "");
         }
     }
 
@@ -222,9 +229,10 @@ contract LSP8CustomizableTokenInit is
         virtual
         override(
             OwnableUpgradeable,
-            LSP8CappedBalanceInitAbstract,
             LSP8MintableInitAbstract,
-            LSP8NonTransferableInitAbstract
+            LSP8CappedBalanceInitAbstract,
+            LSP8NonTransferableInitAbstract,
+            LSP8RevokableInitAbstract
         )
     {
         super._transferOwnership(newOwner);
@@ -238,9 +246,10 @@ contract LSP8CustomizableTokenInit is
         virtual
         override(
             LSP8IdentifiableDigitalAssetInitAbstract,
-            LSP8CappedBalanceInitAbstract,
             LSP8MintableInitAbstract,
-            LSP8NonTransferableInitAbstract
+            LSP8CappedBalanceInitAbstract,
+            LSP8NonTransferableInitAbstract,
+            LSP8RevokableInitAbstract
         )
         returns (bool)
     {
