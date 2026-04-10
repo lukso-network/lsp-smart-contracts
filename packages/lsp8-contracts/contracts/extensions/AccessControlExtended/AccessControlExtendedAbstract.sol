@@ -2,18 +2,16 @@
 pragma solidity ^0.8.27;
 
 // interfaces
+import {IAccessControlExtended} from "./IAccessControlExtended.sol";
 import {
     IAccessControl
 } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {
     IAccessControlEnumerable
 } from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
-import {IAccessControlExtended} from "./IAccessControlExtended.sol";
 
 // modules
-import {
-    OwnableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 // libraries
 import {
@@ -34,14 +32,21 @@ import {
 } from "./AccessControlExtendedErrors.sol";
 
 /**
- * @title AccessControlExtendedInitAbstract
- * @dev Proxy/initializable variant of {AccessControlExtendedAbstract}. Uses
- * `__AccessControlExtended_init` / `__AccessControlExtended_init_unchained`
- * instead of a constructor, both guarded by `onlyInitializing`.
+ * @title AccessControlExtendedAbstract
+ * @dev Abstract contract implementing OZ-compatible role management with reverse lookups
+ * and auxiliary data storage. Uses EnumerableSet composition (NOT OZ AccessControl inheritance)
+ *
+ * Provides:
+ * - Standard OZ {IAccessControl} functions: hasRole, grantRole, revokeRole, renounceRole, getRoleAdmin
+ * - Standard OZ {IAccessControlEnumerable} functions: getRoleMember, getRoleMemberCount
+ * - Extended functions: rolesOf, grantRoleWithData, setRoleData, getRoleData
+ * - Explicit role checks for every role-gated function
+ * - DEFAULT_ADMIN_ROLE as root admin for granting and revoking roles
+ * - Automatic transfer of all roles (and their auxiliary data, if any) between old and new on ownership transfer
  */
-abstract contract AccessControlExtendedInitAbstract is
+abstract contract AccessControlExtendedAbstract is
     IAccessControlExtended,
-    OwnableUpgradeable
+    Ownable
 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -72,37 +77,23 @@ abstract contract AccessControlExtendedInitAbstract is
 
     /**
      * @dev Modifier that checks the caller has `role`.
-     * Reverts with {AccessControlExtendedUnauthorized} if the check fails.
+     * Reverts with {AccessControlUnauthorizedAccount} if the check fails.
      */
     modifier onlyRole(bytes32 role) {
         _checkRole(role);
         _;
     }
 
-    // --- Initializer
+    // --- Constructor
 
     /**
-     * @dev Chained initializer that grants DEFAULT_ADMIN_ROLE to the initial owner,
-     * so they appear in enumeration (getRoleMember, rolesOf) and can administer roles from initialization.
+     * @dev Grants `DEFAULT_ADMIN_ROLE` to the initial owner so they appear in
+     * enumeration (getRoleMember, rolesOf) and can administer roles from deployment.
      *
-     * @param initialOwner_ Initial contract owner who also receives DEFAULT_ADMIN_ROLE.
+     * @param initialOwner_ The initial owner who receives DEFAULT_ADMIN_ROLE.
      */
-    function __AccessControlExtended_init(
-        address initialOwner_
-    ) internal virtual onlyInitializing {
-        __AccessControlExtended_init_unchained(initialOwner_);
-    }
-
-    /**
-     * @dev Standalone initializer. Only grants DEFAULT_ADMIN_ROLE to the owner.
-     * Use when the LSP7 base is already initialized through another path.
-     *
-     * @param initialOwner_ The initial contract owner who also receives DEFAULT_ADMIN_ROLE.
-     */
-    function __AccessControlExtended_init_unchained(
-        address initialOwner_
-    ) internal virtual onlyInitializing {
-        OwnableUpgradeable._transferOwnership(initialOwner_);
+    constructor(address initialOwner_) {
+        Ownable._transferOwnership(initialOwner_);
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
     }
 
@@ -390,7 +381,7 @@ abstract contract AccessControlExtendedInitAbstract is
      */
     function _transferOwnership(address newOwner) internal virtual override {
         address oldOwner = owner();
-        OwnableUpgradeable._transferOwnership(newOwner);
+        Ownable._transferOwnership(newOwner);
 
         // Snapshot the old owner's roles before mutating storage (values() returns a memory copy)
         bytes32[] memory oldOwnerRoles = _addressRoles[oldOwner].values();
@@ -412,11 +403,4 @@ abstract contract AccessControlExtendedInitAbstract is
             }
         }
     }
-
-    /**
-     * @dev This empty reserved space is put in place to allow future versions to add new
-     * variables without shifting down storage in the inheritance chain.
-     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
-     */
-    uint256[49] private __gap;
 }

@@ -2,10 +2,18 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {LSP8MintableInitAbstract} from "./LSP8MintableInitAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAssetInitAbstract
+} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {
+    LSP8MintableInitAbstract
+} from "../extensions/LSP8Mintable/LSP8MintableInitAbstract.sol";
+import {
+    AccessControlExtendedInitAbstract
+} from "../extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
 /**
- * @dev LSP8IdentifiableDigitalAsset deployable preset contract (proxy version) with a public {mint} function callable only by the contract {owner}.
+ * @dev LSP8IdentifiableDigitalAsset deployable preset contract (proxy version) with a public {mint} function callable by addresses holding `MINTER_ROLE`.
  */
 contract LSP8MintableInit is LSP8MintableInitAbstract {
     /**
@@ -32,12 +40,14 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_
     ) external virtual initializer {
-        LSP8MintableInitAbstract._initialize(
+        LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
             symbol_,
             newOwner_,
             lsp4TokenType_,
             lsp8TokenIdFormat_
         );
+        __AccessControlExtended_init(newOwner_);
+        __LSP8Mintable_init_unchained(true);
     }
 }

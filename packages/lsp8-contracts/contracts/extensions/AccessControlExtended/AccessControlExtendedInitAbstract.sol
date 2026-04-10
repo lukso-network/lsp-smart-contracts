@@ -72,7 +72,7 @@ abstract contract AccessControlExtendedInitAbstract is
 
     /**
      * @dev Modifier that checks the caller has `role`.
-     * Reverts with {AccessControlExtendedUnauthorized} if the check fails.
+     * Reverts with {AccessControlUnauthorizedAccount} if the check fails.
      */
     modifier onlyRole(bytes32 role) {
         _checkRole(role);
@@ -95,7 +95,7 @@ abstract contract AccessControlExtendedInitAbstract is
 
     /**
      * @dev Standalone initializer. Only grants DEFAULT_ADMIN_ROLE to the owner.
-     * Use when the LSP7 base is already initialized through another path.
+     * Use when the LSP8 base is already initialized through another path.
      *
      * @param initialOwner_ The initial contract owner who also receives DEFAULT_ADMIN_ROLE.
      */
@@ -170,12 +170,6 @@ abstract contract AccessControlExtendedInitAbstract is
      * @dev Allows `msg.sender` to renounce their own `role`. The `callerConfirmation`
      * parameter must equal `msg.sender` to prevent accidental renouncement (OZ pattern).
      * Renouncing triggers data cleanup per BASE-09.
-     *
-     * @custom:info Roles are often managed via {grantRole} and {revokeRole}.
-     * This function's purpose is to provide a mechanism for accounts to lose their privileges
-     * if they are compromised (such as when a trusted device is misplaced).
-     *
-     * If the calling account had been revoked `role`, emits a {RoleRevoked} event.
      *
      * @custom:warning The current owner cannot renounce `DEFAULT_ADMIN_ROLE`
      * to prevent locking the contract out of role administration.
@@ -285,12 +279,6 @@ abstract contract AccessControlExtendedInitAbstract is
 
     // --- Internal functions
 
-    /**
-     * @dev Grants `role` to `account`. No-op if the account already holds the role
-     * (matching OZ behavior). Updates both forward and reverse lookups.
-     *
-     * @custom:events {RoleGranted} if the role was newly granted.
-     */
     function _grantRole(bytes32 role, address account) internal virtual {
         bool added = _roleMembers[role].add(account);
 
@@ -300,14 +288,6 @@ abstract contract AccessControlExtendedInitAbstract is
         }
     }
 
-    /**
-     * @dev Revokes `role` from `account`. No-op if the account does not hold the role.
-     * Auto-clears auxiliary data if any exists (BASE-09).
-     *
-     * @custom:events
-     * - {RoleRevoked} if the role was revoked.
-     * - {RoleDataChanged} if auxiliary data was cleared.
-     */
     function _revokeRole(bytes32 role, address account) internal virtual {
         bool removed = _roleMembers[role].remove(account);
 
@@ -315,7 +295,6 @@ abstract contract AccessControlExtendedInitAbstract is
             _addressRoles[account].remove(role);
             emit RoleRevoked(role, account, msg.sender);
 
-            // Auto-clear auxiliary data (BASE-09)
             if (_roleData[role][account].length > 0) {
                 delete _roleData[role][account];
                 emit RoleDataChanged(role, account, "");
@@ -323,22 +302,10 @@ abstract contract AccessControlExtendedInitAbstract is
         }
     }
 
-    /**
-     * @dev Checks that `msg.sender` has `role`. Reverts with
-     * {AccessControlUnauthorizedAccount} if the check fails.
-     *
-     * @custom:warning Overriding this function changes the behavior of the {onlyRole} modifier.
-     */
     function _checkRole(bytes32 role) internal view virtual {
         _checkRole(role, msg.sender);
     }
 
-    /**
-     * @dev Checks that `account` has `role`.
-     *
-     * Reverts with {AccessControlUnauthorizedAccount} if the account does not
-     * explicitly hold the role.
-     */
     function _checkRole(bytes32 role, address account) internal view virtual {
         require(
             _hasRole(role, account),
@@ -356,10 +323,6 @@ abstract contract AccessControlExtendedInitAbstract is
     /**
      * @dev Sets `adminRole` as the admin of `role`. Available for extensions
      * to configure custom admin hierarchies.
-     *
-     * @custom:warning DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
-     *
-     * @custom:events {RoleAdminChanged} with the previous and new admin roles.
      */
     function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
         bytes32 previousAdminRole = getRoleAdmin(role);

@@ -2,42 +2,63 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {
-    LSP8AllowlistAbstract
-} from "../LSP8Allowlist/LSP8AllowlistAbstract.sol";
+    LSP8IdentifiableDigitalAsset
+} from "../../LSP8IdentifiableDigitalAsset.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {ILSP8CappedBalance} from "./ILSP8CappedBalance.sol";
-
-// libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {LSP8CappedBalanceExceeded} from "./LSP8CappedBalanceErrors.sol";
 
 /// @title LSP8CappedBalanceAbstract
-/// @dev Abstract contract implementing a per-address NFT count cap for LSP8 tokens, with exemptions for allowlisted addresses. Inherits from LSP8AllowlistAbstract to integrate allowlist functionality.
+/// @dev Abstract contract implementing a per-address NFT count cap for LSP8 tokens, with role-based exemptions.
 abstract contract LSP8CappedBalanceAbstract is
     ILSP8CappedBalance,
-    LSP8AllowlistAbstract
+    AccessControlExtendedAbstract,
+    LSP8IdentifiableDigitalAsset
 {
-    using EnumerableSet for EnumerableSet.AddressSet;
+    /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
+    address internal constant _DEAD_ADDRESS =
+        0x000000000000000000000000000000000000dEaD;
 
     /// @notice The immutable maximum number of NFTs allowed per address.
     uint256 private immutable _TOKEN_BALANCE_CAP;
 
+    /// @dev `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    bytes32 public constant UNCAPPED_ROLE =
+        0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
+
     /// @notice Initializes the contract with a token balance cap.
-    /// @dev Sets the immutable balance cap. Inherits LSP8AllowlistAbstract constructor logic.
+    /// @dev Sets the immutable balance cap and grants the initial uncapped-role exemptions.
     /// @param tokenBalanceCap_ The maximum number of NFTs per address, 0 to disable.
     constructor(uint256 tokenBalanceCap_) {
         _TOKEN_BALANCE_CAP = tokenBalanceCap_;
+        _grantRole(UNCAPPED_ROLE, owner());
     }
 
     /// @inheritdoc ILSP8CappedBalance
     function tokenBalanceCap() public view virtual override returns (uint256) {
         return _TOKEN_BALANCE_CAP;
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(AccessControlExtendedAbstract, LSP8IdentifiableDigitalAsset)
+        returns (bool)
+    {
+        return
+            AccessControlExtendedAbstract.supportsInterface(interfaceId) ||
+            LSP8IdentifiableDigitalAsset.supportsInterface(interfaceId);
     }
 
     /// @notice Checks if a token transfer complies with the balance cap.
@@ -50,16 +71,25 @@ abstract contract LSP8CappedBalanceAbstract is
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
+        // Address(0) and 0x0000...dead addresses are used for burning tokens
+        if (to == address(0) || to == _DEAD_ADDRESS) return;
+
+        // Do not check for addresses exempted from balance cap
+        if (hasRole(UNCAPPED_ROLE, to)) return;
+
+        uint256 maxBalanceAllowed = tokenBalanceCap();
+        bool isBalanceCapEnabled = maxBalanceAllowed != 0;
+
+        if (!isBalanceCapEnabled) return;
+
         require(
-            to == address(0) ||
-                tokenBalanceCap() == 0 ||
-                balanceOf(to) + 1 <= tokenBalanceCap(),
+            (balanceOf(to) + 1) <= tokenBalanceCap(),
             LSP8CappedBalanceExceeded(to, balanceOf(to), tokenBalanceCap())
         );
     }
 
     /// @notice Hook called before a token transfer to enforce balance cap restrictions.
-    /// @dev Bypasses balance cap checks for allowlisted recipients. Applies cap checks for non-allowlisted recipients.
+    /// @dev Bypasses balance cap checks for recipients holding `UNCAPPED_ROLE`. Applies cap checks for all other recipients.
     /// @param from The address sending the token.
     /// @param to The address receiving the token.
     /// @param tokenId The unique identifier of the token being transferred.
@@ -72,7 +102,13 @@ abstract contract LSP8CappedBalanceAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (isAllowlisted(to)) return;
         _tokenBalanceCapCheck(from, to, tokenId, force, data);
+        super._beforeTokenTransfer(from, to, tokenId, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        super._transferOwnership(newOwner);
     }
 }

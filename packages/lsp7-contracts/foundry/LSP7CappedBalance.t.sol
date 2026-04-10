@@ -110,18 +110,6 @@ contract LSP7CappedBalanceTest is Test {
             lsp7CappedBalance.hasRole(uncappedBalanceRole, owner),
             "Owner should have uncapped balance role"
         );
-        assertTrue(
-            lsp7CappedBalance.hasRole(uncappedBalanceRole, zeroAddress),
-            "Zero address should have uncapped balance role"
-        );
-        // check for dead address (alternative address used to burn tokens)
-        assertTrue(
-            lsp7CappedBalance.hasRole(
-                uncappedBalanceRole,
-                0x000000000000000000000000000000000000dEaD
-            ),
-            "Dead address should have uncapped balance role"
-        );
 
         // Extra addresses allowed to bypass balance cap after deployment
         assertTrue(

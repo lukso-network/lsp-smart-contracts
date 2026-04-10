@@ -9,11 +9,11 @@ import {
     LSP8IdentifiableDigitalAsset
 } from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 import {
-    LSP8AllowlistAbstract
-} from "../contracts/extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
-import {
     LSP8NonTransferableAbstract
 } from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {
@@ -52,7 +52,7 @@ contract MockLSP8NonTransferable is LSP8NonTransferableAbstract {
             lsp8TokenIdFormat_
         )
         LSP8NonTransferableAbstract(transferLockStart_, transferLockEnd_)
-        LSP8AllowlistAbstract(newOwner_)
+        AccessControlExtendedAbstract(newOwner_)
     {}
 
     function mint(
@@ -83,7 +83,6 @@ contract LSP8NonTransferableTest is Test {
     uint256 lockPeriodStart = block.timestamp + 3600;
     uint256 lockPeriodEnd = lockPeriodStart + 3600;
 
-    address zeroAddress = address(0);
     address owner = address(this);
     address randomCaller = vm.addr(100);
     address allowlistedUser = vm.addr(101);
@@ -96,6 +95,7 @@ contract LSP8NonTransferableTest is Test {
 
     MockLSP8NonTransferable lsp8NonTransferable;
     MockLSP8NonTransferable lsp8TransferableWithLockPeriod;
+    bytes32 nonTransferableBypassRole;
 
     function setUp() public {
         // Token that's always non-transferable (start=0, end=max)
@@ -120,6 +120,9 @@ contract LSP8NonTransferableTest is Test {
             lockPeriodEnd
         );
 
+        nonTransferableBypassRole =
+            lsp8NonTransferable.NON_TRANSFERABLE_BYPASS_ROLE();
+
         lsp8NonTransferable.mint(owner, tokenId1, true, "");
         lsp8NonTransferable.mint(randomCaller, tokenId2, true, "");
         lsp8NonTransferable.mint(allowlistedUser, tokenId3, true, "");
@@ -140,7 +143,10 @@ contract LSP8NonTransferableTest is Test {
         vm.label(randomCaller, "randomCaller");
         vm.label(allowlistedUser, "allowlistedUser");
 
-        lsp8NonTransferable.addToAllowlist(allowlistedUser);
+        lsp8NonTransferable.grantRole(
+            nonTransferableBypassRole,
+            allowlistedUser
+        );
     }
 
     // Constructor and Initial State

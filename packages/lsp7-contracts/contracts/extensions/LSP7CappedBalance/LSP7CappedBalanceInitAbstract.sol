@@ -15,11 +15,6 @@ import {
 // interfaces
 import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";
 
-// libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
 // errors
 import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 
@@ -30,14 +25,13 @@ abstract contract LSP7CappedBalanceInitAbstract is
     AccessControlExtendedInitAbstract,
     LSP7DigitalAssetInitAbstract
 {
-    using EnumerableSet for EnumerableSet.AddressSet;
-
     /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
     address internal constant _DEAD_ADDRESS =
         0x000000000000000000000000000000000000dEaD;
 
     /// @dev `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    bytes32 public constant UNCAPPED_ROLE = 0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
+    bytes32 public constant UNCAPPED_ROLE =
+        0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
 
     /// @notice The immutable maximum token balance allowed per address.
     uint256 private _tokenBalanceCap;
@@ -76,10 +70,6 @@ abstract contract LSP7CappedBalanceInitAbstract is
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
         _tokenBalanceCap = tokenBalanceCap_;
-
-        // Address(0) and 0x0000...dead addresses are used for burning tokens
-        _grantRole(UNCAPPED_ROLE, address(0));
-        _grantRole(UNCAPPED_ROLE, _DEAD_ADDRESS);
         _grantRole(UNCAPPED_ROLE, owner());
     }
 
@@ -118,16 +108,19 @@ abstract contract LSP7CappedBalanceInitAbstract is
         /* force */
         bytes memory /* data */
     ) internal virtual {
-        // Do not check for balance cap if a specific address has the uncapped balance role
-        // (including address(0) and 0x0000...dead addresses)
+        // Address(0) and 0x0000...dead addresses are used for burning tokens
+        if (to == address(0) || to == _DEAD_ADDRESS) return;
+
+        // Do not check for addresses exempted from balance cap
         if (hasRole(UNCAPPED_ROLE, to)) return;
 
         uint256 maxBalanceAllowed = tokenBalanceCap();
         bool isBalanceCapEnabled = maxBalanceAllowed != 0;
 
+        if (!isBalanceCapEnabled) return;
+
         require(
-            !isBalanceCapEnabled ||
-                (balanceOf(to) + amount) <= maxBalanceAllowed,
+            (balanceOf(to) + amount) <= maxBalanceAllowed,
             LSP7CappedBalanceExceeded(
                 to,
                 amount,

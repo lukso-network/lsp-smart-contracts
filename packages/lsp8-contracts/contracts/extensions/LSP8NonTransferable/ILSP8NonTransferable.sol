@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 /// @title ILSP8NonTransferable
-/// @dev Interface for a non-transferable LSP8 token, enabling control over transferability, lock periods, and allowlist exemptions.
+/// @dev Interface for a non-transferable LSP8 token, enabling control over transferability, lock periods, and role-based exemptions.
 interface ILSP8NonTransferable {
     /// @dev Emitted when the transfer lock period is updated.
     /// @param start The new start timestamp of the transfer lock period.
@@ -16,11 +16,11 @@ interface ILSP8NonTransferable {
     function transferLockEnd() external view returns (uint256);
 
     /// @notice Checks if the token is currently transferable.
-    /// @dev Returns true if the token is transferable (based on the lock period). Note that transfers from allowlisted addresses and burning (transfers to address(0)) is always allowed, regardless of transferability status.
+    /// @dev Returns true if the token is transferable (based on the lock period). Note that transfers from addresses holding the bypass role and burning (transfers to address(0)) is always allowed, regardless of transferability status.
     /// @return True if the token is transferable, false otherwise.
     function isTransferable() external view returns (bool);
 
-    /// @notice Removes all transfer lock, enabling token transfers for non-allowlisted addresses.
+    /// @notice Removes all transfer lock, enabling token transfers for all addresses.
     /// @dev Can only be called by the contract owner. Sets both lock periods to 0.
     /// @custom:emits {TransferLockPeriodChanged} event.
     function makeTransferable() external;

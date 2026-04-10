@@ -85,12 +85,15 @@ export const shouldBehaveLikeLSP8Mintable = (
 
       // use any other account
       const nonOwner = context.accounts.tokenReceiver;
+      const minterRole = await context.lsp8Mintable.MINTER_ROLE();
 
       await expect(
         context.lsp8Mintable
           .connect(nonOwner)
           .mint(context.accounts.tokenReceiver.address, randomTokenId, true, '0x'),
-      ).to.be.revertedWith('Ownable: caller is not the owner');
+      )
+        .to.be.revertedWithCustomError(context.lsp8Mintable, 'AccessControlUnauthorizedAccount')
+        .withArgs(nonOwner.address, minterRole);
     });
   });
 

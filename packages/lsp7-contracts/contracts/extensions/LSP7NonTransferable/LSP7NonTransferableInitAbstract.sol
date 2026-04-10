@@ -15,11 +15,6 @@ import {
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
 
-// libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
 // errors
 import {
     LSP7TransferDisabled,
@@ -35,9 +30,6 @@ abstract contract LSP7NonTransferableInitAbstract is
     AccessControlExtendedInitAbstract,
     LSP7DigitalAssetInitAbstract
 {
-    // solhint-disable not-rely-on-time
-    using EnumerableSet for EnumerableSet.AddressSet;
-
     /// @dev `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
     bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE =
         0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000;
@@ -99,11 +91,7 @@ abstract contract LSP7NonTransferableInitAbstract is
         transferLockEnabled = true;
 
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
-        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
         _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, owner());
-
-        // grant role to allow minting tokens (`from == address(0)`)
-        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
     }
 
     function supportsInterface(
@@ -192,14 +180,17 @@ abstract contract LSP7NonTransferableInitAbstract is
     /// @dev Allows burning to address(0) even when transfers are disabled, bypassing transferability restrictions. Reverts with {LSP7TransferDisabled} if the token is non-transferable and the destination is not address(0).
     /// @param to The address receiving the tokens.
     function _nonTransferableCheck(
-        address /* from */,
+        address from,
         address to,
         uint256 /* amount */,
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        // Allow burning or transferring tokens only if the transferability status is enabled
-        require(to == address(0) || isTransferable(), LSP7TransferDisabled());
+        // Allow minting and burning
+        if (from == address(0) || to == address(0)) return;
+
+        // transferring tokens only if the transferability status is enabled
+        require(isTransferable(), LSP7TransferDisabled());
     }
 
     /// @notice Hook called before a token transfer to enforce transfer restrictions.
