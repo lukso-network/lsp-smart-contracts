@@ -3,23 +3,28 @@ pragma solidity ^0.8.27;
 
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
-import {
-    LSP7CappedSupplyAbstract
-} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
+
+// extensions
 import {LSP7Burnable} from "../extensions/LSP7Burnable/LSP7Burnable.sol";
-import {
-    LSP7CappedBalanceAbstract
-} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
 import {
     LSP7MintableAbstract
 } from "../extensions/LSP7Mintable/LSP7MintableAbstract.sol";
 import {
+    LSP7CappedSupplyAbstract
+} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
+import {
+    LSP7CappedBalanceAbstract
+} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
+import {
     LSP7NonTransferableAbstract
 } from "../extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
 import {
-    AccessControlExtendedAbstract
-} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
+    LSP7RevokableAbstract
+} from "../extensions/LSP7Revokable/LSP7RevokableAbstract.sol";
 
 // errors
 import {
@@ -34,20 +39,20 @@ struct MintableParams {
     uint256 initialMintAmount;
 }
 
-/// @dev Deployment configuration for non-transferable feature.
-/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParams {
-    uint256 transferLockStart;
-    uint256 transferLockEnd;
-}
-
 /// @dev Deployment configuration for capped balance and capped supply features.
 /// @param tokenBalanceCap The maximum balance per address in wei, 0 to disable.
 /// @param tokenSupplyCap The maximum total supply in wei, 0 to disable.
 struct CappedParams {
     uint256 tokenBalanceCap;
     uint256 tokenSupplyCap;
+}
+
+/// @dev Deployment configuration for non-transferable feature.
+/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
+struct NonTransferableParams {
+    uint256 transferLockStart;
+    uint256 transferLockEnd;
 }
 
 /// @title LSP7CustomizableToken
@@ -58,11 +63,12 @@ struct CappedParams {
 /// Implements {LSP7NonTransferable} to restrict transfers.
 /// Implements {LSP7CappedSupply} to set total supply cap.
 contract LSP7CustomizableToken is
+    LSP7Burnable,
     LSP7MintableAbstract,
-    LSP7NonTransferableAbstract,
-    LSP7CappedBalanceAbstract,
     LSP7CappedSupplyAbstract,
-    LSP7Burnable
+    LSP7CappedBalanceAbstract,
+    LSP7NonTransferableAbstract,
+    LSP7RevokableAbstract
 {
     /// @notice Initializes the token with name, symbol, owner, and customizable features.
     /// @dev Sets up minting, balance cap, transfer restrictions, allowlist, and supply cap. Mints initial tokens if specified. Reverts if initialMintAmount_ exceeds tokenSupplyCap. Inherits constructor logic from parent contracts.
@@ -73,6 +79,7 @@ contract LSP7CustomizableToken is
     /// @param isNonDivisible_ True if the token is non-divisible (e.g., for NDTs).
     /// @param mintableParams Deployment configuration for minting feature (see above).
     /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
+    /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     constructor(
         string memory name_,
         string memory symbol_,
@@ -80,8 +87,8 @@ contract LSP7CustomizableToken is
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
         MintableParams memory mintableParams,
-        NonTransferableParams memory nonTransferableParams,
-        CappedParams memory cappedParams
+        CappedParams memory cappedParams,
+        NonTransferableParams memory nonTransferableParams
     )
         LSP7DigitalAsset(
             name_,
@@ -92,12 +99,13 @@ contract LSP7CustomizableToken is
         )
         AccessControlExtendedAbstract(newOwner_)
         LSP7MintableAbstract(mintableParams.mintable)
+        LSP7CappedSupplyAbstract(cappedParams.tokenSupplyCap)
+        LSP7CappedBalanceAbstract(cappedParams.tokenBalanceCap)
         LSP7NonTransferableAbstract(
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         )
-        LSP7CappedBalanceAbstract(cappedParams.tokenBalanceCap)
-        LSP7CappedSupplyAbstract(cappedParams.tokenSupplyCap)
+        LSP7RevokableAbstract(newOwner_)
     {
         if (mintableParams.initialMintAmount > 0) {
             _mint(newOwner_, mintableParams.initialMintAmount, true, "");
@@ -163,9 +171,10 @@ contract LSP7CustomizableToken is
         virtual
         override(
             Ownable,
-            LSP7CappedBalanceAbstract,
             LSP7MintableAbstract,
-            LSP7NonTransferableAbstract
+            LSP7CappedBalanceAbstract,
+            LSP7NonTransferableAbstract,
+            LSP7RevokableAbstract
         )
     {
         super._transferOwnership(newOwner);
@@ -179,9 +188,10 @@ contract LSP7CustomizableToken is
         virtual
         override(
             LSP7DigitalAsset,
-            LSP7CappedBalanceAbstract,
             LSP7MintableAbstract,
-            LSP7NonTransferableAbstract
+            LSP7CappedBalanceAbstract,
+            LSP7NonTransferableAbstract,
+            LSP7RevokableAbstract
         )
         returns (bool)
     {

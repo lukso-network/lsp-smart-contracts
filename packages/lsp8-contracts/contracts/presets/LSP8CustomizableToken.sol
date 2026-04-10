@@ -4,24 +4,29 @@ pragma solidity ^0.8.27;
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {
+    AccessControlExtendedAbstract
+} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {
     LSP8IdentifiableDigitalAsset
 } from "../LSP8IdentifiableDigitalAsset.sol";
-import {
-    LSP8CappedSupplyAbstract
-} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol";
+
+// extensions
 import {LSP8Burnable} from "../extensions/LSP8Burnable/LSP8Burnable.sol";
-import {
-    LSP8CappedBalanceAbstract
-} from "../extensions/LSP8CappedBalance/LSP8CappedBalanceAbstract.sol";
 import {
     LSP8MintableAbstract
 } from "../extensions/LSP8Mintable/LSP8MintableAbstract.sol";
 import {
+    LSP8CappedSupplyAbstract
+} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol";
+import {
+    LSP8CappedBalanceAbstract
+} from "../extensions/LSP8CappedBalance/LSP8CappedBalanceAbstract.sol";
+import {
     LSP8NonTransferableAbstract
 } from "../extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol";
 import {
-    AccessControlExtendedAbstract
-} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
+    LSP8RevokableAbstract
+} from "../extensions/LSP8Revokable/LSP8RevokableAbstract.sol";
 
 // errors
 import {
@@ -36,20 +41,20 @@ struct MintableParams {
     bytes32[] initialMintTokenIds;
 }
 
-/// @dev Deployment configuration for non-transferable feature.
-/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParams {
-    uint256 transferLockStart;
-    uint256 transferLockEnd;
-}
-
 /// @dev Deployment configuration for capped balance and capped supply features.
 /// @param tokenBalanceCap The maximum number of NFTs per address, 0 to disable.
 /// @param tokenSupplyCap The maximum total supply of NFTs, 0 to disable.
 struct CappedParams {
     uint256 tokenBalanceCap;
     uint256 tokenSupplyCap;
+}
+
+/// @dev Deployment configuration for non-transferable feature.
+/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
+/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
+struct NonTransferableParams {
+    uint256 transferLockStart;
+    uint256 transferLockEnd;
 }
 
 /// @title LSP8CustomizableToken
@@ -60,11 +65,12 @@ struct CappedParams {
 /// Implements {LSP8NonTransferable} to restrict transfers.
 /// Implements {LSP8CappedSupply} to set total supply cap.
 contract LSP8CustomizableToken is
+    LSP8Burnable,
     LSP8MintableAbstract,
-    LSP8NonTransferableAbstract,
-    LSP8CappedBalanceAbstract,
     LSP8CappedSupplyAbstract,
-    LSP8Burnable
+    LSP8CappedBalanceAbstract,
+    LSP8NonTransferableAbstract,
+    LSP8RevokableAbstract
 {
     /// @notice Initializes the token with name, symbol, owner, and customizable features.
     /// @dev Sets up minting, balance cap, transfer restrictions and supply cap. Mints initial tokens if specified. Reverts if initialMintTokenIds length exceeds tokenSupplyCap. Inherits constructor logic from parent contracts.
@@ -74,8 +80,8 @@ contract LSP8CustomizableToken is
     /// @param lsp4TokenType_ The LSP4 token type (e.g., 1 for NFT, 2 for Collection).
     /// @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
     /// @param mintableParams Deployment configuration for minting feature (see above).
-    /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
+    /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     constructor(
         string memory name_,
         string memory symbol_,
@@ -83,8 +89,8 @@ contract LSP8CustomizableToken is
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_,
         MintableParams memory mintableParams,
-        NonTransferableParams memory nonTransferableParams,
-        CappedParams memory cappedParams
+        CappedParams memory cappedParams,
+        NonTransferableParams memory nonTransferableParams
     )
         LSP8IdentifiableDigitalAsset(
             name_,
@@ -95,20 +101,21 @@ contract LSP8CustomizableToken is
         )
         AccessControlExtendedAbstract(newOwner_)
         LSP8MintableAbstract(mintableParams.mintable)
+        LSP8CappedSupplyAbstract(cappedParams.tokenSupplyCap)
+        LSP8CappedBalanceAbstract(cappedParams.tokenBalanceCap)
         LSP8NonTransferableAbstract(
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         )
-        LSP8CappedBalanceAbstract(cappedParams.tokenBalanceCap)
-        LSP8CappedSupplyAbstract(cappedParams.tokenSupplyCap)
+        LSP8RevokableAbstract(newOwner_)
     {
         // Mint initial tokens
         for (
-            uint256 i = 0;
-            i < mintableParams.initialMintTokenIds.length;
-            i++
+            uint256 ii = 0;
+            ii < mintableParams.initialMintTokenIds.length;
+            ii++
         ) {
-            _mint(newOwner_, mintableParams.initialMintTokenIds[i], true, "");
+            _mint(newOwner_, mintableParams.initialMintTokenIds[ii], true, "");
         }
     }
 
@@ -187,7 +194,8 @@ contract LSP8CustomizableToken is
             Ownable,
             LSP8CappedBalanceAbstract,
             LSP8MintableAbstract,
-            LSP8NonTransferableAbstract
+            LSP8NonTransferableAbstract,
+            LSP8RevokableAbstract
         )
     {
         super._transferOwnership(newOwner);
@@ -203,7 +211,8 @@ contract LSP8CustomizableToken is
             LSP8IdentifiableDigitalAsset,
             LSP8CappedBalanceAbstract,
             LSP8MintableAbstract,
-            LSP8NonTransferableAbstract
+            LSP8NonTransferableAbstract,
+            LSP8RevokableAbstract
         )
         returns (bool)
     {

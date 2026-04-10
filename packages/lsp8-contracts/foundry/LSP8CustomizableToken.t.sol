@@ -94,8 +94,8 @@ contract LSP8CustomizableTokenTest is Test {
             tokenType,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
     }
 
@@ -178,8 +178,8 @@ contract LSP8CustomizableTokenTest is Test {
             tokenType,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
     }
 
@@ -208,8 +208,8 @@ contract LSP8CustomizableTokenTest is Test {
             tokenType,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
         assertEq(
             zeroMintToken.balanceOf(owner),
@@ -225,10 +225,11 @@ contract LSP8CustomizableTokenTest is Test {
             initialTokenIds
         );
 
-        NonTransferableParams memory nonTransferableParams = NonTransferableParams(
-            200,
-            100 // End before start - invalid
-        );
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                200,
+                100 // End before start - invalid
+            );
 
         CappedParams memory cappedParams = CappedParams(
             tokenBalanceCap,
@@ -243,8 +244,8 @@ contract LSP8CustomizableTokenTest is Test {
             tokenType,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
     }
 
@@ -312,8 +313,8 @@ contract LSP8CustomizableTokenTest is Test {
             tokenType,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
 
         // Should be able to mint many tokens
@@ -384,8 +385,8 @@ contract LSP8CustomizableTokenTest is Test {
                 tokenType,
                 tokenIdFormat,
                 mintableParams,
-                nonTransferableParams,
-                cappedParams
+                cappedParams,
+                nonTransferableParams
             );
 
         // Should be able to hold many NFTs when balance cap is disabled
@@ -432,10 +433,11 @@ contract LSP8CustomizableTokenTest is Test {
             emptyTokenIds
         );
 
-        NonTransferableParams memory nonTransferableParams = NonTransferableParams(
-            0,
-            type(uint256).max // non-transferable
-        );
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                0,
+                type(uint256).max // non-transferable
+            );
 
         CappedParams memory cappedParams = CappedParams(0, 0);
 
@@ -446,8 +448,8 @@ contract LSP8CustomizableTokenTest is Test {
             tokenType,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
 
         // Mint a token to user1 (no bypass role)
@@ -472,10 +474,11 @@ contract LSP8CustomizableTokenTest is Test {
             emptyTokenIds
         );
 
-        NonTransferableParams memory nonTransferableParams = NonTransferableParams(
-            0,
-            type(uint256).max // non-transferable
-        );
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                0,
+                type(uint256).max // non-transferable
+            );
 
         CappedParams memory cappedParams = CappedParams(0, 0);
 
@@ -486,8 +489,8 @@ contract LSP8CustomizableTokenTest is Test {
             tokenType,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
 
         // Mint a token to owner (has bypass role)
@@ -523,10 +526,11 @@ contract LSP8CustomizableTokenTest is Test {
             emptyTokenIds
         );
 
-        NonTransferableParams memory nonTransferableParams = NonTransferableParams(
-            0,
-            type(uint256).max // non-transferable
-        );
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                0,
+                type(uint256).max // non-transferable
+            );
 
         CappedParams memory cappedParams = CappedParams(0, 0);
 
@@ -537,8 +541,8 @@ contract LSP8CustomizableTokenTest is Test {
             tokenType,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
-            cappedParams
+            cappedParams,
+            nonTransferableParams
         );
 
         // Mint a token
