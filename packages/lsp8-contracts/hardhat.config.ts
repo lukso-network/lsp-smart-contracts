@@ -19,23 +19,15 @@ const config: HardhatUserConfig = {
       'LSP8IdentifiableDigitalAssetInitAbstract',
 
       // Extensions
-      'LSP8Mintable',
       'LSP8MintableAbstract',
-      'LSP8MintableInit',
       'LSP8MintableInitAbstract',
       'LSP8Burnable',
       'LSP8BurnableInitAbstract',
-      'LSP8CappedBalance',
       'LSP8CappedBalanceAbstract',
-      'LSP8CappedBalanceInit',
       'LSP8CappedBalanceInitAbstract',
-      'LSP8CappedSupply',
       'LSP8CappedSupplyAbstract',
-      'LSP8CappedSupplyInit',
       'LSP8CappedSupplyInitAbstract',
-      'LSP8NonTransferable',
       'LSP8NonTransferableAbstract',
-      'LSP8NonTransferableInit',
       'LSP8NonTransferableInitAbstract',
       'LSP8Enumerable',
       'LSP8EnumerableInitAbstract',
@@ -52,6 +44,12 @@ const config: HardhatUserConfig = {
       'ILSP8CappedSupply',
       'ILSP8NonTransferable',
       'ILSP8Revokable',
+
+      // Presets
+      'LSP8Mintable',
+      'LSP8MintableInit',
+      'LSP8CustomizableToken',
+      'LSP8CustomizableTokenInit',
     ],
   },
   networks: {
