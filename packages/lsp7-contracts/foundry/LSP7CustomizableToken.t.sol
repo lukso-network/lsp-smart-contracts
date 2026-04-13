@@ -394,6 +394,7 @@ contract LSP7CustomizableTokenTest is Test {
     }
 
     function test_RevokeFailsWhenRevocationIsDisabled() public {
+        bytes32 revokerRole = token.REVOKER_ROLE();
         MintableParams memory mintableParams = MintableParams(mintable, 1000);
         NonTransferableParams
             memory nonTransferableParams = NonTransferableParams(
@@ -421,6 +422,9 @@ contract LSP7CustomizableTokenTest is Test {
         nonRevokableToken.transfer(owner, user1, 500, true, "");
 
         assertFalse(nonRevokableToken.isRevokable());
+        assertFalse(nonRevokableToken.hasRole(revokerRole, owner));
+
+        nonRevokableToken.grantRole(revokerRole, owner);
 
         vm.expectRevert(LSP7RevokableFeatureDisabled.selector);
         nonRevokableToken.revoke(user1, owner, 100, "");

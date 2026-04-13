@@ -4,6 +4,11 @@ pragma solidity ^0.8.27;
 // foundry
 import "forge-std/Test.sol";
 
+// interfaces
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+
 // modules
 import {
     LSP7RevokableAbstract
@@ -128,6 +133,81 @@ contract LSP7RevokableTest is Test {
             lsp7Revokable.isRevokable(),
             "Revokable feature should be enabled"
         );
+    }
+
+    function test_ConstructorGrantsRevokerRoleToOwnerWhenRevokable() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
+        vm.recordLogs();
+        new MockLSP7Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            true
+        );
+
+        Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
+
+        // First `RoleGranted` event MUST be for `DEFAULT_ADMIN_ROLE`
+        assertEq(
+            recordedLogs[2].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
+        assertEq(recordedLogs[2].topics[1], DEFAULT_ADMIN_ROLE);
+        assertEq(recordedLogs[2].topics[2], bytes32(uint256(uint160(owner))));
+        assertEq(recordedLogs[2].topics[3], bytes32(uint256(uint160(owner))));
+
+        uint256 lastLog = recordedLogs.length - 1;
+
+        // Another `RoleGranted` event MUST be for `REVOKER_ROLE`
+        assertEq(
+            recordedLogs[lastLog].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
+        assertEq(recordedLogs[lastLog].topics[1], revokerRole);
+        assertEq(
+            recordedLogs[lastLog].topics[2],
+            bytes32(uint256(uint160(owner)))
+        );
+        assertEq(
+            recordedLogs[lastLog].topics[3],
+            bytes32(uint256(uint160(owner)))
+        );
+    }
+
+    function test_ConstructorDoesNotGrantRevokerRoleToOwnerWhenNotRevokable()
+        public
+    {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
+        vm.recordLogs();
+        MockLSP7Revokable nonRevokableToken = new MockLSP7Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            false
+        );
+
+        assertFalse(nonRevokableToken.isRevokable());
+        assertFalse(nonRevokableToken.hasRole(revokerRole, owner));
+        assertEq(nonRevokableToken.getRoleMemberCount(revokerRole), 0);
+
+        Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
+
+        for (uint256 i = 0; i < recordedLogs.length; i++) {
+            if (
+                recordedLogs[i].topics[0] == IAccessControl.RoleGranted.selector
+            ) {
+                assertTrue(
+                    bytes32(recordedLogs[i].topics[1]) != revokerRole,
+                    "REVOKER_ROLE should not be granted on deployment"
+                );
+            }
+        }
     }
 
     // =========================================================================
@@ -306,6 +386,7 @@ contract LSP7RevokableTest is Test {
     }
 
     function test_RevokeFailsWhenRevocationIsDisabled() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
         MockLSP7Revokable nonRevokableToken = new MockLSP7Revokable(
             name,
             symbol,
@@ -321,6 +402,12 @@ contract LSP7RevokableTest is Test {
             nonRevokableToken.isRevokable(),
             "Revokable feature should be disabled"
         );
+        assertFalse(
+            nonRevokableToken.hasRole(revokerRole, owner),
+            "Owner should not start with REVOKER_ROLE"
+        );
+
+        nonRevokableToken.grantRole(revokerRole, owner);
 
         vm.expectRevert(LSP7RevokableFeatureDisabled.selector);
         nonRevokableToken.revoke(user1, owner, 500, "");

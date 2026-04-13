@@ -4,6 +4,11 @@ pragma solidity ^0.8.27;
 // foundry
 import "forge-std/Test.sol";
 
+// interfaces
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+
 // modules
 import {
     LSP8RevokableInitAbstract
@@ -90,6 +95,102 @@ contract LSP8RevokableInitTest is Test {
         assertTrue(token.isRevokable());
     }
 
+    function test_InitializeEmitsRoleGrantedForOwnerWhenRevokable() public {
+        MockLSP8RevokableInit enabledImplementation = new MockLSP8RevokableInit();
+        bytes32 revokerRole = enabledImplementation.REVOKER_ROLE();
+
+        bytes memory initData = abi.encodeCall(
+            MockLSP8RevokableInit.initialize,
+            (owner, true)
+        );
+
+        vm.recordLogs();
+        new ERC1967Proxy(address(enabledImplementation), initData);
+
+        Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
+
+        uint256 thirdToLastLog = recordedLogs.length - 3;
+
+        // `RoleGranted` event MUST be for `DEFAULT_ADMIN_ROLE`
+        assertEq(
+            recordedLogs[thirdToLastLog].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
+        assertEq(recordedLogs[thirdToLastLog].topics[1], DEFAULT_ADMIN_ROLE);
+        assertEq(
+            recordedLogs[thirdToLastLog].topics[2],
+            bytes32(uint256(uint160(owner)))
+        );
+        assertEq(
+            recordedLogs[thirdToLastLog].topics[3],
+            bytes32(uint256(uint160(owner)))
+        );
+
+        uint256 secondToLastLog = recordedLogs.length - 2;
+
+        // Another `RoleGranted` event MUST be for `REVOKER_ROLE`
+        assertEq(
+            recordedLogs[secondToLastLog].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
+        assertEq(recordedLogs[secondToLastLog].topics[1], revokerRole);
+        assertEq(
+            recordedLogs[secondToLastLog].topics[2],
+            bytes32(uint256(uint160(owner)))
+        );
+        assertEq(
+            recordedLogs[secondToLastLog].topics[3],
+            bytes32(uint256(uint160(owner)))
+        );
+    }
+
+    function test_InitializeDoesNotGrantRevokerRoleToOwnerWhenNotRevokable()
+        public
+    {
+        MockLSP8RevokableInit disabledImplementation = new MockLSP8RevokableInit();
+        bytes32 revokerRole = disabledImplementation.REVOKER_ROLE();
+        bytes memory initData = abi.encodeCall(
+            MockLSP8RevokableInit.initialize,
+            (owner, false)
+        );
+
+        vm.recordLogs();
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(disabledImplementation),
+            initData
+        );
+        MockLSP8RevokableInit disabledToken = MockLSP8RevokableInit(
+            payable(address(proxy))
+        );
+
+        assertFalse(disabledToken.isRevokable());
+        assertFalse(disabledToken.hasRole(revokerRole, owner));
+        assertEq(disabledToken.getRoleMemberCount(revokerRole), 0);
+
+        Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
+
+        uint256 roleGrantedLogCount = 0;
+
+        for (uint256 i = 0; i < recordedLogs.length; i++) {
+            if (
+                recordedLogs[i].topics[0] == IAccessControl.RoleGranted.selector
+            ) {
+                roleGrantedLogCount++;
+                assertEq(recordedLogs[i].topics[1], DEFAULT_ADMIN_ROLE);
+                assertEq(
+                    recordedLogs[i].topics[2],
+                    bytes32(uint256(uint160(owner)))
+                );
+                assertEq(
+                    recordedLogs[i].topics[3],
+                    bytes32(uint256(uint160(owner)))
+                );
+            }
+        }
+
+        assertEq(roleGrantedLogCount, 1);
+    }
+
     function test_RevokeThroughProxy() public {
         token.mint(user1, tokenId1, true, "");
 
@@ -136,6 +237,7 @@ contract LSP8RevokableInitTest is Test {
 
     function test_RevokeFailsWhenRevocationIsDisabled() public {
         MockLSP8RevokableInit disabledImplementation = new MockLSP8RevokableInit();
+        bytes32 revokerRole = disabledImplementation.REVOKER_ROLE();
         bytes memory initData = abi.encodeCall(
             MockLSP8RevokableInit.initialize,
             (owner, false)
@@ -152,6 +254,9 @@ contract LSP8RevokableInitTest is Test {
         disabledToken.mint(user1, tokenId1, true, "");
 
         assertFalse(disabledToken.isRevokable());
+        assertFalse(disabledToken.hasRole(revokerRole, owner));
+
+        disabledToken.grantRole(revokerRole, owner);
 
         vm.expectRevert(LSP8RevokableFeatureDisabled.selector);
         disabledToken.revoke(user1, owner, tokenId1, "");

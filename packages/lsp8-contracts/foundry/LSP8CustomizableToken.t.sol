@@ -606,6 +606,7 @@ contract LSP8CustomizableTokenTest is Test {
     }
 
     function test_RevokeFailsWhenRevocationIsDisabled() public {
+        bytes32 revokerRole = token.REVOKER_ROLE();
         bytes32[] memory emptyTokenIds = new bytes32[](0);
         MintableParams memory mintableParams = MintableParams(
             mintable,
@@ -637,6 +638,9 @@ contract LSP8CustomizableTokenTest is Test {
         nonRevokableToken.mint(user1, bytes32(uint256(999)), true, "");
 
         assertFalse(nonRevokableToken.isRevokable());
+        assertFalse(nonRevokableToken.hasRole(revokerRole, owner));
+
+        nonRevokableToken.grantRole(revokerRole, owner);
 
         vm.expectRevert(LSP8RevokableFeatureDisabled.selector);
         nonRevokableToken.revoke(user1, owner, bytes32(uint256(999)), "");

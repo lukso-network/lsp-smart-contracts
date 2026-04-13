@@ -4,6 +4,11 @@ pragma solidity ^0.8.27;
 // foundry
 import "forge-std/Test.sol";
 
+// interfaces
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+
 // modules
 import {
     LSP7RevokableInitAbstract
@@ -19,7 +24,7 @@ import {
     AccessControlUnauthorizedAccount
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 import {
-    LSP7NotRevokable
+    LSP7RevokableFeatureDisabled
 } from "../contracts/extensions/LSP7Revokable/LSP7RevokableErrors.sol";
 
 // constants
@@ -28,7 +33,10 @@ import {
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract MockLSP7RevokableInit is LSP7RevokableInitAbstract {
-    function initialize(address newOwner_, bool isRevokable_) external initializer {
+    function initialize(
+        address newOwner_,
+        bool isRevokable_
+    ) external initializer {
         __LSP7Revokable_init(
             "Revokable Token",
             "RT",
@@ -67,7 +75,10 @@ contract LSP7RevokableInitTest is Test {
             (owner, true)
         );
 
-        ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(implementation),
+            initData
+        );
         token = MockLSP7RevokableInit(payable(address(proxy)));
     }
 
@@ -79,7 +90,102 @@ contract LSP7RevokableInitTest is Test {
         assertTrue(token.hasRole(revokerRole, owner));
         assertEq(token.getRoleMemberCount(revokerRole), 1);
         assertTrue(token.isRevokable());
-        assertTrue(token._isRevokable());
+    }
+
+    function test_InitializeEmitsRoleGrantedForOwnerWhenRevokable() public {
+        MockLSP7RevokableInit enabledImplementation = new MockLSP7RevokableInit();
+        bytes32 revokerRole = enabledImplementation.REVOKER_ROLE();
+
+        bytes memory initData = abi.encodeCall(
+            MockLSP7RevokableInit.initialize,
+            (owner, true)
+        );
+
+        vm.recordLogs();
+        new ERC1967Proxy(address(enabledImplementation), initData);
+
+        Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
+
+        uint256 thirdToLastLog = recordedLogs.length - 3;
+
+        // `RoleGranted` event MUST be for `DEFAULT_ADMIN_ROLE`
+        assertEq(
+            recordedLogs[thirdToLastLog].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
+        assertEq(recordedLogs[thirdToLastLog].topics[1], DEFAULT_ADMIN_ROLE);
+        assertEq(
+            recordedLogs[thirdToLastLog].topics[2],
+            bytes32(uint256(uint160(owner)))
+        );
+        assertEq(
+            recordedLogs[thirdToLastLog].topics[3],
+            bytes32(uint256(uint160(owner)))
+        );
+
+        uint256 secondToLastLog = recordedLogs.length - 2;
+
+        // Another `RoleGranted` event MUST be for `REVOKER_ROLE`
+        assertEq(
+            recordedLogs[secondToLastLog].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
+        assertEq(recordedLogs[secondToLastLog].topics[1], revokerRole);
+        assertEq(
+            recordedLogs[secondToLastLog].topics[2],
+            bytes32(uint256(uint160(owner)))
+        );
+        assertEq(
+            recordedLogs[secondToLastLog].topics[3],
+            bytes32(uint256(uint160(owner)))
+        );
+    }
+
+    function test_InitializeDoesNotGrantRevokerRoleToOwnerWhenNotRevokable()
+        public
+    {
+        MockLSP7RevokableInit disabledImplementation = new MockLSP7RevokableInit();
+        bytes32 revokerRole = disabledImplementation.REVOKER_ROLE();
+        bytes memory initData = abi.encodeCall(
+            MockLSP7RevokableInit.initialize,
+            (owner, false)
+        );
+
+        vm.recordLogs();
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(disabledImplementation),
+            initData
+        );
+        MockLSP7RevokableInit disabledToken = MockLSP7RevokableInit(
+            payable(address(proxy))
+        );
+
+        assertFalse(disabledToken.isRevokable());
+        assertFalse(disabledToken.hasRole(revokerRole, owner));
+        assertEq(disabledToken.getRoleMemberCount(revokerRole), 0);
+
+        Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
+
+        uint256 roleGrantedLogCount = 0;
+
+        for (uint256 i = 0; i < recordedLogs.length; i++) {
+            if (
+                recordedLogs[i].topics[0] == IAccessControl.RoleGranted.selector
+            ) {
+                roleGrantedLogCount++;
+                assertEq(recordedLogs[i].topics[1], DEFAULT_ADMIN_ROLE);
+                assertEq(
+                    recordedLogs[i].topics[2],
+                    bytes32(uint256(uint160(owner)))
+                );
+                assertEq(
+                    recordedLogs[i].topics[3],
+                    bytes32(uint256(uint160(owner)))
+                );
+            }
+        }
+
+        assertEq(roleGrantedLogCount, 1);
     }
 
     function test_RevokeThroughProxy() public {
@@ -126,6 +232,7 @@ contract LSP7RevokableInitTest is Test {
 
     function test_RevokeFailsWhenRevocationIsDisabled() public {
         MockLSP7RevokableInit disabledImplementation = new MockLSP7RevokableInit();
+        bytes32 revokerRole = disabledImplementation.REVOKER_ROLE();
         bytes memory initData = abi.encodeCall(
             MockLSP7RevokableInit.initialize,
             (owner, false)
@@ -142,9 +249,11 @@ contract LSP7RevokableInitTest is Test {
         disabledToken.mint(user1, 1000, true, "");
 
         assertFalse(disabledToken.isRevokable());
-        assertFalse(disabledToken._isRevokable());
+        assertFalse(disabledToken.hasRole(revokerRole, owner));
 
-        vm.expectRevert(LSP7NotRevokable.selector);
+        disabledToken.grantRole(revokerRole, owner);
+
+        vm.expectRevert(LSP7RevokableFeatureDisabled.selector);
         disabledToken.revoke(user1, owner, 500, "");
     }
 }

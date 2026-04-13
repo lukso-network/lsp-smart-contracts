@@ -4,6 +4,11 @@ pragma solidity ^0.8.27;
 // foundry
 import "forge-std/Test.sol";
 
+// interfaces
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+
 // modules
 import {
     LSP8RevokableAbstract
@@ -110,6 +115,81 @@ contract LSP8RevokableTest is Test {
         assertTrue(lsp8Revokable.isRevokable());
     }
 
+    function test_ConstructorGrantsRevokerRoleToOwnerWhenRevokable() public {
+        bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
+
+        vm.recordLogs();
+        new MockLSP8Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            true
+        );
+
+        Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
+
+        // First `RoleGranted` event MUST be for `DEFAULT_ADMIN_ROLE`
+        assertEq(
+            recordedLogs[2].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
+        assertEq(recordedLogs[2].topics[1], DEFAULT_ADMIN_ROLE);
+        assertEq(recordedLogs[2].topics[2], bytes32(uint256(uint160(owner))));
+        assertEq(recordedLogs[2].topics[3], bytes32(uint256(uint160(owner))));
+
+        uint256 lastLog = recordedLogs.length - 1;
+
+        // Another `RoleGranted` event MUST be for `REVOKER_ROLE`
+        assertEq(
+            recordedLogs[lastLog].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
+        assertEq(recordedLogs[lastLog].topics[1], revokerRole);
+        assertEq(
+            recordedLogs[lastLog].topics[2],
+            bytes32(uint256(uint160(owner)))
+        );
+        assertEq(
+            recordedLogs[lastLog].topics[3],
+            bytes32(uint256(uint160(owner)))
+        );
+    }
+
+    function test_ConstructorDoesNotGrantRevokerRoleToOwnerWhenNotRevokable()
+        public
+    {
+        bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
+
+        vm.recordLogs();
+        MockLSP8Revokable nonRevokableToken = new MockLSP8Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            false
+        );
+
+        assertFalse(nonRevokableToken.isRevokable());
+        assertFalse(nonRevokableToken.hasRole(revokerRole, owner));
+        assertEq(nonRevokableToken.getRoleMemberCount(revokerRole), 0);
+
+        Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
+
+        for (uint256 i = 0; i < recordedLogs.length; i++) {
+            if (
+                recordedLogs[i].topics[0] == IAccessControl.RoleGranted.selector
+            ) {
+                assertTrue(
+                    bytes32(recordedLogs[i].topics[1]) != revokerRole,
+                    "REVOKER_ROLE should not be granted on deployment"
+                );
+            }
+        }
+    }
+
     function test_DefaultAdminCanGrantMultipleRevokers() public {
         bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
 
@@ -189,6 +269,7 @@ contract LSP8RevokableTest is Test {
     }
 
     function test_RevokeFailsWhenRevocationIsDisabled() public {
+        bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
         MockLSP8Revokable nonRevokableToken = new MockLSP8Revokable(
             name,
             symbol,
@@ -201,6 +282,9 @@ contract LSP8RevokableTest is Test {
         nonRevokableToken.mint(user1, tokenId1, true, "");
 
         assertFalse(nonRevokableToken.isRevokable());
+        assertFalse(nonRevokableToken.hasRole(revokerRole, owner));
+
+        nonRevokableToken.grantRole(revokerRole, owner);
 
         vm.expectRevert(LSP8RevokableFeatureDisabled.selector);
         nonRevokableToken.revoke(user1, owner, tokenId1, "");
