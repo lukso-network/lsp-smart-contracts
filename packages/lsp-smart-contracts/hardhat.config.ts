@@ -53,8 +53,8 @@ const VIA_IR_SETTINGS: SolidityUserConfig = {
 const LSP7_VIA_IR_SETTINGS: SolidityUserConfig = {
   version: '0.8.28',
   settings: {
-    viaIR: true,
     evmVersion: 'prague',
+    viaIR: true,
     optimizer: {
       enabled: true,
       /**
@@ -73,9 +73,11 @@ const LSP7_VIA_IR_SETTINGS: SolidityUserConfig = {
   },
 };
 
-const LSP8_COMPILER_SETTINGS: SolidityUserConfig = {
-  version: '0.8.27',
+const LSP8_VIA_IR_SETTINGS: SolidityUserConfig = {
+  version: '0.8.28',
   settings: {
+    evmVersion: 'prague',
+    viaIR: true,
     optimizer: {
       enabled: true,
       /**
@@ -84,7 +86,7 @@ const LSP8_COMPILER_SETTINGS: SolidityUserConfig = {
        * values will optimize more for high-frequency usage.
        * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
        */
-      runs: 1000,
+      runs: 25000,
     },
     outputSelection: {
       '*': {
@@ -97,43 +99,49 @@ const LSP8_COMPILER_SETTINGS: SolidityUserConfig = {
 const config: HardhatUserConfig = {
   plugins: [hardhatToolboxMochaEthers],
   solidity: {
-    compilers: [DEFAULT_COMPILER_SETTINGS, LSP8_COMPILER_SETTINGS, LSP7_VIA_IR_SETTINGS],
+    compilers: [DEFAULT_COMPILER_SETTINGS, LSP8_VIA_IR_SETTINGS, LSP7_VIA_IR_SETTINGS],
     overrides: {
-      // dependencies
+      // @lukso dependencies
+      // - @lukso/lsp4-contracts
+      // ----------------------------------------
       '@lukso/lsp4-contracts/contracts/LSP4Utils.sol': VIA_IR_SETTINGS,
+      // dependencies - @lukso/lsp7-contracts (main + presets)
+      // -----------------------------------------------------
       '@lukso/lsp7-contracts/contracts/LSP7DigitalAsset.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/LSP7DigitalAssetInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/presets/LSP7MintableInit.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/presets/LSP7CappedBalance.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/presets/LSP7CappedBalanceInit.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/presets/LSP7CappedSupply.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/presets/LSP7CappedSupplyInit.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/presets/LSP7NonTransferable.sol': LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/presets/LSP7NonTransferableInit.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7CustomizableToken.sol': LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/presets/LSP7CustomizableTokenInit.sol': LSP7_VIA_IR_SETTINGS,
+      // dependencies - @lukso/lsp7-contracts (extension interfaces)
+      // -----------------------------------------------------------
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedBalance/ILSP7CappedBalance.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply/ILSP7CappedSupply.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Mintable/ILSP7Mintable.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7NonTransferable/ILSP7NonTransferable.sol':
+        LSP7_VIA_IR_SETTINGS,
+      '@lukso/lsp7-contracts/contracts/extensions/LSP7Revokable/ILSP7Revokable.sol':
+        LSP7_VIA_IR_SETTINGS,
+      // dependencies - @lukso/lsp7-contracts (extension modules)
+      // -----------------------------------------------------------
       '@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable/LSP7Burnable.sol':
         LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol':
-        LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedBalance/ILSP7CappedBalance.sol':
         LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply/ILSP7CappedSupply.sol':
-        LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7Mintable/ILSP7Mintable.sol':
-        LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7Mintable/LSP7MintableAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7Mintable/LSP7MintableInitAbstract.sol':
-        LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp7-contracts/contracts/extensions/LSP7NonTransferable/ILSP7NonTransferable.sol':
         LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
@@ -142,150 +150,175 @@ const config: HardhatUserConfig = {
       '@lukso/lsp7-contracts/contracts/extensions/LSP7Votes/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
       '@lukso/lsp7-contracts/contracts/extensions/LSP7Votes/LSP7VotesInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol': LSP8_COMPILER_SETTINGS,
+      // dependencies - @lukso/lsp8-contracts (main + presets)
+      // ------------------------------------------------------
+      '@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol': LSP8_VIA_IR_SETTINGS,
       '@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAssetInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/presets/LSP8Mintable.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/presets/LSP8MintableInit.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/presets/LSP8MintableInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/presets/LSP8Mintable.sol': LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/presets/LSP8MintableInit.sol': LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/presets/LSP8CustomizableToken.sol': LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/presets/LSP8CustomizableTokenInit.sol': LSP8_VIA_IR_SETTINGS,
+      // dependencies - @lukso/lsp8-contracts (extension interfaces)
+      // ------------------------------------------------------------
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Mintable/ILSP8Mintable.sol':
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedBalance/ILSP8CappedBalance.sol':
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply/ILSP8CappedSupply.sol':
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8NonTransferable/ILSP8NonTransferable.sol':
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Revokable/ILSP8Revokable.sol':
+        LSP8_VIA_IR_SETTINGS,
+      // dependencies - @lukso/lsp8-contracts (extension modules)
+      // ------------------------------------------------------------
       '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8Burnable.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Mintable/LSP8MintableAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Mintable/LSP8MintableInitAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceInitAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8NonTransferable/LSP8NonTransferableInitAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable/LSP8Enumerable.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8Enumerable/LSP8EnumerableInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes/LSP8Votes.sol': LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
+      '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes/LSP8Votes.sol': LSP8_VIA_IR_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes/LSP8VotesConstants.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
       '@lukso/lsp8-contracts/contracts/extensions/LSP8Votes/LSP8VotesInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
       // imports into lsp-smart-contracts package
+      // - LSP4
+      // ----------------------------------------
       'contracts/LSP4DigitalAssetMetadata/LSP4Utils.sol': VIA_IR_SETTINGS,
+      // - LSP7 (main + presets)
+      // ----------------------------------------
       'contracts/LSP7DigitalAsset/LSP7DigitalAsset.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/LSP7DigitalAssetInitAbstract.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/presets/LSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/presets/LSP7MintableInit.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/presets/LSP7CappedBalance.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/presets/LSP7CappedBalanceInit.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/presets/LSP7CappedSupply.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/presets/LSP7CappedSupplyInit.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/presets/LSP7NonTransferable.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/presets/LSP7NonTransferableInit.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7Burnable/LSP7Burnable.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol':
+      'contracts/LSP7DigitalAsset/presets/LSP7CustomizableToken.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/presets/LSP7CustomizableTokenInit.sol': LSP7_VIA_IR_SETTINGS,
+      // - LSP7 (extensions interfaces)
+      // ----------------------------------------
+      'contracts/LSP7DigitalAsset/extensions/LSP7Mintable/ILSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply/ILSP7CappedSupply.sol':
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7CappedBalance/ILSP7CappedBalance.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7NonTransferable/ILSP7NonTransferable.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Revokable/ILSP7Revokable.sol':
+        // - LSP7 (extensions modules)
+        // ----------------------------------------
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Burnable/LSP7Burnable.sol': LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply/ILSP7CappedSupply.sol':
-        LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7Mintable/ILSP7Mintable.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7Mintable/LSP7MintableAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7Mintable/LSP7MintableInitAbstract.sol':
-        LSP7_VIA_IR_SETTINGS,
-      'contracts/LSP7DigitalAsset/extensions/LSP7NonTransferable/ILSP7NonTransferable.sol':
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Revokable/LSP7RevokableAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
+      'contracts/LSP7DigitalAsset/extensions/LSP7Revokable/LSP7RevokableInitAbstract.sol':
+        LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7Votes/LSP7Votes.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/LSP7DigitalAsset/extensions/LSP7Votes/LSP7VotesInitAbstract.sol':
         LSP7_VIA_IR_SETTINGS,
+      // - LSP8 (main + presets)
+      // ----------------------------------------
       'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAsset.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/LSP8IdentifiableDigitalAssetInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInit.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable/LSP8Burnable.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupplyInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8EnumerableInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8VotesInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Votes.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Allowlist/ILSP8Allowlist.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedBalance/ILSP8CappedBalance.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply/ILSP8CappedSupply.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Mintable/ILSP8Mintable.sol':
-        LSP8_COMPILER_SETTINGS,
-      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8NonTransferable/ILSP8NonTransferable.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8Mintable.sol': LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInit.sol': LSP8_VIA_IR_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CustomizableToken.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
       'contracts/LSP8IdentifiableDigitalAsset/presets/LSP8CustomizableTokenInit.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/presets/LSP8CustomizableToken.sol': LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/presets/LSP8CustomizableTokenInit.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Allowlist/ILSP8Allowlist.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Allowlist/LSP8AllowlistInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedBalance/ILSP8CappedBalance.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Mintable/ILSP8Mintable.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Mintable/LSP8MintableAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8Mintable/LSP8MintableInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8NonTransferable/ILSP8NonTransferable.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
-      '@lukso/lsp8-contracts/contracts/extensions/LSP8NonTransferable/LSP8NonTransferableInitAbstract.sol':
-        LSP8_COMPILER_SETTINGS,
+        LSP8_VIA_IR_SETTINGS,
+      // - LSP8 (extension interfaces)
+      // ----------------------------------------
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedBalance/ILSP8CappedBalance.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply/ILSP8CappedSupply.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Mintable/ILSP8Mintable.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8NonTransferable/ILSP8NonTransferable.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Revokable/ILSP8Revokable.sol':
+        LSP8_VIA_IR_SETTINGS,
+      // - LSP8 (extension modules)
+      // ----------------------------------------
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable/LSP8Burnable.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply/LSP8CappedSupply.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedSupply/LSP8CappedSupplyInitAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedBalance/LSP8CappedBalance.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8CappedBalance/LSP8CappedBalanceInitAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Revokable/LSP8RevokableAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Revokable/LSP8RevokableInitAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable/LSP8Enumerable.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Enumerable/LSP8EnumerableInitAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Votes/LSP8Votes.sol':
+        LSP8_VIA_IR_SETTINGS,
+      'contracts/LSP8IdentifiableDigitalAsset/extensions/LSP8Votes/LSP8VotesInitAbstract.sol':
+        LSP8_VIA_IR_SETTINGS,
       // Mock contracts for testing
+      // ----------------------------------------
       'contracts/Mocks/Tokens/LSP7CappedSupplyTester.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/Mocks/Tokens/LSP7CappedSupplyInitTester.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/Mocks/Tokens/LSP7Tester.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/Mocks/Tokens/LSP7InitTester.sol': LSP7_VIA_IR_SETTINGS,
       'contracts/Mocks/Tokens/LSP7MintWhenDeployed.sol': LSP7_VIA_IR_SETTINGS,
-      'contracts/Mocks/Tokens/LSP8BurnableInitTester.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/Mocks/Tokens/LSP8BurnableTester.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/Mocks/Tokens/LSP8CappedSupplyInitTester.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/Mocks/Tokens/LSP8CappedSupplyTester.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/Mocks/Tokens/LSP8EnumerableInitTester.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/Mocks/Tokens/LSP8EnumerableTester.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/Mocks/Tokens/LSP8InitTester.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/Mocks/Tokens/LSP8Tester.sol': LSP8_COMPILER_SETTINGS,
-      'contracts/Mocks/Tokens/LSP8TransferOwnerChange.sol': LSP8_COMPILER_SETTINGS,
+      'contracts/Mocks/Tokens/LSP8BurnableInitTester.sol': LSP8_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP8BurnableTester.sol': LSP8_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP8CappedSupplyInitTester.sol': LSP8_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP8CappedSupplyTester.sol': LSP8_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP8EnumerableInitTester.sol': LSP8_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP8EnumerableTester.sol': LSP8_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP8InitTester.sol': LSP8_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP8Tester.sol': LSP8_VIA_IR_SETTINGS,
+      'contracts/Mocks/Tokens/LSP8TransferOwnerChange.sol': LSP8_VIA_IR_SETTINGS,
     },
   },
   tasks: [
