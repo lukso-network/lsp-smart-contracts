@@ -57,6 +57,12 @@ struct NonTransferableParams {
     uint256 transferLockEnd;
 }
 
+/// @dev Deployment configuration for revokable feature.
+/// @param isRevokable True to enable token revocation after deployment, false to disable it.
+struct RevokableParams {
+    bool isRevokable;
+}
+
 /// @title LSP8CustomizableToken
 /// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions.
 /// Implements {LSP8Mintable} to allow minting.
@@ -82,6 +88,7 @@ contract LSP8CustomizableToken is
     /// @param mintableParams Deployment configuration for minting feature (see above).
     /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
     /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
+    /// @param revokableParams Deployment configuration for revokable feature (see above).
     constructor(
         string memory name_,
         string memory symbol_,
@@ -90,7 +97,8 @@ contract LSP8CustomizableToken is
         uint256 lsp8TokenIdFormat_,
         MintableParams memory mintableParams,
         CappedParams memory cappedParams,
-        NonTransferableParams memory nonTransferableParams
+        NonTransferableParams memory nonTransferableParams,
+        RevokableParams memory revokableParams
     )
         LSP8IdentifiableDigitalAsset(
             name_,
@@ -107,7 +115,7 @@ contract LSP8CustomizableToken is
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         )
-        LSP8RevokableAbstract(newOwner_)
+        LSP8RevokableAbstract(newOwner_, revokableParams.isRevokable)
     {
         // Mint initial tokens
         for (

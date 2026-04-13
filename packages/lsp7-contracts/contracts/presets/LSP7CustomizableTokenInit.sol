@@ -61,6 +61,12 @@ struct NonTransferableParams {
     uint256 transferLockEnd;
 }
 
+/// @dev Deployment configuration for revokable feature.
+/// @param isRevokable True to enable token revocation after deployment, false to disable it.
+struct RevokableParams {
+    bool isRevokable;
+}
+
 /// @title LSP7CustomizableTokenInit
 /// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
 /// Implements {LSP7MintableInitAbstract} to allow minting.
@@ -84,7 +90,8 @@ contract LSP7CustomizableTokenInit is
         bool isNonDivisible_,
         MintableParams memory mintableParams,
         NonTransferableParams memory nonTransferableParams,
-        CappedParams memory cappedParams
+        CappedParams memory cappedParams,
+        RevokableParams memory revokableParams
     ) external virtual initializer {
         __LSP7CustomizableToken_init(
             name_,
@@ -94,7 +101,8 @@ contract LSP7CustomizableTokenInit is
             isNonDivisible_,
             mintableParams,
             cappedParams,
-            nonTransferableParams
+            nonTransferableParams,
+            revokableParams
         );
     }
 
@@ -108,6 +116,7 @@ contract LSP7CustomizableTokenInit is
     /// @param mintableParams Deployment configuration for minting feature (see above).
     /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
     /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
+    /// @param revokableParams Deployment configuration for revokable feature (see above).
     function __LSP7CustomizableToken_init(
         string memory name_,
         string memory symbol_,
@@ -116,7 +125,8 @@ contract LSP7CustomizableTokenInit is
         bool isNonDivisible_,
         MintableParams memory mintableParams,
         CappedParams memory cappedParams,
-        NonTransferableParams memory nonTransferableParams
+        NonTransferableParams memory nonTransferableParams,
+        RevokableParams memory revokableParams
     ) internal virtual onlyInitializing {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,
@@ -133,7 +143,7 @@ contract LSP7CustomizableTokenInit is
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         );
-        __LSP7Revokable_init_unchained(newOwner_);
+        __LSP7Revokable_init_unchained(newOwner_, revokableParams.isRevokable);
 
         if (mintableParams.initialMintAmount > 0) {
             _mint(newOwner_, mintableParams.initialMintAmount, true, "");

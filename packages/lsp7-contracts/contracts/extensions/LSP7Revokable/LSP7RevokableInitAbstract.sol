@@ -19,6 +19,7 @@ import {ILSP7Revokable} from "./ILSP7Revokable.sol";
 import {
     AccessControlUnauthorizedAccount
 } from "../AccessControlExtended/AccessControlExtendedErrors.sol";
+import {LSP7RevokableFeatureDisabled} from "./LSP7RevokableErrors.sol";
 
 /// @title LSP7RevokableInitAbstract
 /// @dev Abstract contract implementing revokable functionality for LSP7 tokens (initializer version).
@@ -37,8 +38,11 @@ abstract contract LSP7RevokableInitAbstract is
     AccessControlExtendedInitAbstract,
     LSP7DigitalAssetInitAbstract
 {
+    bool internal _isRevokable;
+
     /// @dev `"REVOKER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    bytes32 public constant REVOKER_ROLE = 0x5245564f4b45525f524f4c450000000000000000000000000000000000000000;
+    bytes32 public constant REVOKER_ROLE =
+        0x5245564f4b45525f524f4c450000000000000000000000000000000000000000;
 
     /// @notice Initializes the LSP7Revokable contract with base token params.
     /// @dev Initializes the LSP7DigitalAsset base contract.
@@ -47,12 +51,14 @@ abstract contract LSP7RevokableInitAbstract is
     /// @param newOwner_ The owner of the contract (implicitly a revoker).
     /// @param lsp4TokenType_ The token type (see LSP4).
     /// @param isNonDivisible_ Whether the token is non-divisible.
+    /// @param isRevokable_ Whether token revocation is enabled.
     function __LSP7Revokable_init(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        bool isNonDivisible_
+        bool isNonDivisible_,
+        bool isRevokable_
     ) internal virtual onlyInitializing {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,
@@ -62,14 +68,24 @@ abstract contract LSP7RevokableInitAbstract is
             isNonDivisible_
         );
         __AccessControlExtended_init(newOwner_);
-        __LSP7Revokable_init_unchained(newOwner_);
+        __LSP7Revokable_init_unchained(newOwner_, isRevokable_);
     }
 
     /// @notice Unchained initializer for LSP7Revokable.
     function __LSP7Revokable_init_unchained(
-        address newOwner_
+        address newOwner_,
+        bool isRevokable_
     ) internal virtual onlyInitializing {
-        _grantRole(REVOKER_ROLE, newOwner_);
+        _isRevokable = isRevokable_;
+
+        if (isRevokable_) {
+            _grantRole(REVOKER_ROLE, newOwner_);
+        }
+    }
+
+    /// @inheritdoc ILSP7Revokable
+    function isRevokable() public view virtual override returns (bool) {
+        return _isRevokable;
     }
 
     /// @inheritdoc ILSP7Revokable
@@ -79,6 +95,7 @@ abstract contract LSP7RevokableInitAbstract is
         uint256 amount,
         bytes memory data
     ) public virtual override onlyRole(REVOKER_ROLE) {
+        require(isRevokable(), LSP7RevokableFeatureDisabled());
         require(
             to == owner() || hasRole(REVOKER_ROLE, to),
             AccessControlUnauthorizedAccount(to, REVOKER_ROLE)

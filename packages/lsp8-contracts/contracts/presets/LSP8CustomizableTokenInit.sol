@@ -61,6 +61,12 @@ struct NonTransferableParamsInit {
     uint256 transferLockEnd;
 }
 
+/// @dev Deployment configuration for revokable feature.
+/// @param isRevokable True to enable token revocation after deployment, false to disable it.
+struct RevokableParamsInit {
+    bool isRevokable;
+}
+
 /// @title LSP8CustomizableTokenInit
 /// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions. This is the proxy-deployable version.
 /// Implements {LSP8Mintable} to allow minting.
@@ -99,7 +105,8 @@ contract LSP8CustomizableTokenInit is
         uint256 lsp8TokenIdFormat_,
         MintableParamsInit memory mintableParams,
         NonTransferableParamsInit memory nonTransferableParams,
-        CappedParamsInit memory cappedParams
+        CappedParamsInit memory cappedParams,
+        RevokableParamsInit memory revokableParams
     ) external virtual initializer {
         __LSP8CustomizableToken_init(
             name_,
@@ -109,7 +116,8 @@ contract LSP8CustomizableTokenInit is
             lsp8TokenIdFormat_,
             mintableParams,
             nonTransferableParams,
-            cappedParams
+            cappedParams,
+            revokableParams
         );
     }
 
@@ -122,7 +130,8 @@ contract LSP8CustomizableTokenInit is
         uint256 lsp8TokenIdFormat_,
         MintableParamsInit memory mintableParams,
         NonTransferableParamsInit memory nonTransferableParams,
-        CappedParamsInit memory cappedParams
+        CappedParamsInit memory cappedParams,
+        RevokableParamsInit memory revokableParams
     ) internal virtual onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
@@ -139,7 +148,7 @@ contract LSP8CustomizableTokenInit is
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         );
-        __LSP8Revokable_init_unchained(newOwner_);
+        __LSP8Revokable_init_unchained(newOwner_, revokableParams.isRevokable);
 
         // Mint initial tokens
         for (

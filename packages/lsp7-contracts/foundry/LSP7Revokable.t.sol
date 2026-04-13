@@ -18,6 +18,9 @@ import {
     AccessControlUnauthorizedAccount
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 import {LSP7AmountExceedsBalance} from "../contracts/LSP7Errors.sol";
+import {
+    LSP7RevokableFeatureDisabled
+} from "../contracts/extensions/LSP7Revokable/LSP7RevokableErrors.sol";
 
 // constants
 import {
@@ -31,7 +34,8 @@ contract MockLSP7Revokable is LSP7RevokableAbstract {
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        bool isNonDivisible_
+        bool isNonDivisible_,
+        bool isRevokable_
     )
         LSP7DigitalAsset(
             name_,
@@ -41,7 +45,7 @@ contract MockLSP7Revokable is LSP7RevokableAbstract {
             isNonDivisible_
         )
         AccessControlExtendedAbstract(newOwner_)
-        LSP7RevokableAbstract(newOwner_)
+        LSP7RevokableAbstract(newOwner_, isRevokable_)
     {}
 
     /// @dev Helper function to mint tokens for testing
@@ -62,6 +66,7 @@ contract LSP7RevokableTest is Test {
     string symbol = "RT";
     uint256 tokenType = _LSP4_TOKEN_TYPE_TOKEN;
     bool isNonDivisible = false;
+    bool isRevokable = true;
 
     address owner = address(this);
     address nonOwner = vm.addr(100);
@@ -78,7 +83,8 @@ contract LSP7RevokableTest is Test {
             symbol,
             owner,
             tokenType,
-            isNonDivisible
+            isNonDivisible,
+            isRevokable
         );
 
         // Label addresses for better trace output
@@ -114,6 +120,13 @@ contract LSP7RevokableTest is Test {
         assertFalse(
             lsp7Revokable.hasRole(revokerRole, nonOwner),
             "Non-owner should not start with REVOKER_ROLE"
+        );
+    }
+
+    function test_ConstructorInitializesRevokableStatus() public {
+        assertTrue(
+            lsp7Revokable.isRevokable(),
+            "Revokable feature should be enabled"
         );
     }
 
@@ -290,6 +303,27 @@ contract LSP7RevokableTest is Test {
             )
         );
         lsp7Revokable.revoke(user1, owner, 500, "");
+    }
+
+    function test_RevokeFailsWhenRevocationIsDisabled() public {
+        MockLSP7Revokable nonRevokableToken = new MockLSP7Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            false
+        );
+
+        nonRevokableToken.mint(user1, 1000, true, "");
+
+        assertFalse(
+            nonRevokableToken.isRevokable(),
+            "Revokable feature should be disabled"
+        );
+
+        vm.expectRevert(LSP7RevokableFeatureDisabled.selector);
+        nonRevokableToken.revoke(user1, owner, 500, "");
     }
 
     function test_RevokeFailsWhenDestinationHasNoRevokerRole() public {

@@ -19,6 +19,7 @@ import {ILSP8Revokable} from "./ILSP8Revokable.sol";
 import {
     AccessControlUnauthorizedAccount
 } from "../AccessControlExtended/AccessControlExtendedErrors.sol";
+import {LSP8RevokableFeatureDisabled} from "./LSP8RevokableErrors.sol";
 
 /// @title LSP8RevokableInitAbstract
 /// @dev Abstract contract implementing revokable functionality for LSP8 tokens (initializer version).
@@ -37,6 +38,8 @@ abstract contract LSP8RevokableInitAbstract is
     AccessControlExtendedInitAbstract,
     LSP8IdentifiableDigitalAssetInitAbstract
 {
+    bool internal _isRevokable;
+
     /// @dev `"REVOKER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
     bytes32 public constant REVOKER_ROLE =
         0x5245564f4b45525f524f4c450000000000000000000000000000000000000000;
@@ -48,12 +51,14 @@ abstract contract LSP8RevokableInitAbstract is
     /// @param newOwner_ The owner of the contract (implicitly a revoker).
     /// @param lsp4TokenType_ The token type (see LSP4).
     /// @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
+    /// @param isRevokable_ Whether token revocation is enabled.
     function __LSP8Revokable_init(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        uint256 lsp8TokenIdFormat_
+        uint256 lsp8TokenIdFormat_,
+        bool isRevokable_
     ) internal virtual onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
@@ -63,14 +68,24 @@ abstract contract LSP8RevokableInitAbstract is
             lsp8TokenIdFormat_
         );
         __AccessControlExtended_init(newOwner_);
-        __LSP8Revokable_init_unchained(newOwner_);
+        __LSP8Revokable_init_unchained(newOwner_, isRevokable_);
     }
 
     /// @notice Unchained initializer for LSP8Revokable.
     function __LSP8Revokable_init_unchained(
-        address newOwner_
+        address newOwner_,
+        bool isRevokable_
     ) internal virtual onlyInitializing {
-        _grantRole(REVOKER_ROLE, newOwner_);
+        _isRevokable = isRevokable_;
+
+        if (isRevokable_) {
+            _grantRole(REVOKER_ROLE, newOwner_);
+        }
+    }
+
+    /// @inheritdoc ILSP8Revokable
+    function isRevokable() public view virtual override returns (bool) {
+        return _isRevokable;
     }
 
     /// @inheritdoc ILSP8Revokable
@@ -80,6 +95,7 @@ abstract contract LSP8RevokableInitAbstract is
         bytes32 tokenId,
         bytes memory data
     ) public virtual override onlyRole(REVOKER_ROLE) {
+        require(isRevokable(), LSP8RevokableFeatureDisabled());
         require(
             to == owner() || hasRole(REVOKER_ROLE, to),
             AccessControlUnauthorizedAccount(to, REVOKER_ROLE)
