@@ -9,7 +9,8 @@ import {
     LSP7CustomizableToken,
     MintableParams,
     NonTransferableParams,
-    CappedParams
+    CappedParams,
+    RevokableParams
 } from "../contracts/presets/LSP7CustomizableToken.sol";
 
 // errors
@@ -26,6 +27,9 @@ import {
 import {
     LSP7CappedSupplyCannotMintOverCap
 } from "../contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
+import {
+    LSP7RevokableFeatureDisabled
+} from "../contracts/extensions/LSP7Revokable/LSP7RevokableErrors.sol";
 
 // constants
 import {
@@ -38,6 +42,7 @@ contract LSP7CustomizableTokenTest is Test {
     uint256 tokenType = _LSP4_TOKEN_TYPE_TOKEN;
     bool isNonDivisible = false;
     bool mintable = true;
+    bool isRevokable = true;
     uint256 initialMintAmount = 1000;
     uint256 transferLockStart = 0;
     uint256 transferLockEnd = 0;
@@ -68,6 +73,7 @@ contract LSP7CustomizableTokenTest is Test {
                 transferLockStart,
                 transferLockEnd
             );
+        RevokableParams memory revokableParams = RevokableParams(isRevokable);
 
         token = new LSP7CustomizableToken(
             name,
@@ -77,7 +83,8 @@ contract LSP7CustomizableTokenTest is Test {
             isNonDivisible,
             mintableParams,
             cappedParams,
-            nonTransferableParams
+            nonTransferableParams,
+            revokableParams
         );
     }
 
@@ -99,6 +106,7 @@ contract LSP7CustomizableTokenTest is Test {
             "Balance cap should be set"
         );
         assertEq(token.isMintable(), mintable, "Mintable status should be set");
+        assertTrue(token.isRevokable(), "Revokable status should be set");
         assertTrue(token.isTransferable(), "Token should be transferable");
         assertEq(
             token.transferLockStart(),
@@ -138,6 +146,7 @@ contract LSP7CustomizableTokenTest is Test {
             tokenBalanceCap,
             tokenSupplyCap
         );
+        RevokableParams memory revokableParams = RevokableParams(isRevokable);
 
         vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
         new LSP7CustomizableToken(
@@ -148,7 +157,8 @@ contract LSP7CustomizableTokenTest is Test {
             isNonDivisible,
             mintableParams,
             cappedParams,
-            nonTransferableParams
+            nonTransferableParams,
+            revokableParams
         );
     }
 
@@ -165,6 +175,7 @@ contract LSP7CustomizableTokenTest is Test {
             tokenBalanceCap,
             tokenSupplyCap
         );
+        RevokableParams memory revokableParams = RevokableParams(isRevokable);
 
         LSP7CustomizableToken zeroMintToken = new LSP7CustomizableToken(
             name,
@@ -174,7 +185,8 @@ contract LSP7CustomizableTokenTest is Test {
             isNonDivisible,
             mintableParams,
             cappedParams,
-            nonTransferableParams
+            nonTransferableParams,
+            revokableParams
         );
         assertEq(
             zeroMintToken.balanceOf(owner),
@@ -197,6 +209,7 @@ contract LSP7CustomizableTokenTest is Test {
             tokenBalanceCap,
             tokenSupplyCap
         );
+        RevokableParams memory revokableParams = RevokableParams(isRevokable);
 
         vm.expectRevert(LSP7InvalidTransferLockPeriod.selector);
         new LSP7CustomizableToken(
@@ -207,7 +220,8 @@ contract LSP7CustomizableTokenTest is Test {
             isNonDivisible,
             mintableParams,
             cappedParams,
-            nonTransferableParams
+            nonTransferableParams,
+            revokableParams
         );
     }
 
@@ -261,6 +275,7 @@ contract LSP7CustomizableTokenTest is Test {
             );
 
         CappedParams memory cappedParams = CappedParams(tokenBalanceCap, 0);
+        RevokableParams memory revokableParams = RevokableParams(isRevokable);
 
         LSP7CustomizableToken unlimitedToken = new LSP7CustomizableToken(
             name,
@@ -270,7 +285,8 @@ contract LSP7CustomizableTokenTest is Test {
             isNonDivisible,
             mintableParams,
             cappedParams,
-            nonTransferableParams
+            nonTransferableParams,
+            revokableParams
         );
         unlimitedToken.mint(owner, type(uint256).max / 2, true, "");
         assertEq(
@@ -294,6 +310,7 @@ contract LSP7CustomizableTokenTest is Test {
             1500, // tokenBalanceCap
             0 // tokenSupplyCap = 0 (disabled)
         );
+        RevokableParams memory revokableParams = RevokableParams(isRevokable);
 
         LSP7CustomizableToken tokenWithBalanceCap = new LSP7CustomizableToken(
             name,
@@ -303,7 +320,8 @@ contract LSP7CustomizableTokenTest is Test {
             isNonDivisible,
             mintableParams,
             cappedParams,
-            nonTransferableParams
+            nonTransferableParams,
+            revokableParams
         );
 
         // Should be able to transfer up to the balance cap
@@ -339,6 +357,7 @@ contract LSP7CustomizableTokenTest is Test {
             0, // tokenBalanceCap = 0 (disabled)
             0 // tokenSupplyCap = 0 (disabled)
         );
+        RevokableParams memory revokableParams = RevokableParams(isRevokable);
 
         LSP7CustomizableToken tokenWithoutBalanceCap = new LSP7CustomizableToken(
                 name,
@@ -348,7 +367,8 @@ contract LSP7CustomizableTokenTest is Test {
                 isNonDivisible,
                 mintableParams,
                 cappedParams,
-                nonTransferableParams
+                nonTransferableParams,
+                revokableParams
             );
 
         // Should be able to transfer any amount when balance cap is disabled
@@ -371,5 +391,42 @@ contract LSP7CustomizableTokenTest is Test {
         token.disableMinting();
         vm.expectRevert(LSP7MintDisabled.selector);
         token.mint(user1, 500, true, "");
+    }
+
+    function test_RevokeFailsWhenRevocationIsDisabled() public {
+        bytes32 revokerRole = token.REVOKER_ROLE();
+        MintableParams memory mintableParams = MintableParams(mintable, 1000);
+        NonTransferableParams
+            memory nonTransferableParams = NonTransferableParams(
+                transferLockStart,
+                transferLockEnd
+            );
+        CappedParams memory cappedParams = CappedParams(
+            tokenBalanceCap,
+            tokenSupplyCap
+        );
+        RevokableParams memory revokableParams = RevokableParams(false);
+
+        LSP7CustomizableToken nonRevokableToken = new LSP7CustomizableToken(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+
+        nonRevokableToken.transfer(owner, user1, 500, true, "");
+
+        assertFalse(nonRevokableToken.isRevokable());
+        assertFalse(nonRevokableToken.hasRole(revokerRole, owner));
+
+        nonRevokableToken.grantRole(revokerRole, owner);
+
+        vm.expectRevert(LSP7RevokableFeatureDisabled.selector);
+        nonRevokableToken.revoke(user1, owner, 100, "");
     }
 }

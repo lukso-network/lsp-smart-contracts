@@ -6,6 +6,9 @@ pragma solidity ^0.8.27;
 /// This extension allows authorized revokers to reclaim tokens from any holder back to the
 /// contract owner or another authorized revoker.
 interface ILSP7Revokable {
+    /// @notice Returns whether the feature to revoke tokens from users is enabled or not.
+    function isRevokable() external view returns (bool);
+
     /// @notice Revokes tokens from a holder and transfers them to `to`.
     /// @dev Can only be called by an address holding `REVOKER_ROLE`.
     /// The destination must be either the contract owner or an address holding `REVOKER_ROLE`.

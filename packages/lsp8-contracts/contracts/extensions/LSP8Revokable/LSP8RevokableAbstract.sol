@@ -17,12 +17,13 @@ import {ILSP8Revokable} from "./ILSP8Revokable.sol";
 import {
     AccessControlUnauthorizedAccount
 } from "../AccessControlExtended/AccessControlExtendedErrors.sol";
+import {LSP8RevokableFeatureDisabled} from "./LSP8RevokableErrors.sol";
 
 /// @title LSP8RevokableAbstract
 /// @dev Abstract contract implementing revokable functionality for LSP8 tokens.
 /// Allows addresses with the `REVOKER_ROLE` to revoke NFTs from any holder
 /// back to the contract owner or any other address that also has revoke rights.
-/// 
+///
 /// Use cases include:
 /// - Memberships: Revoke membership NFTs when they expire or are terminated
 /// - Role badges: Remove role badge NFTs from community members
@@ -33,12 +34,23 @@ abstract contract LSP8RevokableAbstract is
     AccessControlExtendedAbstract,
     LSP8IdentifiableDigitalAsset
 {
+    bool internal immutable _IS_REVOKABLE;
+
     /// @dev `"REVOKER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
     bytes32 public constant REVOKER_ROLE =
         0x5245564f4b45525f524f4c450000000000000000000000000000000000000000;
 
-    constructor(address newOwner_) {
-        _grantRole(REVOKER_ROLE, newOwner_);
+    constructor(address newOwner_, bool isRevokable_) {
+        _IS_REVOKABLE = isRevokable_;
+
+        if (isRevokable_) {
+            _grantRole(REVOKER_ROLE, newOwner_);
+        }
+    }
+
+    /// @inheritdoc ILSP8Revokable
+    function isRevokable() public view virtual override returns (bool) {
+        return _IS_REVOKABLE;
     }
 
     /// @inheritdoc ILSP8Revokable
@@ -48,6 +60,7 @@ abstract contract LSP8RevokableAbstract is
         bytes32 tokenId,
         bytes memory data
     ) public virtual override onlyRole(REVOKER_ROLE) {
+        require(isRevokable(), LSP8RevokableFeatureDisabled());
         require(
             to == owner() || hasRole(REVOKER_ROLE, to),
             AccessControlUnauthorizedAccount(to, REVOKER_ROLE)
