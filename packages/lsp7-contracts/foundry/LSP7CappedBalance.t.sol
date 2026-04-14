@@ -2,7 +2,7 @@
 pragma solidity ^0.8.22;
 
 // test
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
 // modules
 import {

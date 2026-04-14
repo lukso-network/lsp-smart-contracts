@@ -35,6 +35,8 @@ contract MockAccessControlExtendedInit is
     LSP8IdentifiableDigitalAssetInitAbstract,
     AccessControlExtendedInitAbstract
 {
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 public constant TEST_ROLE = bytes32(bytes("TestRole"));
 
     function initialize(address newOwner_) external initializer {
@@ -63,7 +65,8 @@ contract MockAccessControlExtendedInit is
         return
             LSP8IdentifiableDigitalAssetInitAbstract.supportsInterface(
                 interfaceId
-            ) || AccessControlExtendedInitAbstract.supportsInterface(interfaceId);
+            ) ||
+            AccessControlExtendedInitAbstract.supportsInterface(interfaceId);
     }
 
     function _transferOwnership(
@@ -79,7 +82,13 @@ contract MockAccessControlExtendedInit is
 
 contract AccessControlExtendedInitTest is Test {
     bytes32 constant DEFAULT_ADMIN_ROLE = 0x00;
+
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 constant TEST_ROLE = bytes32(bytes("TestRole"));
+
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 constant EXTRA_ROLE = bytes32(bytes("ExtraRole"));
 
     address owner = address(this);
@@ -96,7 +105,10 @@ contract AccessControlExtendedInitTest is Test {
             (owner)
         );
 
-        ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(implementation),
+            initData
+        );
         token = MockAccessControlExtendedInit(payable(address(proxy)));
     }
 
