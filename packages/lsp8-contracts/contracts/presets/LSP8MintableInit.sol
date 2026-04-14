@@ -8,9 +8,6 @@ import {
 import {
     LSP8MintableInitAbstract
 } from "../extensions/LSP8Mintable/LSP8MintableInitAbstract.sol";
-import {
-    AccessControlExtendedInitAbstract
-} from "../extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
 /**
  * @dev LSP8IdentifiableDigitalAsset deployable preset contract (proxy version) with a public {mint} function callable by addresses holding `MINTER_ROLE`.

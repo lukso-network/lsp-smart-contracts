@@ -121,7 +121,7 @@ contract LSP8CustomizableToken is
         for (
             uint256 ii = 0;
             ii < mintableParams.initialMintTokenIds.length;
-            ii++
+            ++ii
         ) {
             _mint(newOwner_, mintableParams.initialMintTokenIds[ii], true, "");
         }

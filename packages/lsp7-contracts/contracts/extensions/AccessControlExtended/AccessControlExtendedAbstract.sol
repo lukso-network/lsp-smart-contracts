@@ -2,13 +2,13 @@
 pragma solidity ^0.8.27;
 
 // interfaces
-import {IAccessControlExtended} from "./IAccessControlExtended.sol";
 import {
     IAccessControl
 } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {
     IAccessControlEnumerable
 } from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
+import {IAccessControlExtended} from "./IAccessControlExtended.sol";
 
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
@@ -386,8 +386,8 @@ abstract contract AccessControlExtendedAbstract is
         // Snapshot the old owner's roles before mutating storage (values() returns a memory copy)
         bytes32[] memory oldOwnerRoles = _addressRoles[oldOwner].values();
 
-        for (uint256 i = 0; i < oldOwnerRoles.length; i++) {
-            bytes32 role = oldOwnerRoles[i];
+        for (uint256 ii = 0; ii < oldOwnerRoles.length; ++ii) {
+            bytes32 role = oldOwnerRoles[ii];
             bytes memory oldOwnerRoleData = _roleData[role][oldOwner];
 
             _revokeRole(role, oldOwner);

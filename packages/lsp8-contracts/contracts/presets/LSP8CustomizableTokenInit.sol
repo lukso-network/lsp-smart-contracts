@@ -6,9 +6,6 @@ import {
     OwnableUpgradeable
 } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {
-    AccessControlExtendedInitAbstract
-} from "../extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
-import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 
@@ -154,7 +151,7 @@ contract LSP8CustomizableTokenInit is
         for (
             uint256 ii = 0;
             ii < mintableParams.initialMintTokenIds.length;
-            ii++
+            ++ii
         ) {
             _mint(newOwner_, mintableParams.initialMintTokenIds[ii], true, "");
         }
