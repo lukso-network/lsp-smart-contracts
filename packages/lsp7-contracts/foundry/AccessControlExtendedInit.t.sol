@@ -2,7 +2,7 @@
 pragma solidity ^0.8.22;
 
 // foundry
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
 // modules
 import {
@@ -50,6 +50,8 @@ contract MockAccessControlExtendedInit is
     LSP7DigitalAssetInitAbstract,
     AccessControlExtendedInitAbstract
 {
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 public constant TEST_ROLE = bytes32(bytes("TestRole"));
 
     function initialize(
@@ -127,6 +129,9 @@ contract AccessControlExtendedInitTest is Test {
     address account3 = vm.addr(103);
 
     bytes32 constant DEFAULT_ADMIN_ROLE = 0x00;
+
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 constant TEST_ROLE = bytes32(bytes("TestRole"));
 
     MockAccessControlExtendedInit implementation;
@@ -286,8 +291,14 @@ contract AccessControlExtendedInitTest is Test {
     // ============================================================
 
     function test_StorageLayoutCompatibleWithProxy() public {
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 roleA = bytes32(bytes("RoleA"));
+
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 roleB = bytes32(bytes("RoleB"));
+
         bytes memory dataA1 = abi.encodePacked(uint256(1000));
         bytes memory dataA2 = abi.encodePacked(uint256(2000));
         bytes memory dataB1 = abi.encodePacked(uint256(3000));
@@ -395,7 +406,12 @@ contract AccessControlExtendedInitTest is Test {
     }
 
     function test_InitEnumerationWorksAfterMultipleGrants() public {
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 roleX = bytes32(bytes("RoleX"));
+
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 roleY = bytes32(bytes("RoleY"));
 
         // Forward enumeration: grant to multiple accounts

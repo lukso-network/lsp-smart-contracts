@@ -124,6 +124,8 @@ contract MockTokenWithAccessControlExtended is
         super._revokeRole(role, account);
     }
 
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 public constant TEST_ROLE = bytes32(bytes("TestRole"));
 }
 
@@ -140,8 +142,18 @@ contract AccessControlExtendedTest is Test {
     address account3 = vm.addr(103);
 
     bytes32 constant DEFAULT_ADMIN_ROLE = 0x00;
+
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 constant TEST_ROLE = bytes32(bytes("TestRole"));
+
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 constant ANOTHER_ROLE = bytes32(bytes("AnotherRole"));
+
+    // Other roles for testing
+    bytes32 constant MINTER_ROLE = keccak256("MINTER");
+    bytes32 constant BURNER_ROLE = keccak256("BURNER");
 
     MockTokenWithAccessControlExtended token;
 
@@ -309,6 +321,9 @@ contract AccessControlExtendedTest is Test {
 
     function test_OwnerCannotGrantRoleWithoutCustomAdminRole() public {
         // Set ADMIN_TEST_ROLE as admin for TEST_ROLE
+
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 adminTestRole = bytes32(bytes("AdminTestRole"));
         token.setRoleAdmin(TEST_ROLE, adminTestRole);
 
@@ -653,6 +668,8 @@ contract AccessControlExtendedTest is Test {
     function test_GetRoleMemberNonExistentRoleErrorWithArrayOutOfBounds()
         public
     {
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 nonExistentRole = bytes32(bytes("NonExistentRole"));
 
         //  bytes4(keccak256("Panic(uint256)"));
@@ -1371,9 +1388,6 @@ contract AccessControlExtendedTest is Test {
     // ============================================================
 
     function test_TransferOwnershipTransfersAllRoles() public {
-        bytes32 MINTER_ROLE = keccak256("MINTER");
-        bytes32 BURNER_ROLE = keccak256("BURNER");
-
         // Grant multiple roles to owner
         token.grantRole(MINTER_ROLE, owner);
         token.grantRole(BURNER_ROLE, owner);
@@ -1433,8 +1447,6 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_TransferOwnershipDoesNotAffectOtherRoleHolders() public {
-        bytes32 MINTER_ROLE = keccak256("MINTER");
-
         // Grant MINTER_ROLE to owner and account2
         token.grantRole(MINTER_ROLE, owner);
         token.grantRole(MINTER_ROLE, account2);
@@ -1462,8 +1474,6 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_TransferOwnershipTransfersOldOwnerRoleData() public {
-        bytes32 MINTER_ROLE = keccak256("MINTER");
-
         // Grant role with data to owner
         token.grantRoleWithData(MINTER_ROLE, owner, hex"cafebabe");
 
@@ -1496,8 +1506,6 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_TransferOwnershipEmitsAllRoleEvents() public {
-        bytes32 MINTER_ROLE = keccak256("MINTER");
-
         // Grant MINTER_ROLE to owner so it holds 2 roles: DEFAULT_ADMIN_ROLE + MINTER_ROLE
         token.grantRole(MINTER_ROLE, owner);
 
@@ -1595,8 +1603,6 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_RenounceOwnershipRevokesAllRoles() public {
-        bytes32 MINTER_ROLE = keccak256("MINTER");
-
         // Grant MINTER_ROLE to owner
         token.grantRole(MINTER_ROLE, owner);
 
@@ -1621,9 +1627,6 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_TransferOwnershipNewOwnerAlreadyHasSomeRoles() public {
-        bytes32 MINTER_ROLE = keccak256("MINTER");
-        bytes32 BURNER_ROLE = keccak256("BURNER");
-
         // Grant MINTER to owner, BURNER to both
         token.grantRole(MINTER_ROLE, owner);
         token.grantRole(BURNER_ROLE, owner);
@@ -1659,8 +1662,8 @@ contract AccessControlExtendedTest is Test {
     // ============================================================
 
     function test_GetRoleMembersReturnsEmptyForNoMembers() public {
-        bytes32 UNKNOWN_ROLE = keccak256("UNKNOWN");
-        address[] memory members = token.getRoleMembers(UNKNOWN_ROLE);
+        bytes32 unknownRole = keccak256("UNKNOWN");
+        address[] memory members = token.getRoleMembers(unknownRole);
         assertEq(
             members.length,
             0,

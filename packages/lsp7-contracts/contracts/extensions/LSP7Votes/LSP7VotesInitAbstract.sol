@@ -398,7 +398,7 @@ abstract contract LSP7VotesInitAbstract is
 
         unchecked {
             Checkpoint memory oldCkpt = pos == 0
-                ? Checkpoint(0, 0)
+                ? Checkpoint({fromBlock: 0, votes: 0})
                 : _unsafeAccess(ckpts, pos - 1);
 
             oldWeight = oldCkpt.votes;

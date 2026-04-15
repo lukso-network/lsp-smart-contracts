@@ -2,20 +2,25 @@
 pragma solidity ^0.8.27;
 
 // foundry
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
 // modules
-import {LSP8CappedSupplyAbstract} from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol";
-import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
-
-// interfaces
-import {ILSP8CappedSupply} from "../contracts/extensions/LSP8CappedSupply/ILSP8CappedSupply.sol";
+import {
+    LSP8CappedSupplyAbstract
+} from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 
 // errors
-import {LSP8CappedSupplyCannotMintOverCap} from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
+import {
+    LSP8CappedSupplyCannotMintOverCap
+} from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_NFT
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
 
 // Mock contract to test LSP8CappedSupplyAbstract functionality

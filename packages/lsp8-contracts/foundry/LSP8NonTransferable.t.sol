@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 // foundry
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
 // modules
 import {
@@ -120,8 +120,8 @@ contract LSP8NonTransferableTest is Test {
             lockPeriodEnd
         );
 
-        nonTransferableBypassRole =
-            lsp8NonTransferable.NON_TRANSFERABLE_BYPASS_ROLE();
+        nonTransferableBypassRole = lsp8NonTransferable
+            .NON_TRANSFERABLE_BYPASS_ROLE();
 
         lsp8NonTransferable.mint(owner, tokenId1, true, "");
         lsp8NonTransferable.mint(randomCaller, tokenId2, true, "");
@@ -152,13 +152,13 @@ contract LSP8NonTransferableTest is Test {
     // Constructor and Initial State
     function test_ConstructorSetsInitialStateAndEmitsEvents() public {
         // Token with start=0, end=0 --> always transferable
-        uint256 token1_TransferLockStart = 0;
-        uint256 token1_TransferLockEnd = 0;
+        uint256 token1TransferLockStart = 0;
+        uint256 token1TransferLockEnd = 0;
 
         vm.expectEmit(true, true, false, false);
         emit ILSP8NonTransferable.TransferLockPeriodChanged(
-            token1_TransferLockStart,
-            token1_TransferLockEnd
+            token1TransferLockStart,
+            token1TransferLockEnd
         );
 
         MockLSP8NonTransferable token1 = new MockLSP8NonTransferable(
@@ -167,8 +167,8 @@ contract LSP8NonTransferableTest is Test {
             owner,
             tokenType,
             tokenIdFormat,
-            token1_TransferLockStart,
-            token1_TransferLockEnd
+            token1TransferLockStart,
+            token1TransferLockEnd
         );
 
         assertTrue(token1.isTransferable());
@@ -176,13 +176,13 @@ contract LSP8NonTransferableTest is Test {
         // -------------------------------
 
         // Token with start=0, end=max --> always non-transferable
-        uint256 token2_TransferLockStart = 0;
-        uint256 token2_TransferLockEnd = type(uint256).max;
+        uint256 token2TransferLockStart = 0;
+        uint256 token2TransferLockEnd = type(uint256).max;
 
         vm.expectEmit(true, true, false, false);
         emit ILSP8NonTransferable.TransferLockPeriodChanged(
-            token2_TransferLockStart,
-            token2_TransferLockEnd
+            token2TransferLockStart,
+            token2TransferLockEnd
         );
 
         MockLSP8NonTransferable token2 = new MockLSP8NonTransferable(
@@ -191,8 +191,8 @@ contract LSP8NonTransferableTest is Test {
             owner,
             tokenType,
             tokenIdFormat,
-            token2_TransferLockStart,
-            token2_TransferLockEnd
+            token2TransferLockStart,
+            token2TransferLockEnd
         );
 
         assertFalse(token2.isTransferable());

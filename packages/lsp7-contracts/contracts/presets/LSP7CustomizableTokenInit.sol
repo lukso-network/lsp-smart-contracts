@@ -6,9 +6,6 @@ import {
     OwnableUpgradeable
 } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {
-    AccessControlExtendedInitAbstract
-} from "../extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
-import {
     LSP7DigitalAssetInitAbstract
 } from "../LSP7DigitalAssetInitAbstract.sol";
 

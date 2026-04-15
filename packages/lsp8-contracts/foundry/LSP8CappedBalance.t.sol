@@ -2,23 +2,28 @@
 pragma solidity ^0.8.27;
 
 // foundry
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
 // modules
-import {LSP8CappedBalanceAbstract} from "../contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceAbstract.sol";
+import {
+    LSP8CappedBalanceAbstract
+} from "../contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceAbstract.sol";
 import {
     AccessControlExtendedAbstract
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
-import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
-
-// interfaces
-import {ILSP8CappedBalance} from "../contracts/extensions/LSP8CappedBalance/ILSP8CappedBalance.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 
 // errors
-import {LSP8CappedBalanceExceeded} from "../contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceErrors.sol";
+import {
+    LSP8CappedBalanceExceeded
+} from "../contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_NFT
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
 
 // Mock contract to test LSP8CappedBalanceAbstract functionality

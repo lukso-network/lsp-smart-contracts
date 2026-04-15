@@ -2,7 +2,7 @@
 pragma solidity ^0.8.22;
 
 // foundry
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
 // modules
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
@@ -150,13 +150,13 @@ contract LSP7NonTransferableTest is Test {
     // Constructor and Initial State
     function test_ConstructorSetsInitialStateAndEmitsEvents() public {
         // Token with start=0, end=0 --> always transferable
-        uint256 token1_TransferLockStart = 0;
-        uint256 token1_TransferLockEnd = 0;
+        uint256 token1TransferLockStart = 0;
+        uint256 token1TransferLockEnd = 0;
 
         vm.expectEmit(true, true, false, false);
         emit ILSP7NonTransferable.TransferLockPeriodChanged(
-            token1_TransferLockStart,
-            token1_TransferLockEnd
+            token1TransferLockStart,
+            token1TransferLockEnd
         );
 
         MockLSP7NonTransferable token1 = new MockLSP7NonTransferable(
@@ -165,8 +165,8 @@ contract LSP7NonTransferableTest is Test {
             owner,
             tokenType,
             isNonDivisible,
-            token1_TransferLockStart,
-            token1_TransferLockEnd
+            token1TransferLockStart,
+            token1TransferLockEnd
         );
 
         assertTrue(token1.isTransferable());
@@ -175,13 +175,13 @@ contract LSP7NonTransferableTest is Test {
         // -------------------------------
 
         // Token with start=0, end=max --> always non-transferable
-        uint256 token2_TransferLockStart = 0;
-        uint256 token2_TransferLockEnd = type(uint256).max;
+        uint256 token2TransferLockStart = 0;
+        uint256 token2TransferLockEnd = type(uint256).max;
 
         vm.expectEmit(true, true, false, false);
         emit ILSP7NonTransferable.TransferLockPeriodChanged(
-            token2_TransferLockStart,
-            token2_TransferLockEnd
+            token2TransferLockStart,
+            token2TransferLockEnd
         );
 
         MockLSP7NonTransferable token2 = new MockLSP7NonTransferable(
@@ -190,8 +190,8 @@ contract LSP7NonTransferableTest is Test {
             owner,
             tokenType,
             isNonDivisible,
-            token2_TransferLockStart,
-            token2_TransferLockEnd
+            token2TransferLockStart,
+            token2TransferLockEnd
         );
 
         assertFalse(token2.isTransferable());
@@ -287,14 +287,14 @@ contract LSP7NonTransferableTest is Test {
         uint256 transferLockEndBlock = transferLockStartBlock;
 
         MockLSP7NonTransferable lsp7NonTransferableToken = new MockLSP7NonTransferable(
-            "Test Non Transferable Token",
-            "TNTT",
-            msg.sender,
-            _LSP4_TOKEN_TYPE_TOKEN,
-            false, // isNonDivisible
-            transferLockStartBlock,
-            transferLockEndBlock
-        );
+                "Test Non Transferable Token",
+                "TNTT",
+                msg.sender,
+                _LSP4_TOKEN_TYPE_TOKEN,
+                false, // isNonDivisible
+                transferLockStartBlock,
+                transferLockEndBlock
+            );
 
         lsp7NonTransferableToken.mint(tokenSender, 100, true, "");
         assertEq(lsp7NonTransferableToken.balanceOf(tokenSender), 100);
@@ -647,14 +647,14 @@ contract LSP7NonTransferableTest is Test {
         public
     {
         MockLSP7NonTransferable initiallyTransferableToken = new MockLSP7NonTransferable(
-            name,
-            symbol,
-            owner,
-            tokenType,
-            isNonDivisible,
-            0,
-            0
-        );
+                name,
+                symbol,
+                owner,
+                tokenType,
+                isNonDivisible,
+                0,
+                0
+            );
         initiallyTransferableToken.mint(randomCaller, 100, true, "");
 
         assertTrue(initiallyTransferableToken.isTransferable());
@@ -682,7 +682,9 @@ contract LSP7NonTransferableTest is Test {
         );
     }
 
-    function test_UpdateTransferLockPeriodRevertsAfterMakeTransferable() public {
+    function test_UpdateTransferLockPeriodRevertsAfterMakeTransferable()
+        public
+    {
         lsp7TransferableWithLockPeriod.makeTransferable();
 
         vm.expectRevert(LSP7CannotUpdateTransferLockPeriod.selector);
@@ -721,7 +723,10 @@ contract LSP7NonTransferableTest is Test {
         vm.expectRevert(LSP7TransferDisabled.selector);
         eventTicketToken.transfer(randomCaller, recipient, 10, true, "");
 
-        eventTicketToken.updateTransferLockPeriod(eventStart + 50, eventEnd + 50);
+        eventTicketToken.updateTransferLockPeriod(
+            eventStart + 50,
+            eventEnd + 50
+        );
 
         vm.warp(eventEnd + 60);
         assertTrue(eventTicketToken.isTransferable());
@@ -884,8 +889,7 @@ contract LSP7NonTransferableTest is Test {
                 newStart,
                 newEnd
             );
-        }
-        else {
+        } else {
             vm.expectEmit(true, true, false, false);
             emit ILSP7NonTransferable.TransferLockPeriodChanged(
                 newStart,

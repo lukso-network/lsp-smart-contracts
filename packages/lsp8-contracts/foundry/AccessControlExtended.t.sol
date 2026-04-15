@@ -45,6 +45,8 @@ contract MockLSP8WithAccessControlExtended is
     LSP8IdentifiableDigitalAsset,
     AccessControlExtendedAbstract
 {
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 public constant TEST_ROLE = bytes32(bytes("TestRole"));
 
     constructor(
@@ -87,7 +89,13 @@ contract MockLSP8WithAccessControlExtended is
 
 contract AccessControlExtendedTest is Test {
     bytes32 constant DEFAULT_ADMIN_ROLE = 0x00;
+
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 constant TEST_ROLE = bytes32(bytes("TestRole"));
+
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 constant ADMIN_ROLE = bytes32(bytes("AdminRole"));
 
     address owner = address(this);
