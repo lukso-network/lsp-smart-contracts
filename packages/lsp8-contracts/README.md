@@ -70,3 +70,31 @@ import {
     lsp8MintableInitAbi,
  } from '@lukso/lsp8-contracts/abi';
 ```
+
+## Foundry deployment
+
+This package includes a Foundry script at `scripts/DeployLSP8CustomizableTokenInit.s.sol` to deploy the `LSP8CustomizableTokenInit` implementation contract.
+
+Set your deployer key first:
+
+```console
+export PRIVATE_KEY=0x...
+```
+
+Dry run against LUKSO Testnet:
+
+```console
+FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network
+```
+
+Broadcast the deployment:
+
+```console
+FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast
+```
+
+Broadcast and verify on the LUKSO Testnet Blockscout explorer:
+
+```console
+FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast --verify --verifier blockscout --verifier-url https://explorer.execution.testnet.lukso.network/api?
+```
