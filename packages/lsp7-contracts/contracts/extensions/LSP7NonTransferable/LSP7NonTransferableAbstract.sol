@@ -105,7 +105,7 @@ abstract contract LSP7NonTransferableAbstract is
         transferLockStart = 0;
         transferLockEnd = 0;
 
-        emit TransferLockPeriodChanged(0, 0);
+        emit TransferLockPeriodChanged({start: 0, end: 0});
     }
 
     /// @inheritdoc ILSP7NonTransferable
@@ -127,10 +127,10 @@ abstract contract LSP7NonTransferableAbstract is
         transferLockStart = newTransferLockStart;
         transferLockEnd = newTransferLockEnd;
 
-        emit TransferLockPeriodChanged(
-            newTransferLockStart,
-            newTransferLockEnd
-        );
+        emit TransferLockPeriodChanged({
+            start: newTransferLockStart,
+            end: newTransferLockEnd
+        });
     }
 
     /// @notice Checks if a token transfer is allowed based on transferability status.

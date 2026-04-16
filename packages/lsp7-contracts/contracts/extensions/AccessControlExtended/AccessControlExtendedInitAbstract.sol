@@ -296,7 +296,11 @@ abstract contract AccessControlExtendedInitAbstract is
 
         if (added) {
             _addressRoles[account].add(role);
-            emit RoleGranted(role, account, msg.sender);
+            emit RoleGranted({
+                role: role,
+                account: account,
+                sender: msg.sender
+            });
         }
     }
 
@@ -313,12 +317,16 @@ abstract contract AccessControlExtendedInitAbstract is
 
         if (removed) {
             _addressRoles[account].remove(role);
-            emit RoleRevoked(role, account, msg.sender);
+            emit RoleRevoked({
+                role: role,
+                account: account,
+                sender: msg.sender
+            });
 
             // Auto-clear auxiliary data (BASE-09)
             if (_roleData[role][account].length > 0) {
                 delete _roleData[role][account];
-                emit RoleDataChanged(role, account, "");
+                emit RoleDataChanged({role: role, account: account, data: ""});
             }
         }
     }
@@ -364,7 +372,11 @@ abstract contract AccessControlExtendedInitAbstract is
     function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
         bytes32 previousAdminRole = getRoleAdmin(role);
         _roleAdmins[role] = adminRole;
-        emit RoleAdminChanged(role, previousAdminRole, adminRole);
+        emit RoleAdminChanged({
+            role: role,
+            previousAdminRole: previousAdminRole,
+            newAdminRole: adminRole
+        });
     }
 
     // --- Ownership sync
@@ -407,7 +419,11 @@ abstract contract AccessControlExtendedInitAbstract is
 
                 if (oldOwnerRoleData.length > 0) {
                     _roleData[role][newOwner] = oldOwnerRoleData;
-                    emit RoleDataChanged(role, newOwner, oldOwnerRoleData);
+                    emit RoleDataChanged({
+                        role: role,
+                        account: newOwner,
+                        data: oldOwnerRoleData
+                    });
                 }
             }
         }

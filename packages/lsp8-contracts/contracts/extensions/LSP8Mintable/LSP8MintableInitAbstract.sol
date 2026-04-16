@@ -68,7 +68,7 @@ abstract contract LSP8MintableInitAbstract is
         bool mintable_
     ) internal virtual onlyInitializing {
         isMintable = mintable_;
-        emit MintingStatusChanged(mintable_);
+        emit MintingStatusChanged({enabled: mintable_});
         _grantRole(MINTER_ROLE, owner());
     }
 
@@ -76,7 +76,7 @@ abstract contract LSP8MintableInitAbstract is
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP8MintDisabled());
         isMintable = false;
-        emit MintingStatusChanged(false);
+        emit MintingStatusChanged({enabled: false});
     }
 
     /// @inheritdoc ILSP8Mintable
