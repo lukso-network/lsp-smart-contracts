@@ -95,15 +95,15 @@ contract LSP8CustomizableTokenInit is
     /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
     function initialize(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_,
-        MintableParamsInit memory mintableParams,
-        NonTransferableParamsInit memory nonTransferableParams,
-        CappedParamsInit memory cappedParams,
-        RevokableParamsInit memory revokableParams
+        MintableParamsInit calldata mintableParams,
+        NonTransferableParamsInit calldata nonTransferableParams,
+        CappedParamsInit calldata cappedParams,
+        RevokableParamsInit calldata revokableParams
     ) external virtual initializer {
         __LSP8CustomizableToken_init(
             name_,
@@ -120,15 +120,15 @@ contract LSP8CustomizableTokenInit is
 
     /// @dev Internal initialization function.
     function __LSP8CustomizableToken_init(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_,
-        MintableParamsInit memory mintableParams,
-        NonTransferableParamsInit memory nonTransferableParams,
-        CappedParamsInit memory cappedParams,
-        RevokableParamsInit memory revokableParams
+        MintableParamsInit calldata mintableParams,
+        NonTransferableParamsInit calldata nonTransferableParams,
+        CappedParamsInit calldata cappedParams,
+        RevokableParamsInit calldata revokableParams
     ) internal virtual onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,

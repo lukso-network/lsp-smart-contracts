@@ -80,15 +80,15 @@ contract LSP7CustomizableTokenInit is
     LSP7RevokableInitAbstract
 {
     function initialize(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        MintableParams memory mintableParams,
-        NonTransferableParams memory nonTransferableParams,
-        CappedParams memory cappedParams,
-        RevokableParams memory revokableParams
+        MintableParams calldata mintableParams,
+        NonTransferableParams calldata nonTransferableParams,
+        CappedParams calldata cappedParams,
+        RevokableParams calldata revokableParams
     ) external virtual initializer {
         __LSP7CustomizableToken_init(
             name_,
@@ -115,15 +115,15 @@ contract LSP7CustomizableTokenInit is
     /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     /// @param revokableParams Deployment configuration for revokable feature (see above).
     function __LSP7CustomizableToken_init(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        MintableParams memory mintableParams,
-        CappedParams memory cappedParams,
-        NonTransferableParams memory nonTransferableParams,
-        RevokableParams memory revokableParams
+        MintableParams calldata mintableParams,
+        CappedParams calldata cappedParams,
+        NonTransferableParams calldata nonTransferableParams,
+        RevokableParams calldata revokableParams
     ) internal virtual onlyInitializing {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,
