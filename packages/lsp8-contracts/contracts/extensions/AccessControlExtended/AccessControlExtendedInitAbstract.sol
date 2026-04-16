@@ -396,6 +396,9 @@ abstract contract AccessControlExtendedInitAbstract is
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     *
+     * @custom:info The size of the `__gap` array is calculated so that the amount of storage used by the contract
+     * always adds up to the same number (in this case 50 storage slots).
      */
-    uint256[49] private __gap;
+    uint256[46] private __gap;
 }
