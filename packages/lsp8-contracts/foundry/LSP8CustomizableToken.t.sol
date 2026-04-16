@@ -44,7 +44,7 @@ contract LSP8CustomizableTokenTest is Test {
     string symbol = "CNFT";
     uint256 tokenType = _LSP4_TOKEN_TYPE_NFT;
     uint256 tokenIdFormat = 0; // NUMBER format
-    bool mintable = true;
+    bool isMintable = true;
     bool isRevokable = true;
     uint256 transferLockStart = 0;
     uint256 transferLockEnd = 0;
@@ -77,7 +77,7 @@ contract LSP8CustomizableTokenTest is Test {
         initialTokenIds[2] = bytes32(uint256(3));
 
         LSP8MintableParams memory mintableParams = LSP8MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintTokenIds: initialTokenIds
         });
 
@@ -125,7 +125,11 @@ contract LSP8CustomizableTokenTest is Test {
             tokenBalanceCap,
             "Balance cap should be set"
         );
-        assertEq(token.isMintable(), mintable, "Mintable status should be set");
+        assertEq(
+            token.isMintable(),
+            isMintable,
+            "Mintable status should be set"
+        );
         assertTrue(token.isRevokable(), "Revokable status should be set");
         assertTrue(token.isTransferable(), "Token should be transferable");
         assertEq(
@@ -165,7 +169,7 @@ contract LSP8CustomizableTokenTest is Test {
         }
 
         LSP8MintableParams memory mintableParams = LSP8MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintTokenIds: tooManyTokenIds
         });
 
@@ -200,7 +204,7 @@ contract LSP8CustomizableTokenTest is Test {
     function test_ConstructorSucceedsWithZeroInitialMint() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
         LSP8MintableParams memory mintableParams = LSP8MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintTokenIds: emptyTokenIds
         });
 
@@ -239,7 +243,7 @@ contract LSP8CustomizableTokenTest is Test {
 
     function test_ConstructorRevertsWithInvalidLockPeriod() public {
         LSP8MintableParams memory mintableParams = LSP8MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintTokenIds: initialTokenIds
         });
         LSP8NonTransferableParams
@@ -315,7 +319,7 @@ contract LSP8CustomizableTokenTest is Test {
     function test_MintWithMaxSupplyCapAllowsUnlimitedMinting() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
         LSP8MintableParams memory mintableParams = LSP8MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintTokenIds: emptyTokenIds
         });
 
@@ -392,7 +396,7 @@ contract LSP8CustomizableTokenTest is Test {
     function test_BalanceCapDisabledWhenZero() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
         LSP8MintableParams memory mintableParams = LSP8MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintTokenIds: emptyTokenIds
         });
 
@@ -462,7 +466,7 @@ contract LSP8CustomizableTokenTest is Test {
     function test_TransferDisabledWhenNonTransferable() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
         LSP8MintableParams memory mintableParams = LSP8MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintTokenIds: emptyTokenIds
         });
 
@@ -510,7 +514,7 @@ contract LSP8CustomizableTokenTest is Test {
     function test_BypassRoleCanTransferWhenNonTransferable() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
         LSP8MintableParams memory mintableParams = LSP8MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintTokenIds: emptyTokenIds
         });
 
@@ -570,7 +574,7 @@ contract LSP8CustomizableTokenTest is Test {
     function test_BurningAllowedWhenNonTransferable() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
         LSP8MintableParams memory mintableParams = LSP8MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintTokenIds: emptyTokenIds
         });
 
@@ -641,7 +645,7 @@ contract LSP8CustomizableTokenTest is Test {
         bytes32 revokerRole = token.REVOKER_ROLE();
         bytes32[] memory emptyTokenIds = new bytes32[](0);
         LSP8MintableParams memory mintableParams = LSP8MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintTokenIds: emptyTokenIds
         });
         LSP8NonTransferableParams

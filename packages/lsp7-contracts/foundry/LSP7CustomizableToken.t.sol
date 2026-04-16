@@ -40,7 +40,7 @@ contract LSP7CustomizableTokenTest is Test {
     string symbol = "CT";
     uint256 tokenType = _LSP4_TOKEN_TYPE_TOKEN;
     bool isNonDivisible = false;
-    bool mintable = true;
+    bool isMintable = true;
     bool isRevokable = true;
     uint256 initialMintAmount = 1000;
     uint256 transferLockStart = 0;
@@ -58,7 +58,7 @@ contract LSP7CustomizableTokenTest is Test {
 
     function setUp() public {
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintAmount: initialMintAmount
         });
 
@@ -106,7 +106,11 @@ contract LSP7CustomizableTokenTest is Test {
             tokenBalanceCap,
             "Balance cap should be set"
         );
-        assertEq(token.isMintable(), mintable, "Mintable status should be set");
+        assertEq(
+            token.isMintable(),
+            isMintable,
+            "Mintable status should be set"
+        );
         assertTrue(token.isRevokable(), "Revokable status should be set");
         assertTrue(token.isTransferable(), "Token should be transferable");
         assertEq(
@@ -133,7 +137,7 @@ contract LSP7CustomizableTokenTest is Test {
 
     function test_ConstructorRevertsIfInitialMintExceedsSupplyCap() public {
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintAmount: tokenSupplyCap + 1
         });
 
@@ -167,7 +171,7 @@ contract LSP7CustomizableTokenTest is Test {
 
     function test_ConstructorSucceedsWithZeroInitialMint() public {
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintAmount: 0
         });
 
@@ -206,7 +210,7 @@ contract LSP7CustomizableTokenTest is Test {
 
     function test_ConstructorRevertsWithInvalidLockPeriod() public {
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintAmount: initialMintAmount
         });
 
@@ -277,7 +281,7 @@ contract LSP7CustomizableTokenTest is Test {
 
     function test_MintWithMaxSupplyCapAllowsUnlimitedMinting() public {
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintAmount: initialMintAmount
         });
 
@@ -317,7 +321,7 @@ contract LSP7CustomizableTokenTest is Test {
     // Balance Cap Tests
     function test_BalanceCapEnforcedCorrectly() public {
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintAmount: 2000
         });
 
@@ -366,7 +370,7 @@ contract LSP7CustomizableTokenTest is Test {
 
     function test_BalanceCapDisabledWhenZero() public {
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintAmount: 1000000
         });
 
@@ -421,7 +425,7 @@ contract LSP7CustomizableTokenTest is Test {
     function test_RevokeFailsWhenRevocationIsDisabled() public {
         bytes32 revokerRole = token.REVOKER_ROLE();
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            mintable: mintable,
+            isMintable: isMintable,
             initialMintAmount: 1000
         });
         LSP7NonTransferableParams

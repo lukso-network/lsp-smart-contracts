@@ -81,13 +81,15 @@ Set your deployer key first:
 export PRIVATE_KEY=0x...
 ```
 
-Dry run against LUKSO Testnet:
+## Dry run against LUKSO Testnet
 
 ```console
 FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network
 ```
 
-Broadcast the deployment:
+## Broadcast the deployment
+
+> Use one of the method described in the [foundry docs](https://www.getfoundry.sh/forge/scripting#providing-a-private-key) to broadcast from a specific address
 
 ```console
 FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast
@@ -96,5 +98,5 @@ FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8Cust
 Broadcast and verify on the LUKSO Testnet Blockscout explorer:
 
 ```console
-FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast --verify --verifier blockscout --verifier-url https://explorer.execution.testnet.lukso.network/api?
+FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast --verify --verifier blockscout --verifier-url https://api.explorer.execution.testnet.lukso.network/api?
 ```
