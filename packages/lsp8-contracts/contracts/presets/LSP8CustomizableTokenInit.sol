@@ -37,7 +37,7 @@ import {
 /// @dev Deployment configuration for minting feature.
 /// @param mintable True to enable minting after deployment, false to disable it forever.
 /// @param initialMintTokenIds Array of tokenIds to mint to `newOwner_` on deployment.
-struct MintableParamsInit {
+struct LSP8MintableParams {
     bool mintable;
     bytes32[] initialMintTokenIds;
 }
@@ -45,7 +45,7 @@ struct MintableParamsInit {
 /// @dev Deployment configuration for capped balance and capped supply features.
 /// @param tokenBalanceCap The maximum number of NFTs per address, 0 to disable.
 /// @param tokenSupplyCap The maximum total supply of NFTs, 0 to disable.
-struct CappedParamsInit {
+struct LSP8CappedParams {
     uint256 tokenBalanceCap;
     uint256 tokenSupplyCap;
 }
@@ -53,14 +53,14 @@ struct CappedParamsInit {
 /// @dev Deployment configuration for non-transferable feature.
 /// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
 /// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParamsInit {
+struct LSP8NonTransferableParams {
     uint256 transferLockStart;
     uint256 transferLockEnd;
 }
 
 /// @dev Deployment configuration for revokable feature.
 /// @param isRevokable True to enable token revocation after deployment, false to disable it.
-struct RevokableParamsInit {
+struct LSP8RevokableParams {
     bool isRevokable;
 }
 
@@ -100,10 +100,10 @@ contract LSP8CustomizableTokenInit is
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_,
-        MintableParamsInit calldata mintableParams,
-        NonTransferableParamsInit calldata nonTransferableParams,
-        CappedParamsInit calldata cappedParams,
-        RevokableParamsInit calldata revokableParams
+        LSP8MintableParams calldata mintableParams,
+        LSP8NonTransferableParams calldata nonTransferableParams,
+        LSP8CappedParams calldata cappedParams,
+        LSP8RevokableParams calldata revokableParams
     ) external virtual initializer {
         __LSP8CustomizableToken_init(
             name_,
@@ -125,10 +125,10 @@ contract LSP8CustomizableTokenInit is
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_,
-        MintableParamsInit calldata mintableParams,
-        NonTransferableParamsInit calldata nonTransferableParams,
-        CappedParamsInit calldata cappedParams,
-        RevokableParamsInit calldata revokableParams
+        LSP8MintableParams calldata mintableParams,
+        LSP8NonTransferableParams calldata nonTransferableParams,
+        LSP8CappedParams calldata cappedParams,
+        LSP8RevokableParams calldata revokableParams
     ) internal virtual onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,

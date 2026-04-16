@@ -34,7 +34,7 @@ import {
 /// @dev Deployment configuration for minting feature.
 /// @param mintable True to enable minting after deployment, false to disable it forever.
 /// @param initialMintAmount The amount of tokens to mint to `newOwner_` on deployment in wei.
-struct MintableParams {
+struct LSP7MintableParams {
     bool mintable;
     uint256 initialMintAmount;
 }
@@ -42,7 +42,7 @@ struct MintableParams {
 /// @dev Deployment configuration for capped balance and capped supply features.
 /// @param tokenBalanceCap The maximum balance per address in wei, 0 to disable.
 /// @param tokenSupplyCap The maximum total supply in wei, 0 to disable.
-struct CappedParams {
+struct LSP7CappedParams {
     uint256 tokenBalanceCap;
     uint256 tokenSupplyCap;
 }
@@ -50,14 +50,14 @@ struct CappedParams {
 /// @dev Deployment configuration for non-transferable feature.
 /// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
 /// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParams {
+struct LSP7NonTransferableParams {
     uint256 transferLockStart;
     uint256 transferLockEnd;
 }
 
 /// @dev Deployment configuration for revokable feature.
 /// @param isRevokable True to enable token revocation after deployment, false to disable it.
-struct RevokableParams {
+struct LSP7RevokableParams {
     bool isRevokable;
 }
 
@@ -93,10 +93,10 @@ contract LSP7CustomizableToken is
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        MintableParams memory mintableParams,
-        CappedParams memory cappedParams,
-        NonTransferableParams memory nonTransferableParams,
-        RevokableParams memory revokableParams
+        LSP7MintableParams memory mintableParams,
+        LSP7CappedParams memory cappedParams,
+        LSP7NonTransferableParams memory nonTransferableParams,
+        LSP7RevokableParams memory revokableParams
     )
         LSP7DigitalAsset(
             name_,

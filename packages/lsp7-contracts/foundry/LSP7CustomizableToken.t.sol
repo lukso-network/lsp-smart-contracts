@@ -7,10 +7,10 @@ import {Test} from "forge-std/Test.sol";
 // modules
 import {
     LSP7CustomizableToken,
-    MintableParams,
-    NonTransferableParams,
-    CappedParams,
-    RevokableParams
+    LSP7MintableParams,
+    LSP7NonTransferableParams,
+    LSP7CappedParams,
+    LSP7RevokableParams
 } from "../contracts/presets/LSP7CustomizableToken.sol";
 
 // errors
@@ -57,22 +57,22 @@ contract LSP7CustomizableTokenTest is Test {
     LSP7CustomizableToken token;
 
     function setUp() public {
-        MintableParams memory mintableParams = MintableParams({
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
             mintable: mintable,
             initialMintAmount: initialMintAmount
         });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
             tokenBalanceCap: tokenBalanceCap,
             tokenSupplyCap: tokenSupplyCap
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -132,22 +132,22 @@ contract LSP7CustomizableTokenTest is Test {
     }
 
     function test_ConstructorRevertsIfInitialMintExceedsSupplyCap() public {
-        MintableParams memory mintableParams = MintableParams({
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
             mintable: mintable,
             initialMintAmount: tokenSupplyCap + 1
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
             tokenBalanceCap: tokenBalanceCap,
             tokenSupplyCap: tokenSupplyCap
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -166,22 +166,22 @@ contract LSP7CustomizableTokenTest is Test {
     }
 
     function test_ConstructorSucceedsWithZeroInitialMint() public {
-        MintableParams memory mintableParams = MintableParams({
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
             mintable: mintable,
             initialMintAmount: 0
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
             tokenBalanceCap: tokenBalanceCap,
             tokenSupplyCap: tokenSupplyCap
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -205,22 +205,22 @@ contract LSP7CustomizableTokenTest is Test {
     }
 
     function test_ConstructorRevertsWithInvalidLockPeriod() public {
-        MintableParams memory mintableParams = MintableParams({
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
             mintable: mintable,
             initialMintAmount: initialMintAmount
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
                 transferLockStart: 200,
                 transferLockEnd: 100
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
             tokenBalanceCap: tokenBalanceCap,
             tokenSupplyCap: tokenSupplyCap
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -276,22 +276,22 @@ contract LSP7CustomizableTokenTest is Test {
     }
 
     function test_MintWithMaxSupplyCapAllowsUnlimitedMinting() public {
-        MintableParams memory mintableParams = MintableParams({
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
             mintable: mintable,
             initialMintAmount: initialMintAmount
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
             tokenBalanceCap: tokenBalanceCap,
             tokenSupplyCap: 0
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -316,22 +316,22 @@ contract LSP7CustomizableTokenTest is Test {
 
     // Balance Cap Tests
     function test_BalanceCapEnforcedCorrectly() public {
-        MintableParams memory mintableParams = MintableParams({
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
             mintable: mintable,
             initialMintAmount: 2000
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
             tokenBalanceCap: 1500,
             tokenSupplyCap: 0
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -365,22 +365,22 @@ contract LSP7CustomizableTokenTest is Test {
     }
 
     function test_BalanceCapDisabledWhenZero() public {
-        MintableParams memory mintableParams = MintableParams({
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
             mintable: mintable,
             initialMintAmount: 1000000
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
             tokenBalanceCap: 0, // tokenBalanceCap = 0 (disabled)
             tokenSupplyCap: 0 // tokenSupplyCap = 0 (disabled)
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -420,20 +420,20 @@ contract LSP7CustomizableTokenTest is Test {
 
     function test_RevokeFailsWhenRevocationIsDisabled() public {
         bytes32 revokerRole = token.REVOKER_ROLE();
-        MintableParams memory mintableParams = MintableParams({
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
             mintable: mintable,
             initialMintAmount: 1000
         });
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
-        CappedParams memory cappedParams = CappedParams({
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
             tokenBalanceCap: tokenBalanceCap,
             tokenSupplyCap: tokenSupplyCap
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
             isRevokable: false
         });
 

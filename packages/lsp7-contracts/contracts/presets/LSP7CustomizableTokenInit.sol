@@ -37,7 +37,7 @@ import {
 /// @dev Deployment configuration for minting feature.
 /// @param isMintable True to enable minting after deployment, false to disable it forever.
 /// @param initialMintAmount The amount of tokens to mint to `newOwner_` on deployment in wei.
-struct MintableParams {
+struct LSP7MintableParams {
     bool isMintable;
     uint256 initialMintAmount;
 }
@@ -45,7 +45,7 @@ struct MintableParams {
 /// @dev Deployment configuration for capped balance and capped supply features.
 /// @param tokenBalanceCap The maximum balance per address in wei, 0 to disable.
 /// @param tokenSupplyCap The maximum total supply in wei, 0 to disable.
-struct CappedParams {
+struct LSP7CappedParams {
     uint256 tokenBalanceCap;
     uint256 tokenSupplyCap;
 }
@@ -53,14 +53,14 @@ struct CappedParams {
 /// @dev Deployment configuration for non-transferable feature.
 /// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
 /// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParams {
+struct LSP7NonTransferableParams {
     uint256 transferLockStart;
     uint256 transferLockEnd;
 }
 
 /// @dev Deployment configuration for revokable feature.
 /// @param isRevokable True to enable token revocation after deployment, false to disable it.
-struct RevokableParams {
+struct LSP7RevokableParams {
     bool isRevokable;
 }
 
@@ -85,10 +85,10 @@ contract LSP7CustomizableTokenInit is
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        MintableParams calldata mintableParams,
-        NonTransferableParams calldata nonTransferableParams,
-        CappedParams calldata cappedParams,
-        RevokableParams calldata revokableParams
+        LSP7MintableParams calldata mintableParams,
+        LSP7NonTransferableParams calldata nonTransferableParams,
+        LSP7CappedParams calldata cappedParams,
+        LSP7RevokableParams calldata revokableParams
     ) external virtual initializer {
         __LSP7CustomizableToken_init(
             name_,
@@ -120,10 +120,10 @@ contract LSP7CustomizableTokenInit is
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        MintableParams calldata mintableParams,
-        CappedParams calldata cappedParams,
-        NonTransferableParams calldata nonTransferableParams,
-        RevokableParams calldata revokableParams
+        LSP7MintableParams calldata mintableParams,
+        LSP7CappedParams calldata cappedParams,
+        LSP7NonTransferableParams calldata nonTransferableParams,
+        LSP7RevokableParams calldata revokableParams
     ) internal virtual onlyInitializing {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,

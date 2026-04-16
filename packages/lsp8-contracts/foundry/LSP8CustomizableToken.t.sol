@@ -7,10 +7,10 @@ import {Test} from "forge-std/Test.sol";
 // modules
 import {
     LSP8CustomizableToken,
-    MintableParams,
-    NonTransferableParams,
-    CappedParams,
-    RevokableParams
+    LSP8MintableParams,
+    LSP8NonTransferableParams,
+    LSP8CappedParams,
+    LSP8RevokableParams
 } from "../contracts/presets/LSP8CustomizableToken.sol";
 
 // errors
@@ -76,22 +76,22 @@ contract LSP8CustomizableTokenTest is Test {
         initialTokenIds[1] = bytes32(uint256(2));
         initialTokenIds[2] = bytes32(uint256(3));
 
-        MintableParams memory mintableParams = MintableParams({
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
             mintable: mintable,
             initialMintTokenIds: initialTokenIds
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
             tokenBalanceCap: tokenBalanceCap,
             tokenSupplyCap: tokenSupplyCap
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -164,22 +164,22 @@ contract LSP8CustomizableTokenTest is Test {
             tooManyTokenIds[i] = bytes32(uint256(i + 1));
         }
 
-        MintableParams memory mintableParams = MintableParams({
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
             mintable: mintable,
             initialMintTokenIds: tooManyTokenIds
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
             tokenBalanceCap: tokenBalanceCap,
             tokenSupplyCap: tokenSupplyCap
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -199,22 +199,22 @@ contract LSP8CustomizableTokenTest is Test {
 
     function test_ConstructorSucceedsWithZeroInitialMint() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
-        MintableParams memory mintableParams = MintableParams({
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
             mintable: mintable,
             initialMintTokenIds: emptyTokenIds
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
             tokenBalanceCap: tokenBalanceCap,
             tokenSupplyCap: tokenSupplyCap
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -238,21 +238,21 @@ contract LSP8CustomizableTokenTest is Test {
     }
 
     function test_ConstructorRevertsWithInvalidLockPeriod() public {
-        MintableParams memory mintableParams = MintableParams({
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
             mintable: mintable,
             initialMintTokenIds: initialTokenIds
         });
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
                 transferLockStart: 200,
                 transferLockEnd: 100 // End before start - invalid
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
             tokenBalanceCap: tokenBalanceCap,
             tokenSupplyCap: tokenSupplyCap
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -314,23 +314,23 @@ contract LSP8CustomizableTokenTest is Test {
 
     function test_MintWithMaxSupplyCapAllowsUnlimitedMinting() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
-        MintableParams memory mintableParams = MintableParams({
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
             mintable: mintable,
             initialMintTokenIds: emptyTokenIds
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
 
         // Both caps disabled
-        CappedParams memory cappedParams = CappedParams({
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
             tokenBalanceCap: 0,
             tokenSupplyCap: 0
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -391,22 +391,22 @@ contract LSP8CustomizableTokenTest is Test {
 
     function test_BalanceCapDisabledWhenZero() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
-        MintableParams memory mintableParams = MintableParams({
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
             mintable: mintable,
             initialMintTokenIds: emptyTokenIds
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
             tokenBalanceCap: 0, // tokenBalanceCap = 0 (disabled)
             tokenSupplyCap: 0 // tokenSupplyCap = 0 (disabled)
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -461,22 +461,22 @@ contract LSP8CustomizableTokenTest is Test {
     // Transfer Tests
     function test_TransferDisabledWhenNonTransferable() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
-        MintableParams memory mintableParams = MintableParams({
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
             mintable: mintable,
             initialMintTokenIds: emptyTokenIds
         });
 
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
                 transferLockStart: 0,
                 transferLockEnd: type(uint256).max // non-transferable
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
             tokenBalanceCap: 0, // tokenBalanceCap = 0 (disabled)
             tokenSupplyCap: 0 // tokenSupplyCap = 0 (disabled)
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -509,23 +509,23 @@ contract LSP8CustomizableTokenTest is Test {
 
     function test_BypassRoleCanTransferWhenNonTransferable() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
-        MintableParams memory mintableParams = MintableParams({
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
             mintable: mintable,
             initialMintTokenIds: emptyTokenIds
         });
 
         // ALWAYS non-transferable
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
                 transferLockStart: 0,
                 transferLockEnd: type(uint256).max
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
             tokenBalanceCap: 0, // tokenBalanceCap = 0 (disabled)
             tokenSupplyCap: 0 // tokenSupplyCap = 0 (disabled)
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -569,23 +569,23 @@ contract LSP8CustomizableTokenTest is Test {
     // Burning Tests
     function test_BurningAllowedWhenNonTransferable() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
-        MintableParams memory mintableParams = MintableParams({
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
             mintable: mintable,
             initialMintTokenIds: emptyTokenIds
         });
 
         // ALWAYS non-transferable
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
                 transferLockStart: 0,
                 transferLockEnd: type(uint256).max
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
             tokenBalanceCap: 0, // tokenBalanceCap = 0 (disabled)
             tokenSupplyCap: 0 // tokenSupplyCap = 0 (disabled)
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
             isRevokable: isRevokable
         });
 
@@ -640,21 +640,21 @@ contract LSP8CustomizableTokenTest is Test {
     function test_RevokeFailsWhenRevocationIsDisabled() public {
         bytes32 revokerRole = token.REVOKER_ROLE();
         bytes32[] memory emptyTokenIds = new bytes32[](0);
-        MintableParams memory mintableParams = MintableParams({
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
             mintable: mintable,
             initialMintTokenIds: emptyTokenIds
         });
-        NonTransferableParams
-            memory nonTransferableParams = NonTransferableParams({
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
                 transferLockStart: transferLockStart,
                 transferLockEnd: transferLockEnd
             });
 
-        CappedParams memory cappedParams = CappedParams({
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
             tokenBalanceCap: tokenBalanceCap,
             tokenSupplyCap: tokenSupplyCap
         });
-        RevokableParams memory revokableParams = RevokableParams({
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
             isRevokable: false
         });
 

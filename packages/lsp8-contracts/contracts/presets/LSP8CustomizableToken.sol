@@ -36,7 +36,7 @@ import {
 /// @dev Deployment configuration for minting feature.
 /// @param mintable True to enable minting after deployment, false to disable it forever.
 /// @param initialMintTokenIds Array of tokenIds to mint to `newOwner_` on deployment.
-struct MintableParams {
+struct LSP8MintableParams {
     bool mintable;
     bytes32[] initialMintTokenIds;
 }
@@ -44,7 +44,7 @@ struct MintableParams {
 /// @dev Deployment configuration for capped balance and capped supply features.
 /// @param tokenBalanceCap The maximum number of NFTs per address, 0 to disable.
 /// @param tokenSupplyCap The maximum total supply of NFTs, 0 to disable.
-struct CappedParams {
+struct LSP8CappedParams {
     uint256 tokenBalanceCap;
     uint256 tokenSupplyCap;
 }
@@ -52,14 +52,14 @@ struct CappedParams {
 /// @dev Deployment configuration for non-transferable feature.
 /// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
 /// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParams {
+struct LSP8NonTransferableParams {
     uint256 transferLockStart;
     uint256 transferLockEnd;
 }
 
 /// @dev Deployment configuration for revokable feature.
 /// @param isRevokable True to enable token revocation after deployment, false to disable it.
-struct RevokableParams {
+struct LSP8RevokableParams {
     bool isRevokable;
 }
 
@@ -95,10 +95,10 @@ contract LSP8CustomizableToken is
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_,
-        MintableParams memory mintableParams,
-        CappedParams memory cappedParams,
-        NonTransferableParams memory nonTransferableParams,
-        RevokableParams memory revokableParams
+        LSP8MintableParams memory mintableParams,
+        LSP8CappedParams memory cappedParams,
+        LSP8NonTransferableParams memory nonTransferableParams,
+        LSP8RevokableParams memory revokableParams
     )
         LSP8IdentifiableDigitalAsset(
             name_,
