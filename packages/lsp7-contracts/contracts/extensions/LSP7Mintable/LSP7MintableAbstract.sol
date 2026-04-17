@@ -35,7 +35,7 @@ abstract contract LSP7MintableAbstract is
     /// @custom:info If `mintable_` is set to `true` then it can be disabled using `disableMinting()` function later on.
     constructor(bool mintable_) {
         isMintable = mintable_;
-        emit MintingStatusChanged(mintable_);
+        emit MintingStatusChanged({enabled: mintable_});
         _grantRole(MINTER_ROLE, owner());
     }
 
@@ -44,7 +44,7 @@ abstract contract LSP7MintableAbstract is
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP7MintDisabled());
         isMintable = false;
-        emit MintingStatusChanged(false);
+        emit MintingStatusChanged({enabled: false});
     }
 
     /// @inheritdoc ILSP7Mintable

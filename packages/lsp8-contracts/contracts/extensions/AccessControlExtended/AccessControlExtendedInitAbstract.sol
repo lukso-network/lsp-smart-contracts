@@ -284,7 +284,11 @@ abstract contract AccessControlExtendedInitAbstract is
 
         if (added) {
             _addressRoles[account].add(role);
-            emit RoleGranted(role, account, msg.sender);
+            emit RoleGranted({
+                role: role,
+                account: account,
+                sender: msg.sender
+            });
         }
     }
 
@@ -293,11 +297,15 @@ abstract contract AccessControlExtendedInitAbstract is
 
         if (removed) {
             _addressRoles[account].remove(role);
-            emit RoleRevoked(role, account, msg.sender);
+            emit RoleRevoked({
+                role: role,
+                account: account,
+                sender: msg.sender
+            });
 
             if (_roleData[role][account].length > 0) {
                 delete _roleData[role][account];
-                emit RoleDataChanged(role, account, "");
+                emit RoleDataChanged({role: role, account: account, data: ""});
             }
         }
     }
@@ -327,7 +335,11 @@ abstract contract AccessControlExtendedInitAbstract is
     function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
         bytes32 previousAdminRole = getRoleAdmin(role);
         _roleAdmins[role] = adminRole;
-        emit RoleAdminChanged(role, previousAdminRole, adminRole);
+        emit RoleAdminChanged({
+            role: role,
+            previousAdminRole: previousAdminRole,
+            newAdminRole: adminRole
+        });
     }
 
     // --- Ownership sync
@@ -370,7 +382,11 @@ abstract contract AccessControlExtendedInitAbstract is
 
                 if (oldOwnerRoleData.length > 0) {
                     _roleData[role][newOwner] = oldOwnerRoleData;
-                    emit RoleDataChanged(role, newOwner, oldOwnerRoleData);
+                    emit RoleDataChanged({
+                        role: role,
+                        account: newOwner,
+                        data: oldOwnerRoleData
+                    });
                 }
             }
         }
@@ -380,6 +396,9 @@ abstract contract AccessControlExtendedInitAbstract is
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     *
+     * @custom:info The size of the `__gap` array is calculated so that the amount of storage used by the contract
+     * always adds up to the same number (in this case 50 storage slots).
      */
-    uint256[49] private __gap;
+    uint256[46] private __gap;
 }

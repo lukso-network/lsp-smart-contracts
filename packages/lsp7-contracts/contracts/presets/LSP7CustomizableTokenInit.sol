@@ -29,40 +29,18 @@ import {
     LSP7RevokableInitAbstract
 } from "../extensions/LSP7Revokable/LSP7RevokableInitAbstract.sol";
 
+// constants
+import {
+    LSP7MintableParams,
+    LSP7NonTransferableParams,
+    LSP7CappedParams,
+    LSP7RevokableParams
+} from "./LSP7CustomizableTokenConstants.sol";
+
 // errors
 import {
     LSP7MintDisabled
 } from "../extensions/LSP7Mintable/LSP7MintableErrors.sol";
-
-/// @dev Deployment configuration for minting feature.
-/// @param isMintable True to enable minting after deployment, false to disable it forever.
-/// @param initialMintAmount The amount of tokens to mint to `newOwner_` on deployment in wei.
-struct MintableParams {
-    bool isMintable;
-    uint256 initialMintAmount;
-}
-
-/// @dev Deployment configuration for capped balance and capped supply features.
-/// @param tokenBalanceCap The maximum balance per address in wei, 0 to disable.
-/// @param tokenSupplyCap The maximum total supply in wei, 0 to disable.
-struct CappedParams {
-    uint256 tokenBalanceCap;
-    uint256 tokenSupplyCap;
-}
-
-/// @dev Deployment configuration for non-transferable feature.
-/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParams {
-    uint256 transferLockStart;
-    uint256 transferLockEnd;
-}
-
-/// @dev Deployment configuration for revokable feature.
-/// @param isRevokable True to enable token revocation after deployment, false to disable it.
-struct RevokableParams {
-    bool isRevokable;
-}
 
 /// @title LSP7CustomizableTokenInit
 /// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
@@ -80,15 +58,15 @@ contract LSP7CustomizableTokenInit is
     LSP7RevokableInitAbstract
 {
     function initialize(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        MintableParams memory mintableParams,
-        NonTransferableParams memory nonTransferableParams,
-        CappedParams memory cappedParams,
-        RevokableParams memory revokableParams
+        LSP7MintableParams calldata mintableParams,
+        LSP7NonTransferableParams calldata nonTransferableParams,
+        LSP7CappedParams calldata cappedParams,
+        LSP7RevokableParams calldata revokableParams
     ) external virtual initializer {
         __LSP7CustomizableToken_init(
             name_,
@@ -115,15 +93,15 @@ contract LSP7CustomizableTokenInit is
     /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     /// @param revokableParams Deployment configuration for revokable feature (see above).
     function __LSP7CustomizableToken_init(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        MintableParams memory mintableParams,
-        CappedParams memory cappedParams,
-        NonTransferableParams memory nonTransferableParams,
-        RevokableParams memory revokableParams
+        LSP7MintableParams calldata mintableParams,
+        LSP7CappedParams calldata cappedParams,
+        LSP7NonTransferableParams calldata nonTransferableParams,
+        LSP7RevokableParams calldata revokableParams
     ) internal virtual onlyInitializing {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,

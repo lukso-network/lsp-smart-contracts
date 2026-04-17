@@ -26,40 +26,18 @@ import {
     LSP7RevokableAbstract
 } from "../extensions/LSP7Revokable/LSP7RevokableAbstract.sol";
 
+// constants
+import {
+    LSP7MintableParams,
+    LSP7CappedParams,
+    LSP7NonTransferableParams,
+    LSP7RevokableParams
+} from "./LSP7CustomizableTokenConstants.sol";
+
 // errors
 import {
     LSP7MintDisabled
 } from "../extensions/LSP7Mintable/LSP7MintableErrors.sol";
-
-/// @dev Deployment configuration for minting feature.
-/// @param mintable True to enable minting after deployment, false to disable it forever.
-/// @param initialMintAmount The amount of tokens to mint to `newOwner_` on deployment in wei.
-struct MintableParams {
-    bool mintable;
-    uint256 initialMintAmount;
-}
-
-/// @dev Deployment configuration for capped balance and capped supply features.
-/// @param tokenBalanceCap The maximum balance per address in wei, 0 to disable.
-/// @param tokenSupplyCap The maximum total supply in wei, 0 to disable.
-struct CappedParams {
-    uint256 tokenBalanceCap;
-    uint256 tokenSupplyCap;
-}
-
-/// @dev Deployment configuration for non-transferable feature.
-/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParams {
-    uint256 transferLockStart;
-    uint256 transferLockEnd;
-}
-
-/// @dev Deployment configuration for revokable feature.
-/// @param isRevokable True to enable token revocation after deployment, false to disable it.
-struct RevokableParams {
-    bool isRevokable;
-}
 
 /// @title LSP7CustomizableToken
 /// @dev A customizable LSP7 token (proxy version) implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
@@ -93,10 +71,10 @@ contract LSP7CustomizableToken is
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        MintableParams memory mintableParams,
-        CappedParams memory cappedParams,
-        NonTransferableParams memory nonTransferableParams,
-        RevokableParams memory revokableParams
+        LSP7MintableParams memory mintableParams,
+        LSP7CappedParams memory cappedParams,
+        LSP7NonTransferableParams memory nonTransferableParams,
+        LSP7RevokableParams memory revokableParams
     )
         LSP7DigitalAsset(
             name_,
@@ -106,7 +84,7 @@ contract LSP7CustomizableToken is
             isNonDivisible_
         )
         AccessControlExtendedAbstract(newOwner_)
-        LSP7MintableAbstract(mintableParams.mintable)
+        LSP7MintableAbstract(mintableParams.isMintable)
         LSP7CappedSupplyAbstract(cappedParams.tokenSupplyCap)
         LSP7CappedBalanceAbstract(cappedParams.tokenBalanceCap)
         LSP7NonTransferableAbstract(

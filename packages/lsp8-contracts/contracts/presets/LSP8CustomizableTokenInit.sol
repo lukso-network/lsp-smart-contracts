@@ -29,40 +29,18 @@ import {
     LSP8RevokableInitAbstract
 } from "../extensions/LSP8Revokable/LSP8RevokableInitAbstract.sol";
 
+// constants
+import {
+    LSP8MintableParams,
+    LSP8NonTransferableParams,
+    LSP8CappedParams,
+    LSP8RevokableParams
+} from "./LSP8CustomizableTokenConstants.sol";
+
 // errors
 import {
     LSP8MintDisabled
 } from "../extensions/LSP8Mintable/LSP8MintableErrors.sol";
-
-/// @dev Deployment configuration for minting feature.
-/// @param mintable True to enable minting after deployment, false to disable it forever.
-/// @param initialMintTokenIds Array of tokenIds to mint to `newOwner_` on deployment.
-struct MintableParamsInit {
-    bool mintable;
-    bytes32[] initialMintTokenIds;
-}
-
-/// @dev Deployment configuration for capped balance and capped supply features.
-/// @param tokenBalanceCap The maximum number of NFTs per address, 0 to disable.
-/// @param tokenSupplyCap The maximum total supply of NFTs, 0 to disable.
-struct CappedParamsInit {
-    uint256 tokenBalanceCap;
-    uint256 tokenSupplyCap;
-}
-
-/// @dev Deployment configuration for non-transferable feature.
-/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParamsInit {
-    uint256 transferLockStart;
-    uint256 transferLockEnd;
-}
-
-/// @dev Deployment configuration for revokable feature.
-/// @param isRevokable True to enable token revocation after deployment, false to disable it.
-struct RevokableParamsInit {
-    bool isRevokable;
-}
 
 /// @title LSP8CustomizableTokenInit
 /// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions. This is the proxy-deployable version.
@@ -95,15 +73,15 @@ contract LSP8CustomizableTokenInit is
     /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
     function initialize(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_,
-        MintableParamsInit memory mintableParams,
-        NonTransferableParamsInit memory nonTransferableParams,
-        CappedParamsInit memory cappedParams,
-        RevokableParamsInit memory revokableParams
+        LSP8MintableParams calldata mintableParams,
+        LSP8NonTransferableParams calldata nonTransferableParams,
+        LSP8CappedParams calldata cappedParams,
+        LSP8RevokableParams calldata revokableParams
     ) external virtual initializer {
         __LSP8CustomizableToken_init(
             name_,
@@ -120,15 +98,15 @@ contract LSP8CustomizableTokenInit is
 
     /// @dev Internal initialization function.
     function __LSP8CustomizableToken_init(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_,
-        MintableParamsInit memory mintableParams,
-        NonTransferableParamsInit memory nonTransferableParams,
-        CappedParamsInit memory cappedParams,
-        RevokableParamsInit memory revokableParams
+        LSP8MintableParams calldata mintableParams,
+        LSP8NonTransferableParams calldata nonTransferableParams,
+        LSP8CappedParams calldata cappedParams,
+        LSP8RevokableParams calldata revokableParams
     ) internal virtual onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
@@ -138,7 +116,7 @@ contract LSP8CustomizableTokenInit is
             lsp8TokenIdFormat_
         );
         __AccessControlExtended_init_unchained(newOwner_);
-        __LSP8Mintable_init_unchained(mintableParams.mintable);
+        __LSP8Mintable_init_unchained(mintableParams.isMintable);
         __LSP8CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
         __LSP8CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
         __LSP8NonTransferable_init_unchained(
