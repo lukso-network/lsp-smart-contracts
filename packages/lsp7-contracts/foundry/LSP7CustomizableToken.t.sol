@@ -705,6 +705,133 @@ contract LSP7CustomizableTokenTest is Test {
         lockedToken.updateTransferLockPeriod(1, 2);
     }
 
+    // Fuzzing Tests
+    function testFuzz_MintAmountRespectsBalanceCap(
+        uint256 cap,
+        uint256 currentBalance,
+        uint256 mintAmount
+    ) public {
+        uint256 boundedCap = bound(cap, 1, type(uint128).max);
+        uint256 boundedCurrentBalance = bound(currentBalance, 0, boundedCap);
+        uint256 boundedMintAmount = bound(mintAmount, 1, type(uint128).max);
+
+        LSP7CustomizableToken cappedToken = _deployToken({
+            isMintable_: true,
+            initialMintAmount_: 0,
+            tokenBalanceCap_: boundedCap,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            isRevokable_: true
+        });
+
+        if (boundedCurrentBalance > 0) {
+            cappedToken.mint(user1, boundedCurrentBalance, true, "");
+        }
+
+        if (boundedCurrentBalance + boundedMintAmount > boundedCap) {
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP7CappedBalanceExceeded.selector,
+                    user1,
+                    boundedMintAmount,
+                    boundedCurrentBalance,
+                    boundedCap
+                )
+            );
+            cappedToken.mint(user1, boundedMintAmount, true, "");
+
+            assertEq(cappedToken.balanceOf(user1), boundedCurrentBalance);
+            return;
+        }
+
+        cappedToken.mint(user1, boundedMintAmount, true, "");
+        assertEq(
+            cappedToken.balanceOf(user1),
+            boundedCurrentBalance + boundedMintAmount
+        );
+    }
+
+    function testFuzz_TransferAmountRespectsBalanceCap(
+        uint256 cap,
+        uint256 currentBalance,
+        uint256 transferAmount
+    ) public {
+        uint256 boundedCap = bound(cap, 1, type(uint128).max);
+        uint256 boundedCurrentBalance = bound(currentBalance, 0, boundedCap);
+        uint256 boundedTransferAmount = bound(
+            transferAmount,
+            1,
+            type(uint128).max
+        );
+
+        LSP7CustomizableToken cappedToken = _deployToken({
+            isMintable_: true,
+            initialMintAmount_: boundedCurrentBalance + boundedTransferAmount,
+            tokenBalanceCap_: boundedCap,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            isRevokable_: true
+        });
+
+        if (boundedCurrentBalance > 0) {
+            cappedToken.transfer(owner, user1, boundedCurrentBalance, true, "");
+        }
+
+        if (boundedCurrentBalance + boundedTransferAmount > boundedCap) {
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP7CappedBalanceExceeded.selector,
+                    user1,
+                    boundedTransferAmount,
+                    boundedCurrentBalance,
+                    boundedCap
+                )
+            );
+            cappedToken.transfer(owner, user1, boundedTransferAmount, true, "");
+
+            assertEq(cappedToken.balanceOf(user1), boundedCurrentBalance);
+            return;
+        }
+
+        cappedToken.transfer(owner, user1, boundedTransferAmount, true, "");
+        assertEq(
+            cappedToken.balanceOf(user1),
+            boundedCurrentBalance + boundedTransferAmount
+        );
+    }
+
+    function testFuzz_MintAmountRespectsSupplyCap(
+        uint256 cap,
+        uint256 amountToMint
+    ) public {
+        uint256 boundedCap = bound(cap, 1, type(uint128).max);
+        uint256 boundedAmountToMint = bound(amountToMint, 1, type(uint128).max);
+
+        LSP7CustomizableToken cappedToken = _deployToken({
+            isMintable_: true,
+            initialMintAmount_: 0,
+            tokenBalanceCap_: 0,
+            tokenSupplyCap_: boundedCap,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            isRevokable_: true
+        });
+
+        if (boundedAmountToMint > boundedCap) {
+            vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
+            cappedToken.mint(owner, boundedAmountToMint, true, "");
+
+            assertEq(cappedToken.totalSupply(), 0);
+            return;
+        }
+
+        cappedToken.mint(owner, boundedAmountToMint, true, "");
+        assertEq(cappedToken.totalSupply(), boundedAmountToMint);
+        assertEq(cappedToken.balanceOf(owner), boundedAmountToMint);
+    }
+
     function test_RevokeFailsWhenRevocationIsDisabled() public {
         bytes32 revokerRole = token.REVOKER_ROLE();
         LSP7MintableParams memory mintableParams = LSP7MintableParams({

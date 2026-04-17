@@ -266,6 +266,42 @@ contract LSP8CappedSupplyTest is Test {
 
     // ------ Fuzzing ------
 
+    function testFuzz_MintAmountRespectsSupplyCap(
+        uint256 cap,
+        uint256 amountToMint
+    ) public {
+        cap = bound(uint256(cap), 1, 100);
+        amountToMint = bound(uint256(amountToMint), 1, 150);
+
+        MockLSP8CappedSupply token = new MockLSP8CappedSupply(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            cap
+        );
+
+        if (amountToMint > cap) {
+            for (uint256 i = 1; i <= cap; i++) {
+                token.mint(user1, bytes32(i), true, "");
+            }
+
+            vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
+            token.mint(user1, bytes32(cap + 1), true, "");
+
+            assertEq(token.totalSupply(), cap);
+            return;
+        }
+
+        for (uint256 i = 1; i <= amountToMint; i++) {
+            token.mint(user1, bytes32(i), true, "");
+        }
+
+        assertEq(token.totalSupply(), amountToMint);
+        assertEq(token.balanceOf(user1), amountToMint);
+    }
+
     function testFuzz_SupplyCapEnforcement(uint8 cap, uint8 mintCount) public {
         vm.assume(cap > 0 && cap <= 100);
         vm.assume(mintCount > 0 && mintCount <= 150);

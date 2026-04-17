@@ -289,6 +289,105 @@ contract LSP7CappedBalanceTest is Test {
 
     // ------ Fuzzing ------
 
+    function testFuzz_MintAmountRespectsBalanceCap(
+        uint256 cap,
+        uint256 currentBalance,
+        uint256 mintAmount
+    ) public {
+        cap = bound(cap, 1, type(uint128).max);
+        currentBalance = bound(currentBalance, 1, cap);
+        mintAmount = bound(mintAmount, 1, type(uint128).max);
+
+        MockLSP7CappedBalance token = new MockLSP7CappedBalance(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            cap
+        );
+
+        token.mint(recipient, currentBalance, true, "");
+
+        uint256 newExpectedBalance = currentBalance + mintAmount;
+
+        if (newExpectedBalance > cap) {
+            // If the new balance is expected to be greater than the cap, test that it reverts
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP7CappedBalanceExceeded.selector,
+                    recipient,
+                    mintAmount,
+                    currentBalance,
+                    cap
+                )
+            );
+            token.mint(recipient, mintAmount, true, "");
+
+            assertEq(token.balanceOf(recipient), currentBalance);
+        } else {
+            // Otherwise test that mint succeeds and the balance increased
+            token.mint(recipient, mintAmount, true, "");
+            assertEq(token.balanceOf(recipient), currentBalance + mintAmount);
+        }
+    }
+
+    function testFuzz_TransferAmountRespectsBalanceCap(
+        uint256 cap,
+        uint256 currentBalance,
+        uint256 transferAmount
+    ) public {
+        uint256 boundedCap = bound(cap, 1, type(uint128).max);
+        uint256 boundedCurrentBalance = bound(currentBalance, 0, boundedCap);
+        uint256 boundedTransferAmount = bound(
+            transferAmount,
+            1,
+            type(uint128).max
+        );
+
+        MockLSP7CappedBalance token = new MockLSP7CappedBalance(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            boundedCap
+        );
+
+        token.mint(
+            owner,
+            boundedCurrentBalance + boundedTransferAmount,
+            true,
+            ""
+        );
+
+        if (boundedCurrentBalance > 0) {
+            token.transfer(owner, recipient, boundedCurrentBalance, true, "");
+        }
+
+        if (boundedCurrentBalance + boundedTransferAmount > boundedCap) {
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP7CappedBalanceExceeded.selector,
+                    recipient,
+                    boundedTransferAmount,
+                    boundedCurrentBalance,
+                    boundedCap
+                )
+            );
+            token.transfer(owner, recipient, boundedTransferAmount, true, "");
+
+            assertEq(token.balanceOf(recipient), boundedCurrentBalance);
+            return;
+        }
+
+        token.transfer(owner, recipient, boundedTransferAmount, true, "");
+        assertEq(
+            token.balanceOf(recipient),
+            boundedCurrentBalance + boundedTransferAmount
+        );
+    }
+
     function testFuzz_CannotHoldMoreThanMaxBalance(uint256 amount) public {
         lsp7CappedBalance.mint(recipient, 900, true, "");
         assertEq(lsp7CappedBalance.balanceOf(recipient), 900);

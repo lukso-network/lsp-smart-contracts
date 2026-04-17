@@ -211,6 +211,20 @@ contract LSP8NonTransferableTest is Test {
         );
     }
 
+    function test_ConstructorAssignsNonTransferableBypassRoleToOwner() public {
+        assertTrue(
+            lsp8NonTransferable.hasRole(nonTransferableBypassRole, owner),
+            "Owner should have NON_TRANSFERABLE_BYPASS_ROLE"
+        );
+        assertFalse(
+            lsp8NonTransferable.hasRole(
+                nonTransferableBypassRole,
+                nonAllowlistedUser
+            ),
+            "Non allowlisted user should not have NON_TRANSFERABLE_BYPASS_ROLE"
+        );
+    }
+
     // Transferability
     function test_OwnerCanTransfer() public {
         assertEq(lsp8NonTransferable.balanceOf(recipient), 0);

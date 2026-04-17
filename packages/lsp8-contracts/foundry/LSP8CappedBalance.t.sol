@@ -92,6 +92,17 @@ contract LSP8CappedBalanceTest is Test {
         );
     }
 
+    function _mintTokenIds(
+        MockLSP8CappedBalance token,
+        address to,
+        uint256 startTokenId,
+        uint256 count
+    ) internal {
+        for (uint256 i = 0; i < count; i++) {
+            token.mint(to, bytes32(startTokenId + i), true, "");
+        }
+    }
+
     // Test constructor initialization
     function test_ConstructorInitializesCorrectly() public {
         assertEq(
@@ -282,6 +293,118 @@ contract LSP8CappedBalanceTest is Test {
     }
 
     // ------ Fuzzing ------
+
+    function testFuzz_MintAmountRespectsBalanceCap(
+        uint8 cap,
+        uint8 currentBalance,
+        uint8 mintAmount
+    ) public {
+        uint256 boundedCap = bound(uint256(cap), 1, 50);
+        uint256 boundedCurrentBalance = bound(
+            uint256(currentBalance),
+            0,
+            boundedCap
+        );
+        uint256 boundedMintAmount = bound(uint256(mintAmount), 1, 50);
+
+        MockLSP8CappedBalance token = new MockLSP8CappedBalance(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            boundedCap
+        );
+
+        _mintTokenIds(token, user1, 1, boundedCurrentBalance);
+
+        uint256 availableCapacity = boundedCap - boundedCurrentBalance;
+
+        if (boundedMintAmount > availableCapacity) {
+            _mintTokenIds(token, user1, 1_000, availableCapacity);
+
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP8CappedBalanceExceeded.selector,
+                    user1,
+                    boundedCap,
+                    boundedCap
+                )
+            );
+            token.mint(user1, bytes32(1_000 + availableCapacity), true, "");
+
+            assertEq(token.balanceOf(user1), boundedCap);
+            return;
+        }
+
+        _mintTokenIds(token, user1, 1_000, boundedMintAmount);
+        assertEq(
+            token.balanceOf(user1),
+            boundedCurrentBalance + boundedMintAmount
+        );
+    }
+
+    function testFuzz_TransferAmountRespectsBalanceCap(
+        uint8 cap,
+        uint8 currentBalance,
+        uint8 transferAmount
+    ) public {
+        uint256 boundedCap = bound(uint256(cap), 1, 50);
+        uint256 boundedCurrentBalance = bound(
+            uint256(currentBalance),
+            0,
+            boundedCap
+        );
+        uint256 boundedTransferAmount = bound(uint256(transferAmount), 1, 50);
+
+        MockLSP8CappedBalance token = new MockLSP8CappedBalance(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            boundedCap
+        );
+
+        _mintTokenIds(token, user1, 1, boundedCurrentBalance);
+        _mintTokenIds(token, owner, 10_000, boundedTransferAmount);
+
+        uint256 availableCapacity = boundedCap - boundedCurrentBalance;
+
+        if (boundedTransferAmount > availableCapacity) {
+            for (uint256 i = 0; i < availableCapacity; i++) {
+                token.transfer(owner, user1, bytes32(10_000 + i), true, "");
+            }
+
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP8CappedBalanceExceeded.selector,
+                    user1,
+                    boundedCap,
+                    boundedCap
+                )
+            );
+            token.transfer(
+                owner,
+                user1,
+                bytes32(10_000 + availableCapacity),
+                true,
+                ""
+            );
+
+            assertEq(token.balanceOf(user1), boundedCap);
+            return;
+        }
+
+        for (uint256 i = 0; i < boundedTransferAmount; i++) {
+            token.transfer(owner, user1, bytes32(10_000 + i), true, "");
+        }
+
+        assertEq(
+            token.balanceOf(user1),
+            boundedCurrentBalance + boundedTransferAmount
+        );
+    }
 
     function testFuzz_BalanceCapEnforcement(uint8 cap, uint8 mintCount) public {
         vm.assume(cap > 0 && cap <= 100);

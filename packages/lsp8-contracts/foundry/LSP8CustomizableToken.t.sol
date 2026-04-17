@@ -196,6 +196,17 @@ contract LSP8CustomizableTokenTest is Test {
         }
     }
 
+    function _mintTokenIds(
+        LSP8CustomizableToken deployedToken,
+        address to,
+        uint256 startTokenId,
+        uint256 count
+    ) internal {
+        for (uint256 i = 0; i < count; i++) {
+            deployedToken.mint(to, bytes32(startTokenId + i), true, "");
+        }
+    }
+
     // Constructor Tests
     function test_ConstructorInitializesCorrectly() public {
         assertEq(
@@ -874,6 +885,168 @@ contract LSP8CustomizableTokenTest is Test {
         vm.expectRevert(LSP8CannotUpdateTransferLockPeriod.selector);
         lockedToken.updateTransferLockPeriod(1, 2);
     }
+
+    // Fuzzing Tests
+    function testFuzz_MintAmountRespectsBalanceCap(
+        uint8 cap,
+        uint8 currentBalance,
+        uint8 mintAmount
+    ) public {
+        uint256 boundedCap = bound(uint256(cap), 1, 50);
+        uint256 boundedCurrentBalance = bound(
+            uint256(currentBalance),
+            0,
+            boundedCap
+        );
+        uint256 boundedMintAmount = bound(uint256(mintAmount), 1, 50);
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+
+        LSP8CustomizableToken cappedToken = _deployToken({
+            mintable_: true,
+            initialTokenIds_: emptyTokenIds,
+            tokenBalanceCap_: boundedCap,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            revokable_: true
+        });
+
+        _mintTokenIds(cappedToken, user1, 1, boundedCurrentBalance);
+
+        uint256 availableCapacity = boundedCap - boundedCurrentBalance;
+
+        if (boundedMintAmount > availableCapacity) {
+            _mintTokenIds(cappedToken, user1, 1_000, availableCapacity);
+
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP8CappedBalanceExceeded.selector,
+                    user1,
+                    boundedCap,
+                    boundedCap
+                )
+            );
+            cappedToken.mint(
+                user1,
+                bytes32(1_000 + availableCapacity),
+                true,
+                ""
+            );
+
+            assertEq(cappedToken.balanceOf(user1), boundedCap);
+            return;
+        }
+
+        _mintTokenIds(cappedToken, user1, 1_000, boundedMintAmount);
+        assertEq(
+            cappedToken.balanceOf(user1),
+            boundedCurrentBalance + boundedMintAmount
+        );
+    }
+
+    function testFuzz_TransferAmountRespectsBalanceCap(
+        uint8 cap,
+        uint8 currentBalance,
+        uint8 transferAmount
+    ) public {
+        uint256 boundedCap = bound(uint256(cap), 1, 50);
+        uint256 boundedCurrentBalance = bound(
+            uint256(currentBalance),
+            0,
+            boundedCap
+        );
+        uint256 boundedTransferAmount = bound(uint256(transferAmount), 1, 50);
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+
+        LSP8CustomizableToken cappedToken = _deployToken({
+            mintable_: true,
+            initialTokenIds_: emptyTokenIds,
+            tokenBalanceCap_: boundedCap,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            revokable_: true
+        });
+
+        _mintTokenIds(cappedToken, user1, 1, boundedCurrentBalance);
+        _mintTokenIds(cappedToken, owner, 10_000, boundedTransferAmount);
+
+        uint256 availableCapacity = boundedCap - boundedCurrentBalance;
+
+        if (boundedTransferAmount > availableCapacity) {
+            for (uint256 i = 0; i < availableCapacity; i++) {
+                cappedToken.transfer(
+                    owner,
+                    user1,
+                    bytes32(10_000 + i),
+                    true,
+                    ""
+                );
+            }
+
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP8CappedBalanceExceeded.selector,
+                    user1,
+                    boundedCap,
+                    boundedCap
+                )
+            );
+            cappedToken.transfer(
+                owner,
+                user1,
+                bytes32(10_000 + availableCapacity),
+                true,
+                ""
+            );
+
+            assertEq(cappedToken.balanceOf(user1), boundedCap);
+            return;
+        }
+
+        for (uint256 i = 0; i < boundedTransferAmount; i++) {
+            cappedToken.transfer(owner, user1, bytes32(10_000 + i), true, "");
+        }
+
+        assertEq(
+            cappedToken.balanceOf(user1),
+            boundedCurrentBalance + boundedTransferAmount
+        );
+    }
+
+    function testFuzz_MintAmountRespectsSupplyCap(
+        uint8 cap,
+        uint8 amountToMint
+    ) public {
+        uint256 boundedCap = bound(uint256(cap), 1, 100);
+        uint256 boundedAmountToMint = bound(uint256(amountToMint), 1, 150);
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+
+        LSP8CustomizableToken cappedToken = _deployToken({
+            mintable_: true,
+            initialTokenIds_: emptyTokenIds,
+            tokenBalanceCap_: 0,
+            tokenSupplyCap_: boundedCap,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            revokable_: true
+        });
+
+        if (boundedAmountToMint > boundedCap) {
+            _mintTokenIds(cappedToken, owner, 1, boundedCap);
+
+            vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
+            cappedToken.mint(owner, bytes32(boundedCap + 1), true, "");
+
+            assertEq(cappedToken.totalSupply(), boundedCap);
+            return;
+        }
+
+        _mintTokenIds(cappedToken, owner, 1, boundedAmountToMint);
+        assertEq(cappedToken.totalSupply(), boundedAmountToMint);
+        assertEq(cappedToken.balanceOf(owner), boundedAmountToMint);
+    }
+
     function test_ConstructorInitializesCorrectlyWithSomeTokenIds() public {
         bytes32[] memory someTokenIds = new bytes32[](3);
         someTokenIds[
