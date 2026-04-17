@@ -25,6 +25,8 @@ import {
 } from "../contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceErrors.sol";
 import {
     LSP8TransferDisabled,
+    LSP8CannotUpdateTransferLockPeriod,
+    LSP8TokenAlreadyTransferable,
     LSP8InvalidTransferLockPeriod
 } from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableErrors.sol";
 import {
@@ -55,6 +57,9 @@ contract LSP8CustomizableTokenTest is Test {
     address nonOwner = vm.addr(100);
     address user1 = vm.addr(101);
     address user2 = vm.addr(102);
+    address newOwner = vm.addr(103);
+    address revoker1 = vm.addr(104);
+    address revoker2 = vm.addr(105);
     address zeroAddress = address(0);
 
     bytes32 constant MINTER_ROLE =
@@ -108,6 +113,89 @@ contract LSP8CustomizableTokenTest is Test {
         );
     }
 
+    function _deployToken(
+        bool mintable_,
+        bytes32[] memory initialTokenIds_,
+        uint256 tokenBalanceCap_,
+        uint256 tokenSupplyCap_,
+        uint256 transferLockStart_,
+        uint256 transferLockEnd_,
+        bool revokable_
+    ) internal returns (LSP8CustomizableToken deployedToken) {
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: mintable_,
+            initialMintTokenIds: initialTokenIds_
+        });
+
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: transferLockStart_,
+                transferLockEnd: transferLockEnd_
+            });
+
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: tokenBalanceCap_,
+            tokenSupplyCap: tokenSupplyCap_
+        });
+
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: revokable_
+        });
+
+        deployedToken = new LSP8CustomizableToken(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+    }
+
+    function _assertOwnerFeatureRoles(
+        LSP8CustomizableToken deployedToken,
+        address contractOwner,
+        bool shouldHaveRevokerRole
+    ) internal {
+        assertTrue(
+            deployedToken.hasRole(
+                deployedToken.DEFAULT_ADMIN_ROLE(),
+                contractOwner
+            )
+        );
+        assertTrue(
+            deployedToken.hasRole(deployedToken.MINTER_ROLE(), contractOwner)
+        );
+        assertTrue(
+            deployedToken.hasRole(deployedToken.UNCAPPED_ROLE(), contractOwner)
+        );
+        assertTrue(
+            deployedToken.hasRole(
+                deployedToken.NON_TRANSFERABLE_BYPASS_ROLE(),
+                contractOwner
+            )
+        );
+
+        if (shouldHaveRevokerRole) {
+            assertTrue(
+                deployedToken.hasRole(
+                    deployedToken.REVOKER_ROLE(),
+                    contractOwner
+                )
+            );
+        } else {
+            assertFalse(
+                deployedToken.hasRole(
+                    deployedToken.REVOKER_ROLE(),
+                    contractOwner
+                )
+            );
+        }
+    }
+
     // Constructor Tests
     function test_ConstructorInitializesCorrectly() public {
         assertEq(
@@ -152,6 +240,14 @@ contract LSP8CustomizableTokenTest is Test {
             "Owner should have MINTER_ROLE"
         );
         assertTrue(
+            token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner),
+            "Owner should have DEFAULT_ADMIN_ROLE"
+        );
+        assertTrue(
+            token.hasRole(token.REVOKER_ROLE(), owner),
+            "Owner should have REVOKER_ROLE"
+        );
+        assertTrue(
             token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, owner),
             "Owner should have bypass role"
         );
@@ -159,6 +255,45 @@ contract LSP8CustomizableTokenTest is Test {
             token.hasRole(UNCAPPED_ROLE, owner),
             "Owner should have UNCAPPED_ROLE"
         );
+    }
+
+    function test_ConstructorAssignsOwnerRolesAcrossFeatureCombinations()
+        public
+    {
+        _assertOwnerFeatureRoles(token, owner, true);
+
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+        LSP8CustomizableToken nonRevokableToken = _deployToken({
+            mintable_: false,
+            initialTokenIds_: emptyTokenIds,
+            tokenBalanceCap_: 0,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            revokable_: false
+        });
+        _assertOwnerFeatureRoles({
+            deployedToken: nonRevokableToken,
+            contractOwner: owner,
+            shouldHaveRevokerRole: false
+        });
+
+        assertEq(
+            nonRevokableToken.totalSupply(),
+            0,
+            "Total supply should be 0 since we passed an empty array of token IDs"
+        );
+
+        LSP8CustomizableToken lockedToken = _deployToken({
+            mintable_: true,
+            initialTokenIds_: emptyTokenIds,
+            tokenBalanceCap_: 0,
+            tokenSupplyCap_: 0,
+            transferLockStart_: block.timestamp + 1 days,
+            transferLockEnd_: 0,
+            revokable_: true
+        });
+        _assertOwnerFeatureRoles(lockedToken, owner, true);
     }
 
     function test_ConstructorRevertsIfInitialMintExceedsSupplyCap() public {
@@ -639,6 +774,138 @@ contract LSP8CustomizableTokenTest is Test {
 
         // user1 should have 11 NFTs, exceeding the cap of 5
         assertEq(token.balanceOf(user1), 11);
+    }
+
+    function test_TransferOwnershipClearsRevokersAndMigratesOwnerRoles()
+        public
+    {
+        bytes32 revokerRole = token.REVOKER_ROLE();
+
+        token.grantRole(revokerRole, revoker1);
+        token.grantRole(revokerRole, revoker2);
+        token.grantRole(revokerRole, newOwner);
+
+        assertEq(token.getRoleMemberCount(revokerRole), 4);
+
+        token.transferOwnership(newOwner);
+
+        assertEq(token.owner(), newOwner);
+        assertEq(token.getRoleMemberCount(revokerRole), 0);
+
+        assertFalse(token.hasRole(revokerRole, owner));
+        assertFalse(token.hasRole(revokerRole, newOwner));
+        assertFalse(token.hasRole(revokerRole, revoker1));
+        assertFalse(token.hasRole(revokerRole, revoker2));
+
+        assertFalse(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner));
+        assertFalse(token.hasRole(token.MINTER_ROLE(), owner));
+        assertFalse(token.hasRole(token.UNCAPPED_ROLE(), owner));
+        assertFalse(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), owner));
+
+        assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), newOwner));
+        assertTrue(token.hasRole(token.MINTER_ROLE(), newOwner));
+        assertTrue(token.hasRole(token.UNCAPPED_ROLE(), newOwner));
+        assertTrue(
+            token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), newOwner)
+        );
+    }
+
+    function test_IsTransferableMatchesBoundedLockWindow() public {
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+        uint256 lockStart = block.timestamp + 1 days;
+        uint256 lockEnd = lockStart + 1 days;
+
+        LSP8CustomizableToken lockedToken = _deployToken({
+            mintable_: true,
+            initialTokenIds_: emptyTokenIds,
+            tokenBalanceCap_: 0,
+            tokenSupplyCap_: 0,
+            transferLockStart_: lockStart,
+            transferLockEnd_: lockEnd,
+            revokable_: true
+        });
+        _assertOwnerFeatureRoles({
+            deployedToken: lockedToken,
+            contractOwner: owner,
+            shouldHaveRevokerRole: true
+        });
+
+        assertEq(
+            lockedToken.totalSupply(),
+            0,
+            "Total supply should be 0 when initialTokenIds_ is empty"
+        );
+
+        assertTrue(lockedToken.isTransferable());
+
+        vm.warp(lockStart + 1);
+        assertFalse(lockedToken.isTransferable());
+
+        vm.warp(lockEnd + 1);
+        assertTrue(lockedToken.isTransferable());
+    }
+
+    function test_MakeTransferableClearsLockAndPreventsFurtherLockUpdates()
+        public
+    {
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+
+        LSP8CustomizableToken lockedToken = _deployToken({
+            mintable_: true,
+            initialTokenIds_: emptyTokenIds,
+            tokenBalanceCap_: 0,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: type(uint256).max,
+            revokable_: true
+        });
+
+        assertFalse(lockedToken.isTransferable());
+
+        lockedToken.makeTransferable();
+
+        assertTrue(lockedToken.isTransferable());
+        assertEq(lockedToken.transferLockStart(), 0);
+        assertEq(lockedToken.transferLockEnd(), 0);
+
+        vm.expectRevert(LSP8TokenAlreadyTransferable.selector);
+        lockedToken.makeTransferable();
+
+        vm.expectRevert(LSP8CannotUpdateTransferLockPeriod.selector);
+        lockedToken.updateTransferLockPeriod(1, 2);
+    }
+    function test_ConstructorInitializesCorrectlyWithSomeTokenIds() public {
+        bytes32[] memory someTokenIds = new bytes32[](3);
+        someTokenIds[
+            0
+        ] = 0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa;
+        someTokenIds[
+            1
+        ] = 0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb;
+        someTokenIds[
+            2
+        ] = 0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc;
+
+        LSP8CustomizableToken customToken = _deployToken({
+            mintable_: true,
+            initialTokenIds_: someTokenIds,
+            tokenBalanceCap_: 0,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            revokable_: true
+        });
+        _assertOwnerFeatureRoles({
+            deployedToken: customToken,
+            contractOwner: owner,
+            shouldHaveRevokerRole: true
+        });
+
+        assertEq(customToken.totalSupply(), 3);
+        assertEq(customToken.balanceOf(owner), 3);
+        assertEq(customToken.tokenOwnerOf(someTokenIds[0]), owner);
+        assertEq(customToken.tokenOwnerOf(someTokenIds[1]), owner);
+        assertEq(customToken.tokenOwnerOf(someTokenIds[2]), owner);
     }
 
     function test_RevokeFailsWhenRevocationIsDisabled() public {
