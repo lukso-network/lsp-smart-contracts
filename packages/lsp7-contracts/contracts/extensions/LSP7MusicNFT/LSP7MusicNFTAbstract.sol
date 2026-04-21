@@ -2,23 +2,28 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    LSP7DigitalAsset
-} from "../../LSP7DigitalAsset.sol";
+import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
 
 import {
-    ERC725Y_MsgValueDisallowed,
-    ERC725Y_DataKeysValuesLengthMismatch,
-    ERC725Y_DataKeysValuesEmptyArray
-} from "@erc725/smart-contracts-v8/contracts/errors.sol";
+    ERC725Y
+} from "@erc725/smart-contracts-v8/contracts/ERC725Y.sol";
 
 // interfaces
 import {
     ILSP8IdentifiableDigitalAsset
 } from "@lukso/lsp8-contracts/contracts/ILSP8IdentifiableDigitalAsset.sol";
 
+/// @dev Minimal ERC173 interface used to resolve the minter when
+/// `LSP34OwnershipSource` points to a plain owned contract
+/// (i.e. `tokenId == bytes32(0)`).
+interface IERC173 {
+    function owner() external view returns (address);
+}
+
 // constants
 import {
+    _LSP33_SUPPORTED_STANDARDS_KEY,
+    _LSP33_SUPPORTED_STANDARDS_VALUE,
     _LSP34_OWNERSHIP_SOURCE_KEY
 } from "./LSP7MusicNFTConstants.sol";
 
@@ -27,25 +32,19 @@ import {
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 // errors
-import {
-    LSP34ExternalOwnershipActive,
-    LSP7MusicNFTUnauthorized
-} from "./LSP7MusicNFTErrors.sol";
+import {LSP34NotAuthorizedToMint} from "./LSP7MusicNFTErrors.sol";
 
 /// @title LSP7MusicNFTAbstract
-/// @dev LSP33 Music NFT extension for LSP7 track tokens. Plug-and-play design:
-/// the LSP7 deploys as a plain ERC173-owned contract and becomes linked to a
-/// parent LSP8 collection lazily, when the artist writes `LSP34OwnershipSource`
-/// via `setData`. Once set, `owner()` resolves dynamically through
-/// `LSP8.tokenOwnerOf(tokenId)`, and the parent LSP8 contract is additionally
-/// authorized to write metadata (as a router on behalf of the artist).
+/// @dev LSP33 Music NFT carrier for an LSP7 track token combined with LSP34
+/// minting-rights delegation.
+///
+/// The contract sets the `SupportedStandards:LSP33MusicNFT` marker at
+/// construction and exposes a `mint` function that honours LSP34: in addition
+/// to the ERC173 `owner()`, minting is allowed by the address resolved from
+/// `LSP34OwnershipSource` when it has been set. Everything else — ownership
+/// transfer, renouncement, and ERC725Y access control for `setData` — follows
+/// the standard LSP7 / ERC725Y rules as required by LSP34.
 abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
-    /// @param name_ Token name.
-    /// @param symbol_ Token symbol.
-    /// @param initialOwner_ Initial ERC173 owner (the artist). Acts as `owner()`
-    /// until `LSP34OwnershipSource` is set, at which point ownership is
-    /// derived from the referenced LSP8 tokenId.
-    /// @param isNonDivisible_ Whether the token is non-divisible.
     constructor(
         string memory name_,
         string memory symbol_,
@@ -59,138 +58,50 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
             _LSP4_TOKEN_TYPE_NFT,
             isNonDivisible_
         )
-    {}
-
-    // --- LSP34 External Ownership ---
-
-    /// @dev Resolves owner dynamically via LSP34. If `LSP34OwnershipSource` is
-    /// set, calls `tokenOwnerOf` on the referenced LSP8 to get the current
-    /// owner. Otherwise falls back to the standard ERC173 owner.
-    function owner()
-        public
-        view
-        virtual
-        override
-        returns (address)
     {
-        (address parent, bytes32 tokenId, bool hasSource) =
-            _readOwnershipSource();
-
-        if (hasSource) {
-            try
-                ILSP8IdentifiableDigitalAsset(parent).tokenOwnerOf(tokenId)
-            returns (address tokenOwner) {
-                return tokenOwner;
-            } catch {
-                return super.owner();
-            }
-        }
-
-        return super.owner();
+        ERC725Y._setData(
+            _LSP33_SUPPORTED_STANDARDS_KEY,
+            _LSP33_SUPPORTED_STANDARDS_VALUE
+        );
     }
 
-    /// @dev Reverts when LSP34 external ownership is active.
-    /// Falls back to super when LSP34 is not active.
-    function transferOwnership(
-        address newOwner
-    ) public virtual override {
-        if (_hasExternalOwnership()) {
-            revert LSP34ExternalOwnershipActive();
-        }
-        super.transferOwnership(newOwner);
-    }
-
-    /// @dev Reverts when LSP34 external ownership is active.
-    /// Falls back to super when LSP34 is not active.
-    function renounceOwnership() public virtual override {
-        if (_hasExternalOwnership()) {
-            revert LSP34ExternalOwnershipActive();
-        }
-        super.renounceOwnership();
-    }
-
-    // --- Parent Collection Authorization ---
-
-    /// @dev Allows calls from the resolved owner (via LSP34 or ERC173) or, when
-    /// linked, from the parent LSP8 collection contract decoded from
-    /// `LSP34OwnershipSource`.
-    modifier onlyOwnerOrParentCollection() {
-        if (msg.sender != owner()) {
-            (address parent, , bool hasSource) = _readOwnershipSource();
-            if (!hasSource || msg.sender != parent) {
-                revert LSP7MusicNFTUnauthorized(msg.sender);
-            }
-        }
-        _;
-    }
-
-    /// @dev Override `setData` to allow calls from both the resolved owner and
-    /// the linked parent LSP8 contract.
-    function setData(
-        bytes32 dataKey,
-        bytes memory dataValue
-    ) public payable virtual override onlyOwnerOrParentCollection {
-        if (msg.value != 0) {
-            revert ERC725Y_MsgValueDisallowed();
-        }
-        _setData(dataKey, dataValue);
-    }
-
-    /// @dev Override `setDataBatch` to allow calls from both the resolved
-    /// owner and the linked parent LSP8 contract.
-    function setDataBatch(
-        bytes32[] memory dataKeys,
-        bytes[] memory dataValues
-    ) public payable virtual override onlyOwnerOrParentCollection {
-        if (msg.value != 0) {
-            revert ERC725Y_MsgValueDisallowed();
-        }
-        if (dataKeys.length != dataValues.length) {
-            revert ERC725Y_DataKeysValuesLengthMismatch();
-        }
-        if (dataKeys.length == 0) {
-            revert ERC725Y_DataKeysValuesEmptyArray();
-        }
-        for (uint256 i = 0; i < dataKeys.length; ) {
-            _setData(dataKeys[i], dataValues[i]);
-            unchecked {
-                ++i;
-            }
-        }
-    }
-
-    // --- Minting ---
-
-    /// @dev Mint function restricted to the resolved owner (ERC173 while
-    /// standalone, or the LSP8 token owner via LSP34 once linked).
+    /// @notice Mint `amount` tokens to `to`.
+    /// @dev Authorisation follows LSP34: callable by the contract's own ERC173
+    /// `owner()` or, when `LSP34OwnershipSource` is set, by the address
+    /// resolved from that source.
     function mint(
         address to,
         uint256 amount,
         bool force,
         bytes memory data
-    ) public virtual onlyOwner {
+    ) public virtual {
+        if (msg.sender != owner() && msg.sender != _resolveLSP34Minter()) {
+            revert LSP34NotAuthorizedToMint(msg.sender);
+        }
         _mint(to, amount, force, data);
     }
 
-    // --- Internal Helpers ---
-
-    /// @dev Decodes `LSP34OwnershipSource` from storage. Returns
-    /// `(parent, tokenId, hasSource)`. `hasSource` is true only when the data
-    /// is at least 52 bytes (20-byte address + 32-byte tokenId, abi.encoded).
-    function _readOwnershipSource()
-        internal
-        view
-        returns (address parent, bytes32 tokenId, bool hasSource)
-    {
+    /// @dev Returns the address authorised to mint via `LSP34OwnershipSource`.
+    /// Returns `address(0)` when the source is unset or malformed.
+    ///
+    /// Resolution rules per LSP34:
+    /// - If `tokenId != bytes32(0)`, query `tokenOwnerOf(tokenId)` on the source.
+    /// - If `tokenId == bytes32(0)`, query `owner()` on the source.
+    function _resolveLSP34Minter() internal view returns (address) {
         bytes memory source = _getData(_LSP34_OWNERSHIP_SOURCE_KEY);
-        if (source.length >= 52) {
-            (parent, tokenId) = abi.decode(source, (address, bytes32));
-            hasSource = true;
+        if (source.length != 64) {
+            return address(0);
         }
-    }
 
-    /// @dev Returns true if LSP34 external ownership is active.
-    function _hasExternalOwnership() internal view returns (bool) {
-        return _getData(_LSP34_OWNERSHIP_SOURCE_KEY).length >= 52;
+        (address sourceContract, bytes32 tokenId) = abi.decode(
+            source,
+            (address, bytes32)
+        );
+
+        if (tokenId == bytes32(0)) {
+            return IERC173(sourceContract).owner();
+        }
+        return
+            ILSP8IdentifiableDigitalAsset(sourceContract).tokenOwnerOf(tokenId);
     }
 }

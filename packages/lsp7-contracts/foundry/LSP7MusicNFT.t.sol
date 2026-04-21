@@ -10,8 +10,10 @@ import {
 
 // constants
 import {
-    _LSP34_OWNERSHIP_SOURCE_KEY,
-    _LSP8_REFERENCE_CONTRACT_KEY
+    _LSP33_SUPPORTED_STANDARDS_KEY,
+    _LSP33_SUPPORTED_STANDARDS_VALUE,
+    _LSP33_METADATA_KEY,
+    _LSP34_OWNERSHIP_SOURCE_KEY
 } from "../contracts/extensions/LSP7MusicNFT/LSP7MusicNFTConstants.sol";
 import {
     _LSP4_METADATA_KEY
@@ -19,11 +21,10 @@ import {
 
 // errors
 import {
-    LSP34ExternalOwnershipActive,
-    LSP7MusicNFTUnauthorized
+    LSP34NotAuthorizedToMint
 } from "../contracts/extensions/LSP7MusicNFT/LSP7MusicNFTErrors.sol";
 
-// --- Mock LSP8 for testing ---
+// --- Mock LSP8 for LSP34 source resolution ---
 
 contract MockLSP8 {
     mapping(bytes32 => address) private _tokenOwners;
@@ -45,7 +46,21 @@ contract MockLSP8 {
     }
 }
 
-/// @dev Concrete test implementation of LSP7MusicNFTAbstract.
+/// @dev Minimal ERC173-owned contract used as an LSP34 source when
+/// `tokenId == bytes32(0)`.
+contract MockOwnedContract {
+    address public owner;
+
+    constructor(address _owner) {
+        owner = _owner;
+    }
+
+    function transferOwnership(address newOwner) external {
+        owner = newOwner;
+    }
+}
+
+/// @dev Concrete test implementation of `LSP7MusicNFTAbstract`.
 contract MockLSP7MusicNFT is LSP7MusicNFTAbstract {
     constructor(
         string memory name_,
@@ -77,210 +92,210 @@ contract LSP7MusicNFTTest is Test {
 
     function setUp() public {
         lsp8 = new MockLSP8();
-        // Deploy standalone LSP7 owned by the artist (plug-and-play default).
         lsp7 = new MockLSP7MusicNFT("Track Token", "TRACK", artist, true);
     }
 
-    // --- Helpers ---
-
-    function _link(address lsp8Addr, bytes32 tid) internal {
+    function _setSource(address srcContract, bytes32 tokenId) internal {
         vm.prank(artist);
         lsp7.setData(
             _LSP34_OWNERSHIP_SOURCE_KEY,
-            abi.encode(lsp8Addr, tid)
+            abi.encode(srcContract, tokenId)
         );
     }
 
-    // --- Standalone (no LSP34 source) ---
+    // --- LSP33 SupportedStandards marker ---
 
-    function test_Standalone_OwnerIsInitialOwner() public {
+    function test_LSP33SupportedStandardsMarker() public {
+        assertEq(
+            lsp7.getData(_LSP33_SUPPORTED_STANDARDS_KEY),
+            _LSP33_SUPPORTED_STANDARDS_VALUE
+        );
+    }
+
+    // --- ERC173 ownership semantics (LSP34 leaves these untouched) ---
+
+    function test_OwnerIsArtist() public {
         assertEq(lsp7.owner(), artist);
     }
 
-    function test_Standalone_NoOwnershipSourceKey() public {
-        bytes memory data = lsp7.getData(_LSP34_OWNERSHIP_SOURCE_KEY);
-        assertEq(data.length, 0);
+    function test_OwnerUnchangedWhenSourceSet() public {
+        lsp8.mint(user1, tokenId1);
+        _setSource(address(lsp8), tokenId1);
+
+        // LSP34 MUST NOT affect owner(); it only delegates minting rights.
+        assertEq(lsp7.owner(), artist);
     }
 
-    function test_Standalone_OwnerCanSetData() public {
+    function test_TransferOwnershipWorksWhenSourceSet() public {
+        lsp8.mint(user1, tokenId1);
+        _setSource(address(lsp8), tokenId1);
+
+        vm.prank(artist);
+        lsp7.transferOwnership(user2);
+        // LSP7 uses a direct transfer; owner updates immediately.
+        assertEq(lsp7.owner(), user2);
+    }
+
+    function test_RenounceOwnershipWorksWhenSourceSet() public {
+        lsp8.mint(user1, tokenId1);
+        _setSource(address(lsp8), tokenId1);
+
+        vm.prank(artist);
+        lsp7.renounceOwnership();
+        assertEq(lsp7.owner(), address(0));
+    }
+
+    // --- setData is restricted to owner() even when LSP34 source is set ---
+
+    function test_OwnerCanSetData() public {
         vm.prank(artist);
         lsp7.setData(_LSP4_METADATA_KEY, hex"01020304");
         assertEq(lsp7.getData(_LSP4_METADATA_KEY), hex"01020304");
     }
 
-    function test_Standalone_OwnerCanMint() public {
+    function test_OwnerCanSetLSP33Metadata() public {
+        vm.prank(artist);
+        lsp7.setData(_LSP33_METADATA_KEY, hex"cafebabe");
+        assertEq(lsp7.getData(_LSP33_METADATA_KEY), hex"cafebabe");
+    }
+
+    function test_NonOwnerCannotSetDataWhenSourceUnset() public {
+        vm.prank(unauthorized);
+        vm.expectRevert("Ownable: caller is not the owner");
+        lsp7.setData(_LSP4_METADATA_KEY, hex"badd0000");
+    }
+
+    function test_NonOwnerCannotSetDataWhenSourceSet() public {
+        lsp8.mint(user1, tokenId1);
+        _setSource(address(lsp8), tokenId1);
+
+        // user1 controls the LSP8 tokenId (the delegated minter) but LSP34
+        // does NOT grant them setData rights.
+        vm.prank(user1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        lsp7.setData(_LSP4_METADATA_KEY, hex"0a0b0c");
+    }
+
+    // --- Mint permissions (LSP34 resolution) ---
+
+    function test_OwnerCanMintWhenSourceUnset() public {
         vm.prank(artist);
         lsp7.mint(artist, 100, true, "");
         assertEq(lsp7.balanceOf(artist), 100);
     }
 
-    function test_Standalone_UnauthorizedCannotSetData() public {
+    function test_NonOwnerCannotMintWhenSourceUnset() public {
         vm.prank(unauthorized);
         vm.expectRevert(
             abi.encodeWithSelector(
-                LSP7MusicNFTUnauthorized.selector,
+                LSP34NotAuthorizedToMint.selector,
                 unauthorized
             )
         );
-        lsp7.setData(_LSP4_METADATA_KEY, hex"badd0000");
+        lsp7.mint(unauthorized, 1, true, "");
     }
 
-    function test_Standalone_TransferOwnershipWorks() public {
+    function test_OwnerCanStillMintWhenSourceSet() public {
+        lsp8.mint(user1, tokenId1);
+        _setSource(address(lsp8), tokenId1);
+
         vm.prank(artist);
-        lsp7.transferOwnership(user1);
-        // LSP7DigitalAsset uses pending owner accept pattern; check pending.
-        // If not two-step, owner() should already be user1. Either way,
-        // no revert is the key assertion here.
+        lsp7.mint(artist, 10, true, "");
+        assertEq(lsp7.balanceOf(artist), 10);
     }
 
-    function test_Standalone_RenounceOwnershipWorks() public {
-        vm.prank(artist);
-        lsp7.renounceOwnership();
-        // No revert is the key assertion.
-    }
-
-    // --- Link-later workflow ---
-
-    function test_LinkLater_OwnerResolvesToLSP8TokenOwner() public {
+    function test_TokenIdOwnerCanMint() public {
         lsp8.mint(user1, tokenId1);
-        _link(address(lsp8), tokenId1);
-        assertEq(lsp7.owner(), user1);
-    }
-
-    function test_LinkLater_OwnershipSourceStored() public {
-        lsp8.mint(user1, tokenId1);
-        _link(address(lsp8), tokenId1);
-
-        bytes memory data = lsp7.getData(_LSP34_OWNERSHIP_SOURCE_KEY);
-        (address lsp8Addr, bytes32 tid) = abi.decode(
-            data,
-            (address, bytes32)
-        );
-        assertEq(lsp8Addr, address(lsp8));
-        assertEq(tid, tokenId1);
-    }
-
-    function test_LinkLater_OwnerChangesWhenTokenTransferred() public {
-        lsp8.mint(user1, tokenId1);
-        _link(address(lsp8), tokenId1);
-
-        lsp8.transferTokenId(user2, tokenId1);
-        assertEq(lsp7.owner(), user2);
-    }
-
-    function test_LinkLater_TransferOwnershipReverts() public {
-        lsp8.mint(user1, tokenId1);
-        _link(address(lsp8), tokenId1);
-
-        vm.prank(user1);
-        vm.expectRevert(LSP34ExternalOwnershipActive.selector);
-        lsp7.transferOwnership(user2);
-    }
-
-    function test_LinkLater_RenounceOwnershipReverts() public {
-        lsp8.mint(user1, tokenId1);
-        _link(address(lsp8), tokenId1);
-
-        vm.prank(user1);
-        vm.expectRevert(LSP34ExternalOwnershipActive.selector);
-        lsp7.renounceOwnership();
-    }
-
-    function test_LinkLater_ResolvedOwnerCanSetData() public {
-        lsp8.mint(user1, tokenId1);
-        _link(address(lsp8), tokenId1);
-
-        vm.prank(user1);
-        lsp7.setData(_LSP4_METADATA_KEY, hex"0a0b0c");
-        assertEq(lsp7.getData(_LSP4_METADATA_KEY), hex"0a0b0c");
-    }
-
-    function test_LinkLater_ParentLSP8CanSetData() public {
-        lsp8.mint(user1, tokenId1);
-        _link(address(lsp8), tokenId1);
-
-        vm.prank(address(lsp8));
-        lsp7.setData(_LSP4_METADATA_KEY, hex"cafe");
-        assertEq(lsp7.getData(_LSP4_METADATA_KEY), hex"cafe");
-    }
-
-    function test_LinkLater_ParentLSP8CanSetDataBatch() public {
-        lsp8.mint(user1, tokenId1);
-        _link(address(lsp8), tokenId1);
-
-        bytes32[] memory keys = new bytes32[](1);
-        bytes[] memory values = new bytes[](1);
-        keys[0] = _LSP4_METADATA_KEY;
-        values[0] = hex"ba7c";
-
-        vm.prank(address(lsp8));
-        lsp7.setDataBatch(keys, values);
-        assertEq(lsp7.getData(_LSP4_METADATA_KEY), hex"ba7c");
-    }
-
-    function test_LinkLater_OriginalOwnerLosesControl() public {
-        lsp8.mint(user1, tokenId1);
-        _link(address(lsp8), tokenId1);
-
-        // After linking, the artist's ERC173 ownership is shadowed by LSP34.
-        vm.prank(artist);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                LSP7MusicNFTUnauthorized.selector,
-                artist
-            )
-        );
-        lsp7.setData(_LSP4_METADATA_KEY, hex"0000");
-    }
-
-    function test_LinkLater_UnauthorizedCannotSetData() public {
-        lsp8.mint(user1, tokenId1);
-        _link(address(lsp8), tokenId1);
-
-        vm.prank(unauthorized);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                LSP7MusicNFTUnauthorized.selector,
-                unauthorized
-            )
-        );
-        lsp7.setData(_LSP4_METADATA_KEY, hex"badd");
-    }
-
-    function test_LinkLater_MintFollowsTokenOwner() public {
-        lsp8.mint(user1, tokenId1);
-        _link(address(lsp8), tokenId1);
+        _setSource(address(lsp8), tokenId1);
 
         vm.prank(user1);
         lsp7.mint(user1, 100, true, "");
         assertEq(lsp7.balanceOf(user1), 100);
+    }
+
+    function test_MintRightsFollowTokenIdOwnership() public {
+        lsp8.mint(user1, tokenId1);
+        _setSource(address(lsp8), tokenId1);
+
+        vm.prank(user1);
+        lsp7.mint(user1, 50, true, "");
 
         lsp8.transferTokenId(user2, tokenId1);
 
         vm.prank(user1);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP34NotAuthorizedToMint.selector,
+                user1
+            )
+        );
         lsp7.mint(user1, 10, true, "");
 
         vm.prank(user2);
-        lsp7.mint(user2, 50, true, "");
-        assertEq(lsp7.balanceOf(user2), 50);
+        lsp7.mint(user2, 25, true, "");
+        assertEq(lsp7.balanceOf(user2), 25);
     }
 
-    // --- Artist may set LSP8ReferenceContract during linking ---
+    function test_UnauthorizedCannotMintWhenSourceSet() public {
+        lsp8.mint(user1, tokenId1);
+        _setSource(address(lsp8), tokenId1);
 
-    function test_LinkLater_ArtistCanSetReferenceContract() public {
+        vm.prank(unauthorized);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP34NotAuthorizedToMint.selector,
+                unauthorized
+            )
+        );
+        lsp7.mint(unauthorized, 1, true, "");
+    }
+
+    // --- LSP34 source with bytes32(0) tokenId resolves via IERC173.owner() ---
+
+    function test_MintRightsFromOwnedContract() public {
+        MockOwnedContract src = new MockOwnedContract(user1);
+        _setSource(address(src), bytes32(0));
+
+        vm.prank(user1);
+        lsp7.mint(user1, 7, true, "");
+        assertEq(lsp7.balanceOf(user1), 7);
+
+        // Transfer the source contract ownership; mint rights follow.
+        src.transferOwnership(user2);
+
+        vm.prank(user1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP34NotAuthorizedToMint.selector,
+                user1
+            )
+        );
+        lsp7.mint(user1, 1, true, "");
+
+        vm.prank(user2);
+        lsp7.mint(user2, 3, true, "");
+        assertEq(lsp7.balanceOf(user2), 3);
+    }
+
+    // --- Malformed `LSP34OwnershipSource` value is ignored ---
+
+    function test_MalformedSourceTreatedAsUnset() public {
+        // 20 bytes is the wrong encoding (LSP34 requires abi.encode(address, bytes32) = 64 bytes).
         vm.prank(artist);
-        lsp7.setData(
-            _LSP8_REFERENCE_CONTRACT_KEY,
-            abi.encode(address(lsp8), tokenId1)
-        );
+        lsp7.setData(_LSP34_OWNERSHIP_SOURCE_KEY, abi.encodePacked(user1));
 
-        bytes memory data = lsp7.getData(_LSP8_REFERENCE_CONTRACT_KEY);
-        (address lsp8Addr, bytes32 tid) = abi.decode(
-            data,
-            (address, bytes32)
+        vm.prank(user1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP34NotAuthorizedToMint.selector,
+                user1
+            )
         );
-        assertEq(lsp8Addr, address(lsp8));
-        assertEq(tid, tokenId1);
+        lsp7.mint(user1, 1, true, "");
+
+        // Owner can still mint.
+        vm.prank(artist);
+        lsp7.mint(artist, 1, true, "");
+        assertEq(lsp7.balanceOf(artist), 1);
     }
 }
