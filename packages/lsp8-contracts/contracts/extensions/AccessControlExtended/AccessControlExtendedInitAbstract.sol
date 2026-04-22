@@ -174,7 +174,7 @@ abstract contract AccessControlExtendedInitAbstract is
      * @custom:warning The current owner cannot renounce `DEFAULT_ADMIN_ROLE`
      * to prevent locking the contract out of role administration.
      *
-     * @custom:events {RoleRevoked} with the `role` that msg.sender revoked for itself.
+     * @custom:events Emits {RoleRevoked} if `msg.sender` currently holds `role` and successfully revokes it for itself.
      */
     function renounceRole(
         bytes32 role,
