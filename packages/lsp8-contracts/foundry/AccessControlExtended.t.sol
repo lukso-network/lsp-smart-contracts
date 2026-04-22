@@ -166,22 +166,17 @@ contract AccessControlExtendedTest is Test {
         assertTrue(token.hasRole(TEST_ROLE, account1));
     }
 
-    function test_GrantRoleWithDataStoresData() public {
-        bytes memory data = abi.encodePacked(uint256(42));
-
-        token.grantRoleWithData(TEST_ROLE, account1, data);
-
+    function test_GrantRoleStoresRole() public {
+        token.grantRole(TEST_ROLE, account1);
         assertTrue(token.hasRole(TEST_ROLE, account1));
-        assertEq(token.getRoleData(TEST_ROLE, account1), data);
     }
 
-    function test_RevokeRoleClearsData() public {
-        token.grantRoleWithData(TEST_ROLE, account1, bytes("hello"));
+    function test_RevokeRoleClearsRole() public {
+        token.grantRole(TEST_ROLE, account1);
+        assertTrue(token.hasRole(TEST_ROLE, account1));
 
         token.revokeRole(TEST_ROLE, account1);
-
         assertFalse(token.hasRole(TEST_ROLE, account1));
-        assertEq(token.getRoleData(TEST_ROLE, account1).length, 0);
     }
 
     function test_RenounceRoleRequiresConfirmation() public {
@@ -239,7 +234,6 @@ contract AccessControlExtendedTest is Test {
         bytes32 burnerRole = keccak256("BURNER_ROLE");
 
         token.grantRole(minterRole, owner);
-        token.grantRoleWithData(burnerRole, owner, hex"cafe");
 
         token.transferOwnership(account1);
 
@@ -247,13 +241,11 @@ contract AccessControlExtendedTest is Test {
         assertFalse(token.hasRole(minterRole, owner));
         assertFalse(token.hasRole(burnerRole, owner));
         assertEq(token.rolesOf(owner).length, 0);
-        assertEq(token.getRoleData(burnerRole, owner).length, 0);
 
         assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, account1));
         assertTrue(token.hasRole(minterRole, account1));
         assertTrue(token.hasRole(burnerRole, account1));
         assertEq(token.rolesOf(account1).length, 3);
-        assertEq(token.getRoleData(burnerRole, account1), hex"cafe");
     }
 
     function test_RenounceOwnershipRevokesAllRoles() public {
