@@ -169,10 +169,12 @@ abstract contract AccessControlExtendedInitAbstract is
      * @inheritdoc IAccessControl
      * @dev Allows `msg.sender` to renounce their own `role`. The `callerConfirmation`
      * parameter must equal `msg.sender` to prevent accidental renouncement (OZ pattern).
-     * Renouncing triggers data cleanup per BASE-09.
+     * Renouncing triggers data cleanup.
      *
      * @custom:warning The current owner cannot renounce `DEFAULT_ADMIN_ROLE`
      * to prevent locking the contract out of role administration.
+     *
+     * @custom:events Emits {RoleRevoked} if `msg.sender` currently holds `role` and successfully revokes it for itself.
      */
     function renounceRole(
         bytes32 role,
@@ -279,6 +281,12 @@ abstract contract AccessControlExtendedInitAbstract is
 
     // --- Internal functions
 
+    /**
+     * @dev Grants `role` to `account`. No-op if the account already holds the role
+     * (matching OZ behavior). Updates both forward and reverse lookups.
+     *
+     * @custom:events {RoleGranted} if the role was newly granted.
+     */
     function _grantRole(bytes32 role, address account) internal virtual {
         bool added = _roleMembers[role].add(account);
 
@@ -292,6 +300,14 @@ abstract contract AccessControlExtendedInitAbstract is
         }
     }
 
+    /**
+     * @dev Revokes `role` from `account`. No-op if the account does not hold the role.
+     * Auto-clears auxiliary data if any exists.
+     *
+     * @custom:events
+     * - {RoleRevoked} if the role was revoked.
+     * - {RoleDataChanged} if auxiliary data was cleared.
+     */
     function _revokeRole(bytes32 role, address account) internal virtual {
         bool removed = _roleMembers[role].remove(account);
 
@@ -303,6 +319,7 @@ abstract contract AccessControlExtendedInitAbstract is
                 sender: msg.sender
             });
 
+            // Auto-clear auxiliary data
             if (_roleData[role][account].length > 0) {
                 delete _roleData[role][account];
                 emit RoleDataChanged({role: role, account: account, data: ""});
@@ -310,10 +327,22 @@ abstract contract AccessControlExtendedInitAbstract is
         }
     }
 
+    /**
+     * @dev Checks that `msg.sender` has `role`. Reverts with
+     * {AccessControlUnauthorizedAccount} if the check fails.
+     *
+     * @custom:warning Overriding this function changes the behavior of the {onlyRole} modifier.
+     */
     function _checkRole(bytes32 role) internal view virtual {
         _checkRole(role, msg.sender);
     }
 
+    /**
+     * @dev Checks that `account` has `role`.
+     *
+     * Reverts with {AccessControlUnauthorizedAccount} if the account does not
+     * explicitly hold the role.
+     */
     function _checkRole(bytes32 role, address account) internal view virtual {
         require(
             _hasRole(role, account),
@@ -331,6 +360,10 @@ abstract contract AccessControlExtendedInitAbstract is
     /**
      * @dev Sets `adminRole` as the admin of `role`. Available for extensions
      * to configure custom admin hierarchies.
+     *
+     * @custom:warning DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
+     *
+     * @custom:events {RoleAdminChanged} with the previous and new admin roles.
      */
     function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
         bytes32 previousAdminRole = getRoleAdmin(role);

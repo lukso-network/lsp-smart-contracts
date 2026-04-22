@@ -63,6 +63,7 @@ contract LSP7RevokableInitTest is Test {
     address owner = address(this);
     address user1 = vm.addr(101);
     address revoker1 = vm.addr(103);
+    address revoker2 = vm.addr(104);
 
     MockLSP7RevokableInit implementation;
     MockLSP7RevokableInit token;
@@ -202,12 +203,26 @@ contract LSP7RevokableInitTest is Test {
         address newOwner = vm.addr(200);
 
         token.grantRole(revokerRole, revoker1);
+        token.grantRole(revokerRole, revoker2);
         token.mint(user1, 1000, true, "");
+
+        assertEq(
+            token.getRoleMemberCount(revokerRole),
+            3,
+            "Owner and delegated revokers should be registered before transfer"
+        );
 
         token.transferOwnership(newOwner);
 
+        assertEq(
+            token.getRoleMemberCount(revokerRole),
+            0,
+            "All revokers should be cleared on ownership transfer"
+        );
         assertFalse(token.hasRole(revokerRole, owner));
         assertFalse(token.hasRole(revokerRole, revoker1));
+        assertFalse(token.hasRole(revokerRole, revoker2));
+        assertFalse(token.hasRole(revokerRole, newOwner));
         assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, newOwner));
 
         vm.prank(revoker1);

@@ -42,7 +42,7 @@ import {
  * - Extended functions: rolesOf, grantRoleWithData, setRoleData, getRoleData
  * - Explicit role checks for every role-gated function
  * - DEFAULT_ADMIN_ROLE as root admin for granting and revoking roles
- * - Automatic transfer of all roles (and their auxiliary data, if any) on ownership transfer
+ * - Automatic transfer of all roles (and their auxiliary data, if any) between old and new on ownership transfer
  */
 abstract contract AccessControlExtendedAbstract is
     IAccessControlExtended,
@@ -160,16 +160,12 @@ abstract contract AccessControlExtendedAbstract is
      * @inheritdoc IAccessControl
      * @dev Allows `msg.sender` to renounce their own `role`. The `callerConfirmation`
      * parameter must equal `msg.sender` to prevent accidental renouncement (OZ pattern).
-     * Renouncing triggers data cleanup per BASE-09.
-     *
-     * @custom:info Roles are often managed via {grantRole} and {revokeRole}.
-     * This function's purpose is to provide a mechanism for accounts to lose their privileges
-     * if they are compromised (such as when a trusted device is misplaced).
-     *
-     * If the calling account had been revoked `role`, emits a {RoleRevoked} event.
+     * Renouncing triggers data cleanup.
      *
      * @custom:warning The current owner cannot renounce `DEFAULT_ADMIN_ROLE`
      * to prevent locking the contract out of role administration.
+     *
+     * @custom:events Emits {RoleRevoked} if `msg.sender` currently holds `role` and successfully revokes it for itself.
      */
     function renounceRole(
         bytes32 role,
@@ -297,7 +293,7 @@ abstract contract AccessControlExtendedAbstract is
 
     /**
      * @dev Revokes `role` from `account`. No-op if the account does not hold the role.
-     * Auto-clears auxiliary data if any exists (BASE-09).
+     * Auto-clears auxiliary data if any exists.
      *
      * @custom:events
      * - {RoleRevoked} if the role was revoked.
@@ -314,7 +310,7 @@ abstract contract AccessControlExtendedAbstract is
                 sender: msg.sender
             });
 
-            // Auto-clear auxiliary data (BASE-09)
+            // Auto-clear auxiliary data
             if (_roleData[role][account].length > 0) {
                 delete _roleData[role][account];
                 emit RoleDataChanged({role: role, account: account, data: ""});

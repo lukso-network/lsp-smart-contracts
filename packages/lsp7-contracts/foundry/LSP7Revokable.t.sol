@@ -487,9 +487,20 @@ contract LSP7RevokableTest is Test {
         lsp7Revokable.grantRole(revokerRole, revoker2);
         _mintTo(user1, 1000);
 
+        assertEq(
+            lsp7Revokable.getRoleMemberCount(revokerRole),
+            3,
+            "Owner and delegated revokers should be registered before transfer"
+        );
+
         lsp7Revokable.transferOwnership(newOwner);
 
         // CHECK old owner + revokers have been removed their roles
+        assertEq(
+            lsp7Revokable.getRoleMemberCount(revokerRole),
+            0,
+            "All revokers should be cleared on ownership transfer"
+        );
         assertFalse(
             lsp7Revokable.hasRole(revokerRole, owner),
             "Old owner should lose REVOKER_ROLE after ownership transfer"
@@ -497,6 +508,14 @@ contract LSP7RevokableTest is Test {
         assertFalse(
             lsp7Revokable.hasRole(revokerRole, revoker1),
             "Existing delegated revokers should be cleared"
+        );
+        assertFalse(
+            lsp7Revokable.hasRole(revokerRole, revoker2),
+            "All delegated revokers should be cleared"
+        );
+        assertFalse(
+            lsp7Revokable.hasRole(revokerRole, newOwner),
+            "New owner should not implicitly keep REVOKER_ROLE after clear"
         );
 
         // CHECK previous revokers cannot revoke tokens anymore
