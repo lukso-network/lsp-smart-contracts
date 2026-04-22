@@ -34,15 +34,15 @@ import {
 /**
  * @title AccessControlExtendedAbstract
  * @dev Abstract contract implementing OZ-compatible role management with reverse lookups
- * and auxiliary data storage. Uses EnumerableSet composition (NOT OZ AccessControl inheritance)
+ * Uses EnumerableSet composition (NOT OZ AccessControl inheritance)
  *
  * Provides:
  * - Standard OZ {IAccessControl} functions: hasRole, grantRole, revokeRole, renounceRole, getRoleAdmin
  * - Standard OZ {IAccessControlEnumerable} functions: getRoleMember, getRoleMemberCount
- * - Extended functions: rolesOf, grantRoleWithData, setRoleData, getRoleData
+ * - Extended functions: rolesOf, getRoleMembers
  * - Explicit role checks for every role-gated function
  * - DEFAULT_ADMIN_ROLE as root admin for granting and revoking roles
- * - Automatic transfer of all roles (and their auxiliary data, if any) between old and new on ownership transfer
+ * - Automatic transfer of all roles between old and new on ownership transfer
  */
 abstract contract AccessControlExtendedAbstract is
     IAccessControlExtended,
@@ -68,10 +68,6 @@ abstract contract AccessControlExtendedAbstract is
     /// @dev Reverse lookup: address -> set of roles held.
     mapping(address account => EnumerableSet.Bytes32Set rolesAssigned)
         private _addressRoles;
-
-    /// @dev Auxiliary data: role -> address -> bytes.
-    mapping(bytes32 role => mapping(address account => bytes roleData))
-        private _roleData;
 
     // --- Modifier
 
@@ -113,7 +109,9 @@ abstract contract AccessControlExtendedAbstract is
 
     // --- IAccessControl
 
-    /// @inheritdoc IAccessControl
+    /**
+     * @inheritdoc IAccessControl
+     */
     function hasRole(
         bytes32 role,
         address account
@@ -121,7 +119,9 @@ abstract contract AccessControlExtendedAbstract is
         return _hasRole(role, account);
     }
 
-    /// @inheritdoc IAccessControl
+    /**
+     * @inheritdoc IAccessControl
+     */
     function getRoleAdmin(bytes32 role) public view virtual returns (bytes32) {
         return _roleAdmins[role];
     }
@@ -160,7 +160,6 @@ abstract contract AccessControlExtendedAbstract is
      * @inheritdoc IAccessControl
      * @dev Allows `msg.sender` to renounce their own `role`. The `callerConfirmation`
      * parameter must equal `msg.sender` to prevent accidental renouncement (OZ pattern).
-     * Renouncing triggers data cleanup.
      *
      * @custom:warning The current owner cannot renounce `DEFAULT_ADMIN_ROLE`
      * to prevent locking the contract out of role administration.
@@ -184,7 +183,9 @@ abstract contract AccessControlExtendedAbstract is
 
     // --- IAccessControlEnumerable
 
-    /// @inheritdoc IAccessControlEnumerable
+    /**
+     * @inheritdoc IAccessControlEnumerable
+     */
     function getRoleMember(
         bytes32 role,
         uint256 index
@@ -192,14 +193,25 @@ abstract contract AccessControlExtendedAbstract is
         return _roleMembers[role].at(index);
     }
 
-    /// @inheritdoc IAccessControlEnumerable
+    /**
+     * @inheritdoc IAccessControlEnumerable
+     */
     function getRoleMemberCount(
         bytes32 role
     ) public view virtual returns (uint256) {
         return _roleMembers[role].length();
     }
 
-    // --- IAccessControlEnumerable (extended)
+    // --- IAccessControlExtended
+
+    /**
+     * @inheritdoc IAccessControlExtended
+     */
+    function rolesOf(
+        address account
+    ) public view virtual returns (bytes32[] memory) {
+        return _addressRoles[account].values();
+    }
 
     /**
      * @notice Returns all members that hold `role`.
@@ -210,7 +222,8 @@ abstract contract AccessControlExtendedAbstract is
      * @param role The role identifier to query members for.
      * @return An array of addresses that currently hold the specified role.
      *
-     * @custom:warning This function copies the entire role membership set into memory.
+     * @custom:warning This function copies the entire role members set from storage into memory.
+     * This is designed to mostly be used by view accessors that are queried without any gas fees.
      * For roles with a large number of members, this may consume a significant amount of gas. If calling this function on-chain, consider calling `{getRoleMember}` repeatedly, using `getRoleMemberCount` to know as max index.
      * This function is primarily intended for off-chain usage.
      */
@@ -218,56 +231,6 @@ abstract contract AccessControlExtendedAbstract is
         bytes32 role
     ) public view virtual returns (address[] memory) {
         return _roleMembers[role].values();
-    }
-
-    // --- IAccessControlExtended
-
-    /// @inheritdoc IAccessControlExtended
-    function rolesOf(
-        address account
-    ) public view virtual returns (bytes32[] memory) {
-        return _addressRoles[account].values();
-    }
-
-    /**
-     * @inheritdoc IAccessControlExtended
-     * @dev Atomically grants `role` to `account` and stores `data`.
-     * If `account` already holds the role (_grantRole is a no-op), the data
-     * is still updated if provided and {RoleDataChanged} is emitted.
-     */
-    function grantRoleWithData(
-        bytes32 role,
-        address account,
-        bytes calldata data
-    ) public virtual onlyRole(getRoleAdmin(role)) {
-        _grantRole(role, account);
-        if (data.length > 0) {
-            _roleData[role][account] = data;
-            emit RoleDataChanged(role, account, data);
-        }
-    }
-
-    /**
-     * @inheritdoc IAccessControlExtended
-     * @dev Sets auxiliary data for a role-address pair. Does NOT revert if `account`
-     * does not hold the role (allows pre-configuration before granting).
-     * Requires the caller to have the admin role for `role`.
-     */
-    function setRoleData(
-        bytes32 role,
-        address account,
-        bytes calldata data
-    ) public virtual onlyRole(getRoleAdmin(role)) {
-        _roleData[role][account] = data;
-        emit RoleDataChanged(role, account, data);
-    }
-
-    /// @inheritdoc IAccessControlExtended
-    function getRoleData(
-        bytes32 role,
-        address account
-    ) public view virtual returns (bytes memory) {
-        return _roleData[role][account];
     }
 
     // --- Internal functions
@@ -293,11 +256,8 @@ abstract contract AccessControlExtendedAbstract is
 
     /**
      * @dev Revokes `role` from `account`. No-op if the account does not hold the role.
-     * Auto-clears auxiliary data if any exists.
      *
-     * @custom:events
-     * - {RoleRevoked} if the role was revoked.
-     * - {RoleDataChanged} if auxiliary data was cleared.
+     * @custom:events Emits {RoleRevoked} if the role was revoked.
      */
     function _revokeRole(bytes32 role, address account) internal virtual {
         bool removed = _roleMembers[role].remove(account);
@@ -309,12 +269,6 @@ abstract contract AccessControlExtendedAbstract is
                 account: account,
                 sender: msg.sender
             });
-
-            // Auto-clear auxiliary data (BASE-09)
-            if (_roleData[role][account].length > 0) {
-                delete _roleData[role][account];
-                emit RoleDataChanged({role: role, account: account, data: ""});
-            }
         }
     }
 
@@ -374,15 +328,13 @@ abstract contract AccessControlExtendedAbstract is
      * custom roles the old owner was assigned.
      *
      * For each role held by the old owner:
-     * 1. The role is revoked from the old owner (including clearing auxiliary data).
+     * 1. The role is revoked from the old owner.
      * 2. The role is granted to the new owner (if not already held).
      *
      * @custom:info When renouncing ownership, roles are only removed from the old owner. Roles are not passed to `address(0)` (being the `newOwner` in the case of renounce ownership).
      *
      * @custom:warning
      * - Gas cost scales linearly with the number of roles the old owner holds.
-     * - Auxiliary role data set on the old owner is transferred to the new owner if ownership is transferred.
-     * - Transferring ownership to self will still clear then restore the old owner's auxiliary role data.
      * - If the old owner holds a large number of roles, the transaction may approach or exceed
      *   the block gas limit and fail. Avoid assigning too many roles to the owner to ensure
      *   ownership transfers remain callable.
@@ -396,22 +348,12 @@ abstract contract AccessControlExtendedAbstract is
 
         for (uint256 ii = 0; ii < oldOwnerRoles.length; ++ii) {
             bytes32 role = oldOwnerRoles[ii];
-            bytes memory oldOwnerRoleData = _roleData[role][oldOwner];
 
             _revokeRole(role, oldOwner);
 
             // exclude case when renouncing ownership
             if (newOwner != address(0)) {
                 _grantRole(role, newOwner);
-
-                if (oldOwnerRoleData.length > 0) {
-                    _roleData[role][newOwner] = oldOwnerRoleData;
-                    emit RoleDataChanged({
-                        role: role,
-                        account: newOwner,
-                        data: oldOwnerRoleData
-                    });
-                }
             }
         }
     }
