@@ -51,8 +51,8 @@ contract MockLSP8NonTransferable is LSP8NonTransferableAbstract {
             lsp4TokenType_,
             lsp8TokenIdFormat_
         )
+        AccessControlExtendedAbstract()
         LSP8NonTransferableAbstract(transferLockStart_, transferLockEnd_)
-        AccessControlExtendedAbstract(newOwner_)
     {}
 
     function mint(

@@ -83,14 +83,11 @@ abstract contract AccessControlExtendedAbstract is
     // --- Constructor
 
     /**
-     * @dev Grants `DEFAULT_ADMIN_ROLE` to the initial owner so they appear in
-     * enumeration (getRoleMember, rolesOf) and can administer roles from deployment.
-     *
-     * @param initialOwner_ The initial owner who receives DEFAULT_ADMIN_ROLE.
+     * @dev Grants `DEFAULT_ADMIN_ROLE` to the contract owner so to allow it to administer roles to other addresses after deployment.
+     * This will also make it appear inside the enumerations (getRoleMember, rolesOf, getRoleMembers).
      */
-    constructor(address initialOwner_) {
-        Ownable._transferOwnership(initialOwner_);
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
+    constructor() {
+        _grantRole(DEFAULT_ADMIN_ROLE, owner());
     }
 
     // --- ERC-165

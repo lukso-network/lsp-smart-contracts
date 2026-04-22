@@ -59,7 +59,7 @@ contract MockLSP8WithAccessControlExtended is
             _LSP4_TOKEN_TYPE_NFT,
             _LSP8_TOKENID_FORMAT_NUMBER
         )
-        AccessControlExtendedAbstract(newOwner_)
+        AccessControlExtendedAbstract()
     {}
 
     function setRoleAdmin(bytes32 role, bytes32 adminRole) public {

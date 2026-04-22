@@ -37,7 +37,6 @@ test = 'packages/lsp7-contracts/foundry'
 out = 'packages/lsp7-contracts/contracts/foundry_artifacts'
 optimizer = true
 optimizer_runs = 20000
-via_ir = true
 solc = "0.8.28"
 evm_version = "prague"
 
@@ -47,7 +46,6 @@ test = 'packages/lsp8-contracts/foundry'
 out = 'packages/lsp8-contracts/contracts/foundry_artifacts'
 optimizer = true
 optimizer_runs = 20000
-via_ir = true
 solc = "0.8.28"
 evm_version = "prague"
 
