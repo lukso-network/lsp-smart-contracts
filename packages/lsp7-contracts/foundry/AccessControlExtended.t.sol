@@ -75,11 +75,6 @@ contract MockTokenWithAccessControlExtended is
         _mint(to, amount, force, data);
     }
 
-    // Expose _setRoleAdmin for testing role admin hierarchy
-    function setRoleAdmin(bytes32 role, bytes32 adminRole) public {
-        _setRoleAdmin(role, adminRole);
-    }
-
     // Expose a restrictedFunction for onlyRole modifier testing
     function restrictedFunction()
         public
@@ -869,6 +864,18 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
+    function test_NonDefaultAdminCannotSetRoleAdmin() public {
+        vm.prank(account1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                account1,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(TEST_ROLE, ANOTHER_ROLE);
+    }
+
     function test_CustomAdminCanGrantThisRole() public {
         address addressWithDefaultAdminRole = makeAddr(
             "addressWithDefaultAdminRole"
@@ -1218,6 +1225,32 @@ contract AccessControlExtendedTest is Test {
 
         bytes32[] memory rolesAfter = token.rolesOf(addr);
         assertEq(rolesAfter.length, 0, "Should have 0 roles after revoke");
+    }
+
+    function testFuzz_DefaultAdminCanSetRoleAdmin(
+        bytes32 role,
+        bytes32 newAdminRole
+    ) public {
+        token.setRoleAdmin(role, newAdminRole);
+        assertEq(token.getRoleAdmin(role), newAdminRole);
+    }
+
+    function testFuzz_NonDefaultAdminCannotSetRoleAdmin(
+        address randomCaller,
+        bytes32 role,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(randomCaller != owner);
+
+        vm.prank(randomCaller);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                randomCaller,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(role, newAdminRole);
     }
 
     // ============================================================

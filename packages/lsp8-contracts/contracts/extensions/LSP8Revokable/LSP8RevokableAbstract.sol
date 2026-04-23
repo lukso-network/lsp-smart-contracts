@@ -68,7 +68,13 @@ abstract contract LSP8RevokableAbstract is
 
         // We assume revokers are trusted when specifying revocation destinations.
         // Therefore, we bypass LSP1 receiver checks.
-        _transfer(from, to, tokenId, true, data);
+        _transfer({
+            from: from,
+            to: to,
+            tokenId: tokenId,
+            force: true,
+            data: data
+        });
     }
 
     function supportsInterface(

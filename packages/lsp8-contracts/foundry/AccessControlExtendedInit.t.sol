@@ -134,6 +134,25 @@ contract AccessControlExtendedInitTest is Test {
         assertEq(members[0], account1);
     }
 
+    function test_DefaultAdminCanSetRoleAdminThroughProxy() public {
+        bytes32 roleAdmin = keccak256("ROLE_ADMIN");
+        token.setRoleAdmin(TEST_ROLE, roleAdmin);
+        assertEq(token.getRoleAdmin(TEST_ROLE), roleAdmin);
+    }
+
+    function test_NonDefaultAdminCannotSetRoleAdminThroughProxy() public {
+        bytes32 roleAdmin = keccak256("ROLE_ADMIN");
+        vm.prank(account1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                account1,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(TEST_ROLE, roleAdmin);
+    }
+
     function test_TransferOwnershipTransfersAllRolesThroughProxy() public {
         token.grantRole(TEST_ROLE, owner);
         token.grantRole(EXTRA_ROLE, owner);
@@ -170,5 +189,31 @@ contract AccessControlExtendedInitTest is Test {
             )
         );
         token.renounceRole(DEFAULT_ADMIN_ROLE, owner);
+    }
+
+    function testFuzz_DefaultAdminCanSetRoleAdminThroughProxy(
+        bytes32 role,
+        bytes32 roleAdmin
+    ) public {
+        token.setRoleAdmin(role, roleAdmin);
+        assertEq(token.getRoleAdmin(role), roleAdmin);
+    }
+
+    function testFuzz_NonDefaultAdminCannotSetRoleAdminThroughProxy(
+        address randomCaller,
+        bytes32 role,
+        bytes32 roleAdmin
+    ) public {
+        vm.assume(randomCaller != owner);
+
+        vm.prank(randomCaller);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                randomCaller,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(role, roleAdmin);
     }
 }

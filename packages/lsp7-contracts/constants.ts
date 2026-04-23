@@ -1,4 +1,5 @@
 export const INTERFACE_ID_LSP7 = '0xc52d6008';
+export const INTERFACE_ID_ACCESS_CONTROL_EXTENDED = '0xb409bee6';
 
 export const INTERFACE_ID_LSP7_PREVIOUS = {
   'v0.14.0': '0xb3c4928f',
@@ -7,14 +8,14 @@ export const INTERFACE_ID_LSP7_PREVIOUS = {
 
 // Role constants used across LSP7 extensions for AccessControlExtended
 export const ROLES = {
-    // `"MINTER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    MINTER: "0x4d494e5445525f524f4c45000000000000000000000000000000000000000000",
-    // `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    UNCAPPED: "0x554e4341505045445f524f4c4500000000000000000000000000000000000000",
-    // `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    NON_TRANSFERABLE_BYPASS: "0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000",
-    // `"REVOKER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    REVOKER: "0x5245564f4b45525f524f4c450000000000000000000000000000000000000000"
+  // `"MINTER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+  MINTER: '0x4d494e5445525f524f4c45000000000000000000000000000000000000000000',
+  // `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+  UNCAPPED: '0x554e4341505045445f524f4c4500000000000000000000000000000000000000',
+  // `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+  NON_TRANSFERABLE_BYPASS: '0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000',
+  // `"REVOKER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+  REVOKER: '0x5245564f4b45525f524f4c450000000000000000000000000000000000000000',
 } as const;
 
 // Export individual constants for backward compatibility

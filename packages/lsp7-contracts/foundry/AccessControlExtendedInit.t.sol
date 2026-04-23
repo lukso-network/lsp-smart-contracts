@@ -273,6 +273,25 @@ contract AccessControlExtendedInitTest is Test {
         token.restrictedFunction();
     }
 
+    function test_InitOwnerCanSetRoleAdmin() public {
+        bytes32 roleAdmin = keccak256("ROLE_ADMIN");
+        token.setRoleAdmin(TEST_ROLE, roleAdmin);
+        assertEq(token.getRoleAdmin(TEST_ROLE), roleAdmin);
+    }
+
+    function test_InitNonAdminCannotSetRoleAdmin() public {
+        bytes32 roleAdmin = keccak256("ROLE_ADMIN");
+        vm.prank(account1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                account1,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(TEST_ROLE, roleAdmin);
+    }
+
     // ============================================================
     // Section 3: Storage layout safety (TEST-03)
     // ============================================================
@@ -411,6 +430,32 @@ contract AccessControlExtendedInitTest is Test {
                 "hasRole should be true for each enumerated role"
             );
         }
+    }
+
+    function testFuzz_InitDefaultAdminCanSetRoleAdmin(
+        bytes32 role,
+        bytes32 roleAdmin
+    ) public {
+        token.setRoleAdmin(role, roleAdmin);
+        assertEq(token.getRoleAdmin(role), roleAdmin);
+    }
+
+    function testFuzz_InitNonAdminCannotSetRoleAdmin(
+        address randomCaller,
+        bytes32 role,
+        bytes32 roleAdmin
+    ) public {
+        vm.assume(randomCaller != tokenOwner);
+
+        vm.prank(randomCaller);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                randomCaller,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(role, roleAdmin);
     }
 
     // ============================================================

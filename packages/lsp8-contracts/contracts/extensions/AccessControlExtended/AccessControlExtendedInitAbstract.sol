@@ -131,6 +131,16 @@ abstract contract AccessControlExtendedInitAbstract is
     }
 
     /**
+     * @inheritdoc IAccessControlExtended
+     */
+    function setRoleAdmin(
+        bytes32 role,
+        bytes32 adminRole
+    ) public virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setRoleAdmin(role, adminRole);
+    }
+
+    /**
      * @inheritdoc IAccessControl
      *
      * @dev Grants `role` to `account`.

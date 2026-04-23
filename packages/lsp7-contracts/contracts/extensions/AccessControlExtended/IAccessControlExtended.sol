@@ -15,6 +15,20 @@ import {
  */
 interface IAccessControlExtended is IAccessControlEnumerable {
     /**
+     * @notice Returns the admin role that controls `role`.
+     * @param role The role identifier to query.
+     * @return The admin role assigned to `role`.
+     */
+    function getRoleAdmin(bytes32 role) external view returns (bytes32);
+
+    /**
+     * @notice Sets a new admin role for `role`.
+     * @param role The role identifier being configured.
+     * @param adminRole The role that will become the new admin of `role`.
+     */
+    function setRoleAdmin(bytes32 role, bytes32 adminRole) external;
+
+    /**
      * @notice Returns all members that hold `role`.
      *
      * @dev Convenience function that returns the full membership array in a single call.

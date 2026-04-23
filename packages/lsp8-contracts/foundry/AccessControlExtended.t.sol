@@ -62,10 +62,6 @@ contract MockLSP8WithAccessControlExtended is
         AccessControlExtendedAbstract()
     {}
 
-    function setRoleAdmin(bytes32 role, bytes32 adminRole) public {
-        _setRoleAdmin(role, adminRole);
-    }
-
     function supportsInterface(
         bytes4 interfaceId
     )
@@ -164,6 +160,18 @@ contract AccessControlExtendedTest is Test {
         token.grantRole(ADMIN_ROLE, owner);
         token.grantRole(TEST_ROLE, account1);
         assertTrue(token.hasRole(TEST_ROLE, account1));
+    }
+
+    function test_NonDefaultAdminCannotSetRoleAdmin() public {
+        vm.prank(account1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                account1,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(TEST_ROLE, ADMIN_ROLE);
     }
 
     function test_GrantRoleStoresRole() public {
@@ -276,5 +284,31 @@ contract AccessControlExtendedTest is Test {
             )
         );
         token.grantRole(TEST_ROLE, account2);
+    }
+
+    function testFuzz_DefaultAdminCanSetRoleAdmin(
+        bytes32 role,
+        bytes32 roleAdmin
+    ) public {
+        token.setRoleAdmin(role, roleAdmin);
+        assertEq(token.getRoleAdmin(role), roleAdmin);
+    }
+
+    function testFuzz_NonDefaultAdminCannotSetRoleAdmin(
+        address randomCaller,
+        bytes32 role,
+        bytes32 roleAdmin
+    ) public {
+        vm.assume(randomCaller != owner);
+
+        vm.prank(randomCaller);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                randomCaller,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(role, roleAdmin);
     }
 }
