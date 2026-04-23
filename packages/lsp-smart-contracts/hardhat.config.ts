@@ -54,7 +54,6 @@ const LSP7_VIA_IR_SETTINGS: SolidityUserConfig = {
   version: '0.8.28',
   settings: {
     evmVersion: 'prague',
-    viaIR: true,
     optimizer: {
       enabled: true,
       /**
@@ -77,7 +76,6 @@ const LSP8_VIA_IR_SETTINGS: SolidityUserConfig = {
   version: '0.8.28',
   settings: {
     evmVersion: 'prague',
-    viaIR: true,
     optimizer: {
       enabled: true,
       /**

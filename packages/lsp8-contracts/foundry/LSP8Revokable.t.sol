@@ -54,8 +54,8 @@ contract MockLSP8Revokable is LSP8RevokableAbstract {
             lsp4TokenType_,
             lsp8TokenIdFormat_
         )
-        AccessControlExtendedAbstract(newOwner_)
-        LSP8RevokableAbstract(newOwner_, isRevokable_)
+        AccessControlExtendedAbstract()
+        LSP8RevokableAbstract(isRevokable_)
     {}
 
     function mint(
@@ -130,16 +130,22 @@ contract LSP8RevokableTest is Test {
 
         Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
 
+        uint256 lastLog = recordedLogs.length - 1;
+
         // First `RoleGranted` event MUST be for `DEFAULT_ADMIN_ROLE`
         assertEq(
-            recordedLogs[2].topics[0],
+            recordedLogs[lastLog - 1].topics[0],
             IAccessControl.RoleGranted.selector
         );
-        assertEq(recordedLogs[2].topics[1], DEFAULT_ADMIN_ROLE);
-        assertEq(recordedLogs[2].topics[2], bytes32(uint256(uint160(owner))));
-        assertEq(recordedLogs[2].topics[3], bytes32(uint256(uint160(owner))));
-
-        uint256 lastLog = recordedLogs.length - 1;
+        assertEq(recordedLogs[lastLog - 1].topics[1], DEFAULT_ADMIN_ROLE);
+        assertEq(
+            recordedLogs[lastLog - 1].topics[2],
+            bytes32(uint256(uint160(owner)))
+        );
+        assertEq(
+            recordedLogs[lastLog - 1].topics[3],
+            bytes32(uint256(uint160(owner)))
+        );
 
         // Another `RoleGranted` event MUST be for `REVOKER_ROLE`
         assertEq(

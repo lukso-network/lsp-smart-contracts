@@ -64,10 +64,6 @@ abstract contract AccessControlExtendedInitAbstract is
     mapping(address account => EnumerableSet.Bytes32Set rolesAssigned)
         private _addressRoles;
 
-    /// @dev Auxiliary data: role -> address -> bytes.
-    mapping(bytes32 role => mapping(address account => bytes roleData))
-        private _roleData;
-
     // --- Modifier
 
     /**
@@ -84,26 +80,21 @@ abstract contract AccessControlExtendedInitAbstract is
     /**
      * @dev Chained initializer that grants DEFAULT_ADMIN_ROLE to the initial owner,
      * so they appear in enumeration (getRoleMember, rolesOf) and can administer roles from initialization.
-     *
-     * @param initialOwner_ Initial contract owner who also receives DEFAULT_ADMIN_ROLE.
      */
-    function __AccessControlExtended_init(
-        address initialOwner_
-    ) internal virtual onlyInitializing {
-        __AccessControlExtended_init_unchained(initialOwner_);
+    function __AccessControlExtended_init() internal virtual onlyInitializing {
+        __AccessControlExtended_init_unchained();
     }
 
     /**
-     * @dev Standalone initializer. Only grants DEFAULT_ADMIN_ROLE to the owner.
+     * @dev Standalone initializer. Only grants DEFAULT_ADMIN_ROLE to the contract owner.
      * Use when the LSP8 base is already initialized through another path.
-     *
-     * @param initialOwner_ The initial contract owner who also receives DEFAULT_ADMIN_ROLE.
      */
-    function __AccessControlExtended_init_unchained(
-        address initialOwner_
-    ) internal virtual onlyInitializing {
-        OwnableUpgradeable._transferOwnership(initialOwner_);
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
+    function __AccessControlExtended_init_unchained()
+        internal
+        virtual
+        onlyInitializing
+    {
+        _grantRole(DEFAULT_ADMIN_ROLE, owner());
     }
 
     // --- ERC-165
@@ -122,7 +113,9 @@ abstract contract AccessControlExtendedInitAbstract is
 
     // --- IAccessControl
 
-    /// @inheritdoc IAccessControl
+    /**
+     * @inheritdoc IAccessControl
+     */
     function hasRole(
         bytes32 role,
         address account
@@ -130,13 +123,16 @@ abstract contract AccessControlExtendedInitAbstract is
         return _hasRole(role, account);
     }
 
-    /// @inheritdoc IAccessControl
+    /**
+     * @inheritdoc IAccessControl
+     */
     function getRoleAdmin(bytes32 role) public view virtual returns (bytes32) {
         return _roleAdmins[role];
     }
 
     /**
      * @inheritdoc IAccessControl
+     *
      * @dev Grants `role` to `account`.
      *
      * @custom:requirements The caller must hold the admin role for `role`.
@@ -167,6 +163,7 @@ abstract contract AccessControlExtendedInitAbstract is
 
     /**
      * @inheritdoc IAccessControl
+     *
      * @dev Allows `msg.sender` to renounce their own `role`. The `callerConfirmation`
      * parameter must equal `msg.sender` to prevent accidental renouncement (OZ pattern).
      * Renouncing triggers data cleanup.
@@ -193,7 +190,9 @@ abstract contract AccessControlExtendedInitAbstract is
 
     // --- IAccessControlEnumerable
 
-    /// @inheritdoc IAccessControlEnumerable
+    /**
+     * @inheritdoc IAccessControlEnumerable
+     */
     function getRoleMember(
         bytes32 role,
         uint256 index
@@ -201,37 +200,20 @@ abstract contract AccessControlExtendedInitAbstract is
         return _roleMembers[role].at(index);
     }
 
-    /// @inheritdoc IAccessControlEnumerable
+    /**
+     * @inheritdoc IAccessControlEnumerable
+     */
     function getRoleMemberCount(
         bytes32 role
     ) public view virtual returns (uint256) {
         return _roleMembers[role].length();
     }
 
-    // --- IAccessControlEnumerable (extended)
-
-    /**
-     * @notice Returns all members that hold `role`.
-     *
-     * @dev Convenience function that returns the full membership array in a single call.
-     * Equivalent to calling {getRoleMember} for each index from `0` to `getRoleMemberCount(role) - 1`.
-     *
-     * @param role The role identifier to query members for.
-     * @return An array of addresses that currently hold the specified role.
-     *
-     * @custom:warning This function copies the entire role membership set into memory.
-     * For roles with a large number of members, this may consume a significant amount of gas. If calling this function on-chain, consider calling `{getRoleMember}` repeatedly, using `getRoleMemberCount` to know as max index.
-     * This function is primarily intended for off-chain usage.
-     */
-    function getRoleMembers(
-        bytes32 role
-    ) public view virtual returns (address[] memory) {
-        return _roleMembers[role].values();
-    }
-
     // --- IAccessControlExtended
 
-    /// @inheritdoc IAccessControlExtended
+    /**
+     * @inheritdoc IAccessControlExtended
+     */
     function rolesOf(
         address account
     ) public view virtual returns (bytes32[] memory) {
@@ -240,43 +222,11 @@ abstract contract AccessControlExtendedInitAbstract is
 
     /**
      * @inheritdoc IAccessControlExtended
-     * @dev Atomically grants `role` to `account` and stores `data`.
-     * If `account` already holds the role (_grantRole is a no-op), the data
-     * is still updated if provided and {RoleDataChanged} is emitted.
      */
-    function grantRoleWithData(
-        bytes32 role,
-        address account,
-        bytes calldata data
-    ) public virtual onlyRole(getRoleAdmin(role)) {
-        _grantRole(role, account);
-        if (data.length > 0) {
-            _roleData[role][account] = data;
-            emit RoleDataChanged(role, account, data);
-        }
-    }
-
-    /**
-     * @inheritdoc IAccessControlExtended
-     * @dev Sets auxiliary data for a role-address pair. Does NOT revert if `account`
-     * does not hold the role (allows pre-configuration before granting).
-     * Requires the caller to have the admin role for `role`.
-     */
-    function setRoleData(
-        bytes32 role,
-        address account,
-        bytes calldata data
-    ) public virtual onlyRole(getRoleAdmin(role)) {
-        _roleData[role][account] = data;
-        emit RoleDataChanged(role, account, data);
-    }
-
-    /// @inheritdoc IAccessControlExtended
-    function getRoleData(
-        bytes32 role,
-        address account
-    ) public view virtual returns (bytes memory) {
-        return _roleData[role][account];
+    function getRoleMembers(
+        bytes32 role
+    ) public view virtual returns (address[] memory) {
+        return _roleMembers[role].values();
     }
 
     // --- Internal functions
@@ -304,9 +254,7 @@ abstract contract AccessControlExtendedInitAbstract is
      * @dev Revokes `role` from `account`. No-op if the account does not hold the role.
      * Auto-clears auxiliary data if any exists.
      *
-     * @custom:events
-     * - {RoleRevoked} if the role was revoked.
-     * - {RoleDataChanged} if auxiliary data was cleared.
+     * @custom:events Emits {RoleRevoked} if the role was revoked.
      */
     function _revokeRole(bytes32 role, address account) internal virtual {
         bool removed = _roleMembers[role].remove(account);
@@ -318,12 +266,6 @@ abstract contract AccessControlExtendedInitAbstract is
                 account: account,
                 sender: msg.sender
             });
-
-            // Auto-clear auxiliary data
-            if (_roleData[role][account].length > 0) {
-                delete _roleData[role][account];
-                emit RoleDataChanged({role: role, account: account, data: ""});
-            }
         }
     }
 
@@ -405,22 +347,12 @@ abstract contract AccessControlExtendedInitAbstract is
 
         for (uint256 ii = 0; ii < oldOwnerRoles.length; ++ii) {
             bytes32 role = oldOwnerRoles[ii];
-            bytes memory oldOwnerRoleData = _roleData[role][oldOwner];
 
             _revokeRole(role, oldOwner);
 
             // exclude case when renouncing ownership
             if (newOwner != address(0)) {
                 _grantRole(role, newOwner);
-
-                if (oldOwnerRoleData.length > 0) {
-                    _roleData[role][newOwner] = oldOwnerRoleData;
-                    emit RoleDataChanged({
-                        role: role,
-                        account: newOwner,
-                        data: oldOwnerRoleData
-                    });
-                }
             }
         }
     }
@@ -433,5 +365,5 @@ abstract contract AccessControlExtendedInitAbstract is
      * @custom:info The size of the `__gap` array is calculated so that the amount of storage used by the contract
      * always adds up to the same number (in this case 50 storage slots).
      */
-    uint256[46] private __gap;
+    uint256[47] private __gap;
 }

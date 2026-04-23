@@ -27,8 +27,8 @@ import {
 /// @dev Abstract contract implementing non-transferable LSP8 token functionality with transfer lock periods and role-based bypass support.
 abstract contract LSP8NonTransferableInitAbstract is
     ILSP8NonTransferable,
-    AccessControlExtendedInitAbstract,
-    LSP8IdentifiableDigitalAssetInitAbstract
+    LSP8IdentifiableDigitalAssetInitAbstract,
+    AccessControlExtendedInitAbstract
 {
     /// @dev `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
     bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE =
@@ -65,7 +65,7 @@ abstract contract LSP8NonTransferableInitAbstract is
             lsp4TokenType_,
             lsp8TokenIdFormat_
         );
-        __AccessControlExtended_init(newOwner_);
+        __AccessControlExtended_init();
         __LSP8NonTransferable_init_unchained(
             transferLockStart_,
             transferLockEnd_

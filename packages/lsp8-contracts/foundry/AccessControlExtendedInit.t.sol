@@ -47,7 +47,7 @@ contract MockAccessControlExtendedInit is
             _LSP4_TOKEN_TYPE_NFT,
             _LSP8_TOKENID_FORMAT_NUMBER
         );
-        __AccessControlExtended_init(newOwner_);
+        __AccessControlExtended_init();
     }
 
     function supportsInterface(
@@ -100,14 +100,14 @@ contract AccessControlExtendedInitTest is Test {
     function setUp() public {
         implementation = new MockAccessControlExtendedInit();
 
-        bytes memory initData = abi.encodeCall(
+        bytes memory initializeCalldata = abi.encodeCall(
             MockAccessControlExtendedInit.initialize,
             (owner)
         );
 
         ERC1967Proxy proxy = new ERC1967Proxy(
             address(implementation),
-            initData
+            initializeCalldata
         );
         token = MockAccessControlExtendedInit(payable(address(proxy)));
     }
@@ -135,8 +135,8 @@ contract AccessControlExtendedInitTest is Test {
     }
 
     function test_TransferOwnershipTransfersAllRolesThroughProxy() public {
+        token.grantRole(TEST_ROLE, owner);
         token.grantRole(EXTRA_ROLE, owner);
-        token.grantRoleWithData(TEST_ROLE, owner, hex"beef");
 
         token.transferOwnership(account1);
 
@@ -144,13 +144,11 @@ contract AccessControlExtendedInitTest is Test {
         assertFalse(token.hasRole(EXTRA_ROLE, owner));
         assertFalse(token.hasRole(TEST_ROLE, owner));
         assertEq(token.rolesOf(owner).length, 0);
-        assertEq(token.getRoleData(TEST_ROLE, owner).length, 0);
 
         assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, account1));
         assertTrue(token.hasRole(EXTRA_ROLE, account1));
         assertTrue(token.hasRole(TEST_ROLE, account1));
         assertEq(token.rolesOf(account1).length, 3);
-        assertEq(token.getRoleData(TEST_ROLE, account1), hex"beef");
     }
 
     function test_RenounceOwnershipRevokesAllRolesThroughProxy() public {

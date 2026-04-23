@@ -21,8 +21,8 @@ import {LSP8MintDisabled} from "./LSP8MintableErrors.sol";
 /// Inherits from LSP8IdentifiableDigitalAsset to provide core token functionality.
 abstract contract LSP8MintableAbstract is
     ILSP8Mintable,
-    AccessControlExtendedAbstract,
-    LSP8IdentifiableDigitalAsset
+    LSP8IdentifiableDigitalAsset,
+    AccessControlExtendedAbstract
 {
     /// @notice Indicates whether minting is currently enabled.
     bool public isMintable;

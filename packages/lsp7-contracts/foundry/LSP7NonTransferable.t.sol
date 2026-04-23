@@ -48,8 +48,8 @@ contract MockLSP7NonTransferable is LSP7NonTransferableAbstract {
             lsp4TokenType_,
             isNonDivisible_
         )
+        AccessControlExtendedAbstract()
         LSP7NonTransferableAbstract(transferLockStart_, transferLockEnd_)
-        AccessControlExtendedAbstract(newOwner_)
     {}
 
     function mint(

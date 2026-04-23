@@ -30,7 +30,7 @@ contract LSP8Mintable is LSP8MintableAbstract {
             lsp4TokenType_,
             lsp8TokenIdFormat_
         )
-        AccessControlExtendedAbstract(newOwner_)
+        AccessControlExtendedAbstract()
         LSP8MintableAbstract(true)
     {}
 }

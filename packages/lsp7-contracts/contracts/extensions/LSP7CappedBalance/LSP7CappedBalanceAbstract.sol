@@ -19,8 +19,8 @@ import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 /// Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
 abstract contract LSP7CappedBalanceAbstract is
     ILSP7CappedBalance,
-    AccessControlExtendedAbstract,
-    LSP7DigitalAsset
+    LSP7DigitalAsset,
+    AccessControlExtendedAbstract
 {
     /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
     address internal constant _DEAD_ADDRESS =

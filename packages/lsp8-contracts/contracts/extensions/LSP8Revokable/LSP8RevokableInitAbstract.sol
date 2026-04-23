@@ -35,8 +35,8 @@ import {LSP8RevokableFeatureDisabled} from "./LSP8RevokableErrors.sol";
 /// - Ticketing: Reclaim tickets or access NFTs when conditions are no longer met
 abstract contract LSP8RevokableInitAbstract is
     ILSP8Revokable,
-    AccessControlExtendedInitAbstract,
-    LSP8IdentifiableDigitalAssetInitAbstract
+    LSP8IdentifiableDigitalAssetInitAbstract,
+    AccessControlExtendedInitAbstract
 {
     bool internal _isRevokable;
 
@@ -67,19 +67,18 @@ abstract contract LSP8RevokableInitAbstract is
             lsp4TokenType_,
             lsp8TokenIdFormat_
         );
-        __AccessControlExtended_init(newOwner_);
-        __LSP8Revokable_init_unchained(newOwner_, isRevokable_);
+        __AccessControlExtended_init();
+        __LSP8Revokable_init_unchained(isRevokable_);
     }
 
     /// @notice Unchained initializer for LSP8Revokable.
     function __LSP8Revokable_init_unchained(
-        address newOwner_,
         bool isRevokable_
     ) internal virtual onlyInitializing {
         _isRevokable = isRevokable_;
 
         if (isRevokable_) {
-            _grantRole(REVOKER_ROLE, newOwner_);
+            _grantRole(REVOKER_ROLE, owner());
         }
     }
 

@@ -44,11 +44,12 @@ import {
 
 /// @title LSP8CustomizableTokenInit
 /// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions. This is the proxy-deployable version.
+/// Implements {LSP8Burnable} to allow burning.
 /// Implements {LSP8Mintable} to allow minting.
-/// Implements {LSP8Burnable} to allow burning
+/// Implements {LSP8CappedSupply} to set total supply cap.
 /// Implements {LSP8CappedBalance} to set balance caps.
 /// Implements {LSP8NonTransferable} to restrict transfers.
-/// Implements {LSP8CappedSupply} to set total supply cap.
+/// Implements {LSP8Revokable} to allow revoking tokens.
 contract LSP8CustomizableTokenInit is
     LSP8BurnableInitAbstract,
     LSP8MintableInitAbstract,
@@ -115,7 +116,7 @@ contract LSP8CustomizableTokenInit is
             lsp4TokenType_,
             lsp8TokenIdFormat_
         );
-        __AccessControlExtended_init_unchained(newOwner_);
+        __AccessControlExtended_init_unchained();
         __LSP8Mintable_init_unchained(mintableParams.isMintable);
         __LSP8CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
         __LSP8CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
@@ -123,7 +124,7 @@ contract LSP8CustomizableTokenInit is
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         );
-        __LSP8Revokable_init_unchained(newOwner_, revokableParams.isRevokable);
+        __LSP8Revokable_init_unchained(revokableParams.isRevokable);
 
         // Mint initial tokens
         for (

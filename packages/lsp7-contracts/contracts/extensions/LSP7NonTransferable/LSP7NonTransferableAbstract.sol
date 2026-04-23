@@ -23,8 +23,8 @@ import {
 /// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods and allowlist support.
 abstract contract LSP7NonTransferableAbstract is
     ILSP7NonTransferable,
-    AccessControlExtendedAbstract,
-    LSP7DigitalAsset
+    LSP7DigitalAsset,
+    AccessControlExtendedAbstract
 {
     /// @dev `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
     bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE =

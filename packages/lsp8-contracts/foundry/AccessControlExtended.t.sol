@@ -59,7 +59,7 @@ contract MockLSP8WithAccessControlExtended is
             _LSP4_TOKEN_TYPE_NFT,
             _LSP8_TOKENID_FORMAT_NUMBER
         )
-        AccessControlExtendedAbstract(newOwner_)
+        AccessControlExtendedAbstract()
     {}
 
     function setRoleAdmin(bytes32 role, bytes32 adminRole) public {
@@ -166,22 +166,17 @@ contract AccessControlExtendedTest is Test {
         assertTrue(token.hasRole(TEST_ROLE, account1));
     }
 
-    function test_GrantRoleWithDataStoresData() public {
-        bytes memory data = abi.encodePacked(uint256(42));
-
-        token.grantRoleWithData(TEST_ROLE, account1, data);
-
+    function test_GrantRoleStoresRole() public {
+        token.grantRole(TEST_ROLE, account1);
         assertTrue(token.hasRole(TEST_ROLE, account1));
-        assertEq(token.getRoleData(TEST_ROLE, account1), data);
     }
 
-    function test_RevokeRoleClearsData() public {
-        token.grantRoleWithData(TEST_ROLE, account1, bytes("hello"));
+    function test_RevokeRoleClearsRole() public {
+        token.grantRole(TEST_ROLE, account1);
+        assertTrue(token.hasRole(TEST_ROLE, account1));
 
         token.revokeRole(TEST_ROLE, account1);
-
         assertFalse(token.hasRole(TEST_ROLE, account1));
-        assertEq(token.getRoleData(TEST_ROLE, account1).length, 0);
     }
 
     function test_RenounceRoleRequiresConfirmation() public {
@@ -212,14 +207,20 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_InterfaceIdConstantsMatchComputedSelectors() public {
-        assertEq(_INTERFACEID_ACCESSCONTROL, type(IAccessControl).interfaceId);
+        assertEq(
+            _INTERFACEID_ACCESSCONTROL,
+            type(IAccessControl).interfaceId,
+            "AccessControl interfaceId constant mismatch"
+        );
         assertEq(
             _INTERFACEID_ACCESSCONTROLENUMERABLE,
-            type(IAccessControlEnumerable).interfaceId
+            type(IAccessControlEnumerable).interfaceId,
+            "AccessControlEnumerable interfaceId constant mismatch"
         );
         assertEq(
             _INTERFACEID_ACCESSCONTROLEXTENDED,
-            type(IAccessControlExtended).interfaceId
+            type(IAccessControlExtended).interfaceId,
+            "AccessControlExtended interfaceId constant mismatch"
         );
     }
 
@@ -239,7 +240,7 @@ contract AccessControlExtendedTest is Test {
         bytes32 burnerRole = keccak256("BURNER_ROLE");
 
         token.grantRole(minterRole, owner);
-        token.grantRoleWithData(burnerRole, owner, hex"cafe");
+        token.grantRole(burnerRole, owner);
 
         token.transferOwnership(account1);
 
@@ -247,13 +248,11 @@ contract AccessControlExtendedTest is Test {
         assertFalse(token.hasRole(minterRole, owner));
         assertFalse(token.hasRole(burnerRole, owner));
         assertEq(token.rolesOf(owner).length, 0);
-        assertEq(token.getRoleData(burnerRole, owner).length, 0);
 
         assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, account1));
         assertTrue(token.hasRole(minterRole, account1));
         assertTrue(token.hasRole(burnerRole, account1));
         assertEq(token.rolesOf(account1).length, 3);
-        assertEq(token.getRoleData(burnerRole, account1), hex"cafe");
     }
 
     function test_RenounceOwnershipRevokesAllRoles() public {

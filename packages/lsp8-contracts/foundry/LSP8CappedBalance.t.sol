@@ -43,7 +43,7 @@ contract MockLSP8CappedBalance is LSP8CappedBalanceAbstract {
             lsp4TokenType_,
             lsp8TokenIdFormat_
         )
-        AccessControlExtendedAbstract(newOwner_)
+        AccessControlExtendedAbstract()
         LSP8CappedBalanceAbstract(tokenBalanceCap_)
     {}
 

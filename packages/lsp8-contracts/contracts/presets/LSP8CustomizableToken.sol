@@ -43,11 +43,12 @@ import {
 
 /// @title LSP8CustomizableToken
 /// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions.
+/// Implements {LSP8Burnable} to allow burning.
 /// Implements {LSP8Mintable} to allow minting.
-/// Implements {LSP8Burnable} to allow burning
+/// Implements {LSP8CappedSupply} to set total supply cap.
 /// Implements {LSP8CappedBalance} to set balance caps.
 /// Implements {LSP8NonTransferable} to restrict transfers.
-/// Implements {LSP8CappedSupply} to set total supply cap.
+/// Implements {LSP8Revokable} to allow revoking tokens.
 contract LSP8CustomizableToken is
     LSP8Burnable,
     LSP8MintableAbstract,
@@ -85,7 +86,7 @@ contract LSP8CustomizableToken is
             lsp4TokenType_,
             lsp8TokenIdFormat_
         )
-        AccessControlExtendedAbstract(newOwner_)
+        AccessControlExtendedAbstract()
         LSP8MintableAbstract(mintableParams.isMintable)
         LSP8CappedSupplyAbstract(cappedParams.tokenSupplyCap)
         LSP8CappedBalanceAbstract(cappedParams.tokenBalanceCap)
@@ -93,7 +94,7 @@ contract LSP8CustomizableToken is
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         )
-        LSP8RevokableAbstract(newOwner_, revokableParams.isRevokable)
+        LSP8RevokableAbstract(revokableParams.isRevokable)
     {
         // Mint initial tokens
         for (

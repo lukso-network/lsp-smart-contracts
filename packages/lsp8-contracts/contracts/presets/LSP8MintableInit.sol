@@ -44,7 +44,7 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
             lsp4TokenType_,
             lsp8TokenIdFormat_
         );
-        __AccessControlExtended_init(newOwner_);
+        __AccessControlExtended_init();
         __LSP8Mintable_init_unchained(true);
     }
 }
