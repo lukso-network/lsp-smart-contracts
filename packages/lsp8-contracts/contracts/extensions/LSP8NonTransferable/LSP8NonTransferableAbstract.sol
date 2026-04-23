@@ -176,6 +176,9 @@ abstract contract LSP8NonTransferableAbstract is
     function _transferOwnership(
         address newOwner
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant NON_TRANSFERABLE_BYPASS_ROLE to new accounts post-transfer
+        _setRoleAdmin(NON_TRANSFERABLE_BYPASS_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
 }

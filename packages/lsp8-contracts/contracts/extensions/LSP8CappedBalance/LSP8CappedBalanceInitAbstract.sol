@@ -149,6 +149,9 @@ abstract contract LSP8CappedBalanceInitAbstract is
         virtual
         override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
     {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant UNCAPPED_ROLE to new accounts post-transfer
+        _setRoleAdmin(UNCAPPED_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
 }

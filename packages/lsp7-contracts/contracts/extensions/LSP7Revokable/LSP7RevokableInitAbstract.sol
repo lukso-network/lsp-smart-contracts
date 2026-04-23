@@ -144,5 +144,8 @@ abstract contract LSP7RevokableInitAbstract is
         while (getRoleMemberCount(REVOKER_ROLE) != 0) {
             _revokeRole(REVOKER_ROLE, getRoleMember(REVOKER_ROLE, 0));
         }
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant REVOKER_ROLE to new accounts post-transfer
+        _setRoleAdmin(REVOKER_ROLE, DEFAULT_ADMIN_ROLE);
     }
 }

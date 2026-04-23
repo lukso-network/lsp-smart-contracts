@@ -114,6 +114,9 @@ abstract contract LSP7CappedBalanceAbstract is
     function _transferOwnership(
         address newOwner
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant UNCAPPED_ROLE to new accounts post-transfer
+        _setRoleAdmin(UNCAPPED_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
 }
