@@ -64,10 +64,6 @@ abstract contract AccessControlExtendedInitAbstract is
     mapping(address account => EnumerableSet.Bytes32Set rolesAssigned)
         private _addressRoles;
 
-    /// @dev Auxiliary data: role -> address -> bytes.
-    mapping(bytes32 role => mapping(address account => bytes roleData))
-        private _roleData;
-
     // --- Modifier
 
     /**
@@ -208,7 +204,14 @@ abstract contract AccessControlExtendedInitAbstract is
         return _roleMembers[role].length();
     }
 
-    // --- IAccessControlEnumerable (extended)
+    // --- IAccessControlExtended
+
+    /// @inheritdoc IAccessControlExtended
+    function rolesOf(
+        address account
+    ) public view virtual returns (bytes32[] memory) {
+        return _addressRoles[account].values();
+    }
 
     /**
      * @notice Returns all members that hold `role`.
@@ -227,56 +230,6 @@ abstract contract AccessControlExtendedInitAbstract is
         bytes32 role
     ) public view virtual returns (address[] memory) {
         return _roleMembers[role].values();
-    }
-
-    // --- IAccessControlExtended
-
-    /// @inheritdoc IAccessControlExtended
-    function rolesOf(
-        address account
-    ) public view virtual returns (bytes32[] memory) {
-        return _addressRoles[account].values();
-    }
-
-    /**
-     * @inheritdoc IAccessControlExtended
-     * @dev Atomically grants `role` to `account` and stores `data`.
-     * If `account` already holds the role (_grantRole is a no-op), the data
-     * is still updated if provided and {RoleDataChanged} is emitted.
-     */
-    function grantRoleWithData(
-        bytes32 role,
-        address account,
-        bytes calldata data
-    ) public virtual onlyRole(getRoleAdmin(role)) {
-        _grantRole(role, account);
-        if (data.length > 0) {
-            _roleData[role][account] = data;
-            emit RoleDataChanged(role, account, data);
-        }
-    }
-
-    /**
-     * @inheritdoc IAccessControlExtended
-     * @dev Sets auxiliary data for a role-address pair. Does NOT revert if `account`
-     * does not hold the role (allows pre-configuration before granting).
-     * Requires the caller to have the admin role for `role`.
-     */
-    function setRoleData(
-        bytes32 role,
-        address account,
-        bytes calldata data
-    ) public virtual onlyRole(getRoleAdmin(role)) {
-        _roleData[role][account] = data;
-        emit RoleDataChanged(role, account, data);
-    }
-
-    /// @inheritdoc IAccessControlExtended
-    function getRoleData(
-        bytes32 role,
-        address account
-    ) public view virtual returns (bytes memory) {
-        return _roleData[role][account];
     }
 
     // --- Internal functions
@@ -318,12 +271,6 @@ abstract contract AccessControlExtendedInitAbstract is
                 account: account,
                 sender: msg.sender
             });
-
-            // Auto-clear auxiliary data
-            if (_roleData[role][account].length > 0) {
-                delete _roleData[role][account];
-                emit RoleDataChanged({role: role, account: account, data: ""});
-            }
         }
     }
 
@@ -405,22 +352,12 @@ abstract contract AccessControlExtendedInitAbstract is
 
         for (uint256 ii = 0; ii < oldOwnerRoles.length; ++ii) {
             bytes32 role = oldOwnerRoles[ii];
-            bytes memory oldOwnerRoleData = _roleData[role][oldOwner];
 
             _revokeRole(role, oldOwner);
 
             // exclude case when renouncing ownership
             if (newOwner != address(0)) {
                 _grantRole(role, newOwner);
-
-                if (oldOwnerRoleData.length > 0) {
-                    _roleData[role][newOwner] = oldOwnerRoleData;
-                    emit RoleDataChanged({
-                        role: role,
-                        account: newOwner,
-                        data: oldOwnerRoleData
-                    });
-                }
             }
         }
     }
@@ -433,5 +370,5 @@ abstract contract AccessControlExtendedInitAbstract is
      * @custom:info The size of the `__gap` array is calculated so that the amount of storage used by the contract
      * always adds up to the same number (in this case 50 storage slots).
      */
-    uint256[46] private __gap;
+    uint256[47] private __gap;
 }
