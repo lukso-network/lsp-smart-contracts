@@ -41,10 +41,10 @@ import {
 
 /// @title LSP7CustomizableToken
 /// @dev A customizable LSP7 token (proxy version) implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
-/// Implements {LSP7Mintable} to allow minting.
 /// Implements {LSP7Burnable} to allow burning.
-/// Implements {LSP7CappedBalance} to set balance caps.
+/// Implements {LSP7Mintable} to allow minting.
 /// Implements {LSP7CappedSupply} to set total supply cap.
+/// Implements {LSP7CappedBalance} to set balance caps.
 /// Implements {LSP7NonTransferable} to restrict transfers.
 /// Implements {LSP7Revokable} to allow revoking tokens.
 contract LSP7CustomizableToken is

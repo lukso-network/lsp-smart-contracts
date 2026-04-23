@@ -245,9 +245,7 @@ abstract contract AccessControlExtendedAbstract is
      * @dev Revokes `role` from `account`. No-op if the account does not hold the role.
      * Auto-clears auxiliary data if any exists.
      *
-     * @custom:events
-     * - {RoleRevoked} if the role was revoked.
-     * - {RoleDataChanged} if auxiliary data was cleared.
+     * @custom:events Emits {RoleRevoked} if the role was revoked.
      */
     function _revokeRole(bytes32 role, address account) internal virtual {
         bool removed = _roleMembers[role].remove(account);

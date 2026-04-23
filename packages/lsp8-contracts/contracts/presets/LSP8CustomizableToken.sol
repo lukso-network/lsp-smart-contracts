@@ -45,8 +45,8 @@ import {
 /// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions.
 /// Implements {LSP8Burnable} to allow burning.
 /// Implements {LSP8Mintable} to allow minting.
-/// Implements {LSP8CappedBalance} to set balance caps.
 /// Implements {LSP8CappedSupply} to set total supply cap.
+/// Implements {LSP8CappedBalance} to set balance caps.
 /// Implements {LSP8NonTransferable} to restrict transfers.
 /// Implements {LSP8Revokable} to allow revoking tokens.
 contract LSP8CustomizableToken is

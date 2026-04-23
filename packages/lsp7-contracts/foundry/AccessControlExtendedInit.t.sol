@@ -286,7 +286,7 @@ contract AccessControlExtendedInitTest is Test {
         // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 roleB = bytes32(bytes("RoleB"));
 
-        // Grant multiple rolesto multiple accounts through proxy
+        // Grant multiple roles to multiple accounts through proxy
         token.grantRole(roleA, account1);
         token.grantRole(roleA, account2);
         token.grantRole(roleB, account1);

@@ -44,11 +44,12 @@ import {
 
 /// @title LSP8CustomizableTokenInit
 /// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions. This is the proxy-deployable version.
+/// Implements {LSP8Burnable} to allow burning.
 /// Implements {LSP8Mintable} to allow minting.
-/// Implements {LSP8Burnable} to allow burning
+/// Implements {LSP8CappedSupply} to set total supply cap.
 /// Implements {LSP8CappedBalance} to set balance caps.
 /// Implements {LSP8NonTransferable} to restrict transfers.
-/// Implements {LSP8CappedSupply} to set total supply cap.
+/// Implements {LSP8Revokable} to allow revoking tokens.
 contract LSP8CustomizableTokenInit is
     LSP8BurnableInitAbstract,
     LSP8MintableInitAbstract,

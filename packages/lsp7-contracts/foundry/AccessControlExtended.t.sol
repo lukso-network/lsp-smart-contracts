@@ -1327,7 +1327,7 @@ contract AccessControlExtendedTest is Test {
         address newOwner = account1;
         token.transferOwnership(newOwner);
 
-        // Old owner's rolesshould be cleared
+        // Old owner's roles should be cleared
         bytes32[] memory rolesAfter = token.rolesOf(owner);
         assertEq(
             rolesAfter.length,

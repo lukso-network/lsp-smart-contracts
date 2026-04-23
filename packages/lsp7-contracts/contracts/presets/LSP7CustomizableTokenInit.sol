@@ -46,9 +46,9 @@ import {
 /// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
 /// Implements {LSP7BurnableInitAbstract} to allow burning.
 /// Implements {LSP7MintableInitAbstract} to allow minting.
-/// Implements {LSP7CappedBalanceInitAbstract} to restrict transfers.
 /// Implements {LSP7CappedSupplyInitAbstract} to set balance caps.
-/// Implements {LSP7BurnableInitAbstract} to set total supply cap.
+/// Implements {LSP7CappedBalanceInitAbstract} to set balance caps.
+/// Implements {LSP7NonTransferableInitAbstract} to restrict transfers.
 /// Implement {LSP7RevokableInitAbstract} to allow revoking tokens.
 contract LSP7CustomizableTokenInit is
     LSP7BurnableInitAbstract,

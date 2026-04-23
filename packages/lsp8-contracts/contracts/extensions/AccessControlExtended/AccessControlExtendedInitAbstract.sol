@@ -86,7 +86,7 @@ abstract contract AccessControlExtendedInitAbstract is
     }
 
     /**
-     * @dev Standalone initializer. Only grants DEFAULT_ADMIN_ROLE to the owner.
+     * @dev Standalone initializer. Only grants DEFAULT_ADMIN_ROLE to the contract owner.
      * Use when the LSP8 base is already initialized through another path.
      */
     function __AccessControlExtended_init_unchained()
@@ -254,9 +254,7 @@ abstract contract AccessControlExtendedInitAbstract is
      * @dev Revokes `role` from `account`. No-op if the account does not hold the role.
      * Auto-clears auxiliary data if any exists.
      *
-     * @custom:events
-     * - {RoleRevoked} if the role was revoked.
-     * - {RoleDataChanged} if auxiliary data was cleared.
+     * @custom:events Emits {RoleRevoked} if the role was revoked.
      */
     function _revokeRole(bytes32 role, address account) internal virtual {
         bool removed = _roleMembers[role].remove(account);

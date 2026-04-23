@@ -236,7 +236,7 @@ abstract contract AccessControlExtendedAbstract is
      * @dev Grants `role` to `account`. No-op if the account already holds the role
      * (matching OZ behavior). Updates both forward and reverse lookups.
      *
-     * @custom:events {RoleGranted} if the role was newly granted.
+     * @custom:events Emits {RoleGranted} if the role was newly granted.
      */
     function _grantRole(bytes32 role, address account) internal virtual {
         bool added = _roleMembers[role].add(account);
