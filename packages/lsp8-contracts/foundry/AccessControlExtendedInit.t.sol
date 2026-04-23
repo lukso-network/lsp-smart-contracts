@@ -47,7 +47,7 @@ contract MockAccessControlExtendedInit is
             _LSP4_TOKEN_TYPE_NFT,
             _LSP8_TOKENID_FORMAT_NUMBER
         );
-        __AccessControlExtended_init(newOwner_);
+        __AccessControlExtended_init();
     }
 
     function supportsInterface(
@@ -135,6 +135,7 @@ contract AccessControlExtendedInitTest is Test {
     }
 
     function test_TransferOwnershipTransfersAllRolesThroughProxy() public {
+        token.grantRole(TEST_ROLE, owner);
         token.grantRole(EXTRA_ROLE, owner);
 
         token.transferOwnership(account1);

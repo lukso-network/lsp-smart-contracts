@@ -40,8 +40,8 @@ contract MockLSP7CappedBalance is LSP7CappedBalanceAbstract {
             lsp4TokenType_,
             isNonDivisible_
         )
+        AccessControlExtendedAbstract()
         LSP7CappedBalanceAbstract(tokenBalanceCap_)
-        AccessControlExtendedAbstract(newOwner_)
     {}
 
     // Helper function to mint tokens for testing

@@ -207,14 +207,20 @@ contract AccessControlExtendedTest is Test {
     }
 
     function test_InterfaceIdConstantsMatchComputedSelectors() public {
-        assertEq(_INTERFACEID_ACCESSCONTROL, type(IAccessControl).interfaceId);
+        assertEq(
+            _INTERFACEID_ACCESSCONTROL,
+            type(IAccessControl).interfaceId,
+            "AccessControl interfaceId constant mismatch"
+        );
         assertEq(
             _INTERFACEID_ACCESSCONTROLENUMERABLE,
-            type(IAccessControlEnumerable).interfaceId
+            type(IAccessControlEnumerable).interfaceId,
+            "AccessControlEnumerable interfaceId constant mismatch"
         );
         assertEq(
             _INTERFACEID_ACCESSCONTROLEXTENDED,
-            type(IAccessControlExtended).interfaceId
+            type(IAccessControlExtended).interfaceId,
+            "AccessControlExtended interfaceId constant mismatch"
         );
     }
 
@@ -234,6 +240,7 @@ contract AccessControlExtendedTest is Test {
         bytes32 burnerRole = keccak256("BURNER_ROLE");
 
         token.grantRole(minterRole, owner);
+        token.grantRole(burnerRole, owner);
 
         token.transferOwnership(account1);
 

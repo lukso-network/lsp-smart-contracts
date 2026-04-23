@@ -50,8 +50,8 @@ contract MockLSP7Mintable is LSP7MintableAbstract {
             lsp4TokenType_,
             isNonDivisible_
         )
+        AccessControlExtendedAbstract()
         LSP7MintableAbstract(mintable_)
-        AccessControlExtendedAbstract(newOwner_)
     {}
 }
 
@@ -175,10 +175,19 @@ contract LSP7MintableTest is Test {
         assertEq(lsp7NonMintable.owner(), owner);
     }
 
-    function test_OwnerStartsWithMinterRole() public {
+    function test_OwnerStartsWithDefaultAdminRoleAndMinterRole() public {
+        assertTrue(
+            lsp7Mintable.hasRole(DEFAULT_ADMIN_ROLE, owner),
+            "Owner should start with DEFAULT_ADMIN_ROLE"
+        );
         assertTrue(
             lsp7Mintable.hasRole(lsp7Mintable.MINTER_ROLE(), owner),
             "Owner should start with MINTER_ROLE"
+        );
+
+        assertTrue(
+            lsp7MintableRandomOwner.hasRole(DEFAULT_ADMIN_ROLE, randomOwner),
+            "Random owner should start with DEFAULT_ADMIN_ROLE"
         );
         assertTrue(
             lsp7MintableRandomOwner.hasRole(
@@ -243,6 +252,11 @@ contract LSP7MintableTest is Test {
     function test_DefaultAdminCanGrantItselfMinterRoleAndMint() public {
         bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
         address defaultAdmin = vm.addr(103);
+
+        assertEq(lsp7MintableRandomOwner.owner(), randomOwner);
+        assertTrue(
+            lsp7MintableRandomOwner.hasRole(DEFAULT_ADMIN_ROLE, randomOwner)
+        );
 
         vm.prank(randomOwner);
         lsp7MintableRandomOwner.grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
