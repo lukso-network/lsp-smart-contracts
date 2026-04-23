@@ -80,26 +80,21 @@ abstract contract AccessControlExtendedInitAbstract is
     /**
      * @dev Chained initializer that grants DEFAULT_ADMIN_ROLE to the initial owner,
      * so they appear in enumeration (getRoleMember, rolesOf) and can administer roles from initialization.
-     *
-     * @param initialOwner_ Initial contract owner who also receives DEFAULT_ADMIN_ROLE.
      */
-    function __AccessControlExtended_init(
-        address initialOwner_
-    ) internal virtual onlyInitializing {
-        __AccessControlExtended_init_unchained(initialOwner_);
+    function __AccessControlExtended_init() internal virtual onlyInitializing {
+        __AccessControlExtended_init_unchained();
     }
 
     /**
      * @dev Standalone initializer. Only grants DEFAULT_ADMIN_ROLE to the owner.
      * Use when the LSP8 base is already initialized through another path.
-     *
-     * @param initialOwner_ The initial contract owner who also receives DEFAULT_ADMIN_ROLE.
      */
-    function __AccessControlExtended_init_unchained(
-        address initialOwner_
-    ) internal virtual onlyInitializing {
-        OwnableUpgradeable._transferOwnership(initialOwner_);
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
+    function __AccessControlExtended_init_unchained()
+        internal
+        virtual
+        onlyInitializing
+    {
+        _grantRole(DEFAULT_ADMIN_ROLE, owner());
     }
 
     // --- ERC-165
