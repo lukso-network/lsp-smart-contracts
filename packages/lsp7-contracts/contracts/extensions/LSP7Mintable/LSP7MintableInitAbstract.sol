@@ -24,8 +24,8 @@ import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 /// Inherits from LSP7DigitalAsset to provide core token functionality.
 abstract contract LSP7MintableInitAbstract is
     ILSP7Mintable,
-    AccessControlExtendedInitAbstract,
-    LSP7DigitalAssetInitAbstract
+    LSP7DigitalAssetInitAbstract,
+    AccessControlExtendedInitAbstract
 {
     /// @notice Indicates whether minting is currently enabled or not.
     bool public isMintable;
@@ -58,7 +58,7 @@ abstract contract LSP7MintableInitAbstract is
             lsp4TokenType_,
             isNonDivisible_
         );
-        __AccessControlExtended_init(newOwner_);
+        __AccessControlExtended_init();
         __LSP7Mintable_init_unchained(mintable_);
     }
 

@@ -35,7 +35,7 @@ contract LSP7Mintable is LSP7MintableAbstract {
             lsp4TokenType_,
             isNonDivisible_
         )
-        AccessControlExtendedAbstract(newOwner_)
+        AccessControlExtendedAbstract()
         LSP7MintableAbstract(mintable_)
     {}
 }

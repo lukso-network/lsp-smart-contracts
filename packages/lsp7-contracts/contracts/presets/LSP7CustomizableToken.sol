@@ -42,10 +42,11 @@ import {
 /// @title LSP7CustomizableToken
 /// @dev A customizable LSP7 token (proxy version) implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
 /// Implements {LSP7Mintable} to allow minting.
-/// Implements {LSP7Burnable} to allow burning
+/// Implements {LSP7Burnable} to allow burning.
 /// Implements {LSP7CappedBalance} to set balance caps.
-/// Implements {LSP7NonTransferable} to restrict transfers.
 /// Implements {LSP7CappedSupply} to set total supply cap.
+/// Implements {LSP7NonTransferable} to restrict transfers.
+/// Implements {LSP7Revokable} to allow revoking tokens.
 contract LSP7CustomizableToken is
     LSP7Burnable,
     LSP7MintableAbstract,
@@ -83,7 +84,7 @@ contract LSP7CustomizableToken is
             lsp4TokenType_,
             isNonDivisible_
         )
-        AccessControlExtendedAbstract(newOwner_)
+        AccessControlExtendedAbstract()
         LSP7MintableAbstract(mintableParams.isMintable)
         LSP7CappedSupplyAbstract(cappedParams.tokenSupplyCap)
         LSP7CappedBalanceAbstract(cappedParams.tokenBalanceCap)
@@ -91,7 +92,7 @@ contract LSP7CustomizableToken is
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         )
-        LSP7RevokableAbstract(newOwner_, revokableParams.isRevokable)
+        LSP7RevokableAbstract(revokableParams.isRevokable)
     {
         if (mintableParams.initialMintAmount > 0) {
             _mint(newOwner_, mintableParams.initialMintAmount, true, "");

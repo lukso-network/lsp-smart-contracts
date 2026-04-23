@@ -29,8 +29,8 @@ import {LSP7RevokableFeatureDisabled} from "./LSP7RevokableErrors.sol";
 /// - Vesting: Revoke unvested tokens if conditions are not met
 abstract contract LSP7RevokableAbstract is
     ILSP7Revokable,
-    AccessControlExtendedAbstract,
-    LSP7DigitalAsset
+    LSP7DigitalAsset,
+    AccessControlExtendedAbstract
 {
     bool internal immutable _IS_REVOKABLE;
 
@@ -38,11 +38,11 @@ abstract contract LSP7RevokableAbstract is
     bytes32 public constant REVOKER_ROLE =
         0x5245564f4b45525f524f4c450000000000000000000000000000000000000000;
 
-    constructor(address newOwner_, bool isRevokable_) {
+    constructor(bool isRevokable_) {
         _IS_REVOKABLE = isRevokable_;
 
         if (isRevokable_) {
-            _grantRole(REVOKER_ROLE, newOwner_);
+            _grantRole(REVOKER_ROLE, owner());
         }
     }
 

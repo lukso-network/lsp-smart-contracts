@@ -35,8 +35,8 @@ import {LSP7RevokableFeatureDisabled} from "./LSP7RevokableErrors.sol";
 /// - Vesting: Revoke unvested tokens if conditions are not met
 abstract contract LSP7RevokableInitAbstract is
     ILSP7Revokable,
-    AccessControlExtendedInitAbstract,
-    LSP7DigitalAssetInitAbstract
+    LSP7DigitalAssetInitAbstract,
+    AccessControlExtendedInitAbstract
 {
     bool internal _isRevokable;
 
@@ -67,19 +67,18 @@ abstract contract LSP7RevokableInitAbstract is
             lsp4TokenType_,
             isNonDivisible_
         );
-        __AccessControlExtended_init(newOwner_);
-        __LSP7Revokable_init_unchained(newOwner_, isRevokable_);
+        __AccessControlExtended_init();
+        __LSP7Revokable_init_unchained(isRevokable_);
     }
 
     /// @notice Unchained initializer for LSP7Revokable.
     function __LSP7Revokable_init_unchained(
-        address newOwner_,
         bool isRevokable_
     ) internal virtual onlyInitializing {
         _isRevokable = isRevokable_;
 
         if (isRevokable_) {
-            _grantRole(REVOKER_ROLE, newOwner_);
+            _grantRole(REVOKER_ROLE, owner());
         }
     }
 

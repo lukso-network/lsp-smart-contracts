@@ -31,8 +31,8 @@ import {LSP8RevokableFeatureDisabled} from "./LSP8RevokableErrors.sol";
 /// - Ticketing: Reclaim tickets or access NFTs when conditions are no longer met
 abstract contract LSP8RevokableAbstract is
     ILSP8Revokable,
-    AccessControlExtendedAbstract,
-    LSP8IdentifiableDigitalAsset
+    LSP8IdentifiableDigitalAsset,
+    AccessControlExtendedAbstract
 {
     bool internal immutable _IS_REVOKABLE;
 

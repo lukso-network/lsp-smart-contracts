@@ -20,8 +20,8 @@ import {LSP8CappedBalanceExceeded} from "./LSP8CappedBalanceErrors.sol";
 /// @dev Abstract contract implementing a per-address NFT count cap for LSP8 tokens, with role-based exemptions.
 abstract contract LSP8CappedBalanceAbstract is
     ILSP8CappedBalance,
-    AccessControlExtendedAbstract,
-    LSP8IdentifiableDigitalAsset
+    LSP8IdentifiableDigitalAsset,
+    AccessControlExtendedAbstract
 {
     /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
     address internal constant _DEAD_ADDRESS =

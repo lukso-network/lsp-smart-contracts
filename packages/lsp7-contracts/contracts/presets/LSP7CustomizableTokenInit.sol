@@ -44,11 +44,12 @@ import {
 
 /// @title LSP7CustomizableTokenInit
 /// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
+/// Implements {LSP7BurnableInitAbstract} to allow burning.
 /// Implements {LSP7MintableInitAbstract} to allow minting.
-/// Implements {LSP7BurnableInitAbstract} to allow burning
 /// Implements {LSP7CappedBalanceInitAbstract} to restrict transfers.
 /// Implements {LSP7CappedSupplyInitAbstract} to set balance caps.
 /// Implements {LSP7BurnableInitAbstract} to set total supply cap.
+/// Implement {LSP7RevokableInitAbstract} to allow revoking tokens.
 contract LSP7CustomizableTokenInit is
     LSP7BurnableInitAbstract,
     LSP7MintableInitAbstract,
@@ -110,7 +111,7 @@ contract LSP7CustomizableTokenInit is
             lsp4TokenType_,
             isNonDivisible_
         );
-        __AccessControlExtended_init_unchained(newOwner_);
+        __AccessControlExtended_init_unchained();
         __LSP7Mintable_init_unchained(mintableParams.isMintable);
         __LSP7CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
         __LSP7CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
@@ -118,7 +119,7 @@ contract LSP7CustomizableTokenInit is
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         );
-        __LSP7Revokable_init_unchained(newOwner_, revokableParams.isRevokable);
+        __LSP7Revokable_init_unchained(revokableParams.isRevokable);
 
         if (mintableParams.initialMintAmount > 0) {
             _mint(newOwner_, mintableParams.initialMintAmount, true, "");

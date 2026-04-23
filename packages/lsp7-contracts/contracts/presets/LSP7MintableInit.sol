@@ -40,7 +40,7 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
             lsp4TokenType_,
             isNonDivisible_
         );
-        __AccessControlExtended_init(newOwner_);
+        __AccessControlExtended_init();
         __LSP7Mintable_init_unchained(mintable_);
     }
 }

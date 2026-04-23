@@ -115,7 +115,7 @@ contract LSP8CustomizableTokenInit is
             lsp4TokenType_,
             lsp8TokenIdFormat_
         );
-        __AccessControlExtended_init_unchained(newOwner_);
+        __AccessControlExtended_init_unchained();
         __LSP8Mintable_init_unchained(mintableParams.isMintable);
         __LSP8CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
         __LSP8CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
@@ -123,7 +123,7 @@ contract LSP8CustomizableTokenInit is
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         );
-        __LSP8Revokable_init_unchained(newOwner_, revokableParams.isRevokable);
+        __LSP8Revokable_init_unchained(revokableParams.isRevokable);
 
         // Mint initial tokens
         for (
