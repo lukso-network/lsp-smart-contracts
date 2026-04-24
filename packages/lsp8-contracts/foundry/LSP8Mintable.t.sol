@@ -17,6 +17,9 @@ import {
 
 // interfaces
 import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {
     ILSP8Mintable
 } from "../contracts/extensions/LSP8Mintable/ILSP8Mintable.sol";
 
@@ -110,6 +113,67 @@ contract LSP8MintableTest is Test {
             lsp8Mintable.hasRole(minterRole, owner),
             "Owner should have MINTER_ROLE"
         );
+    }
+
+    function test_DeployWithoutMintableFeatureDoesNotGrantMinterRoleToOwner()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        MockLSP8Mintable tokenContract = new MockLSP8Mintable(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            tokenIdFormat,
+            false // isMintable
+        );
+
+        assertFalse(tokenContract.hasRole(minterRole, contractOwner));
+        assertTrue(
+            tokenContract.hasRole(
+                tokenContract.DEFAULT_ADMIN_ROLE(),
+                contractOwner
+            )
+        );
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 1);
+        assertEq(ownerRoles[0], tokenContract.DEFAULT_ADMIN_ROLE());
+    }
+
+    function test_DeployWithMintableFeatureGrantsMinterRoleToOwnerAndEmitsRoleGranted()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        vm.expectEmit(true, true, true, true);
+        emit IAccessControl.RoleGranted(
+            minterRole,
+            contractOwner,
+            address(this)
+        );
+        MockLSP8Mintable tokenContract = new MockLSP8Mintable(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            tokenIdFormat,
+            true // mintable
+        );
+
+        assertTrue(tokenContract.hasRole(minterRole, contractOwner));
+        assertTrue(
+            tokenContract.hasRole(
+                tokenContract.DEFAULT_ADMIN_ROLE(),
+                contractOwner
+            )
+        );
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 2);
+        assertEq(ownerRoles[0], tokenContract.DEFAULT_ADMIN_ROLE());
+        assertEq(ownerRoles[1], minterRole);
     }
 
     // Test owner can mint tokens

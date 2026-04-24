@@ -202,8 +202,39 @@ contract LSP7MintableTest is Test {
         );
     }
 
-    function test_DeployWithoutMintableFeatureDoesNotGrantMinterRoleToOwner() public {
-        
+    function test_DeployWithoutMintableFeatureDoesNotGrantMinterRoleToOwner()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        MockLSP7Mintable tokenContract = new MockLSP7Mintable(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            isNonDivisible,
+            false // isMintable
+        );
+
+        assertFalse(tokenContract.hasRole(minterRole, contractOwner));
+        assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 1);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+    }
+
+    function test_DeployWithMintableFeatureGrantsMinterRoleToOwnerAndEmitsRoleGranted()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        vm.expectEmit(true, true, true, true);
+        emit IAccessControl.RoleGranted(
+            minterRole,
+            contractOwner,
+            address(this)
+        );
         MockLSP7Mintable tokenContract = new MockLSP7Mintable(
             name,
             symbol,
@@ -213,14 +244,13 @@ contract LSP7MintableTest is Test {
             true // mintable
         );
 
-        assertTrue(tokenContract.hasRole(tokenContract.MINTER_ROLE(), contractOwner));
+        assertTrue(tokenContract.hasRole(minterRole, contractOwner));
         assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
-        
+
         bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
         assertEq(ownerRoles.length, 2);
-
         assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
-        assertEq(ownerRoles[1], tokenContract.MINTER_ROLE());
+        assertEq(ownerRoles[1], minterRole);
     }
 
     function test_MintableOwnerCanMint() public {

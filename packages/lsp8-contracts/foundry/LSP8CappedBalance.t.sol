@@ -4,6 +4,11 @@ pragma solidity ^0.8.27;
 // foundry
 import {Test} from "forge-std/Test.sol";
 
+// interfaces
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+
 // modules
 import {
     LSP8CappedBalanceAbstract
@@ -117,6 +122,67 @@ contract LSP8CappedBalanceTest is Test {
             lsp8CappedBalance.hasRole(UNCAPPED_ROLE, owner),
             "Owner should have UNCAPPED_ROLE"
         );
+    }
+
+    function test_DeployWithoutCappedBalanceFeatureDoesNotGrantUncappedRoleToOwner()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        MockLSP8CappedBalance tokenContract = new MockLSP8CappedBalance(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            tokenIdFormat,
+            0 // tokenBalanceCap disabled
+        );
+
+        assertFalse(tokenContract.hasRole(UNCAPPED_ROLE, contractOwner));
+        assertTrue(
+            tokenContract.hasRole(
+                tokenContract.DEFAULT_ADMIN_ROLE(),
+                contractOwner
+            )
+        );
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 1);
+        assertEq(ownerRoles[0], tokenContract.DEFAULT_ADMIN_ROLE());
+    }
+
+    function test_DeployWithCappedBalanceFeatureGrantsUncappedRoleToOwnerAndEmitsRoleGranted()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        vm.expectEmit(true, true, true, true);
+        emit IAccessControl.RoleGranted(
+            UNCAPPED_ROLE,
+            contractOwner,
+            address(this)
+        );
+        MockLSP8CappedBalance tokenContract = new MockLSP8CappedBalance(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            tokenIdFormat,
+            tokenBalanceCap
+        );
+
+        assertTrue(tokenContract.hasRole(UNCAPPED_ROLE, contractOwner));
+        assertTrue(
+            tokenContract.hasRole(
+                tokenContract.DEFAULT_ADMIN_ROLE(),
+                contractOwner
+            )
+        );
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 2);
+        assertEq(ownerRoles[0], tokenContract.DEFAULT_ADMIN_ROLE());
+        assertEq(ownerRoles[1], UNCAPPED_ROLE);
     }
 
     // Test balance cap is returned correctly
@@ -300,10 +366,7 @@ contract LSP8CappedBalanceTest is Test {
         bytes32 uncappedBalanceAdminRole = keccak256("UNCAPPED_ADMIN_ROLE");
         address uncappedBalanceAdmin = makeAddr("A Uncapped Balance Admin");
 
-        lsp8CappedBalance.setRoleAdmin(
-            UNCAPPED_ROLE,
-            uncappedBalanceAdminRole
-        );
+        lsp8CappedBalance.setRoleAdmin(UNCAPPED_ROLE, uncappedBalanceAdminRole);
         assertEq(
             lsp8CappedBalance.getRoleAdmin(UNCAPPED_ROLE),
             uncappedBalanceAdminRole
