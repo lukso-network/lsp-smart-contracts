@@ -231,7 +231,6 @@ contract LSP7MintableTest is Test {
     }
 
     function test_DefaultAdminCannotMintWithoutMinterRole() public {
-        bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
         address defaultAdmin = vm.addr(102);
 
         vm.prank(randomOwner);
@@ -254,7 +253,6 @@ contract LSP7MintableTest is Test {
     }
 
     function test_DefaultAdminCanGrantItselfMinterRoleAndMint() public {
-        bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
         address defaultAdmin = vm.addr(103);
 
         assertEq(lsp7MintableRandomOwner.owner(), randomOwner);
@@ -275,8 +273,6 @@ contract LSP7MintableTest is Test {
     }
 
     function test_OwnerCanReGrantItselfMinterRoleAfterRevocation() public {
-        bytes32 minterRole = lsp7Mintable.MINTER_ROLE();
-
         lsp7Mintable.revokeRole(minterRole, owner);
         assertFalse(lsp7Mintable.hasRole(minterRole, owner));
 
@@ -306,8 +302,6 @@ contract LSP7MintableTest is Test {
         /// vm.assume(nonOwner != address(this));
 
         assertEq(lsp7MintableRandomOwner.balanceOf(recipient), 0);
-
-        bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
 
         vm.prank(nonOwner);
         vm.expectRevert(

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 // foundry
-import {Test} from "forge-std/Test.sol";
+import {Test, Vm} from "forge-std/Test.sol";
 
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
@@ -38,7 +38,8 @@ import {
 // errors
 import {
     AccessControlUnauthorizedAccount,
-    AccessControlBadConfirmation
+    AccessControlBadConfirmation,
+    AccessControlCannotSetAdminForDefaultAdminRole
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 
 contract MockLSP8WithAccessControlExtended is
@@ -81,6 +82,15 @@ contract MockLSP8WithAccessControlExtended is
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
         AccessControlExtendedAbstract._transferOwnership(newOwner);
     }
+
+    function restrictedFunction()
+        public
+        view
+        onlyRole(TEST_ROLE)
+        returns (bool)
+    {
+        return true;
+    }
 }
 
 contract AccessControlExtendedTest is Test {
@@ -95,8 +105,13 @@ contract AccessControlExtendedTest is Test {
     bytes32 constant ADMIN_ROLE = bytes32(bytes("AdminRole"));
 
     address owner = address(this);
+    address nonOwner = vm.addr(100);
     address account1 = vm.addr(101);
     address account2 = vm.addr(102);
+    address account3 = vm.addr(103);
+
+    bytes32 constant MINTER_ROLE = keccak256("MINTER");
+    bytes32 constant BURNER_ROLE = keccak256("BURNER");
 
     MockLSP8WithAccessControlExtended token;
 
@@ -310,5 +325,266 @@ contract AccessControlExtendedTest is Test {
             )
         );
         token.setRoleAdmin(role, roleAdmin);
+    }
+
+    function testFuzz_OwnerCannotChangeAdminRoleForDefaultAdminRole(
+        bytes32 newAdminRole
+    ) public {
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlCannotSetAdminForDefaultAdminRole.selector
+            )
+        );
+        token.setRoleAdmin(DEFAULT_ADMIN_ROLE, newAdminRole);
+
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+    }
+
+    function testFuzz_DefaultAdminCannotChangeAdminRoleForDefaultAdminRole(
+        address addressWithDefaultAdminRole,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(addressWithDefaultAdminRole != owner);
+        token.grantRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole);
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole)
+        );
+
+        vm.prank(addressWithDefaultAdminRole);
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlCannotSetAdminForDefaultAdminRole.selector
+            )
+        );
+        vm.prank(addressWithDefaultAdminRole);
+        token.setRoleAdmin(DEFAULT_ADMIN_ROLE, newAdminRole);
+
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+    }
+
+    function test_TransferOwnershipDoesNotAffectOtherRoleHolders() public {
+        token.grantRole(MINTER_ROLE, owner);
+        token.grantRole(MINTER_ROLE, account2);
+
+        address newOwner = account1;
+        token.transferOwnership(newOwner);
+
+        assertTrue(token.hasRole(MINTER_ROLE, account2));
+        assertTrue(token.hasRole(MINTER_ROLE, newOwner));
+        assertFalse(token.hasRole(MINTER_ROLE, owner));
+    }
+
+    function test_TransferOwnershipTransfersOldOwnerRoles() public {
+        token.grantRole(MINTER_ROLE, owner);
+
+        assertTrue(token.hasRole(MINTER_ROLE, owner));
+
+        bytes32[] memory ownerRoles = token.rolesOf(owner);
+        assertEq(ownerRoles.length, 2);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+        assertEq(ownerRoles[1], MINTER_ROLE);
+
+        address newOwner = account1;
+        token.transferOwnership(newOwner);
+
+        bytes32[] memory rolesAfter = token.rolesOf(owner);
+        assertEq(rolesAfter.length, 0);
+
+        assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, newOwner));
+        assertTrue(token.hasRole(MINTER_ROLE, newOwner));
+
+        bytes32[] memory newOwnerRoles = token.rolesOf(newOwner);
+        assertEq(newOwnerRoles.length, 2);
+        assertEq(newOwnerRoles[0], DEFAULT_ADMIN_ROLE);
+        assertEq(newOwnerRoles[1], MINTER_ROLE);
+    }
+
+    function test_TransferOwnershipEmitsAllRoleEvents() public {
+        token.grantRole(MINTER_ROLE, owner);
+
+        address newOwner = account1;
+
+        vm.recordLogs();
+        token.transferOwnership(newOwner);
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+
+        assertEq(entries.length, 5);
+
+        bytes32 revokedSel = IAccessControl.RoleRevoked.selector;
+        bytes32 grantedSel = IAccessControl.RoleGranted.selector;
+        bytes32 transferredSel = Ownable.OwnershipTransferred.selector;
+
+        uint256 revokedCount;
+        uint256 grantedCount;
+        bool ownershipTransferredFound;
+
+        for (uint256 i = 0; i < entries.length; i++) {
+            if (entries[i].topics[0] == revokedSel) {
+                assertEq(
+                    entries[i].topics[2],
+                    bytes32(uint256(uint160(owner)))
+                );
+                revokedCount++;
+            } else if (entries[i].topics[0] == grantedSel) {
+                assertEq(
+                    entries[i].topics[2],
+                    bytes32(uint256(uint160(newOwner)))
+                );
+                grantedCount++;
+            } else if (entries[i].topics[0] == transferredSel) {
+                assertEq(
+                    entries[i].topics[1],
+                    bytes32(uint256(uint160(owner)))
+                );
+                assertEq(
+                    entries[i].topics[2],
+                    bytes32(uint256(uint160(newOwner)))
+                );
+                ownershipTransferredFound = true;
+            }
+        }
+
+        assertEq(revokedCount, 2);
+        assertEq(grantedCount, 2);
+        assertTrue(ownershipTransferredFound);
+    }
+
+    function test_TransferOwnershipNewOwnerAlreadyHasSomeRoles() public {
+        token.grantRole(MINTER_ROLE, owner);
+        token.grantRole(BURNER_ROLE, owner);
+        token.grantRole(BURNER_ROLE, account1);
+
+        address newOwner = account1;
+        token.transferOwnership(newOwner);
+
+        assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, newOwner));
+        assertTrue(token.hasRole(MINTER_ROLE, newOwner));
+        assertTrue(token.hasRole(BURNER_ROLE, newOwner));
+        assertEq(token.getRoleMemberCount(BURNER_ROLE), 1);
+    }
+
+    function test_OnlyRoleAllowsRoleHolder() public {
+        token.grantRole(TEST_ROLE, account1);
+
+        vm.prank(account1);
+        bool result = token.restrictedFunction();
+        assertTrue(result);
+    }
+
+    function test_OnlyRoleDoesNotBypassOwner() public {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                owner,
+                TEST_ROLE
+            )
+        );
+        token.restrictedFunction();
+    }
+
+    function test_OnlyRoleRevertsForNonHolder() public {
+        vm.prank(nonOwner);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                nonOwner,
+                TEST_ROLE
+            )
+        );
+        token.restrictedFunction();
+    }
+
+    function test_GetRoleMembersReturnsEmptyForNoMembers() public {
+        bytes32 unknownRole = keccak256("UNKNOWN");
+        address[] memory members = token.getRoleMembers(unknownRole);
+        assertEq(members.length, 0);
+    }
+
+    function test_GetRoleMembersReturnsSingleMember() public {
+        address[] memory members = token.getRoleMembers(DEFAULT_ADMIN_ROLE);
+        assertEq(members.length, 1);
+        assertEq(members[0], owner);
+    }
+
+    function test_GetRoleMembersReturnsMultipleMembers() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+        token.grantRole(TEST_ROLE, account3);
+
+        address[] memory members = token.getRoleMembers(TEST_ROLE);
+        assertEq(members.length, 3);
+
+        bool found1;
+        bool found2;
+        bool found3;
+        for (uint256 i = 0; i < members.length; i++) {
+            if (members[i] == account1) found1 = true;
+            if (members[i] == account2) found2 = true;
+            if (members[i] == account3) found3 = true;
+        }
+        assertTrue(found1);
+        assertTrue(found2);
+        assertTrue(found3);
+    }
+
+    function test_GetRoleMembersUpdatesAfterRevocation() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+
+        assertEq(token.getRoleMembers(TEST_ROLE).length, 2);
+
+        token.revokeRole(TEST_ROLE, account1);
+
+        address[] memory members = token.getRoleMembers(TEST_ROLE);
+        assertEq(members.length, 1);
+        assertEq(members[0], account2);
+    }
+
+    function test_GetRoleMembersConsistentWithGetRoleMemberCount() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+
+        address[] memory members = token.getRoleMembers(TEST_ROLE);
+        uint256 count = token.getRoleMemberCount(TEST_ROLE);
+
+        assertEq(members.length, count);
+    }
+
+    function test_GetRoleMembersConsistentWithGetRoleMember() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+        token.grantRole(TEST_ROLE, account3);
+
+        address[] memory allMembers = token.getRoleMembers(TEST_ROLE);
+
+        for (uint256 i = 0; i < allMembers.length; i++) {
+            assertEq(allMembers[i], token.getRoleMember(TEST_ROLE, i));
+        }
+    }
+
+    function testFuzz_GetRoleMembersAfterGrantAndRevoke(
+        address addr1,
+        address addr2
+    ) public {
+        vm.assume(addr1 != address(0) && addr2 != address(0));
+        vm.assume(addr1 != addr2);
+        vm.assume(addr1 != owner && addr2 != owner);
+        vm.assume(uint160(addr1) > 9 && uint160(addr2) > 9);
+
+        token.grantRole(TEST_ROLE, addr1);
+        token.grantRole(TEST_ROLE, addr2);
+
+        address[] memory membersAfterGrant = token.getRoleMembers(TEST_ROLE);
+        assertEq(membersAfterGrant.length, 2);
+
+        token.revokeRole(TEST_ROLE, addr1);
+
+        address[] memory membersAfterRevoke = token.getRoleMembers(TEST_ROLE);
+        assertEq(membersAfterRevoke.length, 1);
+        assertEq(membersAfterRevoke[0], addr2);
     }
 }

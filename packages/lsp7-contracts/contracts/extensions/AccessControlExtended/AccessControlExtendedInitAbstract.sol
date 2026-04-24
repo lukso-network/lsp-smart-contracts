@@ -30,7 +30,8 @@ import {
 // errors
 import {
     AccessControlUnauthorizedAccount,
-    AccessControlBadConfirmation
+    AccessControlBadConfirmation,
+    AccessControlCannotSetAdminForDefaultAdminRole
 } from "./AccessControlExtendedErrors.sol";
 
 /**
@@ -311,11 +312,19 @@ abstract contract AccessControlExtendedInitAbstract is
      *
      * @custom:warning DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
      *
+     * @custom:requirements `role` cannot be the `DEFAULT_ADMIN_ROLE`.
+     *
      * @custom:events {RoleAdminChanged} with the previous and new admin roles.
      */
     function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
+        require(
+            role != DEFAULT_ADMIN_ROLE,
+            AccessControlCannotSetAdminForDefaultAdminRole()
+        );
+
         bytes32 previousAdminRole = getRoleAdmin(role);
         _roleAdmins[role] = adminRole;
+
         emit RoleAdminChanged({
             role: role,
             previousAdminRole: previousAdminRole,

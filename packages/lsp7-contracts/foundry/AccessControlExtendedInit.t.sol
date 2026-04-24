@@ -42,7 +42,8 @@ import {
 
 // errors
 import {
-    AccessControlUnauthorizedAccount
+    AccessControlUnauthorizedAccount,
+    AccessControlCannotSetAdminForDefaultAdminRole
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 
 // Mock contract for testing the InitAbstract variant
@@ -432,20 +433,39 @@ contract AccessControlExtendedInitTest is Test {
         }
     }
 
-    function testFuzz_InitDefaultAdminCanSetRoleAdmin(
+    function testFuzz_ContractOwnerCanSetRoleAdmin(
         bytes32 role,
-        bytes32 roleAdmin
+        bytes32 newAdminRole
     ) public {
-        token.setRoleAdmin(role, roleAdmin);
-        assertEq(token.getRoleAdmin(role), roleAdmin);
+        vm.assume(role != DEFAULT_ADMIN_ROLE);
+        token.setRoleAdmin(role, newAdminRole);
+        assertEq(token.getRoleAdmin(role), newAdminRole);
     }
 
-    function testFuzz_InitNonAdminCannotSetRoleAdmin(
+    function testFuzz_DefaultAdminCanSetRoleAdmin(
+        bytes32 role,
+        address addressWithDefaultAdminRole,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(addressWithDefaultAdminRole != token.owner());
+        vm.assume(role != DEFAULT_ADMIN_ROLE);
+
+        token.grantRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole);
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole)
+        );
+
+        vm.prank(addressWithDefaultAdminRole);
+        token.setRoleAdmin(role, newAdminRole);
+        assertEq(token.getRoleAdmin(role), newAdminRole);
+    }
+
+    function testFuzz_NonDefaultAdminCannotSetRoleAdmin(
         address randomCaller,
         bytes32 role,
-        bytes32 roleAdmin
+        bytes32 newAdminRole
     ) public {
-        vm.assume(randomCaller != tokenOwner);
+        vm.assume(randomCaller != token.owner());
 
         vm.prank(randomCaller);
         vm.expectRevert(
@@ -455,7 +475,48 @@ contract AccessControlExtendedInitTest is Test {
                 DEFAULT_ADMIN_ROLE
             )
         );
-        token.setRoleAdmin(role, roleAdmin);
+        token.setRoleAdmin(role, newAdminRole);
+    }
+
+    function testFuzz_OwnerCannotChangeAdminRoleForDefaultAdminRole(
+        bytes32 newAdminRole
+    ) public {
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlCannotSetAdminForDefaultAdminRole.selector
+            )
+        );
+        token.setRoleAdmin(DEFAULT_ADMIN_ROLE, newAdminRole);
+
+        // Ensure this has not changed
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+    }
+
+    function testFuzz_DefaultAdminCannotChangeAdminRoleForDefaultAdminRole(
+        address addressWithDefaultAdminRole,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(addressWithDefaultAdminRole != token.owner());
+        token.grantRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole);
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole)
+        );
+
+        vm.prank(addressWithDefaultAdminRole);
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlCannotSetAdminForDefaultAdminRole.selector
+            )
+        );
+        vm.prank(addressWithDefaultAdminRole);
+        token.setRoleAdmin(DEFAULT_ADMIN_ROLE, newAdminRole);
+
+        // Ensure this has not changed
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
     }
 
     // ============================================================

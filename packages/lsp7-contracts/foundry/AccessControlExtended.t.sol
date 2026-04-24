@@ -35,7 +35,8 @@ import {
 // errors
 import {
     AccessControlUnauthorizedAccount,
-    AccessControlBadConfirmation
+    AccessControlBadConfirmation,
+    AccessControlCannotSetAdminForDefaultAdminRole
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 
 // Mock contract for testing
@@ -1227,10 +1228,29 @@ contract AccessControlExtendedTest is Test {
         assertEq(rolesAfter.length, 0, "Should have 0 roles after revoke");
     }
 
-    function testFuzz_DefaultAdminCanSetRoleAdmin(
+    function testFuzz_ContractOwnerCanSetRoleAdmin(
         bytes32 role,
         bytes32 newAdminRole
     ) public {
+        vm.assume(role != DEFAULT_ADMIN_ROLE);
+        token.setRoleAdmin(role, newAdminRole);
+        assertEq(token.getRoleAdmin(role), newAdminRole);
+    }
+
+    function testFuzz_DefaultAdminCanSetRoleAdmin(
+        bytes32 role,
+        address addressWithDefaultAdminRole,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(addressWithDefaultAdminRole != owner);
+        vm.assume(role != DEFAULT_ADMIN_ROLE);
+
+        token.grantRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole);
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole)
+        );
+
+        vm.prank(addressWithDefaultAdminRole);
         token.setRoleAdmin(role, newAdminRole);
         assertEq(token.getRoleAdmin(role), newAdminRole);
     }
@@ -1251,6 +1271,47 @@ contract AccessControlExtendedTest is Test {
             )
         );
         token.setRoleAdmin(role, newAdminRole);
+    }
+
+    function testFuzz_OwnerCannotChangeAdminRoleForDefaultAdminRole(
+        bytes32 newAdminRole
+    ) public {
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlCannotSetAdminForDefaultAdminRole.selector
+            )
+        );
+        token.setRoleAdmin(DEFAULT_ADMIN_ROLE, newAdminRole);
+
+        // Ensure this has not changed
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+    }
+
+    function testFuzz_DefaultAdminCannotChangeAdminRoleForDefaultAdminRole(
+        address addressWithDefaultAdminRole,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(addressWithDefaultAdminRole != owner);
+        token.grantRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole);
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole)
+        );
+
+        vm.prank(addressWithDefaultAdminRole);
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlCannotSetAdminForDefaultAdminRole.selector
+            )
+        );
+        vm.prank(addressWithDefaultAdminRole);
+        token.setRoleAdmin(DEFAULT_ADMIN_ROLE, newAdminRole);
+
+        // Ensure this has not changed
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
     }
 
     // ============================================================
