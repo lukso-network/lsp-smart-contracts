@@ -34,11 +34,14 @@ abstract contract LSP7CappedBalanceAbstract is
         0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
 
     /// @notice Initializes the contract with a token balance cap.
-    /// @dev Sets the immutable balance cap and reverts if the cap is zero. Inherits LSP7AllowlistAbstract constructor logic.
-    /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
+    /// @dev Sets the immutable balance cap. If set, grants the initial uncapped balance role exemption to the contract owner.
+    /// @param tokenBalanceCap_ The maximum balance allowed per token holder (in wei). Set to 0 to disable.
     constructor(uint256 tokenBalanceCap_) {
         _TOKEN_BALANCE_CAP = tokenBalanceCap_;
-        _grantRole(UNCAPPED_ROLE, owner());
+
+        if (tokenBalanceCap_ != 0) {
+            _grantRole(UNCAPPED_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP7CappedBalance
