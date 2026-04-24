@@ -560,6 +560,40 @@ contract LSP7RevokableTest is Test {
         );
     }
 
+    function test_TransferOwnershipClearsSpecificRoleAdmins() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+        bytes32 revokerAdminRole = keccak256("REVOKER_ADMIN_ROLE");
+        address revokerAdmin = makeAddr("A Revoker Admin");
+
+        lsp7Revokable.setRoleAdmin(revokerRole, revokerAdminRole);
+        assertEq(lsp7Revokable.getRoleAdmin(revokerRole), revokerAdminRole);
+
+        lsp7Revokable.grantRole(revokerAdminRole, revokerAdmin);
+        assertTrue(lsp7Revokable.hasRole(revokerAdminRole, revokerAdmin));
+
+        vm.prank(revokerAdmin);
+        lsp7Revokable.grantRole(revokerRole, address(11111));
+        assertTrue(lsp7Revokable.hasRole(revokerRole, address(11111)));
+
+        lsp7Revokable.transferOwnership(vm.addr(200));
+
+        assertEq(lsp7Revokable.getRoleAdmin(revokerRole), DEFAULT_ADMIN_ROLE);
+
+        // Test previous admin cannot use its role
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                revokerAdmin,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        vm.prank(revokerAdmin);
+        lsp7Revokable.grantRole(revokerRole, address(22222));
+
+        // sanity check revoker was removed after transferring ownership
+        assertFalse(lsp7Revokable.hasRole(revokerRole, address(11111)));
+    }
+
     // =========================================================================
     // Fuzzing Tests
     // =========================================================================

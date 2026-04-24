@@ -235,6 +235,42 @@ contract LSP8RevokableInitTest is Test {
         assertEq(token.tokenOwnerOf(tokenId1), newOwner);
     }
 
+    function test_TransferOwnershipClearsSpecificRoleAdminsThroughProxy()
+        public
+    {
+        bytes32 revokerRole = token.REVOKER_ROLE();
+        bytes32 revokerAdminRole = keccak256("REVOKER_ADMIN_ROLE");
+        address revokerAdmin = makeAddr("A Revoker Admin");
+
+        token.setRoleAdmin(revokerRole, revokerAdminRole);
+        assertEq(token.getRoleAdmin(revokerRole), revokerAdminRole);
+
+        token.grantRole(revokerAdminRole, revokerAdmin);
+        assertTrue(token.hasRole(revokerAdminRole, revokerAdmin));
+
+        vm.prank(revokerAdmin);
+        token.grantRole(revokerRole, address(11111));
+        assertTrue(token.hasRole(revokerRole, address(11111)));
+
+        token.transferOwnership(vm.addr(200));
+
+        assertEq(token.getRoleAdmin(revokerRole), DEFAULT_ADMIN_ROLE);
+
+        // Test previous admin cannot use its role
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                revokerAdmin,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        vm.prank(revokerAdmin);
+        token.grantRole(revokerRole, address(22222));
+
+        // sanity check revoker was removed after transferring ownership
+        assertFalse(token.hasRole(revokerRole, address(11111)));
+    }
+
     function test_RevokeFailsWhenRevocationIsDisabled() public {
         MockLSP8RevokableInit disabledImplementation = new MockLSP8RevokableInit();
         bytes32 revokerRole = disabledImplementation.REVOKER_ROLE();

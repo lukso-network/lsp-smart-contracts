@@ -68,7 +68,13 @@ abstract contract LSP8RevokableAbstract is
 
         // We assume revokers are trusted when specifying revocation destinations.
         // Therefore, we bypass LSP1 receiver checks.
-        _transfer(from, to, tokenId, true, data);
+        _transfer({
+            from: from,
+            to: to,
+            tokenId: tokenId,
+            force: true,
+            data: data
+        });
     }
 
     function supportsInterface(
@@ -89,6 +95,9 @@ abstract contract LSP8RevokableAbstract is
     function _transferOwnership(
         address newOwner
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant REVOKER_ROLE to new accounts post-transfer
+        _setRoleAdmin(REVOKER_ROLE, DEFAULT_ADMIN_ROLE);
         _clearRevokers();
         super._transferOwnership(newOwner);
     }

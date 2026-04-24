@@ -70,6 +70,8 @@ contract LSP7MintableTest is Test {
     MockLSP7Mintable lsp7MintableRandomOwner;
     MockLSP7Mintable lsp7NonMintable;
 
+    bytes32 minterRole;
+
     function setUp() public {
         recipient = vm.addr(100);
         randomOwner = vm.addr(101);
@@ -82,6 +84,8 @@ contract LSP7MintableTest is Test {
             isNonDivisible,
             true
         );
+
+        minterRole = lsp7Mintable.MINTER_ROLE();
 
         vm.recordLogs();
         lsp7MintableRandomOwner = new MockLSP7Mintable(
@@ -227,7 +231,6 @@ contract LSP7MintableTest is Test {
     }
 
     function test_DefaultAdminCannotMintWithoutMinterRole() public {
-        bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
         address defaultAdmin = vm.addr(102);
 
         vm.prank(randomOwner);
@@ -250,7 +253,6 @@ contract LSP7MintableTest is Test {
     }
 
     function test_DefaultAdminCanGrantItselfMinterRoleAndMint() public {
-        bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
         address defaultAdmin = vm.addr(103);
 
         assertEq(lsp7MintableRandomOwner.owner(), randomOwner);
@@ -271,8 +273,6 @@ contract LSP7MintableTest is Test {
     }
 
     function test_OwnerCanReGrantItselfMinterRoleAfterRevocation() public {
-        bytes32 minterRole = lsp7Mintable.MINTER_ROLE();
-
         lsp7Mintable.revokeRole(minterRole, owner);
         assertFalse(lsp7Mintable.hasRole(minterRole, owner));
 
@@ -302,8 +302,6 @@ contract LSP7MintableTest is Test {
         /// vm.assume(nonOwner != address(this));
 
         assertEq(lsp7MintableRandomOwner.balanceOf(recipient), 0);
-
-        bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
 
         vm.prank(nonOwner);
         vm.expectRevert(
@@ -338,5 +336,44 @@ contract LSP7MintableTest is Test {
         vm.expectRevert(LSP7MintDisabled.selector);
         lsp7NonMintable.mint(recipient, 100, true, "");
         assertEq(lsp7NonMintable.balanceOf(recipient), 0);
+    }
+
+    // Test transfer ownership
+    function test_TransferOwnershipClearsMinterRoleAdmin() public {
+        bytes32 minterRoleAdmin = keccak256("MINTER_ADMIN_ROLE");
+        address minterRoleAdminAccount = makeAddr("A Minter Role Admin");
+
+        lsp7Mintable.setRoleAdmin(minterRole, minterRoleAdmin);
+        assertEq(lsp7Mintable.getRoleAdmin(minterRole), minterRoleAdmin);
+
+        lsp7Mintable.grantRole(minterRoleAdmin, minterRoleAdminAccount);
+        assertTrue(
+            lsp7Mintable.hasRole(minterRoleAdmin, minterRoleAdminAccount)
+        );
+
+        vm.prank(minterRoleAdminAccount);
+        lsp7Mintable.grantRole(minterRole, address(11111));
+        assertTrue(lsp7Mintable.hasRole(minterRole, address(11111)));
+
+        lsp7Mintable.transferOwnership(vm.addr(200));
+
+        assertEq(
+            lsp7Mintable.getRoleAdmin(minterRole),
+            lsp7Mintable.DEFAULT_ADMIN_ROLE()
+        );
+
+        // Test previous admin cannot use its role
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                minterRoleAdminAccount,
+                lsp7Mintable.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(minterRoleAdminAccount);
+        lsp7Mintable.grantRole(minterRole, address(22222));
+
+        // Addresses with previously granted role still persist
+        assertTrue(lsp7Mintable.hasRole(minterRole, address(11111)));
     }
 }

@@ -30,7 +30,8 @@ import {
 // errors
 import {
     AccessControlUnauthorizedAccount,
-    AccessControlBadConfirmation
+    AccessControlBadConfirmation,
+    AccessControlCannotSetAdminForDefaultAdminRole
 } from "./AccessControlExtendedErrors.sol";
 
 /**
@@ -128,6 +129,16 @@ abstract contract AccessControlExtendedInitAbstract is
      */
     function getRoleAdmin(bytes32 role) public view virtual returns (bytes32) {
         return _roleAdmins[role];
+    }
+
+    /**
+     * @inheritdoc IAccessControlExtended
+     */
+    function setRoleAdmin(
+        bytes32 role,
+        bytes32 adminRole
+    ) public virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setRoleAdmin(role, adminRole);
     }
 
     /**
@@ -303,13 +314,25 @@ abstract contract AccessControlExtendedInitAbstract is
      * @dev Sets `adminRole` as the admin of `role`. Available for extensions
      * to configure custom admin hierarchies.
      *
-     * @custom:warning DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
+     * @custom:warning
+     * - DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
+     * - Be aware that calling `setRoleAdmin(X, X)` creates a self-admin where nobody can grant role `X` unless someone already holds role `X`.
+     *
+     * @custom:requirements
+     * - `role` cannot be the `DEFAULT_ADMIN_ROLE`.
+     * - The caller must hold the `DEFAULT_ADMIN_ROLE`.
      *
      * @custom:events {RoleAdminChanged} with the previous and new admin roles.
      */
     function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
+        require(
+            role != DEFAULT_ADMIN_ROLE,
+            AccessControlCannotSetAdminForDefaultAdminRole()
+        );
+
         bytes32 previousAdminRole = getRoleAdmin(role);
         _roleAdmins[role] = adminRole;
+
         emit RoleAdminChanged({
             role: role,
             previousAdminRole: previousAdminRole,

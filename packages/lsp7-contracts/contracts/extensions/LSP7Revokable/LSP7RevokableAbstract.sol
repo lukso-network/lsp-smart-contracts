@@ -93,6 +93,9 @@ abstract contract LSP7RevokableAbstract is
     function _transferOwnership(
         address newOwner
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant REVOKER_ROLE to new accounts post-transfer
+        _setRoleAdmin(REVOKER_ROLE, DEFAULT_ADMIN_ROLE);
         _clearRevokers();
         super._transferOwnership(newOwner);
     }

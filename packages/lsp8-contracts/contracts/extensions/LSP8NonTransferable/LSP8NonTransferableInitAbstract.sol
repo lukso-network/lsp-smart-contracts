@@ -221,6 +221,9 @@ abstract contract LSP8NonTransferableInitAbstract is
         virtual
         override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
     {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant NON_TRANSFERABLE_BYPASS_ROLE to new accounts post-transfer
+        _setRoleAdmin(NON_TRANSFERABLE_BYPASS_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
 }

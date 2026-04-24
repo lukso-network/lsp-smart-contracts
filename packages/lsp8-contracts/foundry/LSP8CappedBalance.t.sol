@@ -17,6 +17,9 @@ import {
 
 // errors
 import {
+    AccessControlUnauthorizedAccount
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
+import {
     LSP8CappedBalanceExceeded
 } from "../contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceErrors.sol";
 
@@ -290,6 +293,57 @@ contract LSP8CappedBalanceTest is Test {
             )
         );
         lsp8CappedBalance.transfer(owner, user1, bytes32(uint256(5)), true, "");
+    }
+
+    // Test transfer ownership
+    function test_TransferOwnershipClearsUncappedBalanceRoleAdmin() public {
+        bytes32 uncappedBalanceAdminRole = keccak256("UNCAPPED_ADMIN_ROLE");
+        address uncappedBalanceAdmin = makeAddr("A Uncapped Balance Admin");
+
+        lsp8CappedBalance.setRoleAdmin(
+            UNCAPPED_ROLE,
+            uncappedBalanceAdminRole
+        );
+        assertEq(
+            lsp8CappedBalance.getRoleAdmin(UNCAPPED_ROLE),
+            uncappedBalanceAdminRole
+        );
+
+        lsp8CappedBalance.grantRole(
+            uncappedBalanceAdminRole,
+            uncappedBalanceAdmin
+        );
+        assertTrue(
+            lsp8CappedBalance.hasRole(
+                uncappedBalanceAdminRole,
+                uncappedBalanceAdmin
+            )
+        );
+
+        vm.prank(uncappedBalanceAdmin);
+        lsp8CappedBalance.grantRole(UNCAPPED_ROLE, address(11111));
+        assertTrue(lsp8CappedBalance.hasRole(UNCAPPED_ROLE, address(11111)));
+
+        lsp8CappedBalance.transferOwnership(vm.addr(200));
+
+        assertEq(
+            lsp8CappedBalance.getRoleAdmin(UNCAPPED_ROLE),
+            lsp8CappedBalance.DEFAULT_ADMIN_ROLE()
+        );
+
+        // Test previous admin cannot use its role
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                uncappedBalanceAdmin,
+                lsp8CappedBalance.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(uncappedBalanceAdmin);
+        lsp8CappedBalance.grantRole(UNCAPPED_ROLE, address(22222));
+
+        // Addresses with previously granted role still persist
+        assertTrue(lsp8CappedBalance.hasRole(UNCAPPED_ROLE, address(11111)));
     }
 
     // ------ Fuzzing ------

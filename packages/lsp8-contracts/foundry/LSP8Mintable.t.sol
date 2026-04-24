@@ -271,6 +271,45 @@ contract LSP8MintableTest is Test {
         assertEq(lsp8Mintable.tokenOwnerOf(tokenId3), owner);
     }
 
+    // Test transfer ownership
+    function test_TransferOwnershipClearsMinterRoleAdmin() public {
+        bytes32 minterRoleAdmin = keccak256("MINTER_ADMIN_ROLE");
+        address minterRoleAdminAccount = makeAddr("A Minter Role Admin");
+
+        lsp8Mintable.setRoleAdmin(minterRole, minterRoleAdmin);
+        assertEq(lsp8Mintable.getRoleAdmin(minterRole), minterRoleAdmin);
+
+        lsp8Mintable.grantRole(minterRoleAdmin, minterRoleAdminAccount);
+        assertTrue(
+            lsp8Mintable.hasRole(minterRoleAdmin, minterRoleAdminAccount)
+        );
+
+        vm.prank(minterRoleAdminAccount);
+        lsp8Mintable.grantRole(minterRole, address(11111));
+        assertTrue(lsp8Mintable.hasRole(minterRole, address(11111)));
+
+        lsp8Mintable.transferOwnership(vm.addr(200));
+
+        assertEq(
+            lsp8Mintable.getRoleAdmin(minterRole),
+            lsp8Mintable.DEFAULT_ADMIN_ROLE()
+        );
+
+        // Test previous admin cannot use its role
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                minterRoleAdminAccount,
+                lsp8Mintable.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(minterRoleAdminAccount);
+        lsp8Mintable.grantRole(minterRole, address(22222));
+
+        // Addresses with previously granted role still persist
+        assertTrue(lsp8Mintable.hasRole(minterRole, address(11111)));
+    }
+
     // ------ Fuzzing ------
 
     function testFuzz_OwnerCanMint(address recipient, bytes32 tokenId) public {

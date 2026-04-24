@@ -8,10 +8,21 @@ import {
 
 /**
  * @title IAccessControlExtended
- * @dev Interface extending IAccessControlEnumerable with reverse role lookups.
- * Inherits all functions from {IAccessControl} and {IAccessControlEnumerable}:
+ *
+ * @dev Interface extending IAccessControlEnumerable with reverse role lookups and function to set admin role for a given role.
+ * Inherits all functions from {IAccessControl} and {IAccessControlEnumerable}.
+ *
+ * @custom:info This interface only include the setter function `setRoleAdmin(bytes32,bytes32)`. The getter `getRoleAdmin(bytes32)` is inherited from {IAccessControl}
+ * (itself inherited through {IAccessControlEnumerable}). This ensures that the selector `getRoleAdmin(bytes32)` is not used twice to calculate the final interface Id.
  */
 interface IAccessControlExtended is IAccessControlEnumerable {
+    /**
+     * @notice Sets a new admin role for `role`.
+     * @param role The role identifier being configured.
+     * @param adminRole The role that will become the new admin of `role`.
+     */
+    function setRoleAdmin(bytes32 role, bytes32 adminRole) external;
+
     /**
      * @notice Returns all members that hold `role`.
      *
