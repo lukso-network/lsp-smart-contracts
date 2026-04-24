@@ -24,7 +24,8 @@ import {
 } from "./LSP7NonTransferableErrors.sol";
 
 /// @title LSP7NonTransferableInitAbstract
-/// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods and allowlist support.
+/// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods
+/// and support to bypass non transferable checks through a role.
 abstract contract LSP7NonTransferableInitAbstract is
     ILSP7NonTransferable,
     LSP7DigitalAssetInitAbstract,
@@ -113,9 +114,7 @@ abstract contract LSP7NonTransferableInitAbstract is
 
     /// @inheritdoc ILSP7NonTransferable
     function isTransferable() public view virtual override returns (bool) {
-        if (!transferLockEnabled) {
-            return true;
-        }
+        if (!transferLockEnabled) return true;
 
         bool isTransferLockStartEnabled = transferLockStart != 0;
         bool isTransferLockEndEnabled = transferLockEnd != 0;
@@ -135,7 +134,7 @@ abstract contract LSP7NonTransferableInitAbstract is
             return transferLockStart > block.timestamp;
         }
 
-        // The last case is when the non-transferable feature is enabled is enabled within a certain time period
+        // This last case checks if we are within the transfer lock period
         return
             transferLockStart > block.timestamp ||
             transferLockEnd < block.timestamp;
