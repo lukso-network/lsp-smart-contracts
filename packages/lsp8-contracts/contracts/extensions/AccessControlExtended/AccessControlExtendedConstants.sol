@@ -9,5 +9,5 @@ bytes4 constant _INTERFACEID_ACCESSCONTROLENUMERABLE = 0x5a05180f;
 
 /// @dev ERC-165 interface ID for IAccessControlExtended.
 /// Computed as XOR of selectors:
-/// getRoleMembers(bytes32) ^ rolesOf(address) ^ setRoleAdmin(bytes32,bytes32) ^ getRoleAdmin(bytes32)
-bytes4 constant _INTERFACEID_ACCESSCONTROLEXTENDED = 0xb409bee6;
+/// getRoleMembers(bytes32) ^ rolesOf(address) ^ setRoleAdmin(bytes32,bytes32)
+bytes4 constant _INTERFACEID_ACCESSCONTROLEXTENDED = 0x90832245;

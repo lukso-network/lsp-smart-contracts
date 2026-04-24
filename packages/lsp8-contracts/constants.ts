@@ -1,5 +1,5 @@
 export const INTERFACE_ID_LSP8 = '0x3a271706';
-export const INTERFACE_ID_ACCESS_CONTROL_EXTENDED = '0xb409bee6';
+export const INTERFACE_ID_ACCESS_CONTROL_EXTENDED = '0x90832245';
 
 export const INTERFACE_ID_LSP8_PREVIOUS = {
   'v0.14.0': '0xecad9f75',
