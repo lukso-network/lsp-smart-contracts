@@ -22,6 +22,9 @@ import {
 
 // errors
 import {
+    AccessControlUnauthorizedAccount
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
+import {
     LSP8TransferDisabled,
     LSP8CannotUpdateTransferLockPeriod,
     LSP8InvalidTransferLockPeriod,
@@ -660,6 +663,79 @@ contract LSP8NonTransferableTest is Test {
         lsp8NonTransferable.updateTransferLockPeriod(
             block.timestamp + 100,
             block.timestamp + 200
+        );
+    }
+
+    // Transfer contract ownership
+    function test_TransferOwnershipClearsNonTransferableBypassRoleAdmin()
+        public
+    {
+        bytes32 nonTransferableBypassRoleAdmin = keccak256(
+            "NON_TRANSFERABLE_BYPASS_ADMIN_ROLE"
+        );
+        address nonTransferableBypassRoleAdminAccount = makeAddr(
+            "A NonTransferableBypass Role Admin"
+        );
+
+        lsp8NonTransferable.setRoleAdmin(
+            nonTransferableBypassRole,
+            nonTransferableBypassRoleAdmin
+        );
+        assertEq(
+            lsp8NonTransferable.getRoleAdmin(nonTransferableBypassRole),
+            nonTransferableBypassRoleAdmin
+        );
+
+        lsp8NonTransferable.grantRole(
+            nonTransferableBypassRoleAdmin,
+            nonTransferableBypassRoleAdminAccount
+        );
+        assertTrue(
+            lsp8NonTransferable.hasRole(
+                nonTransferableBypassRoleAdmin,
+                nonTransferableBypassRoleAdminAccount
+            )
+        );
+
+        vm.prank(nonTransferableBypassRoleAdminAccount);
+        lsp8NonTransferable.grantRole(
+            nonTransferableBypassRole,
+            address(11111)
+        );
+        assertTrue(
+            lsp8NonTransferable.hasRole(
+                nonTransferableBypassRole,
+                address(11111)
+            )
+        );
+
+        lsp8NonTransferable.transferOwnership(vm.addr(200));
+
+        assertEq(
+            lsp8NonTransferable.getRoleAdmin(nonTransferableBypassRole),
+            lsp8NonTransferable.DEFAULT_ADMIN_ROLE()
+        );
+
+        // Test previous admin cannot use its role
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                nonTransferableBypassRoleAdminAccount,
+                lsp8NonTransferable.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(nonTransferableBypassRoleAdminAccount);
+        lsp8NonTransferable.grantRole(
+            nonTransferableBypassRole,
+            address(22222)
+        );
+
+        // Addresses with previously granted role still persist
+        assertTrue(
+            lsp8NonTransferable.hasRole(
+                nonTransferableBypassRole,
+                address(11111)
+            )
         );
     }
 

@@ -15,6 +15,9 @@ import {
 
 // errors
 import {
+    AccessControlUnauthorizedAccount
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
+import {
     LSP7MintDisabled
 } from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
 import {
@@ -622,6 +625,152 @@ contract LSP7CustomizableTokenTest is Test {
         assertTrue(
             token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), newOwner)
         );
+    }
+
+    function test_TransferOwnershipClearsSpecificRoleAdminsOnMultiFeatureToken()
+        public
+    {
+        bytes32 minterRole = token.MINTER_ROLE();
+        bytes32 revokerRole = token.REVOKER_ROLE();
+        bytes32 uncappedRole = token.UNCAPPED_ROLE();
+        bytes32 nonTransferableBypassRole = token
+            .NON_TRANSFERABLE_BYPASS_ROLE();
+
+        bytes32 minterAdminRole = keccak256("MINTER_ADMIN_ROLE");
+        bytes32 revokerAdminRole = keccak256("REVOKER_ADMIN_ROLE");
+        bytes32 uncappedAdminRole = keccak256("UNCAPPED_ADMIN_ROLE");
+        bytes32 nonTransferableBypassAdminRole = keccak256(
+            "NON_TRANSFERABLE_BYPASS_ADMIN_ROLE"
+        );
+
+        token.setRoleAdmin(minterRole, minterAdminRole);
+        token.setRoleAdmin(revokerRole, revokerAdminRole);
+        token.setRoleAdmin(uncappedRole, uncappedAdminRole);
+        token.setRoleAdmin(
+            nonTransferableBypassRole,
+            nonTransferableBypassAdminRole
+        );
+
+        address minterAdmin = makeAddr("a minter admin");
+        address revokerAdmin = makeAddr("a revoker admin");
+        address uncappedAdmin = makeAddr("a uncapped admin");
+        address nonTransferableBypassAdmin = makeAddr(
+            "a non transferable bypass admin"
+        );
+
+        assertEq(token.getRoleAdmin(minterRole), minterAdminRole);
+        assertEq(token.getRoleAdmin(revokerRole), revokerAdminRole);
+        assertEq(token.getRoleAdmin(uncappedRole), uncappedAdminRole);
+        assertEq(
+            token.getRoleAdmin(nonTransferableBypassRole),
+            nonTransferableBypassAdminRole
+        );
+
+        token.grantRole(minterAdminRole, minterAdmin);
+        token.grantRole(revokerAdminRole, revokerAdmin);
+        token.grantRole(uncappedAdminRole, uncappedAdmin);
+        token.grantRole(
+            nonTransferableBypassAdminRole,
+            nonTransferableBypassAdmin
+        );
+
+        assertTrue(token.hasRole(minterAdminRole, minterAdmin));
+        assertTrue(token.hasRole(revokerAdminRole, revokerAdmin));
+        assertTrue(token.hasRole(uncappedAdminRole, uncappedAdmin));
+        assertTrue(
+            token.hasRole(
+                nonTransferableBypassAdminRole,
+                nonTransferableBypassAdmin
+            )
+        );
+
+        vm.prank(minterAdmin);
+        token.grantRole(minterRole, address(11111));
+        assertTrue(token.hasRole(minterRole, address(11111)));
+
+        vm.prank(revokerAdmin);
+        token.grantRole(revokerRole, address(22222));
+        assertTrue(token.hasRole(revokerRole, address(22222)));
+
+        vm.prank(uncappedAdmin);
+        token.grantRole(uncappedRole, address(33333));
+        assertTrue(token.hasRole(uncappedRole, address(33333)));
+
+        vm.prank(nonTransferableBypassAdmin);
+        token.grantRole(nonTransferableBypassRole, address(44444));
+        assertTrue(token.hasRole(nonTransferableBypassRole, address(44444)));
+
+        token.transferOwnership(newOwner);
+
+        // CHECK specific admin role previously set was cleared
+        assertEq(token.getRoleAdmin(minterRole), token.DEFAULT_ADMIN_ROLE());
+        assertEq(token.getRoleAdmin(revokerRole), token.DEFAULT_ADMIN_ROLE());
+        assertEq(token.getRoleAdmin(uncappedRole), token.DEFAULT_ADMIN_ROLE());
+        assertEq(
+            token.getRoleAdmin(nonTransferableBypassRole),
+            token.DEFAULT_ADMIN_ROLE()
+        );
+
+        // The previous addresses should still have their former Admin roles
+        assertTrue(token.hasRole(minterAdminRole, minterAdmin));
+        assertTrue(token.hasRole(revokerAdminRole, revokerAdmin));
+        assertTrue(token.hasRole(uncappedAdminRole, uncappedAdmin));
+        assertTrue(
+            token.hasRole(
+                nonTransferableBypassAdminRole,
+                nonTransferableBypassAdmin
+            )
+        );
+
+        // But they shouldn't be able to use them, it MUST revert if they try to-reuse these admin roles
+        // to grant roles, as all the admin roles for these roles have been reset to DEFAULT_ADMIN_ROLE
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                minterAdmin,
+                token.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(minterAdmin);
+        token.grantRole(minterRole, address(33333));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                revokerAdmin,
+                token.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(revokerAdmin);
+        token.grantRole(revokerRole, address(44444));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                uncappedAdmin,
+                token.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(uncappedAdmin);
+        token.grantRole(uncappedRole, address(55555));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                nonTransferableBypassAdmin,
+                token.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(nonTransferableBypassAdmin);
+        token.grantRole(nonTransferableBypassRole, address(66666));
+
+        // The previous addresses should persist and still have the Minter + uncapped bypass and non transferable bypass roles
+        assertTrue(token.hasRole(minterRole, address(11111)));
+        assertTrue(token.hasRole(uncappedRole, address(33333)));
+        assertTrue(token.hasRole(nonTransferableBypassRole, address(44444)));
+
+        // only exception is addresses with revoker roles that are cleared
+        assertFalse(token.hasRole(revokerRole, address(22222)));
     }
 
     function test_TransferDisabledWhenNonTransferable() public {

@@ -15,6 +15,9 @@ import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // errors
 import {
+    AccessControlUnauthorizedAccount
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
+import {
     LSP7CappedBalanceExceeded
 } from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
 
@@ -90,7 +93,6 @@ contract LSP7CappedBalanceTest is Test {
             isNonDivisible,
             tokenBalanceCap
         );
-
         uncappedBalanceRole = lsp7CappedBalance.UNCAPPED_ROLE();
 
         lsp7CappedBalance.grantRole(uncappedBalanceRole, allowlistedUser);
@@ -208,6 +210,61 @@ contract LSP7CappedBalanceTest is Test {
             lsp7CappedBalance.balanceOf(nonAllowlistedUser),
             300,
             "nonAllowlistedUser should have 300 tokens after burning"
+        );
+    }
+
+    // Test transfer ownership
+    function test_TransferOwnershipClearsUncappedBalanceRoleAdmin() public {
+        bytes32 uncappedBalanceAdminRole = keccak256("UNCAPPED_ADMIN_ROLE");
+        address uncappedBalanceAdmin = makeAddr("A Uncapped Balance Admin");
+
+        lsp7CappedBalance.setRoleAdmin(
+            uncappedBalanceRole,
+            uncappedBalanceAdminRole
+        );
+        assertEq(
+            lsp7CappedBalance.getRoleAdmin(uncappedBalanceRole),
+            uncappedBalanceAdminRole
+        );
+
+        lsp7CappedBalance.grantRole(
+            uncappedBalanceAdminRole,
+            uncappedBalanceAdmin
+        );
+        assertTrue(
+            lsp7CappedBalance.hasRole(
+                uncappedBalanceAdminRole,
+                uncappedBalanceAdmin
+            )
+        );
+
+        vm.prank(uncappedBalanceAdmin);
+        lsp7CappedBalance.grantRole(uncappedBalanceRole, address(11111));
+        assertTrue(
+            lsp7CappedBalance.hasRole(uncappedBalanceRole, address(11111))
+        );
+
+        lsp7CappedBalance.transferOwnership(vm.addr(200));
+
+        assertEq(
+            lsp7CappedBalance.getRoleAdmin(uncappedBalanceRole),
+            lsp7CappedBalance.DEFAULT_ADMIN_ROLE()
+        );
+
+        // Test previous admin cannot use its role
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                uncappedBalanceAdmin,
+                lsp7CappedBalance.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(uncappedBalanceAdmin);
+        lsp7CappedBalance.grantRole(uncappedBalanceRole, address(22222));
+
+        // Addresses with previously granted role still persist
+        assertTrue(
+            lsp7CappedBalance.hasRole(uncappedBalanceRole, address(11111))
         );
     }
 
