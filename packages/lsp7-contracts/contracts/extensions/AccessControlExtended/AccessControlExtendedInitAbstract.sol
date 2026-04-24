@@ -310,9 +310,13 @@ abstract contract AccessControlExtendedInitAbstract is
      * @dev Sets `adminRole` as the admin of `role`. Available for extensions
      * to configure custom admin hierarchies.
      *
-     * @custom:warning DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
+     * @custom:warning
+     * - DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
+     * - Be aware that calling `setRoleAdmin(X, X)` creates a self-admin where nobody can grant role `X` unless someone already holds role `X`.
      *
-     * @custom:requirements `role` cannot be the `DEFAULT_ADMIN_ROLE`.
+     * @custom:requirements
+     * - `role` cannot be the `DEFAULT_ADMIN_ROLE`.
+     * - The caller must hold the `DEFAULT_ADMIN_ROLE`.
      *
      * @custom:events {RoleAdminChanged} with the previous and new admin roles.
      */

@@ -305,6 +305,8 @@ contract AccessControlExtendedTest is Test {
         bytes32 role,
         bytes32 roleAdmin
     ) public {
+        vm.assume(role != DEFAULT_ADMIN_ROLE);
+
         token.setRoleAdmin(role, roleAdmin);
         assertEq(token.getRoleAdmin(role), roleAdmin);
     }
