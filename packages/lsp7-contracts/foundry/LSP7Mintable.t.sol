@@ -384,7 +384,13 @@ contract LSP7MintableTest is Test {
 
     function test_NonMintableOwnerCannotMint() public {
         assertEq(lsp7NonMintable.balanceOf(recipient), 0);
-        vm.expectRevert(LSP7MintDisabled.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                address(this),
+                minterRole
+            )
+        );
         lsp7NonMintable.mint(recipient, 100, true, "");
         assertEq(lsp7NonMintable.balanceOf(recipient), 0);
     }
