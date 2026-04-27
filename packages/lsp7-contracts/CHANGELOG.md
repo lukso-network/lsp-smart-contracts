@@ -1,5 +1,59 @@
 # Changelog
 
+## [0.17.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.16.8...lsp7-contracts-v0.17.0) (2026-04-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* compile LSP8 package with solc 0.8.28, EVM version `prague` and 25,000 optimizer runs
+* change `if ... revert` with `require` + custom `error` in LSP7
+* use `require` with custom `error` in LSP7 Votes + increase minimum pragma compiler version
+* change casing in `LSP7DigitalAsset` from `_isNonDivisible` to `_IS_NON_DIVISIBLE` to distinguish variable as `immutable`
+* mark `_isNonDivisible` as `immutable` in `LSP7DigitalAsset` contract with `constructor`
+* upgrade solc compiler + EVM version in LSP7 package to optimize runtime cost
+
+### Features
+
+* **AccessControlExtended:** transfer all roles on ownership change + add getRoleMembers ([ece8576](https://github.com/lukso-network/lsp-smart-contracts/commit/ece8576361c73554538d98e7a9045dc751162dc7))
+* add REVOKER_ROLE constant to LSP7 role constants ([811391a](https://github.com/lukso-network/lsp-smart-contracts/commit/811391a36e49083ec98d92710d5223cc3dae50ae))
+* create `AccessControlExtended` contracts ([06d5e57](https://github.com/lukso-network/lsp-smart-contracts/commit/06d5e57cf19e3a43e0c79dd28b7be295afc82361))
+* create customizeable token contract ([82d8a33](https://github.com/lukso-network/lsp-smart-contracts/commit/82d8a339defd873990bf2202638c2afd429f3c1f))
+* create hardhat-packager plugin ([21ba47c](https://github.com/lukso-network/lsp-smart-contracts/commit/21ba47c0490b36cf3dadc29f174138e247b477f5))
+* create proxy version of CustomizableToken ([eded50a](https://github.com/lukso-network/lsp-smart-contracts/commit/eded50aeac5444b50a8840fc1a67ac3c71f96bd6))
+* **lsp7:** add role constants in TypeScript and convert Solidity role constants to hex literals ([c832d9d](https://github.com/lukso-network/lsp-smart-contracts/commit/c832d9d5769a750246cd7d590ed1bd413d867a91))
+* protect address(0) and dead address in allowlist for burning ([060d520](https://github.com/lukso-network/lsp-smart-contracts/commit/060d520275c04ea75d1d2c296a2130078cc14b3d))
+* upgrade dependencies and Hardhat version to v3 ([32cbc59](https://github.com/lukso-network/lsp-smart-contracts/commit/32cbc5929774bcf58b48414c697325a6ee7c6b39))
+* **wip:** add `LSP7Revokable` token extension ([af2ab8f](https://github.com/lukso-network/lsp-smart-contracts/commit/af2ab8f599cae7d8c72a6fea7ebd03ed52c38017))
+
+
+### Bug Fixes
+
+* add calls to `super._beforeTokenTransfer(...)` for inheritance internal call in parent contracts ([448a0ce](https://github.com/lukso-network/lsp-smart-contracts/commit/448a0ce1ebcd943eabd001ebbf7b4b1d4a8b9a81))
+* avoid stack-too-deep in ownership transfer ([5fbc968](https://github.com/lukso-network/lsp-smart-contracts/commit/5fbc968879e8ea1184390783042aefdb7b208f37))
+* prevent makeTransferable from executing when token is already transferable ([9a3c20d](https://github.com/lukso-network/lsp-smart-contracts/commit/9a3c20d751b999a288429a6bf4708d7f1608bba5))
+* resolve `solidity-bytes-utils` dependency to `0.8.4` to remove trufflehd-wallet and other vulnerabilities in dependencies ([cbe21e9](https://github.com/lukso-network/lsp-smart-contracts/commit/cbe21e99ec3b6a74136c17cc364f3d00f6ddd37b))
+* security improvements ([8efd690](https://github.com/lukso-network/lsp-smart-contracts/commit/8efd690dc7cb792d6c62c2cda0aef417c77c526d))
+
+
+### Performance Improvements
+
+* use `calldata` for `external initialize(...)` functions for new LSP7 token extension ([73fae6d](https://github.com/lukso-network/lsp-smart-contracts/commit/73fae6d4813e793727a63a8dc2c9e934b3bff35c))
+* use `require` with custom `error` in new LSP7 extensions ([3ca92c4](https://github.com/lukso-network/lsp-smart-contracts/commit/3ca92c46612fca0e999914f3e608389329f5f6a4))
+
+
+### Code Refactoring
+
+* change `if ... revert` with `require` + custom `error` in LSP7 ([53ad54f](https://github.com/lukso-network/lsp-smart-contracts/commit/53ad54fdf736e2a449948efa39c9f05cc7024b58))
+* change casing in `LSP7DigitalAsset` from `_isNonDivisible` to `_IS_NON_DIVISIBLE` to distinguish variable as `immutable` ([44daac3](https://github.com/lukso-network/lsp-smart-contracts/commit/44daac3aed32574c881954951d547a4831427e64))
+* mark `_isNonDivisible` as `immutable` in `LSP7DigitalAsset` contract with `constructor` ([7a6d2c9](https://github.com/lukso-network/lsp-smart-contracts/commit/7a6d2c90e97e45544ec5384f9a4c7d9c228e83b3))
+* upgrade solc compiler + EVM version in LSP7 package to optimize runtime cost ([b0a4c7f](https://github.com/lukso-network/lsp-smart-contracts/commit/b0a4c7fb487f228d9d2b2f5c56a7113d0fe99f24))
+* use `require` with custom `error` in LSP7 Votes + increase minimum pragma compiler version ([4d3f7d4](https://github.com/lukso-network/lsp-smart-contracts/commit/4d3f7d4e2c23de11b76f1aacb59ccf4c5f1683c9))
+
+
+### Build System
+
+* compile LSP8 package with solc 0.8.28, EVM version `prague` and 25,000 optimizer runs ([c9d2316](https://github.com/lukso-network/lsp-smart-contracts/commit/c9d2316ba23464bf9e812ba2b6022661d39b61bd))
+
 ## [0.16.8](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.16.7...lsp7-contracts-v0.16.8) (2025-06-19)
 
 ### Bug Fixes
