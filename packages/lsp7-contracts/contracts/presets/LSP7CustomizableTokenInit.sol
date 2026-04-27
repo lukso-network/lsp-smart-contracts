@@ -58,6 +58,11 @@ contract LSP7CustomizableTokenInit is
     LSP7NonTransferableInitAbstract,
     LSP7RevokableInitAbstract
 {
+    /// @dev Locks the base implementation contract from being initialized.
+    constructor() {
+        _disableInitializers();
+    }
+
     function initialize(
         string calldata name_,
         string calldata symbol_,
