@@ -29,9 +29,9 @@ abstract contract LSP8MintableInitAbstract is
     /// @notice Indicates whether minting is currently enabled.
     bool public isMintable;
 
-    /// @dev `"MINTER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    /// @dev keccak256("MINTER_ROLE")
     bytes32 public constant MINTER_ROLE =
-        0x4d494e5445525f524f4c45000000000000000000000000000000000000000000;
+        0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6;
 
     /// @notice Initializes the LSP8Mintable contract with base token params and minting status.
     /// @dev Initializes the LSP8IdentifiableDigitalAsset base and sets the initial minting status.

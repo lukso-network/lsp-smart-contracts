@@ -6,6 +6,24 @@ export const INTERFACE_ID_LSP8_PREVIOUS = {
   'v0.12.0': '0x30dc5278',
 };
 
+// Role constants used across LSP8 extensions for AccessControlExtended
+export const ROLES = {
+  // keccak256("MINTER_ROLE")
+  MINTER: '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
+  // keccak256("UNCAPPED_BALANCE_ROLE")
+  UNCAPPED_BALANCE: '0x975773d1e0a917a74b57f36a377f439ffff6271648aebdbff75a52ab58eb7bad',
+  // keccak256("NON_TRANSFERABLE_BYPASS_ROLE")
+  NON_TRANSFERABLE_BYPASS: '0xb4b3a36d7c2b72add3151898671aaed843238e580f7d6d4bc5077ce2023b0659',
+  // keccak256("REVOKER_ROLE")
+  REVOKER: '0xce3f34913921da558f105cefb578d87278debbbd073a8d552b5de0d168deee30',
+} as const;
+
+// Export individual constants for backward compatibility
+export const MINTER_ROLE = ROLES.MINTER;
+export const UNCAPPED_BALANCE_ROLE = ROLES.UNCAPPED_BALANCE;
+export const NON_TRANSFERABLE_BYPASS_ROLE = ROLES.NON_TRANSFERABLE_BYPASS;
+export const REVOKER_ROLE = ROLES.REVOKER;
+
 export const LSP8DataKeys = {
   LSP8TokenIdFormat: '0xf675e9361af1c1664c1868cfa3eb97672d6b1a513aa5b81dec34c9ee330e818d',
   LSP8TokenMetadataBaseURI: '0x1a7628600c3bac7101f53697f48df381ddc36b9015e7d7c9c5633d1252aa2843',

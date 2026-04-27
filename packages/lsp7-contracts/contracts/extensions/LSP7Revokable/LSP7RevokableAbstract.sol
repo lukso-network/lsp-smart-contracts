@@ -34,9 +34,9 @@ abstract contract LSP7RevokableAbstract is
 {
     bool internal immutable _IS_REVOKABLE;
 
-    /// @dev `"REVOKER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    /// @dev keccak256("REVOKER_ROLE")
     bytes32 public constant REVOKER_ROLE =
-        0x5245564f4b45525f524f4c450000000000000000000000000000000000000000;
+        0xce3f34913921da558f105cefb578d87278debbbd073a8d552b5de0d168deee30;
 
     constructor(bool isRevokable_) {
         _IS_REVOKABLE = isRevokable_;

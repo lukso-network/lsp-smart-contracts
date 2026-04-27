@@ -29,9 +29,9 @@ abstract contract LSP7CappedBalanceAbstract is
     /// @notice The immutable maximum token balance allowed per address.
     uint256 internal immutable _TOKEN_BALANCE_CAP;
 
-    /// @dev `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    bytes32 public constant UNCAPPED_ROLE =
-        0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
+    /// @dev keccak256("UNCAPPED_BALANCE_ROLE")
+    bytes32 public constant UNCAPPED_BALANCE_ROLE =
+        0x975773d1e0a917a74b57f36a377f439ffff6271648aebdbff75a52ab58eb7bad;
 
     /// @notice Initializes the contract with a token balance cap.
     /// @dev Sets the immutable balance cap. If set, grants the initial uncapped balance role exemption to the contract owner.
@@ -40,7 +40,7 @@ abstract contract LSP7CappedBalanceAbstract is
         _TOKEN_BALANCE_CAP = tokenBalanceCap_;
 
         if (tokenBalanceCap_ != 0) {
-            _grantRole(UNCAPPED_ROLE, owner());
+            _grantRole(UNCAPPED_BALANCE_ROLE, owner());
         }
     }
 
@@ -78,7 +78,7 @@ abstract contract LSP7CappedBalanceAbstract is
         if (to == address(0) || to == _DEAD_ADDRESS) return;
 
         // Do not check for addresses exempted from balance cap
-        if (hasRole(UNCAPPED_ROLE, to)) return;
+        if (hasRole(UNCAPPED_BALANCE_ROLE, to)) return;
 
         uint256 maxBalanceAllowed = tokenBalanceCap();
         bool isBalanceCapEnabled = maxBalanceAllowed != 0;
@@ -118,8 +118,8 @@ abstract contract LSP7CappedBalanceAbstract is
         address newOwner
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
         // restore default admin hierarchy so a previously-installed custom admin
-        // cannot grant UNCAPPED_ROLE to new accounts post-transfer
-        _setRoleAdmin(UNCAPPED_ROLE, DEFAULT_ADMIN_ROLE);
+        // cannot grant UNCAPPED_BALANCE_ROLE to new accounts post-transfer
+        _setRoleAdmin(UNCAPPED_BALANCE_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
 }
