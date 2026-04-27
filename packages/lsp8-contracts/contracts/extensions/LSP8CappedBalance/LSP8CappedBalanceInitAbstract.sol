@@ -72,7 +72,7 @@ abstract contract LSP8CappedBalanceInitAbstract is
         _tokenBalanceCap = tokenBalanceCap_;
 
         if (tokenBalanceCap_ != 0) {
-            _grantRole(UNCAPPED_ROLE, owner());
+            _grantRole(UNCAPPED_BALANCE_ROLE, owner());
         }
     }
 

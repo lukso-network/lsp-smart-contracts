@@ -170,13 +170,13 @@ contract LSP7CustomizableTokenTest is Test {
         shouldHaveUncappedRole
             ? assertTrue(
                 deployedToken.hasRole(
-                    deployedToken.UNCAPPED_ROLE(),
+                    deployedToken.UNCAPPED_BALANCE_ROLE(),
                     contractOwner
                 )
             )
             : assertFalse(
                 deployedToken.hasRole(
-                    deployedToken.UNCAPPED_ROLE(),
+                    deployedToken.UNCAPPED_BALANCE_ROLE(),
                     contractOwner
                 )
             );

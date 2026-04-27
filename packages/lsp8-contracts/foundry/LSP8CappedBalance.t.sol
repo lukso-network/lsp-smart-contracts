@@ -163,78 +163,7 @@ contract LSP8CappedBalanceTest is Test {
 
         vm.expectEmit(true, true, true, true);
         emit IAccessControl.RoleGranted(
-            UNCAPPED_ROLE,
-            contractOwner,
-            address(this)
-        );
-        MockLSP8CappedBalance tokenContract = new MockLSP8CappedBalance(
-            name,
-            symbol,
-            contractOwner,
-            tokenType,
-            tokenIdFormat,
-            tokenBalanceCap
-        );
-
-        assertTrue(
-            tokenContract.hasRole(
-                tokenContract.UNCAPPED_BALANCE_ROLE(),
-                contractOwner
-            )
-        );
-        assertTrue(
-            tokenContract.hasRole(
-                tokenContract.DEFAULT_ADMIN_ROLE(),
-                contractOwner
-            )
-        );
-
-        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
-        assertEq(ownerRoles.length, 2);
-        assertEq(ownerRoles[0], tokenContract.DEFAULT_ADMIN_ROLE());
-        assertEq(ownerRoles[1], tokenContract.UNCAPPED_BALANCE_ROLE());
-    }
-
-    function test_DeployWithoutCappedBalanceFeatureDoesNotGrantUncappedRoleToOwner()
-        public
-    {
-        address contractOwner = makeAddr("contractOwner");
-
-        MockLSP8CappedBalance tokenContract = new MockLSP8CappedBalance(
-            name,
-            symbol,
-            contractOwner,
-            tokenType,
-            tokenIdFormat,
-            0 // tokenBalanceCap disabled
-        );
-
-        assertFalse(
-            tokenContract.hasRole(
-                tokenContract.UNCAPPED_BALANCE_ROLE(),
-                contractOwner
-            )
-        );
-        assertTrue(
-            tokenContract.hasRole(
-                tokenContract.DEFAULT_ADMIN_ROLE(),
-                contractOwner
-            )
-        );
-
-        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
-        assertEq(ownerRoles.length, 1);
-        assertEq(ownerRoles[0], tokenContract.DEFAULT_ADMIN_ROLE());
-    }
-
-    function test_DeployWithCappedBalanceFeatureGrantsUncappedRoleToOwnerAndEmitsRoleGranted()
-        public
-    {
-        address contractOwner = makeAddr("contractOwner");
-
-        vm.expectEmit(true, true, true, true);
-        emit IAccessControl.RoleGranted(
-            UNCAPPED_ROLE,
+            lsp8CappedBalance.UNCAPPED_BALANCE_ROLE(),
             contractOwner,
             address(this)
         );

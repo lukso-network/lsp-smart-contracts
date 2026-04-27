@@ -207,17 +207,6 @@ contract LSP8CustomizableTokenInit is
         );
     }
 
-    /// @dev Override function to allow revokers
-    function _nonTransferableCheck(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bool force,
-        bytes memory data
-    ) internal virtual override {
-        super._nonTransferableCheck(from, to, tokenId, force, data);
-    }
-
     function _transferOwnership(
         address newOwner
     )
