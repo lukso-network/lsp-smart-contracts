@@ -36,7 +36,10 @@ abstract contract LSP7MintableAbstract is
     constructor(bool mintable_) {
         isMintable = mintable_;
         emit MintingStatusChanged({enabled: mintable_});
-        _grantRole(MINTER_ROLE, owner());
+
+        if (mintable_) {
+            _grantRole(MINTER_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP7Mintable

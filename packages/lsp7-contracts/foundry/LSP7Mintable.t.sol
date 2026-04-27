@@ -202,6 +202,57 @@ contract LSP7MintableTest is Test {
         );
     }
 
+    function test_DeployWithoutMintableFeatureDoesNotGrantMinterRoleToOwner()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        MockLSP7Mintable tokenContract = new MockLSP7Mintable(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            isNonDivisible,
+            false // isMintable
+        );
+
+        assertFalse(tokenContract.hasRole(minterRole, contractOwner));
+        assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 1);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+    }
+
+    function test_DeployWithMintableFeatureGrantsMinterRoleToOwnerAndEmitsRoleGranted()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        vm.expectEmit(true, true, true, true);
+        emit IAccessControl.RoleGranted(
+            minterRole,
+            contractOwner,
+            address(this)
+        );
+        MockLSP7Mintable tokenContract = new MockLSP7Mintable(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            isNonDivisible,
+            true // mintable
+        );
+
+        assertTrue(tokenContract.hasRole(minterRole, contractOwner));
+        assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 2);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+        assertEq(ownerRoles[1], minterRole);
+    }
+
     function test_MintableOwnerCanMint() public {
         assertEq(lsp7Mintable.balanceOf(recipient), 0);
         lsp7Mintable.mint(recipient, 100, true, "");
@@ -333,7 +384,13 @@ contract LSP7MintableTest is Test {
 
     function test_NonMintableOwnerCannotMint() public {
         assertEq(lsp7NonMintable.balanceOf(recipient), 0);
-        vm.expectRevert(LSP7MintDisabled.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                address(this),
+                minterRole
+            )
+        );
         lsp7NonMintable.mint(recipient, 100, true, "");
         assertEq(lsp7NonMintable.balanceOf(recipient), 0);
     }

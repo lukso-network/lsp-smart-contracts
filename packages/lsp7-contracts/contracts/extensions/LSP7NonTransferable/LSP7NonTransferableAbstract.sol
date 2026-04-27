@@ -86,12 +86,12 @@ abstract contract LSP7NonTransferableAbstract is
             return transferLockEnd < block.timestamp;
         }
 
-        // If the token becomes non-transferable starting at a specific point in time, check if we have reach this lock starting period
+        // If the token becomes non-transferable starting at a specific point in time, check if we have reached this lock starting period
         if (isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return transferLockStart > block.timestamp;
         }
 
-        // The last case is when the non-transferable feature is enabled is enabled within a certain time period
+        // This last case checks if we are within the transfer lock period
         return
             transferLockStart > block.timestamp ||
             transferLockEnd < block.timestamp;

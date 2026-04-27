@@ -64,13 +64,16 @@ abstract contract LSP8CappedBalanceInitAbstract is
     }
 
     /// @notice Unchained initializer for the balance cap.
-    /// @dev Sets the balance cap.
-    /// @param tokenBalanceCap_ The maximum number of NFTs per address, 0 to disable.
+    /// @dev Sets the balance cap. If set, grants the initial uncapped balance role exemption to the contract owner.
+    /// @param tokenBalanceCap_ The maximum number of NFTs allowed per address. Set to 0 to disable.
     function __LSP8CappedBalance_init_unchained(
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
         _tokenBalanceCap = tokenBalanceCap_;
-        _grantRole(UNCAPPED_ROLE, owner());
+
+        if (tokenBalanceCap_ != 0) {
+            _grantRole(UNCAPPED_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP8CappedBalance

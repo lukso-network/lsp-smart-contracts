@@ -15,6 +15,10 @@ interface ILSP8NonTransferable {
     /// @notice The end timestamp of the transfer lock period, at which point the token becomes transferable again.
     function transferLockEnd() external view returns (uint256);
 
+    /// @notice Returns whether the transfer lock feature is still enabled.
+    /// @dev When this returns `false`, the token has been permanently made transferable and the lock period can no longer be updated.
+    function transferLockEnabled() external view returns (bool);
+
     /// @notice Checks if the token is currently transferable.
     /// @dev Returns true if the token is transferable (based on the lock period). Note that transfers from addresses holding the bypass role and burning (transfers to address(0)) is always allowed, regardless of transferability status.
     /// @return True if the token is transferable, false otherwise.
