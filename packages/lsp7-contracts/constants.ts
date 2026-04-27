@@ -8,19 +8,19 @@ export const INTERFACE_ID_LSP7_PREVIOUS = {
 
 // Role constants used across LSP7 extensions for AccessControlExtended
 export const ROLES = {
-  // `"MINTER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-  MINTER: '0x4d494e5445525f524f4c45000000000000000000000000000000000000000000',
-  // `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-  UNCAPPED: '0x554e4341505045445f524f4c4500000000000000000000000000000000000000',
-  // `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-  NON_TRANSFERABLE_BYPASS: '0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000',
-  // `"REVOKER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-  REVOKER: '0x5245564f4b45525f524f4c450000000000000000000000000000000000000000',
+  // keccak256("MINTER_ROLE")
+  MINTER: '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6',
+  // keccak256("UNCAPPED_BALANCE_ROLE")
+  UNCAPPED_BALANCE: '0x975773d1e0a917a74b57f36a377f439ffff6271648aebdbff75a52ab58eb7bad',
+  // keccak256("NON_TRANSFERABLE_BYPASS_ROLE")
+  NON_TRANSFERABLE_BYPASS: '0xb4b3a36d7c2b72add3151898671aaed843238e580f7d6d4bc5077ce2023b0659',
+  // keccak256("REVOKER_ROLE")
+  REVOKER: '0xce3f34913921da558f105cefb578d87278debbbd073a8d552b5de0d168deee30',
 } as const;
 
 // Export individual constants for backward compatibility
 export const MINTER_ROLE = ROLES.MINTER;
-export const UNCAPPED_ROLE = ROLES.UNCAPPED;
+export const UNCAPPED_BALANCE_ROLE = ROLES.UNCAPPED_BALANCE;
 export const NON_TRANSFERABLE_BYPASS_ROLE = ROLES.NON_TRANSFERABLE_BYPASS;
 export const REVOKER_ROLE = ROLES.REVOKER;
 

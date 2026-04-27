@@ -133,7 +133,7 @@ contract LSP7MintableTest is Test {
     // │   ├─ emit DataChanged(dataKey: 0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756, dataValue: 0x5454)
     // │   ├─ emit DataChanged(dataKey: 0xe0261fa95db2eb3b5439bd033cda66d56b96f92f243a8228fd87550ed7bdfdb3, dataValue: 0x0000000000000000000000000000000000000000000000000000000000000000)
     // │   ├─ emit MintingStatusChanged(enabled: false)
-    // │   ├─ emit RoleGranted(role: 0x4d494e5445525f524f4c45000000000000000000000000000000000000000000, account: LSP7MintableTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], sender: LSP7MintableTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496])
+    // │   ├─ emit RoleGranted(role: 0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6, account: LSP7MintableTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], sender: LSP7MintableTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496])
     function test_EventsEmissionOnDeployment() public {
         address contractOwner = makeAddr("contractOwner");
 

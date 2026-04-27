@@ -29,15 +29,15 @@ abstract contract LSP7CappedBalanceInitAbstract is
     address internal constant _DEAD_ADDRESS =
         0x000000000000000000000000000000000000dEaD;
 
-    /// @dev `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    bytes32 public constant UNCAPPED_ROLE =
-        0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
+    /// @dev keccak256("UNCAPPED_BALANCE_ROLE")
+    bytes32 public constant UNCAPPED_BALANCE_ROLE =
+        0x975773d1e0a917a74b57f36a377f439ffff6271648aebdbff75a52ab58eb7bad;
 
     /// @notice The immutable maximum token balance allowed per address.
     uint256 private _tokenBalanceCap;
 
     /// @notice Initializes the LSP7CappedBalance contract with base token params, balance cap per address,
-    /// and `UNCAPPED_ROLE` exemptions for token contract `owner()`, `address(0)` and `0x...dead` addresses (for burning).
+    /// and `UNCAPPED_BALANCE_ROLE` exemptions for token contract `owner()`, `address(0)` and `0x...dead` addresses (for burning).
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param newOwner_ The owner of the contract, added to the allowlist.
@@ -70,7 +70,7 @@ abstract contract LSP7CappedBalanceInitAbstract is
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
         _tokenBalanceCap = tokenBalanceCap_;
-        _grantRole(UNCAPPED_ROLE, owner());
+        _grantRole(UNCAPPED_BALANCE_ROLE, owner());
     }
 
     /// @inheritdoc ILSP7CappedBalance
@@ -112,7 +112,7 @@ abstract contract LSP7CappedBalanceInitAbstract is
         if (to == address(0) || to == _DEAD_ADDRESS) return;
 
         // Do not check for addresses exempted from balance cap
-        if (hasRole(UNCAPPED_ROLE, to)) return;
+        if (hasRole(UNCAPPED_BALANCE_ROLE, to)) return;
 
         uint256 maxBalanceAllowed = tokenBalanceCap();
         bool isBalanceCapEnabled = maxBalanceAllowed != 0;
@@ -156,8 +156,8 @@ abstract contract LSP7CappedBalanceInitAbstract is
         override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
     {
         // restore default admin hierarchy so a previously-installed custom admin
-        // cannot grant UNCAPPED_ROLE to new accounts post-transfer
-        _setRoleAdmin(UNCAPPED_ROLE, DEFAULT_ADMIN_ROLE);
+        // cannot grant UNCAPPED_BALANCE_ROLE to new accounts post-transfer
+        _setRoleAdmin(UNCAPPED_BALANCE_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
 }

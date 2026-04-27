@@ -62,13 +62,6 @@ contract LSP8CustomizableTokenTest is Test {
     address revoker2 = vm.addr(105);
     address zeroAddress = address(0);
 
-    bytes32 constant MINTER_ROLE =
-        0x4d494e5445525f524f4c45000000000000000000000000000000000000000000;
-    bytes32 constant NON_TRANSFERABLE_BYPASS_ROLE =
-        0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000;
-    bytes32 constant UNCAPPED_ROLE =
-        0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
-
     // Initial token IDs to mint
     bytes32[] initialTokenIds;
 
@@ -170,7 +163,10 @@ contract LSP8CustomizableTokenTest is Test {
             deployedToken.hasRole(deployedToken.MINTER_ROLE(), contractOwner)
         );
         assertTrue(
-            deployedToken.hasRole(deployedToken.UNCAPPED_ROLE(), contractOwner)
+            deployedToken.hasRole(
+                deployedToken.UNCAPPED_BALANCE_ROLE(),
+                contractOwner
+            )
         );
         assertTrue(
             deployedToken.hasRole(
@@ -247,7 +243,7 @@ contract LSP8CustomizableTokenTest is Test {
             "Supply cap should be set"
         );
         assertTrue(
-            token.hasRole(MINTER_ROLE, owner),
+            token.hasRole(token.MINTER_ROLE(), owner),
             "Owner should have MINTER_ROLE"
         );
         assertTrue(
@@ -259,12 +255,12 @@ contract LSP8CustomizableTokenTest is Test {
             "Owner should have REVOKER_ROLE"
         );
         assertTrue(
-            token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, owner),
+            token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), owner),
             "Owner should have bypass role"
         );
         assertTrue(
-            token.hasRole(UNCAPPED_ROLE, owner),
-            "Owner should have UNCAPPED_ROLE"
+            token.hasRole(token.UNCAPPED_BALANCE_ROLE(), owner),
+            "Owner should have UNCAPPED_BALANCE_ROLE"
         );
     }
 
@@ -597,14 +593,14 @@ contract LSP8CustomizableTokenTest is Test {
     }
 
     function test_NonOwnerCannotMint() public {
-        vm.prank(nonOwner);
         vm.expectRevert(
             abi.encodeWithSelector(
                 AccessControlUnauthorizedAccount.selector,
                 nonOwner,
-                MINTER_ROLE
+                token.MINTER_ROLE()
             )
         );
+        vm.prank(nonOwner);
         token.mint(user1, bytes32(uint256(100)), true, "");
     }
 
@@ -765,20 +761,20 @@ contract LSP8CustomizableTokenTest is Test {
 
     // Role-based exemption tests
     function test_GrantNonTransferableBypassRole() public {
-        assertFalse(token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, user1));
-        token.grantRole(NON_TRANSFERABLE_BYPASS_ROLE, user1);
-        assertTrue(token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, user1));
+        assertFalse(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), user1));
+        token.grantRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), user1);
+        assertTrue(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), user1));
     }
 
     function test_RevokeNonTransferableBypassRole() public {
-        token.grantRole(NON_TRANSFERABLE_BYPASS_ROLE, user1);
-        assertTrue(token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, user1));
-        token.revokeRole(NON_TRANSFERABLE_BYPASS_ROLE, user1);
-        assertFalse(token.hasRole(NON_TRANSFERABLE_BYPASS_ROLE, user1));
+        token.grantRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), user1);
+        assertTrue(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), user1));
+        token.revokeRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), user1);
+        assertFalse(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), user1));
     }
 
     function test_UncappedRoleBypassesBalanceCap() public {
-        token.grantRole(UNCAPPED_ROLE, user1);
+        token.grantRole(token.UNCAPPED_BALANCE_ROLE(), user1);
 
         // Mint many NFTs directly to user1 (beyond the cap)
         for (uint256 i = 100; i <= 110; i++) {
@@ -812,12 +808,12 @@ contract LSP8CustomizableTokenTest is Test {
 
         assertFalse(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner));
         assertFalse(token.hasRole(token.MINTER_ROLE(), owner));
-        assertFalse(token.hasRole(token.UNCAPPED_ROLE(), owner));
+        assertFalse(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), owner));
         assertFalse(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), owner));
 
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), newOwner));
         assertTrue(token.hasRole(token.MINTER_ROLE(), newOwner));
-        assertTrue(token.hasRole(token.UNCAPPED_ROLE(), newOwner));
+        assertTrue(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), newOwner));
         assertTrue(
             token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), newOwner)
         );
@@ -828,7 +824,7 @@ contract LSP8CustomizableTokenTest is Test {
     {
         bytes32 minterRole = token.MINTER_ROLE();
         bytes32 revokerRole = token.REVOKER_ROLE();
-        bytes32 uncappedRole = token.UNCAPPED_ROLE();
+        bytes32 uncappedRole = token.UNCAPPED_BALANCE_ROLE();
         bytes32 nonTransferableBypassRole = token
             .NON_TRANSFERABLE_BYPASS_ROLE();
 

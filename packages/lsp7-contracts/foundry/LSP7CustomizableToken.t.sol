@@ -155,7 +155,10 @@ contract LSP7CustomizableTokenTest is Test {
             deployedToken.hasRole(deployedToken.MINTER_ROLE(), contractOwner)
         );
         assertTrue(
-            deployedToken.hasRole(deployedToken.UNCAPPED_ROLE(), contractOwner)
+            deployedToken.hasRole(
+                deployedToken.UNCAPPED_BALANCE_ROLE(),
+                contractOwner
+            )
         );
         assertTrue(
             deployedToken.hasRole(
@@ -227,7 +230,7 @@ contract LSP7CustomizableTokenTest is Test {
         );
         assertTrue(token.hasRole(token.MINTER_ROLE(), owner));
         assertTrue(token.hasRole(token.REVOKER_ROLE(), owner));
-        assertTrue(token.hasRole(token.UNCAPPED_ROLE(), owner));
+        assertTrue(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), owner));
         assertTrue(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), owner));
     }
 
@@ -616,12 +619,12 @@ contract LSP7CustomizableTokenTest is Test {
 
         assertFalse(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner));
         assertFalse(token.hasRole(token.MINTER_ROLE(), owner));
-        assertFalse(token.hasRole(token.UNCAPPED_ROLE(), owner));
+        assertFalse(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), owner));
         assertFalse(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), owner));
 
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), newOwner));
         assertTrue(token.hasRole(token.MINTER_ROLE(), newOwner));
-        assertTrue(token.hasRole(token.UNCAPPED_ROLE(), newOwner));
+        assertTrue(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), newOwner));
         assertTrue(
             token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), newOwner)
         );
@@ -632,7 +635,7 @@ contract LSP7CustomizableTokenTest is Test {
     {
         bytes32 minterRole = token.MINTER_ROLE();
         bytes32 revokerRole = token.REVOKER_ROLE();
-        bytes32 uncappedRole = token.UNCAPPED_ROLE();
+        bytes32 uncappedRole = token.UNCAPPED_BALANCE_ROLE();
         bytes32 nonTransferableBypassRole = token
             .NON_TRANSFERABLE_BYPASS_ROLE();
 

@@ -30,9 +30,9 @@ abstract contract LSP7NonTransferableInitAbstract is
     LSP7DigitalAssetInitAbstract,
     AccessControlExtendedInitAbstract
 {
-    /// @dev `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    /// @dev keccak256("NON_TRANSFERABLE_BYPASS_ROLE")
     bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE =
-        0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000;
+        0xb4b3a36d7c2b72add3151898671aaed843238e580f7d6d4bc5077ce2023b0659;
 
     /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockStart;

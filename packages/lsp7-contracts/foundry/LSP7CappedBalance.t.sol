@@ -93,7 +93,7 @@ contract LSP7CappedBalanceTest is Test {
             isNonDivisible,
             tokenBalanceCap
         );
-        uncappedBalanceRole = lsp7CappedBalance.UNCAPPED_ROLE();
+        uncappedBalanceRole = lsp7CappedBalance.UNCAPPED_BALANCE_ROLE();
 
         lsp7CappedBalance.grantRole(uncappedBalanceRole, allowlistedUser);
         lsp7CappedBalance.grantRole(uncappedBalanceRole, allowlistedUserExtra);

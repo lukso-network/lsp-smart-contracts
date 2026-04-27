@@ -79,8 +79,8 @@ contract LSP8CappedBalanceTest is Test {
     address user2 = vm.addr(102);
     address zeroAddress = address(0);
 
-    bytes32 constant UNCAPPED_ROLE =
-        0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
+    bytes32 constant UNCAPPED_BALANCE_ROLE =
+        0x975773d1e0a917a74b57f36a377f439ffff6271648aebdbff75a52ab58eb7bad;
 
     MockLSP8CappedBalance lsp8CappedBalance;
 
@@ -114,8 +114,8 @@ contract LSP8CappedBalanceTest is Test {
             "Balance cap should be set correctly"
         );
         assertTrue(
-            lsp8CappedBalance.hasRole(UNCAPPED_ROLE, owner),
-            "Owner should have UNCAPPED_ROLE"
+            lsp8CappedBalance.hasRole(UNCAPPED_BALANCE_ROLE, owner),
+            "Owner should have UNCAPPED_BALANCE_ROLE"
         );
     }
 
@@ -159,7 +159,7 @@ contract LSP8CappedBalanceTest is Test {
 
     // Test balance cap enforced on transfers
     function test_TransferEnforcesBalanceCap() public {
-        // Mint tokens to owner (UNCAPPED_ROLE holder, can exceed cap)
+        // Mint tokens to owner (UNCAPPED_BALANCE_ROLE holder, can exceed cap)
         lsp8CappedBalance.mint(owner, bytes32(uint256(1)), true, "");
         lsp8CappedBalance.mint(owner, bytes32(uint256(2)), true, "");
         lsp8CappedBalance.mint(owner, bytes32(uint256(3)), true, "");
@@ -185,7 +185,7 @@ contract LSP8CappedBalanceTest is Test {
 
     // Test role holders bypass balance cap
     function test_UncappedRoleBypassesBalanceCap() public {
-        lsp8CappedBalance.grantRole(UNCAPPED_ROLE, user1);
+        lsp8CappedBalance.grantRole(UNCAPPED_BALANCE_ROLE, user1);
 
         // Mint more than cap to address with the bypass role
         lsp8CappedBalance.mint(user1, bytes32(uint256(1)), true, "");
@@ -260,7 +260,7 @@ contract LSP8CappedBalanceTest is Test {
         assertEq(lsp8CappedBalance.balanceOf(user2), 2);
     }
 
-    // Test owner (UNCAPPED_ROLE holder) can receive unlimited
+    // Test owner (UNCAPPED_BALANCE_ROLE holder) can receive unlimited
     function test_OwnerCanReceiveUnlimited() public {
         // Mint many tokens directly to owner
         for (uint256 i = 1; i <= 10; i++) {
@@ -271,7 +271,7 @@ contract LSP8CappedBalanceTest is Test {
 
     // Test revoking the bypass role enforces the cap again
     function test_RevokingUncappedRoleEnforcesCap() public {
-        lsp8CappedBalance.grantRole(UNCAPPED_ROLE, user1);
+        lsp8CappedBalance.grantRole(UNCAPPED_BALANCE_ROLE, user1);
 
         // Mint tokens exceeding cap
         lsp8CappedBalance.mint(user1, bytes32(uint256(1)), true, "");
@@ -279,7 +279,7 @@ contract LSP8CappedBalanceTest is Test {
         lsp8CappedBalance.mint(user1, bytes32(uint256(3)), true, "");
         lsp8CappedBalance.mint(user1, bytes32(uint256(4)), true, "");
 
-        lsp8CappedBalance.revokeRole(UNCAPPED_ROLE, user1);
+        lsp8CappedBalance.revokeRole(UNCAPPED_BALANCE_ROLE, user1);
 
         // Now user1 cannot receive more tokens via transfer
         lsp8CappedBalance.mint(owner, bytes32(uint256(5)), true, "");
@@ -301,11 +301,11 @@ contract LSP8CappedBalanceTest is Test {
         address uncappedBalanceAdmin = makeAddr("A Uncapped Balance Admin");
 
         lsp8CappedBalance.setRoleAdmin(
-            UNCAPPED_ROLE,
+            UNCAPPED_BALANCE_ROLE,
             uncappedBalanceAdminRole
         );
         assertEq(
-            lsp8CappedBalance.getRoleAdmin(UNCAPPED_ROLE),
+            lsp8CappedBalance.getRoleAdmin(UNCAPPED_BALANCE_ROLE),
             uncappedBalanceAdminRole
         );
 
@@ -321,13 +321,13 @@ contract LSP8CappedBalanceTest is Test {
         );
 
         vm.prank(uncappedBalanceAdmin);
-        lsp8CappedBalance.grantRole(UNCAPPED_ROLE, address(11111));
-        assertTrue(lsp8CappedBalance.hasRole(UNCAPPED_ROLE, address(11111)));
+        lsp8CappedBalance.grantRole(UNCAPPED_BALANCE_ROLE, address(11111));
+        assertTrue(lsp8CappedBalance.hasRole(UNCAPPED_BALANCE_ROLE, address(11111)));
 
         lsp8CappedBalance.transferOwnership(vm.addr(200));
 
         assertEq(
-            lsp8CappedBalance.getRoleAdmin(UNCAPPED_ROLE),
+            lsp8CappedBalance.getRoleAdmin(UNCAPPED_BALANCE_ROLE),
             lsp8CappedBalance.DEFAULT_ADMIN_ROLE()
         );
 
@@ -340,10 +340,10 @@ contract LSP8CappedBalanceTest is Test {
             )
         );
         vm.prank(uncappedBalanceAdmin);
-        lsp8CappedBalance.grantRole(UNCAPPED_ROLE, address(22222));
+        lsp8CappedBalance.grantRole(UNCAPPED_BALANCE_ROLE, address(22222));
 
         // Addresses with previously granted role still persist
-        assertTrue(lsp8CappedBalance.hasRole(UNCAPPED_ROLE, address(11111)));
+        assertTrue(lsp8CappedBalance.hasRole(UNCAPPED_BALANCE_ROLE, address(11111)));
     }
 
     // ------ Fuzzing ------
@@ -496,7 +496,7 @@ contract LSP8CappedBalanceTest is Test {
 
         address uncappedAddr = vm.addr(200);
 
-        lsp8CappedBalance.grantRole(UNCAPPED_ROLE, uncappedAddr);
+        lsp8CappedBalance.grantRole(UNCAPPED_BALANCE_ROLE, uncappedAddr);
 
         for (uint256 i = 1; i <= mintCount; i++) {
             lsp8CappedBalance.mint(
