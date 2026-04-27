@@ -699,6 +699,44 @@ contract LSP7NonTransferableTest is Test {
         );
     }
 
+    function test_TransferFlowBeforeDuringAndAfterUpdatedLockPeriod() public {
+        uint256 initialLockStart = block.timestamp + 100;
+        uint256 initialLockEnd = initialLockStart + 200;
+
+        MockLSP7NonTransferable tokenWithLockPeriods = new MockLSP7NonTransferable(
+                name,
+                symbol,
+                owner,
+                tokenType,
+                isNonDivisible,
+                initialLockStart,
+                initialLockEnd
+            );
+        tokenWithLockPeriods.mint(randomCaller, 100, true, "");
+
+        vm.warp(initialLockStart - 1);
+        vm.prank(randomCaller);
+        tokenWithLockPeriods.transfer(randomCaller, recipient, 10, true, "");
+        assertEq(tokenWithLockPeriods.balanceOf(recipient), 10);
+
+        vm.warp(initialLockStart + 1);
+        vm.prank(randomCaller);
+        vm.expectRevert(LSP7TransferDisabled.selector);
+        tokenWithLockPeriods.transfer(randomCaller, recipient, 10, true, "");
+
+        uint256 updatedLockStart = initialLockStart + 1000;
+        uint256 updatedLockEnd = updatedLockStart + 200;
+        tokenWithLockPeriods.updateTransferLockPeriod(
+            updatedLockStart,
+            updatedLockEnd
+        );
+
+        assertTrue(tokenWithLockPeriods.isTransferable());
+        vm.prank(randomCaller);
+        tokenWithLockPeriods.transfer(randomCaller, recipient, 10, true, "");
+        assertEq(tokenWithLockPeriods.balanceOf(recipient), 20);
+    }
+
     function test_UpdateTransferLockPeriodRevertsAfterMakeTransferable()
         public
     {

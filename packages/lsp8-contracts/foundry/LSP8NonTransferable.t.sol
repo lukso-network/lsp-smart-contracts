@@ -607,6 +607,63 @@ contract LSP8NonTransferableTest is Test {
         assertTrue(lsp8TransferableWithLockPeriod.isTransferable());
     }
 
+    function test_TransferFlowBeforeDuringAndAfterUpdatedLockPeriod() public {
+        uint256 initialLockStart = block.timestamp + 100;
+        uint256 initialLockEnd = initialLockStart + 200;
+        bytes32 tokenId = bytes32(uint256(999));
+
+        MockLSP8NonTransferable tokenWithLockPeriods = new MockLSP8NonTransferable(
+                name,
+                symbol,
+                owner,
+                tokenType,
+                tokenIdFormat,
+                initialLockStart,
+                initialLockEnd
+            );
+        tokenWithLockPeriods.mint(randomCaller, tokenId, true, "");
+
+        vm.warp(initialLockStart - 1);
+        vm.prank(randomCaller);
+        tokenWithLockPeriods.transfer(
+            randomCaller,
+            recipient,
+            tokenId,
+            true,
+            ""
+        );
+        assertEq(tokenWithLockPeriods.balanceOf(recipient), 1);
+
+        vm.warp(initialLockStart + 1);
+        vm.prank(recipient);
+        vm.expectRevert(LSP8TransferDisabled.selector);
+        tokenWithLockPeriods.transfer(
+            recipient,
+            randomCaller,
+            tokenId,
+            true,
+            ""
+        );
+
+        uint256 updatedLockStart = initialLockStart + 1000;
+        uint256 updatedLockEnd = updatedLockStart + 200;
+        tokenWithLockPeriods.updateTransferLockPeriod(
+            updatedLockStart,
+            updatedLockEnd
+        );
+
+        assertTrue(tokenWithLockPeriods.isTransferable());
+        vm.prank(recipient);
+        tokenWithLockPeriods.transfer(
+            recipient,
+            randomCaller,
+            tokenId,
+            true,
+            ""
+        );
+        assertEq(tokenWithLockPeriods.balanceOf(randomCaller), 1);
+    }
+
     // Edge Cases
     function test_TransferToSelfSucceedsWhenTransferable() public {
         uint256 initialBalance = lsp8NonTransferable.balanceOf(owner);
