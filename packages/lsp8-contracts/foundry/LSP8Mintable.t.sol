@@ -99,7 +99,7 @@ contract LSP8MintableTest is Test {
             tokenIdFormat,
             false // not mintable
         );
-        assertTrue(lsp8NonMintable.hasRole(minterRole, owner));
+        assertFalse(lsp8NonMintable.hasRole(minterRole, owner));
     }
 
     // Test constructor initialization
@@ -284,7 +284,22 @@ contract LSP8MintableTest is Test {
     function test_DeployedAsNonMintable() public {
         assertFalse(lsp8NonMintable.isMintable());
 
+        // Test first it reverts with access control error, even if minting is disable
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                address(this),
+                minterRole
+            )
+        );
+        lsp8NonMintable.mint(user1, tokenId1, true, "");
+
+        // Test then it reverts with minting disabled error
+        vm.prank(owner);
+        lsp8NonMintable.grantRole(minterRole, address(this));
+
         vm.expectRevert(LSP8MintDisabled.selector);
+        vm.prank(owner);
         lsp8NonMintable.mint(user1, tokenId1, true, "");
     }
 
