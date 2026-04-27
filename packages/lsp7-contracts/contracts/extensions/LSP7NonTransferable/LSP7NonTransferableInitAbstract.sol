@@ -25,7 +25,7 @@ import {
 
 /// @title LSP7NonTransferableInitAbstract
 /// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods
-/// and support to bypass non transferable checks through a role.
+/// and support to bypass non-transferable checks through a role.
 abstract contract LSP7NonTransferableInitAbstract is
     ILSP7NonTransferable,
     LSP7DigitalAssetInitAbstract,
@@ -129,7 +129,7 @@ abstract contract LSP7NonTransferableInitAbstract is
             return transferLockEnd < block.timestamp;
         }
 
-        // If the token becomes non-transferable starting at a specific point in time, check if we have reach this lock starting period
+        // If the token becomes non-transferable starting at a specific point in time, check if we have reached this lock starting period
         if (isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return transferLockStart > block.timestamp;
         }
@@ -160,6 +160,7 @@ abstract contract LSP7NonTransferableInitAbstract is
 
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
+        // Allow to make the token always non-transferable, or ensure the end period for locking transfers is always later than the starting period
         require(
             newTransferLockEnd == 0 ||
                 newTransferLockEnd >= newTransferLockStart,

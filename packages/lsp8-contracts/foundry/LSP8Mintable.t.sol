@@ -284,7 +284,7 @@ contract LSP8MintableTest is Test {
     function test_DeployedAsNonMintable() public {
         assertFalse(lsp8NonMintable.isMintable());
 
-        // Test first it reverts with access control error, even if minting is disable
+        // Test first it reverts with access control error, even if minting is disabled
         vm.expectRevert(
             abi.encodeWithSelector(
                 AccessControlUnauthorizedAccount.selector,

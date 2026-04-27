@@ -88,7 +88,7 @@ abstract contract LSP8NonTransferableAbstract is
             return transferLockEnd < block.timestamp;
         }
 
-        // If the token becomes non-transferable starting at a specific point in time, check if we have reach this lock starting period
+        // If the token becomes non-transferable starting at a specific point in time, check if we have reached this lock starting period
         if (isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return transferLockStart > block.timestamp;
         }
@@ -101,11 +101,9 @@ abstract contract LSP8NonTransferableAbstract is
 
     /// @inheritdoc ILSP8NonTransferable
     function makeTransferable() public virtual override onlyOwner {
-        require(
-            transferLockStart != 0 || transferLockEnd != 0,
-            LSP8TokenAlreadyTransferable()
-        );
+        require(transferLockEnabled, LSP8TokenAlreadyTransferable());
 
+        transferLockEnabled = false;
         transferLockStart = 0;
         transferLockEnd = 0;
 
@@ -117,22 +115,15 @@ abstract contract LSP8NonTransferableAbstract is
         uint256 newTransferLockStart,
         uint256 newTransferLockEnd
     ) public virtual override onlyOwner {
+        require(transferLockEnabled, LSP8CannotUpdateTransferLockPeriod());
+
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
+        // Allow to make the token always non-transferable, or ensure the end period for locking transfers is always later than the starting period
         require(
             newTransferLockEnd == 0 ||
                 newTransferLockEnd >= newTransferLockStart,
             LSP8InvalidTransferLockPeriod()
-        );
-
-        require(
-            newTransferLockStart == 0 || block.timestamp < transferLockStart,
-            LSP8CannotUpdateTransferLockPeriod()
-        );
-
-        require(
-            newTransferLockEnd == 0 || block.timestamp < transferLockEnd,
-            LSP8CannotUpdateTransferLockPeriod()
         );
 
         transferLockStart = newTransferLockStart;
