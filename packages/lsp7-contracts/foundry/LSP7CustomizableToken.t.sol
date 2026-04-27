@@ -143,6 +143,9 @@ contract LSP7CustomizableTokenTest is Test {
     function _assertOwnerFeatureRoles(
         LSP7CustomizableToken deployedToken,
         address contractOwner,
+        bool shouldHaveMinterRole,
+        bool shouldHaveUncappedRole,
+        bool shouldHaveNonTransferableBypassRole,
         bool shouldHaveRevokerRole
     ) internal {
         assertTrue(
@@ -151,21 +154,45 @@ contract LSP7CustomizableTokenTest is Test {
                 contractOwner
             )
         );
-        assertTrue(
-            deployedToken.hasRole(deployedToken.MINTER_ROLE(), contractOwner)
-        );
-        assertTrue(
-            deployedToken.hasRole(
-                deployedToken.UNCAPPED_BALANCE_ROLE(),
-                contractOwner
+        shouldHaveMinterRole
+            ? assertTrue(
+                deployedToken.hasRole(
+                    deployedToken.MINTER_ROLE(),
+                    contractOwner
+                )
             )
-        );
-        assertTrue(
-            deployedToken.hasRole(
-                deployedToken.NON_TRANSFERABLE_BYPASS_ROLE(),
-                contractOwner
+            : assertFalse(
+                deployedToken.hasRole(
+                    deployedToken.MINTER_ROLE(),
+                    contractOwner
+                )
+            );
+        shouldHaveUncappedRole
+            ? assertTrue(
+                deployedToken.hasRole(
+                    deployedToken.UNCAPPED_ROLE(),
+                    contractOwner
+                )
             )
-        );
+            : assertFalse(
+                deployedToken.hasRole(
+                    deployedToken.UNCAPPED_ROLE(),
+                    contractOwner
+                )
+            );
+        shouldHaveNonTransferableBypassRole
+            ? assertTrue(
+                deployedToken.hasRole(
+                    deployedToken.NON_TRANSFERABLE_BYPASS_ROLE(),
+                    contractOwner
+                )
+            )
+            : assertFalse(
+                deployedToken.hasRole(
+                    deployedToken.NON_TRANSFERABLE_BYPASS_ROLE(),
+                    contractOwner
+                )
+            );
 
         if (shouldHaveRevokerRole) {
             assertTrue(
@@ -240,6 +267,9 @@ contract LSP7CustomizableTokenTest is Test {
         _assertOwnerFeatureRoles({
             deployedToken: token,
             contractOwner: owner,
+            shouldHaveMinterRole: true,
+            shouldHaveUncappedRole: true,
+            shouldHaveNonTransferableBypassRole: true,
             shouldHaveRevokerRole: true
         });
 
@@ -255,6 +285,9 @@ contract LSP7CustomizableTokenTest is Test {
         _assertOwnerFeatureRoles({
             deployedToken: nonRevokableToken,
             contractOwner: owner,
+            shouldHaveMinterRole: false,
+            shouldHaveUncappedRole: false,
+            shouldHaveNonTransferableBypassRole: true,
             shouldHaveRevokerRole: false
         });
 
@@ -279,6 +312,9 @@ contract LSP7CustomizableTokenTest is Test {
         _assertOwnerFeatureRoles({
             deployedToken: lockedToken,
             contractOwner: owner,
+            shouldHaveMinterRole: true,
+            shouldHaveUncappedRole: false,
+            shouldHaveNonTransferableBypassRole: true,
             shouldHaveRevokerRole: true
         });
 
@@ -789,6 +825,9 @@ contract LSP7CustomizableTokenTest is Test {
         _assertOwnerFeatureRoles({
             deployedToken: nonTransferableToken,
             contractOwner: owner,
+            shouldHaveMinterRole: true,
+            shouldHaveUncappedRole: false,
+            shouldHaveNonTransferableBypassRole: true,
             shouldHaveRevokerRole: true
         });
 

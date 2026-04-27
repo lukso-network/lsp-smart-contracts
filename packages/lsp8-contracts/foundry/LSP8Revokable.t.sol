@@ -115,6 +115,59 @@ contract LSP8RevokableTest is Test {
         assertTrue(lsp8Revokable.isRevokable());
     }
 
+    function test_DeployWithoutRevokableFeatureDoesNotGrantRevokerRoleToOwner()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+        bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
+
+        MockLSP8Revokable tokenContract = new MockLSP8Revokable(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            tokenIdFormat,
+            false // isRevokable
+        );
+
+        assertFalse(tokenContract.hasRole(revokerRole, contractOwner));
+        assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 1);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+    }
+
+    function test_DeployWithRevokableFeatureGrantsRevokerRoleToOwnerAndEmitsRoleGranted()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+        bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
+
+        vm.expectEmit(true, true, true, true);
+        emit IAccessControl.RoleGranted(
+            revokerRole,
+            contractOwner,
+            address(this)
+        );
+        MockLSP8Revokable tokenContract = new MockLSP8Revokable(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            tokenIdFormat,
+            true // isRevokable
+        );
+
+        assertTrue(tokenContract.hasRole(revokerRole, contractOwner));
+        assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 2);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+        assertEq(ownerRoles[1], revokerRole);
+    }
+
     function test_ConstructorGrantsRevokerRoleToOwnerWhenRevokable() public {
         bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
 

@@ -64,13 +64,16 @@ abstract contract LSP7CappedBalanceInitAbstract is
     }
 
     /// @notice Unchained initializer for the token balance cap.
-    /// @dev Sets the balance cap value.
-    /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
+    /// @dev Sets the balance cap. If set, grants the initial uncapped balance role exemption to the contract owner.
+    /// @param tokenBalanceCap_ The maximum balance allowed per token holder (in wei). Set to 0 to disable.
     function __LSP7CappedBalance_init_unchained(
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
         _tokenBalanceCap = tokenBalanceCap_;
-        _grantRole(UNCAPPED_BALANCE_ROLE, owner());
+
+        if (tokenBalanceCap_ != 0) {
+            _grantRole(UNCAPPED_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP7CappedBalance

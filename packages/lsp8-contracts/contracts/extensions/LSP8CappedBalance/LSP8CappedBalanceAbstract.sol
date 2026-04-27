@@ -35,11 +35,14 @@ abstract contract LSP8CappedBalanceAbstract is
         0x975773d1e0a917a74b57f36a377f439ffff6271648aebdbff75a52ab58eb7bad;
 
     /// @notice Initializes the contract with a token balance cap.
-    /// @dev Sets the immutable balance cap and grants the initial uncapped-role exemptions.
-    /// @param tokenBalanceCap_ The maximum number of NFTs per address, 0 to disable.
+    /// @dev Sets the immutable balance cap. If set, grants the initial uncapped balance role exemption to the contract owner.
+    /// @param tokenBalanceCap_ The maximum number of NFTs allowed per address. Set to 0 to disable.
     constructor(uint256 tokenBalanceCap_) {
         _TOKEN_BALANCE_CAP = tokenBalanceCap_;
-        _grantRole(UNCAPPED_BALANCE_ROLE, owner());
+
+        if (tokenBalanceCap_ != 0) {
+            _grantRole(UNCAPPED_BALANCE_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP8CappedBalance

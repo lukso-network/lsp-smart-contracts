@@ -4,6 +4,11 @@ pragma solidity ^0.8.22;
 // test
 import {Test} from "forge-std/Test.sol";
 
+// interfaces
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+
 // modules
 import {
     LSP7CappedBalanceAbstract
@@ -129,6 +134,67 @@ contract LSP7CappedBalanceTest is Test {
             lsp7CappedBalance.hasRole(uncappedBalanceRole, nonAllowlistedUser),
             "Non allowlisted user should not have uncapped balance role"
         );
+    }
+
+    function test_DeployWithoutCappedBalanceFeatureDoesNotGrantUncappedRoleToOwner()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        MockLSP7CappedBalance tokenContract = new MockLSP7CappedBalance(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            isNonDivisible,
+            0 // tokenBalanceCap disabled
+        );
+
+        assertFalse(tokenContract.hasRole(uncappedBalanceRole, contractOwner));
+        assertTrue(
+            tokenContract.hasRole(
+                tokenContract.DEFAULT_ADMIN_ROLE(),
+                contractOwner
+            )
+        );
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 1);
+        assertEq(ownerRoles[0], tokenContract.DEFAULT_ADMIN_ROLE());
+    }
+
+    function test_DeployWithCappedBalanceFeatureGrantsUncappedRoleToOwnerAndEmitsRoleGranted()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        vm.expectEmit(true, true, true, true);
+        emit IAccessControl.RoleGranted(
+            uncappedBalanceRole,
+            contractOwner,
+            address(this)
+        );
+        MockLSP7CappedBalance tokenContract = new MockLSP7CappedBalance(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            isNonDivisible,
+            tokenBalanceCap
+        );
+
+        assertTrue(tokenContract.hasRole(uncappedBalanceRole, contractOwner));
+        assertTrue(
+            tokenContract.hasRole(
+                tokenContract.DEFAULT_ADMIN_ROLE(),
+                contractOwner
+            )
+        );
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 2);
+        assertEq(ownerRoles[0], tokenContract.DEFAULT_ADMIN_ROLE());
+        assertEq(ownerRoles[1], uncappedBalanceRole);
     }
 
     // Test tokenBalanceCap function

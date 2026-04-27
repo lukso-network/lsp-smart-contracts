@@ -93,6 +93,67 @@ contract LSP7RevokableInitTest is Test {
         assertTrue(token.isRevokable());
     }
 
+    function test_DeployWithoutRevokableFeatureDoesNotGrantRevokerRoleToOwner()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+        MockLSP7RevokableInit disabledImplementation = new MockLSP7RevokableInit();
+        bytes32 revokerRole = disabledImplementation.REVOKER_ROLE();
+        bytes memory initData = abi.encodeCall(
+            MockLSP7RevokableInit.initialize,
+            (contractOwner, false)
+        );
+
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(disabledImplementation),
+            initData
+        );
+        MockLSP7RevokableInit tokenContract = MockLSP7RevokableInit(
+            payable(address(proxy))
+        );
+
+        assertFalse(tokenContract.hasRole(revokerRole, contractOwner));
+        assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 1);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+    }
+
+    function test_DeployWithRevokableFeatureGrantsRevokerRoleToOwnerAndEmitsRoleGranted()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+        MockLSP7RevokableInit enabledImplementation = new MockLSP7RevokableInit();
+        bytes32 revokerRole = enabledImplementation.REVOKER_ROLE();
+        bytes memory initData = abi.encodeCall(
+            MockLSP7RevokableInit.initialize,
+            (contractOwner, true)
+        );
+
+        vm.expectEmit(true, true, true, true);
+        emit IAccessControl.RoleGranted(
+            revokerRole,
+            contractOwner,
+            address(this)
+        );
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(enabledImplementation),
+            initData
+        );
+        MockLSP7RevokableInit tokenContract = MockLSP7RevokableInit(
+            payable(address(proxy))
+        );
+
+        assertTrue(tokenContract.hasRole(revokerRole, contractOwner));
+        assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 2);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+        assertEq(ownerRoles[1], revokerRole);
+    }
+
     function test_InitializeEmitsRoleGrantedForOwnerWhenRevokable() public {
         MockLSP7RevokableInit enabledImplementation = new MockLSP7RevokableInit();
         bytes32 revokerRole = enabledImplementation.REVOKER_ROLE();

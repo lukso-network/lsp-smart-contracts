@@ -38,6 +38,9 @@ abstract contract LSP8NonTransferableAbstract is
     /// @inheritdoc ILSP8NonTransferable
     uint256 public transferLockEnd;
 
+    /// @inheritdoc ILSP8NonTransferable
+    bool public transferLockEnabled;
+
     /// @notice Initializes the contract with lock period.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
     /// @param transferLockEnd_ The end timestamp of the transfer lock period, 0 to disable.
@@ -48,6 +51,7 @@ abstract contract LSP8NonTransferableAbstract is
         );
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
+        transferLockEnabled = true;
 
         emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
         _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, owner());
@@ -69,21 +73,27 @@ abstract contract LSP8NonTransferableAbstract is
 
     /// @inheritdoc ILSP8NonTransferable
     function isTransferable() public view virtual override returns (bool) {
-        bool isTransferLockStartDisabled = transferLockStart == 0;
-        bool isTransferLockEndDisabled = transferLockEnd == 0;
+        if (!transferLockEnabled) return true;
 
-        if (isTransferLockStartDisabled && isTransferLockEndDisabled) {
+        bool isTransferLockStartEnabled = transferLockStart != 0;
+        bool isTransferLockEndEnabled = transferLockEnd != 0;
+
+        // If both lock periods are disabled, the token is transferable
+        if (!isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return true;
         }
 
-        if (isTransferLockStartDisabled && !isTransferLockEndDisabled) {
+        // If the token is non-transferable up to a certain point in time, check if we have passed this period
+        if (!isTransferLockStartEnabled && isTransferLockEndEnabled) {
             return transferLockEnd < block.timestamp;
         }
 
-        if (!isTransferLockStartDisabled && isTransferLockEndDisabled) {
+        // If the token becomes non-transferable starting at a specific point in time, check if we have reached this lock starting period
+        if (isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return transferLockStart > block.timestamp;
         }
 
+        // This last case checks if we are within the transfer lock period
         return
             transferLockStart > block.timestamp ||
             transferLockEnd < block.timestamp;
@@ -91,11 +101,9 @@ abstract contract LSP8NonTransferableAbstract is
 
     /// @inheritdoc ILSP8NonTransferable
     function makeTransferable() public virtual override onlyOwner {
-        require(
-            transferLockStart != 0 || transferLockEnd != 0,
-            LSP8TokenAlreadyTransferable()
-        );
+        require(transferLockEnabled, LSP8TokenAlreadyTransferable());
 
+        transferLockEnabled = false;
         transferLockStart = 0;
         transferLockEnd = 0;
 
@@ -107,22 +115,15 @@ abstract contract LSP8NonTransferableAbstract is
         uint256 newTransferLockStart,
         uint256 newTransferLockEnd
     ) public virtual override onlyOwner {
+        require(transferLockEnabled, LSP8CannotUpdateTransferLockPeriod());
+
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
+        // Allow to make the token always non-transferable, or ensure the end period for locking transfers is always later than the starting period
         require(
             newTransferLockEnd == 0 ||
                 newTransferLockEnd >= newTransferLockStart,
             LSP8InvalidTransferLockPeriod()
-        );
-
-        require(
-            newTransferLockStart == 0 || block.timestamp < transferLockStart,
-            LSP8CannotUpdateTransferLockPeriod()
-        );
-
-        require(
-            newTransferLockEnd == 0 || block.timestamp < transferLockEnd,
-            LSP8CannotUpdateTransferLockPeriod()
         );
 
         transferLockStart = newTransferLockStart;

@@ -70,7 +70,10 @@ abstract contract LSP7MintableInitAbstract is
     ) internal virtual onlyInitializing {
         isMintable = mintable_;
         emit MintingStatusChanged({enabled: mintable_});
-        _grantRole(MINTER_ROLE, owner());
+
+        if (mintable_) {
+            _grantRole(MINTER_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP7Mintable
