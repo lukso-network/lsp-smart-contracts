@@ -842,6 +842,66 @@ contract LSP7NonTransferableTest is Test {
         assertTrue(lsp7TransferableWithLockPeriod.transferLockEnabled());
     }
 
+    function test_TransferLock_WithZeroStart_IsLockedImmediatelyUntilEnd()
+        public
+    {
+        // transferLockStart = 0 and transferLockEnd > 0:
+        // token must be non-transferable immediately until end.
+        MockLSP7NonTransferable token = new MockLSP7NonTransferable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            0,
+            1_000
+        );
+
+        token.mint(randomCaller, 100, true, "");
+
+        vm.warp(999);
+        assertFalse(token.isTransferable());
+        vm.prank(randomCaller);
+        vm.expectRevert(LSP7TransferDisabled.selector);
+        token.transfer(randomCaller, recipient, 10, true, "");
+
+        vm.warp(1_001);
+        assertTrue(token.isTransferable());
+    }
+
+    function test_TransferLock_WithZeroEnd_BecomesLockedFromStartForever()
+        public
+    {
+        // transferLockStart > 0 and transferLockEnd = 0:
+        // token becomes non-transferable from start onward (no end).
+        MockLSP7NonTransferable token = new MockLSP7NonTransferable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            1_000,
+            0
+        );
+
+        token.mint(randomCaller, 100, true, "");
+
+        vm.warp(999);
+        assertTrue(token.isTransferable());
+
+        vm.warp(1_000);
+        assertFalse(token.isTransferable());
+        vm.prank(randomCaller);
+        vm.expectRevert(LSP7TransferDisabled.selector);
+        token.transfer(randomCaller, recipient, 10, true, "");
+
+        vm.warp(10_000);
+        assertFalse(token.isTransferable());
+        vm.prank(randomCaller);
+        vm.expectRevert(LSP7TransferDisabled.selector);
+        token.transfer(randomCaller, recipient, 10, true, "");
+    }
+
     function test_TransferWithZeroStart() public {
         // Create a non-transferable token with zero start
         MockLSP7NonTransferable token = new MockLSP7NonTransferable(

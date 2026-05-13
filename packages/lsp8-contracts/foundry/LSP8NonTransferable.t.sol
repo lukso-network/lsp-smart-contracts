@@ -698,6 +698,7 @@ contract LSP8NonTransferableTest is Test {
 
     function test_TransferWithZeroStart() public {
         // Create a token with zero start
+        bytes32 tokenId = bytes32(uint256(1001));
         MockLSP8NonTransferable token = new MockLSP8NonTransferable(
             name,
             symbol,
@@ -708,15 +709,21 @@ contract LSP8NonTransferableTest is Test {
             1000 // transferLockEnd = 1000 (restricted until then)
         );
 
-        vm.warp(500); // Before lock end time
-        assertFalse(token.isTransferable()); // Should be locked before end time
+        token.mint(randomCaller, tokenId, true, "");
 
-        vm.warp(1500); // After lock end time
+        vm.warp(999); // Before lock end time
+        assertFalse(token.isTransferable()); // Should be locked before end time
+        vm.prank(randomCaller);
+        vm.expectRevert(LSP8TransferDisabled.selector);
+        token.transfer(randomCaller, recipient, tokenId, true, "");
+
+        vm.warp(1001); // After lock end time
         assertTrue(token.isTransferable()); // Should be unlocked after end time
     }
 
     function test_TransferWithZeroEnd() public {
         // Create a token with zero end
+        bytes32 tokenId = bytes32(uint256(1002));
         MockLSP8NonTransferable token = new MockLSP8NonTransferable(
             name,
             symbol,
@@ -727,11 +734,22 @@ contract LSP8NonTransferableTest is Test {
             0 // transferLockEnd = 0 (no restriction after start)
         );
 
-        vm.warp(500); // Before lock start time
+        token.mint(randomCaller, tokenId, true, "");
+
+        vm.warp(999); // Before lock start time
         assertTrue(token.isTransferable()); // Should be allowed before start time
 
-        vm.warp(1500); // After lock start time
+        vm.warp(1000); // At lock start time
         assertFalse(token.isTransferable()); // Should be restricted after start time
+        vm.prank(randomCaller);
+        vm.expectRevert(LSP8TransferDisabled.selector);
+        token.transfer(randomCaller, recipient, tokenId, true, "");
+
+        vm.warp(10_000); // Later, should still be locked
+        assertFalse(token.isTransferable());
+        vm.prank(randomCaller);
+        vm.expectRevert(LSP8TransferDisabled.selector);
+        token.transfer(randomCaller, recipient, tokenId, true, "");
     }
 
     function test_NonOwnerCannotUpdateLockPeriod() public {
