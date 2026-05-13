@@ -14,7 +14,9 @@ import {
     LSP7CappedParams,
     LSP7RevokableParams
 } from "../contracts/presets/LSP7CustomizableTokenConstants.sol";
-import {LSP7TransferDisabled} from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableErrors.sol";
+import {
+    LSP7TransferDisabled
+} from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableErrors.sol";
 import {
     _LSP4_TOKEN_TYPE_TOKEN
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
@@ -25,7 +27,9 @@ contract LSP7CustomizableTokenInitTest is Test {
     address internal user2 = vm.addr(102);
     address internal revoker1 = vm.addr(104);
 
-    function test_InitImplementationCannotBeInitializedAfterDeployment() public {
+    function test_InitImplementationCannotBeInitializedAfterDeployment()
+        public
+    {
         LSP7CustomizableTokenInit implementation = new LSP7CustomizableTokenInit();
 
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
@@ -81,17 +85,66 @@ contract LSP7CustomizableTokenInitTest is Test {
         );
     }
 
-    function test_CloneInitializeMintsToOwnerAndTransferWorksWhenUnlocked() public {
-        LSP7MintableParams memory mintableParams =
-            LSP7MintableParams({isMintable: true, initialMintAmount: 500});
-        LSP7NonTransferableParams memory nonTransferableParams =
-            LSP7NonTransferableParams({transferLockStart: 0, transferLockEnd: 0});
-        LSP7CappedParams memory cappedParams =
-            LSP7CappedParams({tokenBalanceCap: 0, tokenSupplyCap: 0});
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: true});
+    function test_InitializeNonMintableTokenButPreMintTokens() public {
+        uint256 preMintAmount = 1_000_000;
+
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
+            isMintable: false,
+            initialMintAmount: preMintAmount
+        });
+
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: 0
+        });
+
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
+            isRevokable: false
+        });
+
+        LSP7CustomizableTokenInit nonMintableToken = _deployClone(
+            mintableParams,
+            nonTransferableParams,
+            cappedParams,
+            revokableParams
+        );
+
+        assertEq(nonMintableToken.balanceOf(owner), preMintAmount);
+        assertEq(nonMintableToken.totalSupply(), preMintAmount);
+        assertFalse(nonMintableToken.isMintable());
+    }
+
+    function test_CloneInitializeMintsToOwnerAndTransferWorksWhenUnlocked()
+        public
+    {
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
+            isMintable: true,
+            initialMintAmount: 500
+        });
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: 0
+        });
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
+            isRevokable: true
+        });
 
         LSP7CustomizableTokenInit token = _deployClone(
-            mintableParams, nonTransferableParams, cappedParams, revokableParams
+            mintableParams,
+            nonTransferableParams,
+            cappedParams,
+            revokableParams
         );
 
         assertEq(token.balanceOf(owner), 500);
@@ -102,18 +155,28 @@ contract LSP7CustomizableTokenInitTest is Test {
     }
 
     function test_TransferDisabledWhenNonTransferableViaEip1167Clone() public {
-        LSP7MintableParams memory mintableParams =
-            LSP7MintableParams({isMintable: true, initialMintAmount: 0});
-        LSP7NonTransferableParams memory nonTransferableParams = LSP7NonTransferableParams({
-            transferLockStart: 0,
-            transferLockEnd: type(uint256).max
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
+            isMintable: true,
+            initialMintAmount: 0
         });
-        LSP7CappedParams memory cappedParams =
-            LSP7CappedParams({tokenBalanceCap: 0, tokenSupplyCap: 0});
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: true});
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: type(uint256).max
+            });
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: 0
+        });
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
+            isRevokable: true
+        });
 
         LSP7CustomizableTokenInit token = _deployClone(
-            mintableParams, nonTransferableParams, cappedParams, revokableParams
+            mintableParams,
+            nonTransferableParams,
+            cappedParams,
+            revokableParams
         );
 
         token.mint(user1, 100, true, "");
@@ -123,22 +186,34 @@ contract LSP7CustomizableTokenInitTest is Test {
         token.transfer(user1, user2, 10, true, "");
     }
 
-    function test_TransferRevertsDuringBoundedLockWindowViaEip1167Clone() public {
+    function test_TransferRevertsDuringBoundedLockWindowViaEip1167Clone()
+        public
+    {
         uint256 lockStart = block.timestamp + 1 days;
         uint256 lockEnd = lockStart + 1 days;
 
-        LSP7MintableParams memory mintableParams =
-            LSP7MintableParams({isMintable: true, initialMintAmount: 0});
-        LSP7NonTransferableParams memory nonTransferableParams = LSP7NonTransferableParams({
-            transferLockStart: lockStart,
-            transferLockEnd: lockEnd
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
+            isMintable: true,
+            initialMintAmount: 0
         });
-        LSP7CappedParams memory cappedParams =
-            LSP7CappedParams({tokenBalanceCap: 0, tokenSupplyCap: 0});
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: true});
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
+                transferLockStart: lockStart,
+                transferLockEnd: lockEnd
+            });
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: 0
+        });
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
+            isRevokable: true
+        });
 
         LSP7CustomizableTokenInit token = _deployClone(
-            mintableParams, nonTransferableParams, cappedParams, revokableParams
+            mintableParams,
+            nonTransferableParams,
+            cappedParams,
+            revokableParams
         );
 
         token.mint(user1, 50, true, "");
@@ -162,18 +237,28 @@ contract LSP7CustomizableTokenInitTest is Test {
     function test_RevokerCannotTransferDuringTransferLockWithoutBypassRoleViaEip1167Clone()
         public
     {
-        LSP7MintableParams memory mintableParams =
-            LSP7MintableParams({isMintable: true, initialMintAmount: 0});
-        LSP7NonTransferableParams memory nonTransferableParams = LSP7NonTransferableParams({
-            transferLockStart: 0,
-            transferLockEnd: type(uint256).max
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
+            isMintable: true,
+            initialMintAmount: 0
         });
-        LSP7CappedParams memory cappedParams =
-            LSP7CappedParams({tokenBalanceCap: 0, tokenSupplyCap: 0});
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: true});
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: type(uint256).max
+            });
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: 0
+        });
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
+            isRevokable: true
+        });
 
         LSP7CustomizableTokenInit token = _deployClone(
-            mintableParams, nonTransferableParams, cappedParams, revokableParams
+            mintableParams,
+            nonTransferableParams,
+            cappedParams,
+            revokableParams
         );
 
         token.grantRole(token.REVOKER_ROLE(), revoker1);

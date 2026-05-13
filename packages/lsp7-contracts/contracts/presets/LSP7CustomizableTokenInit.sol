@@ -127,7 +127,10 @@ contract LSP7CustomizableTokenInit is
         __LSP7Revokable_init_unchained(revokableParams.isRevokable);
 
         if (mintableParams.initialMintAmount > 0) {
-            _mint(newOwner_, mintableParams.initialMintAmount, true, "");
+            _initialMint({
+                to: newOwner_,
+                amount: mintableParams.initialMintAmount
+            });
         }
     }
 
@@ -158,7 +161,9 @@ contract LSP7CustomizableTokenInit is
     }
 
     /// @inheritdoc LSP7MintableInitAbstract
-    /// @dev Relies on {LSP7CappedSupplyInitAbstract} for supply cap enforcement.
+    /// @dev Overriden function to allow minting only if:
+    /// - the minting feature is enabled, from {LSP7MintableInitAbstract}
+    /// - the total amount of tokens does not exceed the capped supply after minting, from {LSP7CappedSupplyInitAbstract}
     function _mint(
         address to,
         uint256 amount,
@@ -176,7 +181,7 @@ contract LSP7CustomizableTokenInit is
         require(isMintable, LSP7MintDisabled());
 
         _tokenSupplyCapCheck(to, amount, force, data);
-        super._mint(to, amount, force, data);
+        LSP7DigitalAssetInitAbstract._mint(to, amount, force, data);
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
@@ -236,5 +241,12 @@ contract LSP7CustomizableTokenInit is
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
+    }
+
+    /// @dev Mint initial tokens without enforcing check if the token contract is mintable or not.
+    /// Relies on {LSP7CappedSupply} for supply cap enforcement.
+    function _initialMint(address to, uint256 amount) private {
+        _tokenSupplyCapCheck(to, amount, true, "");
+        LSP7DigitalAssetInitAbstract._mint(to, amount, true, "");
     }
 }
