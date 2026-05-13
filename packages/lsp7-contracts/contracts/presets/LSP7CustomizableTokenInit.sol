@@ -133,7 +133,7 @@ contract LSP7CustomizableTokenInit is
 
     /// @inheritdoc LSP7CappedSupplyInitAbstract
     /// @notice Returns the token supply cap.
-    /// @dev If minting is enabled, returns the configured supply cap defining the maximum tokens that can be minted.
+    /// @dev If minting is enabled, returns the configured supply cap defining the maximum amount of tokens that can be minted.
     /// If minting is disabled, returns the current total supply as the effective cap (no more tokens can be created).
     function tokenSupplyCap() public view virtual override returns (uint256) {
         return isMintable ? super.tokenSupplyCap() : totalSupply();

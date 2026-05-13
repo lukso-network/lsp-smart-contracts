@@ -107,6 +107,9 @@ contract LSP8CustomizableToken is
     }
 
     /// @inheritdoc LSP8CappedSupplyAbstract
+    /// @notice Returns the token supply cap.
+    /// @dev If minting is enabled, returns the configured supply cap defining the maximum number of NFTs that can be minted.
+    /// If minting is disabled, returns the current total supply as the effective cap (no more NFTs can be created).
     function tokenSupplyCap() public view virtual override returns (uint256) {
         return isMintable ? super.tokenSupplyCap() : totalSupply();
     }
