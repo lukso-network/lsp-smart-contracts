@@ -40,6 +40,9 @@ import {
 import {
     LSP8MintDisabled
 } from "../extensions/LSP8Mintable/LSP8MintableErrors.sol";
+import {
+    LSP8CappedSupplyCannotMintOverCap
+} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
 
 /// @title LSP8CustomizableToken
 /// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions.
@@ -96,14 +99,10 @@ contract LSP8CustomizableToken is
         )
         LSP8RevokableAbstract(revokableParams.isRevokable)
     {
-        // Mint initial tokens
-        for (
-            uint256 ii = 0;
-            ii < mintableParams.initialMintTokenIds.length;
-            ++ii
-        ) {
-            _mint(newOwner_, mintableParams.initialMintTokenIds[ii], true, "");
-        }
+        _initialMint({
+            to: newOwner_,
+            initialMintTokenIds: mintableParams.initialMintTokenIds
+        });
     }
 
     /// @inheritdoc LSP8CappedSupplyAbstract
@@ -133,7 +132,9 @@ contract LSP8CustomizableToken is
     }
 
     /// @inheritdoc LSP8MintableAbstract
-    /// @dev Relies on {LSP8CappedSupply} for supply cap enforcement.
+    /// @dev Overriden function to allow minting only if:
+    /// - the minting feature is enabled, from {LSP8Mintable}
+    /// - the total number of NFTs does not exceed the capped supply after minting, from {LSP8CappedSupply}
     function _mint(
         address to,
         bytes32 tokenId,
@@ -151,7 +152,6 @@ contract LSP8CustomizableToken is
         require(isMintable, LSP8MintDisabled());
 
         _tokenSupplyCapCheck(to, tokenId, force, data);
-
         LSP8IdentifiableDigitalAsset._mint(to, tokenId, force, data);
     }
 
@@ -194,6 +194,30 @@ contract LSP8CustomizableToken is
         )
     {
         super._transferOwnership(newOwner);
+    }
+
+    /// @dev Mint initial NFTs without enforcing check if the token contract is mintable or not.
+    /// Relies on {LSP8CappedSupply} for supply cap enforcement.
+    function _initialMint(
+        address to,
+        bytes32[] memory initialMintTokenIds
+    ) private {
+        bool exceedsSupplyCap = (totalSupply() + initialMintTokenIds.length) >
+            tokenSupplyCap();
+
+        require(
+            tokenSupplyCap() == 0 || !exceedsSupplyCap,
+            LSP8CappedSupplyCannotMintOverCap()
+        );
+
+        for (uint256 ii = 0; ii < initialMintTokenIds.length; ++ii) {
+            LSP8IdentifiableDigitalAsset._mint(
+                to,
+                initialMintTokenIds[ii],
+                true,
+                ""
+            );
+        }
     }
 
     function supportsInterface(

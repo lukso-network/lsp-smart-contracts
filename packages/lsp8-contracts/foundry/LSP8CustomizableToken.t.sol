@@ -317,6 +317,32 @@ contract LSP8CustomizableTokenTest is Test {
         assertEq(zeroMintToken.totalSupply(), 0, "Total supply should be zero");
     }
 
+    /// @dev LSP8 mints one NFT per id; use a moderate count so the test stays within practical gas (LSP7 uses one _mint of 1_000_000).
+    function _preMintTokenIds(uint256 count) internal pure returns (bytes32[] memory ids) {
+        ids = new bytes32[](count);
+        for (uint256 i = 0; i < count; ++i) {
+            ids[i] = bytes32(i + 1);
+        }
+    }
+
+    function test_DeployNonMintableTokenButPreMintTokens() public {
+        uint256 preMintAmount = 1_000;
+
+        LSP8CustomizableToken nonMintableToken = _deployToken({
+            mintable_: false,
+            initialTokenIds_: _preMintTokenIds(preMintAmount),
+            tokenBalanceCap_: 0,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            revokable_: false
+        });
+
+        assertEq(nonMintableToken.balanceOf(owner), preMintAmount);
+        assertEq(nonMintableToken.totalSupply(), preMintAmount);
+        assertFalse(nonMintableToken.isMintable());
+    }
+
     function test_ConstructorRevertsWithInvalidLockPeriod() public {
         LSP8MintableParams memory mintableParams =
             LSP8MintableParams({isMintable: isMintable, initialMintTokenIds: initialTokenIds});

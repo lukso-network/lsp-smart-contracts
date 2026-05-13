@@ -193,6 +193,13 @@ contract LSP7CustomizableToken is
         super._transferOwnership(newOwner);
     }
 
+    /// @dev Mint initial tokens without enforcing check if the token contract is mintable or not.
+    /// Relies on {LSP7CappedSupply} for supply cap enforcement.
+    function _initialMint(address to, uint256 amount) private {
+        _tokenSupplyCapCheck(to, amount, true, "");
+        LSP7DigitalAsset._mint(to, amount, true, "");
+    }
+
     function supportsInterface(
         bytes4 interfaceId
     )
@@ -209,12 +216,5 @@ contract LSP7CustomizableToken is
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
-    }
-
-    /// @dev Mint initial tokens without enforcing check if the token contract is mintable or not.
-    /// Relies on {LSP7CappedSupply} for supply cap enforcement.
-    function _initialMint(address to, uint256 amount) private {
-        _tokenSupplyCapCheck(to, amount, true, "");
-        LSP7DigitalAsset._mint(to, amount, true, "");
     }
 }

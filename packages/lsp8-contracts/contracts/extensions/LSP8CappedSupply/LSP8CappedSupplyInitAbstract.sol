@@ -69,7 +69,7 @@ abstract contract LSP8CappedSupplyInitAbstract is
         bytes memory /* data */
     ) internal virtual {
         require(
-            tokenSupplyCap() == 0 || totalSupply() + 1 <= tokenSupplyCap(),
+            tokenSupplyCap() == 0 || (totalSupply() + 1) <= tokenSupplyCap(),
             LSP8CappedSupplyCannotMintOverCap()
         );
     }
@@ -82,7 +82,6 @@ abstract contract LSP8CappedSupplyInitAbstract is
         bytes memory data
     ) internal virtual override {
         _tokenSupplyCapCheck(to, tokenId, force, data);
-
         super._mint(to, tokenId, force, data);
     }
 }

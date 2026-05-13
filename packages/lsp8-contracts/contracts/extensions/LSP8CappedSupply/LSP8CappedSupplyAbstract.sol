@@ -41,7 +41,7 @@ abstract contract LSP8CappedSupplyAbstract is
         bytes memory /* data */
     ) internal virtual {
         require(
-            tokenSupplyCap() == 0 || totalSupply() + 1 <= tokenSupplyCap(),
+            tokenSupplyCap() == 0 || (totalSupply() + 1) <= tokenSupplyCap(),
             LSP8CappedSupplyCannotMintOverCap()
         );
     }

@@ -16,6 +16,9 @@ import {
 } from "../contracts/presets/LSP8CustomizableTokenConstants.sol";
 import {LSP8TransferDisabled} from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableErrors.sol";
 import {
+    LSP8CappedSupplyCannotMintOverCap
+} from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
+import {
     _LSP4_TOKEN_TYPE_NFT
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
@@ -66,6 +69,85 @@ contract LSP8CustomizableTokenInitTest is Test {
             cappedParams,
             revokableParams
         );
+    }
+
+    function test_InitializeRevertsIfInitialMintExceedsSupplyCap() public {
+        uint256 supplyCap = 100;
+
+        bytes32[] memory tooManyTokenIds = new bytes32[](supplyCap + 1);
+        for (uint256 i = 0; i < supplyCap + 1; ++i) {
+            tooManyTokenIds[i] = bytes32(uint256(i + 1));
+        }
+
+        LSP8CustomizableTokenInit implementation = new LSP8CustomizableTokenInit();
+        address instance = Clones.clone(address(implementation));
+        LSP8CustomizableTokenInit token = LSP8CustomizableTokenInit(payable(instance));
+
+        LSP8MintableParams memory mintableParams =
+            LSP8MintableParams({isMintable: true, initialMintTokenIds: tooManyTokenIds});
+        LSP8NonTransferableParams memory nonTransferableParams =
+            LSP8NonTransferableParams({transferLockStart: 0, transferLockEnd: 0});
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 5,
+            tokenSupplyCap: supplyCap
+        });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: true});
+
+        vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
+        token.initialize(
+            "Custom NFT",
+            "CNFT",
+            owner,
+            _LSP4_TOKEN_TYPE_NFT,
+            tokenIdFormat,
+            mintableParams,
+            nonTransferableParams,
+            cappedParams,
+            revokableParams
+        );
+    }
+
+    /// @dev LSP8 mints one NFT per id; use a moderate count so the test stays within practical gas (LSP7 uses one _mint of 1_000_000).
+    function _preMintTokenIds(uint256 count) internal pure returns (bytes32[] memory ids) {
+        ids = new bytes32[](count);
+        for (uint256 i = 0; i < count; ++i) {
+            ids[i] = bytes32(i + 1);
+        }
+    }
+
+    function test_InitializeNonMintableTokenButPreMintTokens() public {
+        uint256 preMintAmount = 1_000;
+
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: false,
+            initialMintTokenIds: _preMintTokenIds(preMintAmount)
+        });
+
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: 0
+        });
+
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: false
+        });
+
+        LSP8CustomizableTokenInit nonMintableToken = _deployClone(
+            mintableParams,
+            nonTransferableParams,
+            cappedParams,
+            revokableParams
+        );
+
+        assertEq(nonMintableToken.balanceOf(owner), preMintAmount);
+        assertEq(nonMintableToken.totalSupply(), preMintAmount);
+        assertFalse(nonMintableToken.isMintable());
     }
 
     function _deployClone(

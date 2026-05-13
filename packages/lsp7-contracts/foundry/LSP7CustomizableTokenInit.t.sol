@@ -18,6 +18,9 @@ import {
     LSP7TransferDisabled
 } from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableErrors.sol";
 import {
+    LSP7CappedSupplyCannotMintOverCap
+} from "../contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
+import {
     _LSP4_TOKEN_TYPE_TOKEN
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
@@ -54,6 +57,44 @@ contract LSP7CustomizableTokenInitTest is Test {
             "Custom Token",
             "CT",
             address(this),
+            _LSP4_TOKEN_TYPE_TOKEN,
+            false,
+            mintableParams,
+            nonTransferableParams,
+            cappedParams,
+            revokableParams
+        );
+    }
+
+    function test_InitializeRevertsIfInitialMintExceedsSupplyCap() public {
+        uint256 supplyCap = 5_000;
+
+        LSP7CustomizableTokenInit implementation = new LSP7CustomizableTokenInit();
+        address instance = Clones.clone(address(implementation));
+        LSP7CustomizableTokenInit token = LSP7CustomizableTokenInit(payable(instance));
+
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
+            isMintable: true,
+            initialMintAmount: supplyCap + 1
+        });
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 2_000,
+            tokenSupplyCap: supplyCap
+        });
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
+            isRevokable: true
+        });
+
+        vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
+        token.initialize(
+            "Custom Token",
+            "CT",
+            owner,
             _LSP4_TOKEN_TYPE_TOKEN,
             false,
             mintableParams,
