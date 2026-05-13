@@ -150,6 +150,9 @@ abstract contract LSP8NonTransferableAbstract is
         // Allow minting and burning
         if (from == address(0) || to == address(0)) return;
 
+        // Do not check for addresses exempted from non transferable check
+        if (hasRole(NON_TRANSFERABLE_BYPASS_ROLE, from)) return;
+
         // transferring tokens only if the transferability status is enabled
         require(isTransferable(), LSP8TransferDisabled());
     }
@@ -168,9 +171,7 @@ abstract contract LSP8NonTransferableAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (!hasRole(NON_TRANSFERABLE_BYPASS_ROLE, from)) {
-            _nonTransferableCheck(from, to, tokenId, force, data);
-        }
+        _nonTransferableCheck(from, to, tokenId, force, data);
         super._beforeTokenTransfer(from, to, tokenId, force, data);
     }
 

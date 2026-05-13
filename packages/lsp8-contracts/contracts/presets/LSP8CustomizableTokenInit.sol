@@ -141,6 +141,24 @@ contract LSP8CustomizableTokenInit is
         return isMintable ? super.tokenSupplyCap() : totalSupply();
     }
 
+    /// @dev Override to bypass the non transferable check when revokers revoke users' tokens.
+    function _nonTransferableCheck(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
+        if (
+            msg.sig == this.revoke.selector &&
+            isRevokable() &&
+            hasRole(REVOKER_ROLE, msg.sender) &&
+            (to == owner() || hasRole(REVOKER_ROLE, to))
+        ) return;
+
+        super._nonTransferableCheck(from, to, tokenId, force, data);
+    }
+
     /// @inheritdoc LSP8MintableInitAbstract
     /// @dev Relies on {LSP8CappedSupply} for supply cap enforcement.
     function _mint(
@@ -191,20 +209,7 @@ contract LSP8CustomizableTokenInit is
             LSP8NonTransferableInitAbstract
         )
     {
-        LSP8NonTransferableInitAbstract._beforeTokenTransfer(
-            from,
-            to,
-            tokenId,
-            force,
-            data
-        );
-        LSP8CappedBalanceInitAbstract._beforeTokenTransfer(
-            from,
-            to,
-            tokenId,
-            force,
-            data
-        );
+        super._beforeTokenTransfer(from, to, tokenId, force, data);
     }
 
     function _transferOwnership(

@@ -17,29 +17,19 @@ import {
 import {
     AccessControlUnauthorizedAccount
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
-import {
-    LSP7MintDisabled
-} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
-import {
-    LSP7CappedBalanceExceeded
-} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
+import {LSP7MintDisabled} from "../contracts/extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {LSP7CappedBalanceExceeded} from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
 import {
     LSP7TransferDisabled,
     LSP7CannotUpdateTransferLockPeriod,
     LSP7TokenAlreadyTransferable,
     LSP7InvalidTransferLockPeriod
 } from "../contracts/extensions/LSP7NonTransferable/LSP7NonTransferableErrors.sol";
-import {
-    LSP7CappedSupplyCannotMintOverCap
-} from "../contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
-import {
-    LSP7RevokableFeatureDisabled
-} from "../contracts/extensions/LSP7Revokable/LSP7RevokableErrors.sol";
+import {LSP7CappedSupplyCannotMintOverCap} from "../contracts/extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
+import {LSP7RevokableFeatureDisabled} from "../contracts/extensions/LSP7Revokable/LSP7RevokableErrors.sol";
 
 // constants
-import {
-    _LSP4_TOKEN_TYPE_TOKEN
-} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {_LSP4_TOKEN_TYPE_TOKEN} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract LSP7CustomizableTokenTest is Test {
     string name = "Custom Token";
@@ -66,24 +56,15 @@ contract LSP7CustomizableTokenTest is Test {
     LSP7CustomizableToken token;
 
     function setUp() public {
-        LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            isMintable: isMintable,
-            initialMintAmount: initialMintAmount
-        });
+        LSP7MintableParams memory mintableParams =
+            LSP7MintableParams({isMintable: isMintable, initialMintAmount: initialMintAmount});
 
-        LSP7CappedParams memory cappedParams = LSP7CappedParams({
-            tokenBalanceCap: tokenBalanceCap,
-            tokenSupplyCap: tokenSupplyCap
-        });
+        LSP7CappedParams memory cappedParams =
+            LSP7CappedParams({tokenBalanceCap: tokenBalanceCap, tokenSupplyCap: tokenSupplyCap});
 
-        LSP7NonTransferableParams
-            memory nonTransferableParams = LSP7NonTransferableParams({
-                transferLockStart: transferLockStart,
-                transferLockEnd: transferLockEnd
-            });
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
-            isRevokable: isRevokable
-        });
+        LSP7NonTransferableParams memory nonTransferableParams =
+            LSP7NonTransferableParams({transferLockStart: transferLockStart, transferLockEnd: transferLockEnd});
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: isRevokable});
 
         token = new LSP7CustomizableToken(
             name,
@@ -108,24 +89,16 @@ contract LSP7CustomizableTokenTest is Test {
         bool isRevokable_
     ) internal returns (LSP7CustomizableToken deployedToken) {
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            isMintable: isMintable_,
-            initialMintAmount: initialMintAmount_
+            isMintable: isMintable_, initialMintAmount: initialMintAmount_
         });
 
-        LSP7CappedParams memory cappedParams = LSP7CappedParams({
-            tokenBalanceCap: tokenBalanceCap_,
-            tokenSupplyCap: tokenSupplyCap_
-        });
+        LSP7CappedParams memory cappedParams =
+            LSP7CappedParams({tokenBalanceCap: tokenBalanceCap_, tokenSupplyCap: tokenSupplyCap_});
 
-        LSP7NonTransferableParams
-            memory nonTransferableParams = LSP7NonTransferableParams({
-                transferLockStart: transferLockStart_,
-                transferLockEnd: transferLockEnd_
-            });
+        LSP7NonTransferableParams memory nonTransferableParams =
+            LSP7NonTransferableParams({transferLockStart: transferLockStart_, transferLockEnd: transferLockEnd_});
 
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
-            isRevokable: isRevokable_
-        });
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: isRevokable_});
 
         deployedToken = new LSP7CustomizableToken(
             name,
@@ -148,122 +121,76 @@ contract LSP7CustomizableTokenTest is Test {
         bool shouldHaveNonTransferableBypassRole,
         bool shouldHaveRevokerRole
     ) internal {
-        assertTrue(
-            deployedToken.hasRole(
-                deployedToken.DEFAULT_ADMIN_ROLE(),
-                contractOwner
-            )
-        );
+        assertTrue(deployedToken.hasRole(deployedToken.DEFAULT_ADMIN_ROLE(), contractOwner));
         shouldHaveMinterRole
-            ? assertTrue(
-                deployedToken.hasRole(
-                    deployedToken.MINTER_ROLE(),
-                    contractOwner
-                )
-            )
-            : assertFalse(
-                deployedToken.hasRole(
-                    deployedToken.MINTER_ROLE(),
-                    contractOwner
-                )
-            );
+            ? assertTrue(deployedToken.hasRole(deployedToken.MINTER_ROLE(), contractOwner))
+            : assertFalse(deployedToken.hasRole(deployedToken.MINTER_ROLE(), contractOwner));
         shouldHaveUncappedRole
-            ? assertTrue(
-                deployedToken.hasRole(
-                    deployedToken.UNCAPPED_BALANCE_ROLE(),
-                    contractOwner
-                )
-            )
-            : assertFalse(
-                deployedToken.hasRole(
-                    deployedToken.UNCAPPED_BALANCE_ROLE(),
-                    contractOwner
-                )
-            );
+            ? assertTrue(deployedToken.hasRole(deployedToken.UNCAPPED_BALANCE_ROLE(), contractOwner))
+            : assertFalse(deployedToken.hasRole(deployedToken.UNCAPPED_BALANCE_ROLE(), contractOwner));
         shouldHaveNonTransferableBypassRole
-            ? assertTrue(
-                deployedToken.hasRole(
-                    deployedToken.NON_TRANSFERABLE_BYPASS_ROLE(),
-                    contractOwner
-                )
-            )
-            : assertFalse(
-                deployedToken.hasRole(
-                    deployedToken.NON_TRANSFERABLE_BYPASS_ROLE(),
-                    contractOwner
-                )
-            );
+            ? assertTrue(deployedToken.hasRole(deployedToken.NON_TRANSFERABLE_BYPASS_ROLE(), contractOwner))
+            : assertFalse(deployedToken.hasRole(deployedToken.NON_TRANSFERABLE_BYPASS_ROLE(), contractOwner));
 
         if (shouldHaveRevokerRole) {
-            assertTrue(
-                deployedToken.hasRole(
-                    deployedToken.REVOKER_ROLE(),
-                    contractOwner
-                )
-            );
+            assertTrue(deployedToken.hasRole(deployedToken.REVOKER_ROLE(), contractOwner));
         } else {
-            assertFalse(
-                deployedToken.hasRole(
-                    deployedToken.REVOKER_ROLE(),
-                    contractOwner
-                )
-            );
+            assertFalse(deployedToken.hasRole(deployedToken.REVOKER_ROLE(), contractOwner));
         }
+    }
+
+    function _deployRevokableNonTransferableToken(uint256 lockStart, uint256 lockEnd)
+        internal
+        returns (LSP7CustomizableToken deployedToken)
+    {
+        deployedToken = _deployToken({
+            isMintable_: true,
+            initialMintAmount_: 0,
+            tokenBalanceCap_: 0,
+            tokenSupplyCap_: 0,
+            transferLockStart_: lockStart,
+            transferLockEnd_: lockEnd,
+            isRevokable_: true
+        });
+    }
+
+    function _assertRevokeSucceeds(
+        LSP7CustomizableToken deployedToken,
+        address caller,
+        address holder,
+        address recipient
+    ) internal {
+        uint256 revokeAmount = 40;
+
+        deployedToken.mint(holder, 100, true, "");
+
+        vm.prank(caller);
+        deployedToken.revoke(holder, recipient, revokeAmount, "");
+
+        assertEq(deployedToken.balanceOf(holder), 60);
+        assertEq(deployedToken.balanceOf(recipient), revokeAmount);
     }
 
     // Constructor Tests
     function test_ConstructorInitializesCorrectly() public {
-        assertEq(
-            token.balanceOf(owner),
-            initialMintAmount,
-            "Owner should have initial tokens"
-        );
-        assertEq(
-            token.totalSupply(),
-            initialMintAmount,
-            "Total supply should match initial mint"
-        );
-        assertEq(
-            token.tokenBalanceCap(),
-            tokenBalanceCap,
-            "Balance cap should be set"
-        );
-        assertEq(
-            token.isMintable(),
-            isMintable,
-            "Mintable status should be set"
-        );
+        assertEq(token.balanceOf(owner), initialMintAmount, "Owner should have initial tokens");
+        assertEq(token.totalSupply(), initialMintAmount, "Total supply should match initial mint");
+        assertEq(token.tokenBalanceCap(), tokenBalanceCap, "Balance cap should be set");
+        assertEq(token.isMintable(), isMintable, "Mintable status should be set");
         assertTrue(token.isRevokable(), "Revokable status should be set");
         assertTrue(token.isTransferable(), "Token should be transferable");
-        assertEq(
-            token.transferLockStart(),
-            transferLockStart,
-            "Lock start should be set"
-        );
-        assertEq(
-            token.transferLockEnd(),
-            transferLockEnd,
-            "Lock end should be set"
-        );
-        assertEq(
-            token.tokenSupplyCap(),
-            tokenSupplyCap,
-            "Supply cap should be set"
-        );
+        assertEq(token.transferLockStart(), transferLockStart, "Lock start should be set");
+        assertEq(token.transferLockEnd(), transferLockEnd, "Lock end should be set");
+        assertEq(token.tokenSupplyCap(), tokenSupplyCap, "Supply cap should be set");
 
-        assertTrue(
-            token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner),
-            "Owner should have DEFAULT_ADMIN_ROLE"
-        );
+        assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner), "Owner should have DEFAULT_ADMIN_ROLE");
         assertTrue(token.hasRole(token.MINTER_ROLE(), owner));
         assertTrue(token.hasRole(token.REVOKER_ROLE(), owner));
         assertTrue(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), owner));
         assertTrue(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), owner));
     }
 
-    function test_ConstructorAssignsOwnerRolesAcrossFeatureCombinations()
-        public
-    {
+    function test_ConstructorAssignsOwnerRolesAcrossFeatureCombinations() public {
         _assertOwnerFeatureRoles({
             deployedToken: token,
             contractOwner: owner,
@@ -291,11 +218,7 @@ contract LSP7CustomizableTokenTest is Test {
             shouldHaveRevokerRole: false
         });
 
-        assertEq(
-            nonRevokableToken.totalSupply(),
-            0,
-            "Total supply should be 0 when initialMintAmount_ is 0"
-        );
+        assertEq(nonRevokableToken.totalSupply(), 0, "Total supply should be 0 when initialMintAmount_ is 0");
 
         // -----
         uint256 lockStart = block.timestamp + 1 days;
@@ -318,31 +241,15 @@ contract LSP7CustomizableTokenTest is Test {
             shouldHaveRevokerRole: true
         });
 
-        assertEq(
-            lockedToken.totalSupply(),
-            0,
-            "Total supply should be 0 when initialMintAmount_ is 0"
-        );
+        assertEq(lockedToken.totalSupply(), 0, "Total supply should be 0 when initialMintAmount_ is 0");
 
         assertTrue(lockedToken.isRevokable(), "Token should be revokable");
-        assertEq(
-            lockedToken.transferLockStart(),
-            lockStart,
-            "Transfer lock start should be set"
-        );
-        assertEq(
-            lockedToken.transferLockEnd(),
-            0,
-            "Transfer lock end should be 0"
-        );
+        assertEq(lockedToken.transferLockStart(), lockStart, "Transfer lock start should be set");
+        assertEq(lockedToken.transferLockEnd(), 0, "Transfer lock end should be 0");
 
+        assertTrue(lockedToken.isTransferable(), "Token should be transferable before the lock starts");
         assertTrue(
-            lockedToken.isTransferable(),
-            "Token should be transferable before the lock starts"
-        );
-        assertTrue(
-            lockedToken.transferLockEnabled(),
-            "Transfer lock should stay enabled until makeTransferable is called"
+            lockedToken.transferLockEnabled(), "Transfer lock should stay enabled until makeTransferable is called"
         );
 
         vm.warp(lockStart + 1);
@@ -351,24 +258,15 @@ contract LSP7CustomizableTokenTest is Test {
     }
 
     function test_ConstructorRevertsIfInitialMintExceedsSupplyCap() public {
-        LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            isMintable: isMintable,
-            initialMintAmount: tokenSupplyCap + 1
-        });
+        LSP7MintableParams memory mintableParams =
+            LSP7MintableParams({isMintable: isMintable, initialMintAmount: tokenSupplyCap + 1});
 
-        LSP7NonTransferableParams
-            memory nonTransferableParams = LSP7NonTransferableParams({
-                transferLockStart: transferLockStart,
-                transferLockEnd: transferLockEnd
-            });
+        LSP7NonTransferableParams memory nonTransferableParams =
+            LSP7NonTransferableParams({transferLockStart: transferLockStart, transferLockEnd: transferLockEnd});
 
-        LSP7CappedParams memory cappedParams = LSP7CappedParams({
-            tokenBalanceCap: tokenBalanceCap,
-            tokenSupplyCap: tokenSupplyCap
-        });
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
-            isRevokable: isRevokable
-        });
+        LSP7CappedParams memory cappedParams =
+            LSP7CappedParams({tokenBalanceCap: tokenBalanceCap, tokenSupplyCap: tokenSupplyCap});
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: isRevokable});
 
         vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
         new LSP7CustomizableToken(
@@ -385,24 +283,14 @@ contract LSP7CustomizableTokenTest is Test {
     }
 
     function test_ConstructorSucceedsWithZeroInitialMint() public {
-        LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            isMintable: isMintable,
-            initialMintAmount: 0
-        });
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({isMintable: isMintable, initialMintAmount: 0});
 
-        LSP7NonTransferableParams
-            memory nonTransferableParams = LSP7NonTransferableParams({
-                transferLockStart: transferLockStart,
-                transferLockEnd: transferLockEnd
-            });
+        LSP7NonTransferableParams memory nonTransferableParams =
+            LSP7NonTransferableParams({transferLockStart: transferLockStart, transferLockEnd: transferLockEnd});
 
-        LSP7CappedParams memory cappedParams = LSP7CappedParams({
-            tokenBalanceCap: tokenBalanceCap,
-            tokenSupplyCap: tokenSupplyCap
-        });
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
-            isRevokable: isRevokable
-        });
+        LSP7CappedParams memory cappedParams =
+            LSP7CappedParams({tokenBalanceCap: tokenBalanceCap, tokenSupplyCap: tokenSupplyCap});
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: isRevokable});
 
         LSP7CustomizableToken zeroMintToken = new LSP7CustomizableToken(
             name,
@@ -415,33 +303,20 @@ contract LSP7CustomizableTokenTest is Test {
             nonTransferableParams,
             revokableParams
         );
-        assertEq(
-            zeroMintToken.balanceOf(owner),
-            0,
-            "Owner should have no tokens"
-        );
+        assertEq(zeroMintToken.balanceOf(owner), 0, "Owner should have no tokens");
         assertEq(zeroMintToken.totalSupply(), 0, "Total supply should be zero");
     }
 
     function test_ConstructorRevertsWithInvalidLockPeriod() public {
-        LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            isMintable: isMintable,
-            initialMintAmount: initialMintAmount
-        });
+        LSP7MintableParams memory mintableParams =
+            LSP7MintableParams({isMintable: isMintable, initialMintAmount: initialMintAmount});
 
-        LSP7NonTransferableParams
-            memory nonTransferableParams = LSP7NonTransferableParams({
-                transferLockStart: 200,
-                transferLockEnd: 100
-            });
+        LSP7NonTransferableParams memory nonTransferableParams =
+            LSP7NonTransferableParams({transferLockStart: 200, transferLockEnd: 100});
 
-        LSP7CappedParams memory cappedParams = LSP7CappedParams({
-            tokenBalanceCap: tokenBalanceCap,
-            tokenSupplyCap: tokenSupplyCap
-        });
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
-            isRevokable: isRevokable
-        });
+        LSP7CappedParams memory cappedParams =
+            LSP7CappedParams({tokenBalanceCap: tokenBalanceCap, tokenSupplyCap: tokenSupplyCap});
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: isRevokable});
 
         vm.expectRevert(LSP7InvalidTransferLockPeriod.selector);
         new LSP7CustomizableToken(
@@ -459,26 +334,14 @@ contract LSP7CustomizableTokenTest is Test {
 
     // Supply Cap Tests
     function test_TokenSupplyCapReturnsCorrectValue() public {
-        assertEq(
-            token.tokenSupplyCap(),
-            tokenSupplyCap,
-            "Should return supply cap when isMintable"
-        );
+        assertEq(token.tokenSupplyCap(), tokenSupplyCap, "Should return supply cap when isMintable");
         token.disableMinting();
-        assertEq(
-            token.tokenSupplyCap(),
-            initialMintAmount,
-            "Should return totalSupply when not isMintable"
-        );
+        assertEq(token.tokenSupplyCap(), initialMintAmount, "Should return totalSupply when not isMintable");
     }
 
     function test_MintFailsWhenExceedingSupplyCap() public {
         token.mint(owner, tokenSupplyCap - initialMintAmount, true, "");
-        assertEq(
-            token.totalSupply(),
-            tokenSupplyCap,
-            "Total supply should reach cap"
-        );
+        assertEq(token.totalSupply(), tokenSupplyCap, "Total supply should reach cap");
 
         vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
         token.mint(owner, 1, true, "");
@@ -487,32 +350,18 @@ contract LSP7CustomizableTokenTest is Test {
     function test_MintSucceedsUpToSupplyCap() public {
         uint256 amount = tokenSupplyCap - initialMintAmount;
         token.mint(owner, amount, true, "");
-        assertEq(
-            token.totalSupply(),
-            tokenSupplyCap,
-            "Total supply should match cap"
-        );
+        assertEq(token.totalSupply(), tokenSupplyCap, "Total supply should match cap");
     }
 
     function test_MintWithMaxSupplyCapAllowsUnlimitedMinting() public {
-        LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            isMintable: isMintable,
-            initialMintAmount: initialMintAmount
-        });
+        LSP7MintableParams memory mintableParams =
+            LSP7MintableParams({isMintable: isMintable, initialMintAmount: initialMintAmount});
 
-        LSP7NonTransferableParams
-            memory nonTransferableParams = LSP7NonTransferableParams({
-                transferLockStart: transferLockStart,
-                transferLockEnd: transferLockEnd
-            });
+        LSP7NonTransferableParams memory nonTransferableParams =
+            LSP7NonTransferableParams({transferLockStart: transferLockStart, transferLockEnd: transferLockEnd});
 
-        LSP7CappedParams memory cappedParams = LSP7CappedParams({
-            tokenBalanceCap: tokenBalanceCap,
-            tokenSupplyCap: 0
-        });
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
-            isRevokable: isRevokable
-        });
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({tokenBalanceCap: tokenBalanceCap, tokenSupplyCap: 0});
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: isRevokable});
 
         LSP7CustomizableToken unlimitedToken = new LSP7CustomizableToken(
             name,
@@ -526,33 +375,18 @@ contract LSP7CustomizableTokenTest is Test {
             revokableParams
         );
         unlimitedToken.mint(owner, type(uint256).max / 2, true, "");
-        assertEq(
-            unlimitedToken.balanceOf(owner),
-            type(uint256).max / 2 + initialMintAmount,
-            "Should allow large mint"
-        );
+        assertEq(unlimitedToken.balanceOf(owner), type(uint256).max / 2 + initialMintAmount, "Should allow large mint");
     }
 
     // Balance Cap Tests
     function test_BalanceCapEnforcedCorrectly() public {
-        LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            isMintable: isMintable,
-            initialMintAmount: 2000
-        });
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({isMintable: isMintable, initialMintAmount: 2000});
 
-        LSP7NonTransferableParams
-            memory nonTransferableParams = LSP7NonTransferableParams({
-                transferLockStart: transferLockStart,
-                transferLockEnd: transferLockEnd
-            });
+        LSP7NonTransferableParams memory nonTransferableParams =
+            LSP7NonTransferableParams({transferLockStart: transferLockStart, transferLockEnd: transferLockEnd});
 
-        LSP7CappedParams memory cappedParams = LSP7CappedParams({
-            tokenBalanceCap: 1500,
-            tokenSupplyCap: 0
-        });
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
-            isRevokable: isRevokable
-        });
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({tokenBalanceCap: 1500, tokenSupplyCap: 0});
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: isRevokable});
 
         LSP7CustomizableToken tokenWithBalanceCap = new LSP7CustomizableToken(
             name,
@@ -571,49 +405,34 @@ contract LSP7CustomizableTokenTest is Test {
         assertEq(tokenWithBalanceCap.balanceOf(user1), 1000);
 
         // Should fail when trying to exceed the balance cap
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                LSP7CappedBalanceExceeded.selector,
-                user1,
-                600,
-                1000,
-                1500
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(LSP7CappedBalanceExceeded.selector, user1, 600, 1000, 1500));
         tokenWithBalanceCap.transfer(owner, user1, 600, true, ""); // Would make total 1600 > 1500 cap
     }
 
     function test_BalanceCapDisabledWhenZero() public {
-        LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            isMintable: isMintable,
-            initialMintAmount: 1000000
-        });
+        LSP7MintableParams memory mintableParams =
+            LSP7MintableParams({isMintable: isMintable, initialMintAmount: 1000000});
 
-        LSP7NonTransferableParams
-            memory nonTransferableParams = LSP7NonTransferableParams({
-                transferLockStart: transferLockStart,
-                transferLockEnd: transferLockEnd
-            });
+        LSP7NonTransferableParams memory nonTransferableParams =
+            LSP7NonTransferableParams({transferLockStart: transferLockStart, transferLockEnd: transferLockEnd});
 
         LSP7CappedParams memory cappedParams = LSP7CappedParams({
             tokenBalanceCap: 0, // tokenBalanceCap = 0 (disabled)
             tokenSupplyCap: 0 // tokenSupplyCap = 0 (disabled)
         });
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
-            isRevokable: isRevokable
-        });
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: isRevokable});
 
         LSP7CustomizableToken tokenWithoutBalanceCap = new LSP7CustomizableToken(
-                name,
-                symbol,
-                owner,
-                tokenType,
-                isNonDivisible,
-                mintableParams,
-                cappedParams,
-                nonTransferableParams,
-                revokableParams
-            );
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
 
         // Should be able to transfer any amount when balance cap is disabled
         tokenWithoutBalanceCap.transfer(owner, user1, 1000000, true, "");
@@ -632,9 +451,7 @@ contract LSP7CustomizableTokenTest is Test {
         token.mint(user1, 500, true, "");
     }
 
-    function test_TransferOwnershipClearsRevokersAndMigratesOwnerRoles()
-        public
-    {
+    function test_TransferOwnershipClearsRevokersAndMigratesOwnerRoles() public {
         bytes32 revokerRole = token.REVOKER_ROLE();
 
         token.grantRole(revokerRole, revoker1);
@@ -661,67 +478,44 @@ contract LSP7CustomizableTokenTest is Test {
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), newOwner));
         assertTrue(token.hasRole(token.MINTER_ROLE(), newOwner));
         assertTrue(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), newOwner));
-        assertTrue(
-            token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), newOwner)
-        );
+        assertTrue(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), newOwner));
     }
 
-    function test_TransferOwnershipClearsSpecificRoleAdminsOnMultiFeatureToken()
-        public
-    {
+    function test_TransferOwnershipClearsSpecificRoleAdminsOnMultiFeatureToken() public {
         bytes32 minterRole = token.MINTER_ROLE();
         bytes32 revokerRole = token.REVOKER_ROLE();
         bytes32 uncappedRole = token.UNCAPPED_BALANCE_ROLE();
-        bytes32 nonTransferableBypassRole = token
-            .NON_TRANSFERABLE_BYPASS_ROLE();
+        bytes32 nonTransferableBypassRole = token.NON_TRANSFERABLE_BYPASS_ROLE();
 
         bytes32 minterAdminRole = keccak256("MINTER_ADMIN_ROLE");
         bytes32 revokerAdminRole = keccak256("REVOKER_ADMIN_ROLE");
         bytes32 uncappedAdminRole = keccak256("UNCAPPED_ADMIN_ROLE");
-        bytes32 nonTransferableBypassAdminRole = keccak256(
-            "NON_TRANSFERABLE_BYPASS_ADMIN_ROLE"
-        );
+        bytes32 nonTransferableBypassAdminRole = keccak256("NON_TRANSFERABLE_BYPASS_ADMIN_ROLE");
 
         token.setRoleAdmin(minterRole, minterAdminRole);
         token.setRoleAdmin(revokerRole, revokerAdminRole);
         token.setRoleAdmin(uncappedRole, uncappedAdminRole);
-        token.setRoleAdmin(
-            nonTransferableBypassRole,
-            nonTransferableBypassAdminRole
-        );
+        token.setRoleAdmin(nonTransferableBypassRole, nonTransferableBypassAdminRole);
 
         address minterAdmin = makeAddr("a minter admin");
         address revokerAdmin = makeAddr("a revoker admin");
         address uncappedAdmin = makeAddr("a uncapped admin");
-        address nonTransferableBypassAdmin = makeAddr(
-            "a non transferable bypass admin"
-        );
+        address nonTransferableBypassAdmin = makeAddr("a non transferable bypass admin");
 
         assertEq(token.getRoleAdmin(minterRole), minterAdminRole);
         assertEq(token.getRoleAdmin(revokerRole), revokerAdminRole);
         assertEq(token.getRoleAdmin(uncappedRole), uncappedAdminRole);
-        assertEq(
-            token.getRoleAdmin(nonTransferableBypassRole),
-            nonTransferableBypassAdminRole
-        );
+        assertEq(token.getRoleAdmin(nonTransferableBypassRole), nonTransferableBypassAdminRole);
 
         token.grantRole(minterAdminRole, minterAdmin);
         token.grantRole(revokerAdminRole, revokerAdmin);
         token.grantRole(uncappedAdminRole, uncappedAdmin);
-        token.grantRole(
-            nonTransferableBypassAdminRole,
-            nonTransferableBypassAdmin
-        );
+        token.grantRole(nonTransferableBypassAdminRole, nonTransferableBypassAdmin);
 
         assertTrue(token.hasRole(minterAdminRole, minterAdmin));
         assertTrue(token.hasRole(revokerAdminRole, revokerAdmin));
         assertTrue(token.hasRole(uncappedAdminRole, uncappedAdmin));
-        assertTrue(
-            token.hasRole(
-                nonTransferableBypassAdminRole,
-                nonTransferableBypassAdmin
-            )
-        );
+        assertTrue(token.hasRole(nonTransferableBypassAdminRole, nonTransferableBypassAdmin));
 
         vm.prank(minterAdmin);
         token.grantRole(minterRole, address(11111));
@@ -745,59 +539,37 @@ contract LSP7CustomizableTokenTest is Test {
         assertEq(token.getRoleAdmin(minterRole), token.DEFAULT_ADMIN_ROLE());
         assertEq(token.getRoleAdmin(revokerRole), token.DEFAULT_ADMIN_ROLE());
         assertEq(token.getRoleAdmin(uncappedRole), token.DEFAULT_ADMIN_ROLE());
-        assertEq(
-            token.getRoleAdmin(nonTransferableBypassRole),
-            token.DEFAULT_ADMIN_ROLE()
-        );
+        assertEq(token.getRoleAdmin(nonTransferableBypassRole), token.DEFAULT_ADMIN_ROLE());
 
         // The previous addresses should still have their former Admin roles
         assertTrue(token.hasRole(minterAdminRole, minterAdmin));
         assertTrue(token.hasRole(revokerAdminRole, revokerAdmin));
         assertTrue(token.hasRole(uncappedAdminRole, uncappedAdmin));
-        assertTrue(
-            token.hasRole(
-                nonTransferableBypassAdminRole,
-                nonTransferableBypassAdmin
-            )
-        );
+        assertTrue(token.hasRole(nonTransferableBypassAdminRole, nonTransferableBypassAdmin));
 
         // But they shouldn't be able to use them, it MUST revert if they try to-reuse these admin roles
         // to grant roles, as all the admin roles for these roles have been reset to DEFAULT_ADMIN_ROLE
         vm.expectRevert(
-            abi.encodeWithSelector(
-                AccessControlUnauthorizedAccount.selector,
-                minterAdmin,
-                token.DEFAULT_ADMIN_ROLE()
-            )
+            abi.encodeWithSelector(AccessControlUnauthorizedAccount.selector, minterAdmin, token.DEFAULT_ADMIN_ROLE())
         );
         vm.prank(minterAdmin);
         token.grantRole(minterRole, address(33333));
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                AccessControlUnauthorizedAccount.selector,
-                revokerAdmin,
-                token.DEFAULT_ADMIN_ROLE()
-            )
+            abi.encodeWithSelector(AccessControlUnauthorizedAccount.selector, revokerAdmin, token.DEFAULT_ADMIN_ROLE())
         );
         vm.prank(revokerAdmin);
         token.grantRole(revokerRole, address(44444));
 
         vm.expectRevert(
-            abi.encodeWithSelector(
-                AccessControlUnauthorizedAccount.selector,
-                uncappedAdmin,
-                token.DEFAULT_ADMIN_ROLE()
-            )
+            abi.encodeWithSelector(AccessControlUnauthorizedAccount.selector, uncappedAdmin, token.DEFAULT_ADMIN_ROLE())
         );
         vm.prank(uncappedAdmin);
         token.grantRole(uncappedRole, address(55555));
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUnauthorizedAccount.selector,
-                nonTransferableBypassAdmin,
-                token.DEFAULT_ADMIN_ROLE()
+                AccessControlUnauthorizedAccount.selector, nonTransferableBypassAdmin, token.DEFAULT_ADMIN_ROLE()
             )
         );
         vm.prank(nonTransferableBypassAdmin);
@@ -866,9 +638,7 @@ contract LSP7CustomizableTokenTest is Test {
         assertTrue(lockedToken.isTransferable());
     }
 
-    function test_MakeTransferableClearsLockAndPreventsFurtherLockUpdates()
-        public
-    {
+    function test_MakeTransferableClearsLockAndPreventsFurtherLockUpdates() public {
         LSP7CustomizableToken lockedToken = _deployToken({
             isMintable_: true,
             initialMintAmount_: 0,
@@ -896,12 +666,117 @@ contract LSP7CustomizableTokenTest is Test {
         lockedToken.updateTransferLockPeriod(1, 2);
     }
 
+    function test_OwnerCanRevokeFromNonBypassHolderDuringTransferLock() public {
+        LSP7CustomizableToken lockedToken = _deployRevokableNonTransferableToken(0, type(uint256).max);
+
+        _assertRevokeSucceeds(lockedToken, owner, user1, owner);
+    }
+
+    function test_RevokerCanRevokeFromNonBypassHolderDuringTransferLock() public {
+        LSP7CustomizableToken lockedToken = _deployRevokableNonTransferableToken(0, type(uint256).max);
+        lockedToken.grantRole(lockedToken.REVOKER_ROLE(), revoker1);
+
+        _assertRevokeSucceeds(lockedToken, revoker1, user1, revoker1);
+    }
+
+    function test_OwnerCanRevokeFromBypassHolderDuringTransferLock() public {
+        LSP7CustomizableToken lockedToken = _deployRevokableNonTransferableToken(0, type(uint256).max);
+        lockedToken.grantRole(lockedToken.NON_TRANSFERABLE_BYPASS_ROLE(), user1);
+
+        _assertRevokeSucceeds(lockedToken, owner, user1, owner);
+    }
+
+    function test_RevokerCanRevokeFromBypassHolderDuringTransferLock() public {
+        LSP7CustomizableToken lockedToken = _deployRevokableNonTransferableToken(0, type(uint256).max);
+        lockedToken.grantRole(lockedToken.REVOKER_ROLE(), revoker1);
+        lockedToken.grantRole(lockedToken.NON_TRANSFERABLE_BYPASS_ROLE(), user1);
+
+        _assertRevokeSucceeds(lockedToken, revoker1, user1, revoker1);
+    }
+
+    function test_OwnerCanRevokeFromNonBypassHolderOutsideTransferLock() public {
+        uint256 lockStart = block.timestamp + 1 days;
+        LSP7CustomizableToken unlockedToken = _deployRevokableNonTransferableToken(lockStart, lockStart + 1 days);
+
+        _assertRevokeSucceeds(unlockedToken, owner, user1, owner);
+    }
+
+    function test_RevokerCanRevokeFromNonBypassHolderOutsideTransferLock() public {
+        uint256 lockStart = block.timestamp + 1 days;
+        LSP7CustomizableToken unlockedToken = _deployRevokableNonTransferableToken(lockStart, lockStart + 1 days);
+        unlockedToken.grantRole(unlockedToken.REVOKER_ROLE(), revoker1);
+
+        _assertRevokeSucceeds(unlockedToken, revoker1, user1, revoker1);
+    }
+
+    function test_OwnerCanRevokeFromBypassHolderOutsideTransferLock() public {
+        uint256 lockStart = block.timestamp + 1 days;
+        LSP7CustomizableToken unlockedToken = _deployRevokableNonTransferableToken(lockStart, lockStart + 1 days);
+        unlockedToken.grantRole(unlockedToken.NON_TRANSFERABLE_BYPASS_ROLE(), user1);
+
+        _assertRevokeSucceeds(unlockedToken, owner, user1, owner);
+    }
+
+    function test_RevokerCanRevokeFromBypassHolderOutsideTransferLock() public {
+        uint256 lockStart = block.timestamp + 1 days;
+        LSP7CustomizableToken unlockedToken = _deployRevokableNonTransferableToken(lockStart, lockStart + 1 days);
+        unlockedToken.grantRole(unlockedToken.REVOKER_ROLE(), revoker1);
+        unlockedToken.grantRole(unlockedToken.NON_TRANSFERABLE_BYPASS_ROLE(), user1);
+
+        _assertRevokeSucceeds(unlockedToken, revoker1, user1, revoker1);
+    }
+
+    function test_RevokerCannotTransferDuringTransferLockWithoutBypassRole() public {
+        LSP7CustomizableToken lockedToken = _deployRevokableNonTransferableToken(0, type(uint256).max);
+        lockedToken.grantRole(lockedToken.REVOKER_ROLE(), revoker1);
+        lockedToken.mint(revoker1, 100, true, "");
+
+        vm.prank(revoker1);
+        vm.expectRevert(LSP7TransferDisabled.selector);
+        lockedToken.transfer(revoker1, user2, 10, true, "");
+
+        lockedToken.grantRole(lockedToken.NON_TRANSFERABLE_BYPASS_ROLE(), revoker1);
+
+        vm.prank(revoker1);
+        lockedToken.transfer(revoker1, user2, 10, true, "");
+
+        assertEq(lockedToken.balanceOf(revoker1), 90);
+        assertEq(lockedToken.balanceOf(user2), 10);
+    }
+
+    function test_RevokeToNonOwnerOrNonRevokerRecipientStillReverts() public {
+        LSP7CustomizableToken lockedToken = _deployRevokableNonTransferableToken(0, type(uint256).max);
+        lockedToken.grantRole(lockedToken.REVOKER_ROLE(), revoker1);
+        lockedToken.mint(user1, 100, true, "");
+
+        vm.expectRevert(
+            abi.encodeWithSelector(AccessControlUnauthorizedAccount.selector, user2, lockedToken.REVOKER_ROLE())
+        );
+        vm.prank(revoker1);
+        lockedToken.revoke(user1, user2, 10, "");
+    }
+
+    function test_RevokeDuringTransferLockFailsWhenRevocationIsDisabledEvenIfRoleGranted() public {
+        LSP7CustomizableToken nonRevokableToken = _deployToken({
+            isMintable_: true,
+            initialMintAmount_: 0,
+            tokenBalanceCap_: 0,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: type(uint256).max,
+            isRevokable_: false
+        });
+
+        nonRevokableToken.grantRole(nonRevokableToken.REVOKER_ROLE(), revoker1);
+        nonRevokableToken.mint(user1, 100, true, "");
+
+        vm.expectRevert(LSP7RevokableFeatureDisabled.selector);
+        vm.prank(revoker1);
+        nonRevokableToken.revoke(user1, revoker1, 10, "");
+    }
+
     // Fuzzing Tests
-    function testFuzz_MintAmountRespectsBalanceCap(
-        uint256 cap,
-        uint256 currentBalance,
-        uint256 mintAmount
-    ) public {
+    function testFuzz_MintAmountRespectsBalanceCap(uint256 cap, uint256 currentBalance, uint256 mintAmount) public {
         uint256 boundedCap = bound(cap, 1, type(uint128).max);
         uint256 boundedCurrentBalance = bound(currentBalance, 0, boundedCap);
         uint256 boundedMintAmount = bound(mintAmount, 1, type(uint128).max);
@@ -923,11 +798,7 @@ contract LSP7CustomizableTokenTest is Test {
         if (boundedCurrentBalance + boundedMintAmount > boundedCap) {
             vm.expectRevert(
                 abi.encodeWithSelector(
-                    LSP7CappedBalanceExceeded.selector,
-                    user1,
-                    boundedMintAmount,
-                    boundedCurrentBalance,
-                    boundedCap
+                    LSP7CappedBalanceExceeded.selector, user1, boundedMintAmount, boundedCurrentBalance, boundedCap
                 )
             );
             cappedToken.mint(user1, boundedMintAmount, true, "");
@@ -937,24 +808,15 @@ contract LSP7CustomizableTokenTest is Test {
         }
 
         cappedToken.mint(user1, boundedMintAmount, true, "");
-        assertEq(
-            cappedToken.balanceOf(user1),
-            boundedCurrentBalance + boundedMintAmount
-        );
+        assertEq(cappedToken.balanceOf(user1), boundedCurrentBalance + boundedMintAmount);
     }
 
-    function testFuzz_TransferAmountRespectsBalanceCap(
-        uint256 cap,
-        uint256 currentBalance,
-        uint256 transferAmount
-    ) public {
+    function testFuzz_TransferAmountRespectsBalanceCap(uint256 cap, uint256 currentBalance, uint256 transferAmount)
+        public
+    {
         uint256 boundedCap = bound(cap, 1, type(uint128).max);
         uint256 boundedCurrentBalance = bound(currentBalance, 0, boundedCap);
-        uint256 boundedTransferAmount = bound(
-            transferAmount,
-            1,
-            type(uint128).max
-        );
+        uint256 boundedTransferAmount = bound(transferAmount, 1, type(uint128).max);
 
         LSP7CustomizableToken cappedToken = _deployToken({
             isMintable_: true,
@@ -973,11 +835,7 @@ contract LSP7CustomizableTokenTest is Test {
         if (boundedCurrentBalance + boundedTransferAmount > boundedCap) {
             vm.expectRevert(
                 abi.encodeWithSelector(
-                    LSP7CappedBalanceExceeded.selector,
-                    user1,
-                    boundedTransferAmount,
-                    boundedCurrentBalance,
-                    boundedCap
+                    LSP7CappedBalanceExceeded.selector, user1, boundedTransferAmount, boundedCurrentBalance, boundedCap
                 )
             );
             cappedToken.transfer(owner, user1, boundedTransferAmount, true, "");
@@ -987,16 +845,10 @@ contract LSP7CustomizableTokenTest is Test {
         }
 
         cappedToken.transfer(owner, user1, boundedTransferAmount, true, "");
-        assertEq(
-            cappedToken.balanceOf(user1),
-            boundedCurrentBalance + boundedTransferAmount
-        );
+        assertEq(cappedToken.balanceOf(user1), boundedCurrentBalance + boundedTransferAmount);
     }
 
-    function testFuzz_MintAmountRespectsSupplyCap(
-        uint256 cap,
-        uint256 amountToMint
-    ) public {
+    function testFuzz_MintAmountRespectsSupplyCap(uint256 cap, uint256 amountToMint) public {
         uint256 boundedCap = bound(cap, 1, type(uint128).max);
         uint256 boundedAmountToMint = bound(amountToMint, 1, type(uint128).max);
 
@@ -1025,22 +877,12 @@ contract LSP7CustomizableTokenTest is Test {
 
     function test_RevokeFailsWhenRevocationIsDisabled() public {
         bytes32 revokerRole = token.REVOKER_ROLE();
-        LSP7MintableParams memory mintableParams = LSP7MintableParams({
-            isMintable: isMintable,
-            initialMintAmount: 1000
-        });
-        LSP7NonTransferableParams
-            memory nonTransferableParams = LSP7NonTransferableParams({
-                transferLockStart: transferLockStart,
-                transferLockEnd: transferLockEnd
-            });
-        LSP7CappedParams memory cappedParams = LSP7CappedParams({
-            tokenBalanceCap: tokenBalanceCap,
-            tokenSupplyCap: tokenSupplyCap
-        });
-        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
-            isRevokable: false
-        });
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({isMintable: isMintable, initialMintAmount: 1000});
+        LSP7NonTransferableParams memory nonTransferableParams =
+            LSP7NonTransferableParams({transferLockStart: transferLockStart, transferLockEnd: transferLockEnd});
+        LSP7CappedParams memory cappedParams =
+            LSP7CappedParams({tokenBalanceCap: tokenBalanceCap, tokenSupplyCap: tokenSupplyCap});
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({isRevokable: false});
 
         LSP7CustomizableToken nonRevokableToken = new LSP7CustomizableToken(
             name,
