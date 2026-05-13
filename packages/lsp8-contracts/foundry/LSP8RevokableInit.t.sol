@@ -8,6 +8,9 @@ import {Test, Vm} from "forge-std/Test.sol";
 import {
     IAccessControl
 } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {
+    ILSP8Revokable
+} from "../contracts/extensions/LSP8Revokable/ILSP8Revokable.sol";
 
 // modules
 import {
@@ -260,6 +263,23 @@ contract LSP8RevokableInitTest is Test {
         assertEq(token.balanceOf(user1), 0);
         assertEq(token.balanceOf(owner), 1);
         assertEq(token.tokenOwnerOf(tokenId1), owner);
+    }
+
+    function test_DisableRevokableThroughProxy() public {
+        token.mint(user1, tokenId1, true, "");
+
+        vm.expectEmit(true, false, false, true);
+        emit ILSP8Revokable.RevokableStatusChanged(false);
+
+        token.disableRevokable();
+
+        assertFalse(token.isRevokable());
+
+        vm.expectRevert(LSP8RevokableFeatureDisabled.selector);
+        token.revoke(user1, owner, tokenId1, "");
+
+        vm.expectRevert(LSP8RevokableFeatureDisabled.selector);
+        token.disableRevokable();
     }
 
     function test_TransferOwnershipClearsRevokersThroughProxy() public {

@@ -3,20 +3,14 @@ pragma solidity ^0.8.27;
 
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {
-    LSP8IdentifiableDigitalAsset
-} from "../../LSP8IdentifiableDigitalAsset.sol";
-import {
-    AccessControlExtendedAbstract
-} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {LSP8IdentifiableDigitalAsset} from "../../LSP8IdentifiableDigitalAsset.sol";
+import {AccessControlExtendedAbstract} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {ILSP8Revokable} from "./ILSP8Revokable.sol";
 
 // errors
-import {
-    AccessControlUnauthorizedAccount
-} from "../AccessControlExtended/AccessControlExtendedErrors.sol";
+import {AccessControlUnauthorizedAccount} from "../AccessControlExtended/AccessControlExtendedErrors.sol";
 import {LSP8RevokableFeatureDisabled} from "./LSP8RevokableErrors.sol";
 
 /// @title LSP8RevokableAbstract
@@ -29,19 +23,14 @@ import {LSP8RevokableFeatureDisabled} from "./LSP8RevokableErrors.sol";
 /// - Role badges: Remove role badge NFTs from community members
 /// - Compliance: Freeze or reverse NFTs for regulatory requirements
 /// - Ticketing: Reclaim tickets or access NFTs when conditions are no longer met
-abstract contract LSP8RevokableAbstract is
-    ILSP8Revokable,
-    LSP8IdentifiableDigitalAsset,
-    AccessControlExtendedAbstract
-{
-    bool internal immutable _IS_REVOKABLE;
+abstract contract LSP8RevokableAbstract is ILSP8Revokable, LSP8IdentifiableDigitalAsset, AccessControlExtendedAbstract {
+    bool internal _isRevokable;
 
     /// @dev keccak256("REVOKER_ROLE")
-    bytes32 public constant REVOKER_ROLE =
-        0xce3f34913921da558f105cefb578d87278debbbd073a8d552b5de0d168deee30;
+    bytes32 public constant REVOKER_ROLE = 0xce3f34913921da558f105cefb578d87278debbbd073a8d552b5de0d168deee30;
 
     constructor(bool isRevokable_) {
-        _IS_REVOKABLE = isRevokable_;
+        _isRevokable = isRevokable_;
 
         if (isRevokable_) {
             _grantRole(REVOKER_ROLE, owner());
@@ -50,51 +39,44 @@ abstract contract LSP8RevokableAbstract is
 
     /// @inheritdoc ILSP8Revokable
     function isRevokable() public view virtual override returns (bool) {
-        return _IS_REVOKABLE;
+        return _isRevokable;
     }
 
     /// @inheritdoc ILSP8Revokable
-    function revoke(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bytes memory data
-    ) public virtual override onlyRole(REVOKER_ROLE) {
+    function disableRevokable() public virtual override onlyOwner {
         require(isRevokable(), LSP8RevokableFeatureDisabled());
-        require(
-            to == owner() || hasRole(REVOKER_ROLE, to),
-            AccessControlUnauthorizedAccount(to, REVOKER_ROLE)
-        );
+        _isRevokable = false;
+        emit RevokableStatusChanged({enabled: false});
+    }
+
+    /// @inheritdoc ILSP8Revokable
+    function revoke(address from, address to, bytes32 tokenId, bytes memory data)
+        public
+        virtual
+        override
+        onlyRole(REVOKER_ROLE)
+    {
+        require(isRevokable(), LSP8RevokableFeatureDisabled());
+        require(to == owner() || hasRole(REVOKER_ROLE, to), AccessControlUnauthorizedAccount(to, REVOKER_ROLE));
 
         // We assume revokers are trusted when specifying revocation destinations.
         // Therefore, we bypass LSP1 receiver checks.
-        _transfer({
-            from: from,
-            to: to,
-            tokenId: tokenId,
-            force: true,
-            data: data
-        });
+        _transfer({from: from, to: to, tokenId: tokenId, force: true, data: data});
     }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    )
+    function supportsInterface(bytes4 interfaceId)
         public
         view
         virtual
         override(AccessControlExtendedAbstract, LSP8IdentifiableDigitalAsset)
         returns (bool)
     {
-        return
-            AccessControlExtendedAbstract.supportsInterface(interfaceId) ||
-            LSP8IdentifiableDigitalAsset.supportsInterface(interfaceId);
+        return AccessControlExtendedAbstract.supportsInterface(interfaceId)
+            || LSP8IdentifiableDigitalAsset.supportsInterface(interfaceId);
     }
 
     /// @dev Overridden function to ensure previous revokers do not persist after contract ownership has been transferred.
-    function _transferOwnership(
-        address newOwner
-    ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+    function _transferOwnership(address newOwner) internal virtual override(AccessControlExtendedAbstract, Ownable) {
         // restore default admin hierarchy so a previously-installed custom admin
         // cannot grant REVOKER_ROLE to new accounts post-transfer
         _setRoleAdmin(REVOKER_ROLE, DEFAULT_ADMIN_ROLE);

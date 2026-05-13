@@ -6,8 +6,15 @@ pragma solidity ^0.8.27;
 /// This extension allows authorized revokers to reclaim NFTs from any holder back to the
 /// contract owner or another authorized revoker.
 interface ILSP8Revokable {
+    /// @dev Emitted when revokable status is changed.
+    event RevokableStatusChanged(bool indexed enabled);
+
     /// @notice Returns whether the feature to revoke tokens from users is enabled or not.
     function isRevokable() external view returns (bool);
+
+    /// @notice Disables token revocation permanently.
+    /// @dev Can only be called by the contract owner. Prevents further calls to revoke after invocation.
+    function disableRevokable() external;
 
     /// @notice Revokes `tokenId` from a holder and transfers it to `to`.
     /// @dev Can only be called by an address holding `REVOKER_ROLE`.
@@ -17,10 +24,5 @@ interface ILSP8Revokable {
     /// @param to The address receiving the revoked token.
     /// @param tokenId The tokenId to revoke.
     /// @param data Additional data to include in the transfer notification.
-    function revoke(
-        address from,
-        address to,
-        bytes32 tokenId,
-        bytes memory data
-    ) external;
+    function revoke(address from, address to, bytes32 tokenId, bytes memory data) external;
 }
