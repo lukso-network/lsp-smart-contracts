@@ -163,8 +163,8 @@ contract LSP8CustomizableTokenInit is
 
     /// @inheritdoc LSP8MintableInitAbstract
     /// @dev Overriden function to allow minting only if:
-    /// - the minting feature is enabled, from {LSP8Mintable}
-    /// - the total number of NFTs does not exceed the capped supply after minting, from {LSP8CappedSupply}
+    /// - the minting feature is enabled, from {LSP8MintableInitAbstract}
+    /// - the total number of NFTs does not exceed the capped supply after minting, from {LSP8CappedSupplyInitAbstract}
     function _mint(
         address to,
         bytes32 tokenId,
@@ -180,14 +180,7 @@ contract LSP8CustomizableTokenInit is
         )
     {
         require(isMintable, LSP8MintDisabled());
-
-        _tokenSupplyCapCheck(to, tokenId, force, data);
-        LSP8IdentifiableDigitalAssetInitAbstract._mint(
-            to,
-            tokenId,
-            force,
-            data
-        );
+        LSP8CappedSupplyInitAbstract._mint(to, tokenId, force, data);
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
@@ -232,16 +225,19 @@ contract LSP8CustomizableTokenInit is
     }
 
     /// @dev Mint initial NFTs without enforcing check if the token contract is mintable or not.
-    /// Relies on {LSP8CappedSupply} for supply cap enforcement.
+    /// Enforces the configured capped-supply value directly (not {tokenSupplyCap} when minting is disabled).
     function _initialMint(
         address to,
         bytes32[] memory initialMintTokenIds
     ) private {
-        bool exceedsSupplyCap = (totalSupply() + initialMintTokenIds.length) >
-            tokenSupplyCap();
+        uint256 configuredTokenSupplyCap = LSP8CappedSupplyInitAbstract
+            .tokenSupplyCap();
+        uint256 currentSupply = totalSupply();
 
         require(
-            tokenSupplyCap() == 0 || !exceedsSupplyCap,
+            configuredTokenSupplyCap == 0 ||
+                (currentSupply + initialMintTokenIds.length) <=
+                configuredTokenSupplyCap,
             LSP8CappedSupplyCannotMintOverCap()
         );
 

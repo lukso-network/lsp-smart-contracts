@@ -54,7 +54,6 @@ abstract contract LSP8CappedSupplyAbstract is
         bytes memory data
     ) internal virtual override {
         _tokenSupplyCapCheck(to, tokenId, force, data);
-
         super._mint(to, tokenId, force, data);
     }
 }

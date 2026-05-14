@@ -259,6 +259,75 @@ contract LSP8CustomizableTokenTest is Test {
         });
     }
 
+    /// @dev LSP8 premints one NFT per id; bound counts so fuzzing stays within practical gas.
+    function test_ConstructorNonMintableInitialMintOverSupplyCapReverts(uint256 supplyCap, uint256 preMintCount)
+        public
+    {
+        supplyCap = bound(supplyCap, 1, 128);
+        preMintCount = bound(preMintCount, supplyCap + 1, supplyCap + 64);
+
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: false,
+            initialMintTokenIds: _preMintTokenIds(preMintCount)
+        });
+
+        LSP8NonTransferableParams memory nonTransferableParams =
+            LSP8NonTransferableParams({transferLockStart: 0, transferLockEnd: 0});
+
+        LSP8CappedParams memory cappedParams =
+            LSP8CappedParams({tokenBalanceCap: 0, tokenSupplyCap: supplyCap});
+
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: false});
+
+        vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
+        new LSP8CustomizableToken(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+    }
+
+    /// @dev Same revert as `test_ConstructorNonMintableInitialMintOverSupplyCapReverts` but with an explicit `bytes32[]` (not only sequential ids).
+    function test_ConstructorNonMintableInitialMintOverSupplyCapRevertsWithExplicitTokenIds() public {
+        uint256 supplyCap = 4;
+        bytes32[] memory tokenIds = new bytes32[](5);
+        tokenIds[0] = keccak256("id-a");
+        tokenIds[1] = keccak256("id-b");
+        tokenIds[2] = keccak256("id-c");
+        tokenIds[3] = keccak256("id-d");
+        tokenIds[4] = keccak256("id-e");
+
+        LSP8MintableParams memory mintableParams =
+            LSP8MintableParams({isMintable: false, initialMintTokenIds: tokenIds});
+
+        LSP8NonTransferableParams memory nonTransferableParams =
+            LSP8NonTransferableParams({transferLockStart: 0, transferLockEnd: 0});
+
+        LSP8CappedParams memory cappedParams =
+            LSP8CappedParams({tokenBalanceCap: 0, tokenSupplyCap: supplyCap});
+
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: false});
+
+        vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
+        new LSP8CustomizableToken(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+    }
+
     function test_ConstructorRevertsIfInitialMintExceedsSupplyCap() public {
         // Create more token IDs than the supply cap allows
         bytes32[] memory tooManyTokenIds = new bytes32[](101);

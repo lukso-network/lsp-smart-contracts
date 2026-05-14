@@ -60,8 +60,77 @@ contract LSP7CustomizableTokenInitTest is Test {
             _LSP4_TOKEN_TYPE_TOKEN,
             false,
             mintableParams,
-            nonTransferableParams,
             cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+    }
+
+    function test_InitializeNonMintableInitialMintOverSupplyCapReverts(
+        uint256 supplyCap,
+        uint256 preMintAmount
+    ) public {
+        vm.assume(supplyCap > 0);
+        vm.assume(preMintAmount > supplyCap);
+
+        LSP7CustomizableTokenInit implementation = new LSP7CustomizableTokenInit();
+        address instance = Clones.clone(address(implementation));
+        LSP7CustomizableTokenInit token = LSP7CustomizableTokenInit(
+            payable(instance)
+        );
+
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
+            isMintable: false,
+            initialMintAmount: preMintAmount
+        });
+
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: supplyCap
+        });
+
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
+            isRevokable: false
+        });
+
+        vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
+        token.initialize(
+            "Custom Token",
+            "CT",
+            owner,
+            _LSP4_TOKEN_TYPE_TOKEN,
+            false,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+    }
+
+    function _deployClone(
+        LSP7MintableParams memory mintableParams,
+        LSP7NonTransferableParams memory nonTransferableParams,
+        LSP7CappedParams memory cappedParams,
+        LSP7RevokableParams memory revokableParams
+    ) internal returns (LSP7CustomizableTokenInit token) {
+        LSP7CustomizableTokenInit implementation = new LSP7CustomizableTokenInit();
+        address instance = Clones.clone(address(implementation));
+        token = LSP7CustomizableTokenInit(payable(instance));
+        token.initialize(
+            "Custom Token",
+            "CT",
+            owner,
+            _LSP4_TOKEN_TYPE_TOKEN,
+            false,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
             revokableParams
         );
     }
@@ -71,7 +140,9 @@ contract LSP7CustomizableTokenInitTest is Test {
 
         LSP7CustomizableTokenInit implementation = new LSP7CustomizableTokenInit();
         address instance = Clones.clone(address(implementation));
-        LSP7CustomizableTokenInit token = LSP7CustomizableTokenInit(payable(instance));
+        LSP7CustomizableTokenInit token = LSP7CustomizableTokenInit(
+            payable(instance)
+        );
 
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
             isMintable: true,
@@ -98,30 +169,8 @@ contract LSP7CustomizableTokenInitTest is Test {
             _LSP4_TOKEN_TYPE_TOKEN,
             false,
             mintableParams,
-            nonTransferableParams,
             cappedParams,
-            revokableParams
-        );
-    }
-
-    function _deployClone(
-        LSP7MintableParams memory mintableParams,
-        LSP7NonTransferableParams memory nonTransferableParams,
-        LSP7CappedParams memory cappedParams,
-        LSP7RevokableParams memory revokableParams
-    ) internal returns (LSP7CustomizableTokenInit token) {
-        LSP7CustomizableTokenInit implementation = new LSP7CustomizableTokenInit();
-        address instance = Clones.clone(address(implementation));
-        token = LSP7CustomizableTokenInit(payable(instance));
-        token.initialize(
-            "Custom Token",
-            "CT",
-            owner,
-            _LSP4_TOKEN_TYPE_TOKEN,
-            false,
-            mintableParams,
             nonTransferableParams,
-            cappedParams,
             revokableParams
         );
     }

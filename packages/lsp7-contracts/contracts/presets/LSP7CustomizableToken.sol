@@ -38,6 +38,9 @@ import {
 import {
     LSP7MintDisabled
 } from "../extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {
+    LSP7CappedSupplyCannotMintOverCap
+} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
 
 /// @title LSP7CustomizableToken
 /// @dev A customizable LSP7 token (proxy version) implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
@@ -130,8 +133,8 @@ contract LSP7CustomizableToken is
 
     /// @inheritdoc LSP7MintableAbstract
     /// @dev Overriden function to allow minting only if:
-    /// - the minting feature is enabled, from {LSP7Mintable}
-    /// - the total amount of tokens does not exceed the capped supply after minting, from {LSP7CappedSupply}
+    /// - the minting feature is enabled, from {LSP7MintableAbstract}
+    /// - the total amount of tokens does not exceed the capped supply after minting, from {LSP7CappedSupplyAbstract}
     function _mint(
         address to,
         uint256 amount,
@@ -147,9 +150,7 @@ contract LSP7CustomizableToken is
         )
     {
         require(isMintable, LSP7MintDisabled());
-
-        _tokenSupplyCapCheck(to, amount, force, data);
-        LSP7DigitalAsset._mint(to, amount, force, data);
+        LSP7CappedSupplyAbstract._mint(to, amount, force, data);
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
@@ -194,9 +195,17 @@ contract LSP7CustomizableToken is
     }
 
     /// @dev Mint initial tokens without enforcing check if the token contract is mintable or not.
-    /// Relies on {LSP7CappedSupply} for supply cap enforcement.
+    /// Enforces the configured capped-supply value directly before bypassing the mintable check.
     function _initialMint(address to, uint256 amount) private {
-        _tokenSupplyCapCheck(to, amount, true, "");
+        uint256 configuredTokenSupplyCap = LSP7CappedSupplyAbstract
+            .tokenSupplyCap();
+        uint256 currentSupply = totalSupply();
+
+        require(
+            configuredTokenSupplyCap == 0 ||
+                (currentSupply + amount) <= configuredTokenSupplyCap,
+            LSP7CappedSupplyCannotMintOverCap()
+        );
         LSP7DigitalAsset._mint(to, amount, true, "");
     }
 

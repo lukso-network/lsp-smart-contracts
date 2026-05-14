@@ -400,6 +400,44 @@ contract LSP7CustomizableTokenTest is Test {
         assertTrue(lockedToken.transferLockEnabled());
     }
 
+    function test_ConstructorNonMintableInitialMintOverSupplyCapReverts(uint256 supplyCap, uint256 preMintAmount) public {
+        vm.assume(supplyCap > 0);
+        vm.assume(preMintAmount > supplyCap);
+
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
+            isMintable: false,
+            initialMintAmount: preMintAmount
+        });
+
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: supplyCap
+        });
+
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
+            isRevokable: false
+        });
+
+        vm.expectRevert(LSP7CappedSupplyCannotMintOverCap.selector);
+        new LSP7CustomizableToken(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+    }
+
     function test_ConstructorRevertsIfInitialMintExceedsSupplyCap() public {
         LSP7MintableParams memory mintableParams = LSP7MintableParams({
             isMintable: isMintable,
