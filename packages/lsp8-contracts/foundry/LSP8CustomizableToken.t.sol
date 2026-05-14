@@ -259,6 +259,75 @@ contract LSP8CustomizableTokenTest is Test {
         });
     }
 
+    /// @dev LSP8 premints one NFT per id; bound counts so fuzzing stays within practical gas.
+    function test_ConstructorNonMintableInitialMintOverSupplyCapReverts(uint256 supplyCap, uint256 preMintCount)
+        public
+    {
+        supplyCap = bound(supplyCap, 1, 128);
+        preMintCount = bound(preMintCount, supplyCap + 1, supplyCap + 64);
+
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: false,
+            initialMintTokenIds: _preMintTokenIds(preMintCount)
+        });
+
+        LSP8NonTransferableParams memory nonTransferableParams =
+            LSP8NonTransferableParams({transferLockStart: 0, transferLockEnd: 0});
+
+        LSP8CappedParams memory cappedParams =
+            LSP8CappedParams({tokenBalanceCap: 0, tokenSupplyCap: supplyCap});
+
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: false});
+
+        vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
+        new LSP8CustomizableToken(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+    }
+
+    /// @dev Same revert as `test_ConstructorNonMintableInitialMintOverSupplyCapReverts` but with an explicit `bytes32[]` (not only sequential ids).
+    function test_ConstructorNonMintableInitialMintOverSupplyCapRevertsWithExplicitTokenIds() public {
+        uint256 supplyCap = 4;
+        bytes32[] memory tokenIds = new bytes32[](5);
+        tokenIds[0] = keccak256("id-a");
+        tokenIds[1] = keccak256("id-b");
+        tokenIds[2] = keccak256("id-c");
+        tokenIds[3] = keccak256("id-d");
+        tokenIds[4] = keccak256("id-e");
+
+        LSP8MintableParams memory mintableParams =
+            LSP8MintableParams({isMintable: false, initialMintTokenIds: tokenIds});
+
+        LSP8NonTransferableParams memory nonTransferableParams =
+            LSP8NonTransferableParams({transferLockStart: 0, transferLockEnd: 0});
+
+        LSP8CappedParams memory cappedParams =
+            LSP8CappedParams({tokenBalanceCap: 0, tokenSupplyCap: supplyCap});
+
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: false});
+
+        vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
+        new LSP8CustomizableToken(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+    }
+
     function test_ConstructorRevertsIfInitialMintExceedsSupplyCap() public {
         // Create more token IDs than the supply cap allows
         bytes32[] memory tooManyTokenIds = new bytes32[](101);
@@ -315,6 +384,32 @@ contract LSP8CustomizableTokenTest is Test {
         );
         assertEq(zeroMintToken.balanceOf(owner), 0, "Owner should have no tokens");
         assertEq(zeroMintToken.totalSupply(), 0, "Total supply should be zero");
+    }
+
+    /// @dev LSP8 mints one NFT per id; use a moderate count so the test stays within practical gas (LSP7 uses one _mint of 1_000_000).
+    function _preMintTokenIds(uint256 count) internal pure returns (bytes32[] memory ids) {
+        ids = new bytes32[](count);
+        for (uint256 i = 0; i < count; ++i) {
+            ids[i] = bytes32(i + 1);
+        }
+    }
+
+    function test_DeployNonMintableTokenButPreMintTokens() public {
+        uint256 preMintAmount = 1_000;
+
+        LSP8CustomizableToken nonMintableToken = _deployToken({
+            mintable_: false,
+            initialTokenIds_: _preMintTokenIds(preMintAmount),
+            tokenBalanceCap_: 0,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            revokable_: false
+        });
+
+        assertEq(nonMintableToken.balanceOf(owner), preMintAmount);
+        assertEq(nonMintableToken.totalSupply(), preMintAmount);
+        assertFalse(nonMintableToken.isMintable());
     }
 
     function test_ConstructorRevertsWithInvalidLockPeriod() public {

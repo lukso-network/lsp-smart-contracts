@@ -8,6 +8,9 @@ import {Test, Vm} from "forge-std/Test.sol";
 import {
     IAccessControl
 } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {
+    ILSP7Revokable
+} from "../contracts/extensions/LSP7Revokable/ILSP7Revokable.sol";
 
 // modules
 import {
@@ -133,6 +136,23 @@ contract LSP7RevokableTest is Test {
             lsp7Revokable.isRevokable(),
             "Revokable feature should be enabled"
         );
+    }
+
+    function test_OwnerCanDisableRevokablePermanently() public {
+        _mintTo(user1, 1000);
+
+        vm.expectEmit(true, false, false, true);
+        emit ILSP7Revokable.RevokableStatusChanged(false);
+
+        lsp7Revokable.disableRevokable();
+
+        assertFalse(lsp7Revokable.isRevokable());
+
+        vm.expectRevert(LSP7RevokableFeatureDisabled.selector);
+        lsp7Revokable.revoke(user1, owner, 500, "");
+
+        vm.expectRevert(LSP7RevokableFeatureDisabled.selector);
+        lsp7Revokable.disableRevokable();
     }
 
     function test_DeployWithoutRevokableFeatureDoesNotGrantRevokerRoleToOwner()

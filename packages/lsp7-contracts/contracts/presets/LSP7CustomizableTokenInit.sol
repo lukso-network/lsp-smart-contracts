@@ -41,6 +41,9 @@ import {
 import {
     LSP7MintDisabled
 } from "../extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {
+    LSP7CappedSupplyCannotMintOverCap
+} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
 
 /// @title LSP7CustomizableTokenInit
 /// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
@@ -70,8 +73,8 @@ contract LSP7CustomizableTokenInit is
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
         LSP7MintableParams calldata mintableParams,
-        LSP7NonTransferableParams calldata nonTransferableParams,
         LSP7CappedParams calldata cappedParams,
+        LSP7NonTransferableParams calldata nonTransferableParams,
         LSP7RevokableParams calldata revokableParams
     ) external virtual initializer {
         __LSP7CustomizableToken_init(
@@ -127,13 +130,16 @@ contract LSP7CustomizableTokenInit is
         __LSP7Revokable_init_unchained(revokableParams.isRevokable);
 
         if (mintableParams.initialMintAmount > 0) {
-            _mint(newOwner_, mintableParams.initialMintAmount, true, "");
+            _initialMint({
+                to: newOwner_,
+                amount: mintableParams.initialMintAmount
+            });
         }
     }
 
     /// @inheritdoc LSP7CappedSupplyInitAbstract
     /// @notice Returns the token supply cap.
-    /// @dev If minting is enabled, returns the configured supply cap defining the maximum tokens that can be minted.
+    /// @dev If minting is enabled, returns the configured supply cap defining the maximum amount of tokens that can be minted.
     /// If minting is disabled, returns the current total supply as the effective cap (no more tokens can be created).
     function tokenSupplyCap() public view virtual override returns (uint256) {
         return isMintable ? super.tokenSupplyCap() : totalSupply();
@@ -158,7 +164,9 @@ contract LSP7CustomizableTokenInit is
     }
 
     /// @inheritdoc LSP7MintableInitAbstract
-    /// @dev Relies on {LSP7CappedSupplyInitAbstract} for supply cap enforcement.
+    /// @dev Overridden function to allow minting only if:
+    /// - the minting feature is enabled, from {LSP7MintableInitAbstract}
+    /// - the total amount of tokens does not exceed the capped supply after minting, from {LSP7CappedSupplyInitAbstract}
     function _mint(
         address to,
         uint256 amount,
@@ -174,9 +182,7 @@ contract LSP7CustomizableTokenInit is
         )
     {
         require(isMintable, LSP7MintDisabled());
-
-        _tokenSupplyCapCheck(to, amount, force, data);
-        super._mint(to, amount, force, data);
+        LSP7CappedSupplyInitAbstract._mint(to, amount, force, data);
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
@@ -218,6 +224,21 @@ contract LSP7CustomizableTokenInit is
         )
     {
         super._transferOwnership(newOwner);
+    }
+
+    /// @dev Mint initial tokens without enforcing check if the token contract is mintable or not.
+    /// Enforces the configured capped-supply value directly before bypassing the mintable check.
+    function _initialMint(address to, uint256 amount) private {
+        uint256 configuredTokenSupplyCap = LSP7CappedSupplyInitAbstract
+            .tokenSupplyCap();
+
+        bool exceedsSupplyCap = amount > configuredTokenSupplyCap;
+
+        require(
+            configuredTokenSupplyCap == 0 || !exceedsSupplyCap,
+            LSP7CappedSupplyCannotMintOverCap()
+        );
+        LSP7DigitalAssetInitAbstract._mint(to, amount, true, "");
     }
 
     function supportsInterface(

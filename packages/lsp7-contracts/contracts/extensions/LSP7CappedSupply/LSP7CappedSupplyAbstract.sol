@@ -42,7 +42,8 @@ abstract contract LSP7CappedSupplyAbstract is LSP7DigitalAsset {
         );
     }
 
-    /// @dev Same as {_mint} but allows to mint only if the {totalSupply} does not exceed the {tokenSupplyCap} after `amount` of tokens have been minted.
+    /// @dev Same as {_mint} but allows to mint only if the {totalSupply}
+    /// does not exceed the {tokenSupplyCap} after `amount` of tokens have been minted.
     function _mint(
         address to,
         uint256 amount,
@@ -50,7 +51,6 @@ abstract contract LSP7CappedSupplyAbstract is LSP7DigitalAsset {
         bytes memory data
     ) internal virtual override {
         _tokenSupplyCapCheck(to, amount, force, data);
-
         super._mint(to, amount, force, data);
     }
 }

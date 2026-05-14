@@ -2,23 +2,15 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    OwnableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {
-    LSP7DigitalAssetInitAbstract
-} from "../../LSP7DigitalAssetInitAbstract.sol";
-import {
-    AccessControlExtendedInitAbstract
-} from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAssetInitAbstract.sol";
+import {AccessControlExtendedInitAbstract} from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
 // interfaces
 import {ILSP7Revokable} from "./ILSP7Revokable.sol";
 
 // errors
-import {
-    AccessControlUnauthorizedAccount
-} from "../AccessControlExtended/AccessControlExtendedErrors.sol";
+import {AccessControlUnauthorizedAccount} from "../AccessControlExtended/AccessControlExtendedErrors.sol";
 import {LSP7RevokableFeatureDisabled} from "./LSP7RevokableErrors.sol";
 
 /// @title LSP7RevokableInitAbstract
@@ -41,8 +33,7 @@ abstract contract LSP7RevokableInitAbstract is
     bool internal _isRevokable;
 
     /// @dev keccak256("REVOKER_ROLE")
-    bytes32 public constant REVOKER_ROLE =
-        0xce3f34913921da558f105cefb578d87278debbbd073a8d552b5de0d168deee30;
+    bytes32 public constant REVOKER_ROLE = 0xce3f34913921da558f105cefb578d87278debbbd073a8d552b5de0d168deee30;
 
     /// @notice Initializes the LSP7Revokable contract with base token params.
     /// @dev Initializes the LSP7DigitalAsset base contract.
@@ -60,21 +51,13 @@ abstract contract LSP7RevokableInitAbstract is
         bool isNonDivisible_,
         bool isRevokable_
     ) internal virtual onlyInitializing {
-        LSP7DigitalAssetInitAbstract._initialize(
-            name_,
-            symbol_,
-            newOwner_,
-            lsp4TokenType_,
-            isNonDivisible_
-        );
+        LSP7DigitalAssetInitAbstract._initialize(name_, symbol_, newOwner_, lsp4TokenType_, isNonDivisible_);
         __AccessControlExtended_init();
         __LSP7Revokable_init_unchained(isRevokable_);
     }
 
     /// @notice Unchained initializer for LSP7Revokable.
-    function __LSP7Revokable_init_unchained(
-        bool isRevokable_
-    ) internal virtual onlyInitializing {
+    function __LSP7Revokable_init_unchained(bool isRevokable_) internal virtual onlyInitializing {
         _isRevokable = isRevokable_;
 
         if (isRevokable_) {
@@ -88,50 +71,40 @@ abstract contract LSP7RevokableInitAbstract is
     }
 
     /// @inheritdoc ILSP7Revokable
-    function revoke(
-        address from,
-        address to,
-        uint256 amount,
-        bytes memory data
-    ) public virtual override onlyRole(REVOKER_ROLE) {
+    function disableRevokable() public virtual override onlyOwner {
         require(isRevokable(), LSP7RevokableFeatureDisabled());
-        require(
-            to == owner() || hasRole(REVOKER_ROLE, to),
-            AccessControlUnauthorizedAccount(to, REVOKER_ROLE)
-        );
+        _isRevokable = false;
+        emit RevokableStatusChanged({enabled: false});
+    }
+
+    /// @inheritdoc ILSP7Revokable
+    function revoke(address from, address to, uint256 amount, bytes memory data)
+        public
+        virtual
+        override
+        onlyRole(REVOKER_ROLE)
+    {
+        require(isRevokable(), LSP7RevokableFeatureDisabled());
+        require(to == owner() || hasRole(REVOKER_ROLE, to), AccessControlUnauthorizedAccount(to, REVOKER_ROLE));
 
         // We assume revokers are trusted when specifying revocation destinations.
         // Therefore, we bypass LSP1 receiver checks.
-        _transfer({
-            from: from,
-            to: to,
-            amount: amount,
-            force: true,
-            data: data
-        });
+        _transfer({from: from, to: to, amount: amount, force: true, data: data});
     }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    )
+    function supportsInterface(bytes4 interfaceId)
         public
         view
         virtual
-        override(
-            AccessControlExtendedInitAbstract,
-            LSP7DigitalAssetInitAbstract
-        )
+        override(AccessControlExtendedInitAbstract, LSP7DigitalAssetInitAbstract)
         returns (bool)
     {
-        return
-            AccessControlExtendedInitAbstract.supportsInterface(interfaceId) ||
-            LSP7DigitalAssetInitAbstract.supportsInterface(interfaceId);
+        return AccessControlExtendedInitAbstract.supportsInterface(interfaceId)
+            || LSP7DigitalAssetInitAbstract.supportsInterface(interfaceId);
     }
 
     /// @dev Overridden function to ensure previous revokers do not persist after contract ownership has been transferred.
-    function _transferOwnership(
-        address newOwner
-    )
+    function _transferOwnership(address newOwner)
         internal
         virtual
         override(AccessControlExtendedInitAbstract, OwnableUpgradeable)

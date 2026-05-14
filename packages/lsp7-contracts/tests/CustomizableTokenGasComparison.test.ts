@@ -89,14 +89,14 @@ describe('Gas Comparison: LSP7MintableInit vs CustomizableTokenInit', () => {
           initialMintAmount: INITIAL_MINT_AMOUNT,
         }, // MintableParams
         {
+          tokenBalanceCap: 0n,
+          tokenSupplyCap: 0n,
+        }, // CappedParams
+        {
           isTransferable: true,
           transferLockStart: 0n,
           transferLockEnd: 0n,
         }, // NonTransferableParams
-        {
-          tokenBalanceCap: 0n,
-          tokenSupplyCap: 0n,
-        }, // CappedParams
         {
           isRevokable: true,
         }, // RevokableParams
