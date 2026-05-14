@@ -232,12 +232,12 @@ contract LSP8CustomizableTokenInit is
     ) private {
         uint256 configuredTokenSupplyCap = LSP8CappedSupplyInitAbstract
             .tokenSupplyCap();
-        uint256 currentSupply = totalSupply();
+
+        bool exceedsSupplyCap = initialMintTokenIds.length >
+            configuredTokenSupplyCap;
 
         require(
-            configuredTokenSupplyCap == 0 ||
-                (currentSupply + initialMintTokenIds.length) <=
-                configuredTokenSupplyCap,
+            configuredTokenSupplyCap == 0 || !exceedsSupplyCap,
             LSP8CappedSupplyCannotMintOverCap()
         );
 

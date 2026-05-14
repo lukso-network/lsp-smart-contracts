@@ -231,11 +231,11 @@ contract LSP7CustomizableTokenInit is
     function _initialMint(address to, uint256 amount) private {
         uint256 configuredTokenSupplyCap = LSP7CappedSupplyInitAbstract
             .tokenSupplyCap();
-        uint256 currentSupply = totalSupply();
+
+        bool exceedsSupplyCap = amount > configuredTokenSupplyCap;
 
         require(
-            configuredTokenSupplyCap == 0 ||
-                (currentSupply + amount) <= configuredTokenSupplyCap,
+            configuredTokenSupplyCap == 0 || !exceedsSupplyCap,
             LSP7CappedSupplyCannotMintOverCap()
         );
         LSP7DigitalAssetInitAbstract._mint(to, amount, true, "");
