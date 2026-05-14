@@ -132,7 +132,7 @@ contract LSP8CustomizableToken is
     }
 
     /// @inheritdoc LSP8MintableAbstract
-    /// @dev Overriden function to allow minting only if:
+    /// @dev Overridden function to allow minting only if:
     /// - the minting feature is enabled, from {LSP8MintableAbstract}
     /// - the total number of NFTs does not exceed the capped supply after minting, from {LSP8CappedSupplyAbstract}
     function _mint(

@@ -132,7 +132,7 @@ contract LSP7CustomizableToken is
     }
 
     /// @inheritdoc LSP7MintableAbstract
-    /// @dev Overriden function to allow minting only if:
+    /// @dev Overridden function to allow minting only if:
     /// - the minting feature is enabled, from {LSP7MintableAbstract}
     /// - the total amount of tokens does not exceed the capped supply after minting, from {LSP7CappedSupplyAbstract}
     function _mint(
