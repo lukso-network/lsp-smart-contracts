@@ -46,13 +46,13 @@ import {
 } from "../extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
 
 /// @title LSP8CustomizableTokenInit
-/// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions. This is the proxy-deployable version.
-/// Implements {LSP8Burnable} to allow burning.
-/// Implements {LSP8Mintable} to allow minting.
-/// Implements {LSP8CappedSupply} to set total supply cap.
-/// Implements {LSP8CappedBalance} to set balance caps.
-/// Implements {LSP8NonTransferable} to restrict transfers.
-/// Implements {LSP8Revokable} to allow revoking tokens.
+/// @dev A customizable LSP8 token that implements multiple features and uses role-based exemptions. This version of the contract is the implementation to use behind proxies.
+/// Implements {LSP8BurnableInitAbstract} to allow burning.
+/// Implements {LSP8MintableInitAbstract} to allow minting.
+/// Implements {LSP8CappedSupplyInitAbstract} to set total supply cap.
+/// Implements {LSP8CappedBalanceInitAbstract} to set balance caps.
+/// Implements {LSP8NonTransferableInitAbstract} to restrict transfers.
+/// Implements {LSP8RevokableInitAbstract} to allow revoking tokens.
 contract LSP8CustomizableTokenInit is
     LSP8BurnableInitAbstract,
     LSP8MintableInitAbstract,
@@ -83,8 +83,8 @@ contract LSP8CustomizableTokenInit is
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_,
         LSP8MintableParams calldata mintableParams,
-        LSP8NonTransferableParams calldata nonTransferableParams,
         LSP8CappedParams calldata cappedParams,
+        LSP8NonTransferableParams calldata nonTransferableParams,
         LSP8RevokableParams calldata revokableParams
     ) external virtual initializer {
         __LSP8CustomizableToken_init(
@@ -94,8 +94,8 @@ contract LSP8CustomizableTokenInit is
             lsp4TokenType_,
             lsp8TokenIdFormat_,
             mintableParams,
-            nonTransferableParams,
             cappedParams,
+            nonTransferableParams,
             revokableParams
         );
     }
@@ -108,8 +108,8 @@ contract LSP8CustomizableTokenInit is
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_,
         LSP8MintableParams calldata mintableParams,
-        LSP8NonTransferableParams calldata nonTransferableParams,
         LSP8CappedParams calldata cappedParams,
+        LSP8NonTransferableParams calldata nonTransferableParams,
         LSP8RevokableParams calldata revokableParams
     ) internal virtual onlyInitializing {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(

@@ -45,7 +45,7 @@ import {
 } from "../extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
 
 /// @title LSP8CustomizableToken
-/// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions.
+/// @dev A customizable LSP8 token that implements multiple features and uses role-based exemptions.
 /// Implements {LSP8Burnable} to allow burning.
 /// Implements {LSP8Mintable} to allow minting.
 /// Implements {LSP8CappedSupply} to set total supply cap.

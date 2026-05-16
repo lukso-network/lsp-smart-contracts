@@ -14,7 +14,9 @@ import {
     LSP8CappedParams,
     LSP8RevokableParams
 } from "../contracts/presets/LSP8CustomizableTokenConstants.sol";
-import {LSP8TransferDisabled} from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableErrors.sol";
+import {
+    LSP8TransferDisabled
+} from "../contracts/extensions/LSP8NonTransferable/LSP8NonTransferableErrors.sol";
 import {
     LSP8CappedSupplyCannotMintOverCap
 } from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
@@ -44,15 +46,15 @@ contract LSP8CustomizableTokenInitTest is Test {
             isMintable: true,
             initialMintTokenIds: initialTokenIds
         });
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 5,
+            tokenSupplyCap: 100
+        });
         LSP8NonTransferableParams
             memory nonTransferableParams = LSP8NonTransferableParams({
                 transferLockStart: 0,
                 transferLockEnd: 0
             });
-        LSP8CappedParams memory cappedParams = LSP8CappedParams({
-            tokenBalanceCap: 5,
-            tokenSupplyCap: 100
-        });
         LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
             isRevokable: true
         });
@@ -65,8 +67,8 @@ contract LSP8CustomizableTokenInitTest is Test {
             _LSP4_TOKEN_TYPE_NFT,
             0,
             mintableParams,
-            nonTransferableParams,
             cappedParams,
+            nonTransferableParams,
             revokableParams
         );
     }
@@ -81,17 +83,26 @@ contract LSP8CustomizableTokenInitTest is Test {
 
         LSP8CustomizableTokenInit implementation = new LSP8CustomizableTokenInit();
         address instance = Clones.clone(address(implementation));
-        LSP8CustomizableTokenInit token = LSP8CustomizableTokenInit(payable(instance));
+        LSP8CustomizableTokenInit token = LSP8CustomizableTokenInit(
+            payable(instance)
+        );
 
-        LSP8MintableParams memory mintableParams =
-            LSP8MintableParams({isMintable: true, initialMintTokenIds: tooManyTokenIds});
-        LSP8NonTransferableParams memory nonTransferableParams =
-            LSP8NonTransferableParams({transferLockStart: 0, transferLockEnd: 0});
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: true,
+            initialMintTokenIds: tooManyTokenIds
+        });
         LSP8CappedParams memory cappedParams = LSP8CappedParams({
             tokenBalanceCap: 5,
             tokenSupplyCap: supplyCap
         });
-        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: true});
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: true
+        });
 
         vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
         token.initialize(
@@ -101,35 +112,42 @@ contract LSP8CustomizableTokenInitTest is Test {
             _LSP4_TOKEN_TYPE_NFT,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
             cappedParams,
+            nonTransferableParams,
             revokableParams
         );
     }
 
     /// @dev LSP8 premints one NFT per id; bound counts so fuzzing stays within practical gas.
-    function test_InitializeNonMintableInitialMintOverSupplyCapReverts(uint256 supplyCap, uint256 preMintCount)
-        public
-    {
+    function test_InitializeNonMintableInitialMintOverSupplyCapReverts(
+        uint256 supplyCap,
+        uint256 preMintCount
+    ) public {
         supplyCap = bound(supplyCap, 1, 128);
         preMintCount = bound(preMintCount, supplyCap + 1, supplyCap + 64);
 
         LSP8CustomizableTokenInit implementation = new LSP8CustomizableTokenInit();
         address instance = Clones.clone(address(implementation));
-        LSP8CustomizableTokenInit token = LSP8CustomizableTokenInit(payable(instance));
+        LSP8CustomizableTokenInit token = LSP8CustomizableTokenInit(
+            payable(instance)
+        );
 
         LSP8MintableParams memory mintableParams = LSP8MintableParams({
             isMintable: false,
             initialMintTokenIds: _preMintTokenIds(preMintCount)
         });
-
-        LSP8NonTransferableParams memory nonTransferableParams =
-            LSP8NonTransferableParams({transferLockStart: 0, transferLockEnd: 0});
-
-        LSP8CappedParams memory cappedParams =
-            LSP8CappedParams({tokenBalanceCap: 0, tokenSupplyCap: supplyCap});
-
-        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: false});
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: supplyCap
+        });
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: false
+        });
 
         vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
         token.initialize(
@@ -139,14 +157,16 @@ contract LSP8CustomizableTokenInitTest is Test {
             _LSP4_TOKEN_TYPE_NFT,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
             cappedParams,
+            nonTransferableParams,
             revokableParams
         );
     }
 
     /// @dev Same revert as `test_InitializeNonMintableInitialMintOverSupplyCapReverts` but with an explicit `bytes32[]` (not only sequential ids).
-    function test_InitializeNonMintableInitialMintOverSupplyCapRevertsWithExplicitTokenIds() public {
+    function test_InitializeNonMintableInitialMintOverSupplyCapRevertsWithExplicitTokenIds()
+        public
+    {
         uint256 supplyCap = 4;
         bytes32[] memory tokenIds = new bytes32[](5);
         tokenIds[0] = keccak256("id-a");
@@ -157,18 +177,26 @@ contract LSP8CustomizableTokenInitTest is Test {
 
         LSP8CustomizableTokenInit implementation = new LSP8CustomizableTokenInit();
         address instance = Clones.clone(address(implementation));
-        LSP8CustomizableTokenInit token = LSP8CustomizableTokenInit(payable(instance));
+        LSP8CustomizableTokenInit token = LSP8CustomizableTokenInit(
+            payable(instance)
+        );
 
-        LSP8MintableParams memory mintableParams =
-            LSP8MintableParams({isMintable: false, initialMintTokenIds: tokenIds});
-
-        LSP8NonTransferableParams memory nonTransferableParams =
-            LSP8NonTransferableParams({transferLockStart: 0, transferLockEnd: 0});
-
-        LSP8CappedParams memory cappedParams =
-            LSP8CappedParams({tokenBalanceCap: 0, tokenSupplyCap: supplyCap});
-
-        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: false});
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: false,
+            initialMintTokenIds: tokenIds
+        });
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: supplyCap
+        });
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: false
+        });
 
         vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
         token.initialize(
@@ -178,14 +206,16 @@ contract LSP8CustomizableTokenInitTest is Test {
             _LSP4_TOKEN_TYPE_NFT,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
             cappedParams,
+            nonTransferableParams,
             revokableParams
         );
     }
 
     /// @dev LSP8 mints one NFT per id; use a moderate count so the test stays within practical gas (LSP7 uses one _mint of 1_000_000).
-    function _preMintTokenIds(uint256 count) internal pure returns (bytes32[] memory ids) {
+    function _preMintTokenIds(
+        uint256 count
+    ) internal pure returns (bytes32[] memory ids) {
         ids = new bytes32[](count);
         for (uint256 i = 0; i < count; ++i) {
             ids[i] = bytes32(i + 1);
@@ -217,8 +247,8 @@ contract LSP8CustomizableTokenInitTest is Test {
 
         LSP8CustomizableTokenInit nonMintableToken = _deployClone(
             mintableParams,
-            nonTransferableParams,
             cappedParams,
+            nonTransferableParams,
             revokableParams
         );
 
@@ -229,8 +259,8 @@ contract LSP8CustomizableTokenInitTest is Test {
 
     function _deployClone(
         LSP8MintableParams memory mintableParams,
-        LSP8NonTransferableParams memory nonTransferableParams,
         LSP8CappedParams memory cappedParams,
+        LSP8NonTransferableParams memory nonTransferableParams,
         LSP8RevokableParams memory revokableParams
     ) internal returns (LSP8CustomizableTokenInit token) {
         LSP8CustomizableTokenInit implementation = new LSP8CustomizableTokenInit();
@@ -243,8 +273,8 @@ contract LSP8CustomizableTokenInitTest is Test {
             _LSP4_TOKEN_TYPE_NFT,
             tokenIdFormat,
             mintableParams,
-            nonTransferableParams,
             cappedParams,
+            nonTransferableParams,
             revokableParams
         );
     }
@@ -255,16 +285,28 @@ contract LSP8CustomizableTokenInitTest is Test {
         bytes32[] memory initialTokenIds = new bytes32[](1);
         initialTokenIds[0] = bytes32(uint256(1));
 
-        LSP8MintableParams memory mintableParams =
-            LSP8MintableParams({isMintable: true, initialMintTokenIds: initialTokenIds});
-        LSP8NonTransferableParams memory nonTransferableParams =
-            LSP8NonTransferableParams({transferLockStart: 0, transferLockEnd: 0});
-        LSP8CappedParams memory cappedParams =
-            LSP8CappedParams({tokenBalanceCap: 0, tokenSupplyCap: 0});
-        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: true});
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: true,
+            initialMintTokenIds: initialTokenIds
+        });
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: 0
+        });
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: true
+        });
 
         LSP8CustomizableTokenInit token = _deployClone(
-            mintableParams, nonTransferableParams, cappedParams, revokableParams
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
         );
 
         bytes32 tokenId = bytes32(uint256(1));
@@ -279,18 +321,28 @@ contract LSP8CustomizableTokenInitTest is Test {
 
     function test_TransferDisabledWhenNonTransferableViaEip1167Clone() public {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
-        LSP8MintableParams memory mintableParams =
-            LSP8MintableParams({isMintable: true, initialMintTokenIds: emptyTokenIds});
-        LSP8NonTransferableParams memory nonTransferableParams = LSP8NonTransferableParams({
-            transferLockStart: 0,
-            transferLockEnd: type(uint256).max
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: true,
+            initialMintTokenIds: emptyTokenIds
         });
-        LSP8CappedParams memory cappedParams =
-            LSP8CappedParams({tokenBalanceCap: 0, tokenSupplyCap: 0});
-        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: true});
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: 0
+        });
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: type(uint256).max
+            });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: true
+        });
 
         LSP8CustomizableTokenInit token = _deployClone(
-            mintableParams, nonTransferableParams, cappedParams, revokableParams
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
         );
 
         bytes32 tokenId = bytes32(uint256(1));
@@ -301,23 +353,35 @@ contract LSP8CustomizableTokenInitTest is Test {
         token.transfer(user1, user2, tokenId, true, "");
     }
 
-    function test_TransferRevertsDuringBoundedLockWindowViaEip1167Clone() public {
+    function test_TransferRevertsDuringBoundedLockWindowViaEip1167Clone()
+        public
+    {
         uint256 lockStart = block.timestamp + 1 days;
         uint256 lockEnd = lockStart + 1 days;
 
         bytes32[] memory emptyTokenIds = new bytes32[](0);
-        LSP8MintableParams memory mintableParams =
-            LSP8MintableParams({isMintable: true, initialMintTokenIds: emptyTokenIds});
-        LSP8NonTransferableParams memory nonTransferableParams = LSP8NonTransferableParams({
-            transferLockStart: lockStart,
-            transferLockEnd: lockEnd
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: true,
+            initialMintTokenIds: emptyTokenIds
         });
-        LSP8CappedParams memory cappedParams =
-            LSP8CappedParams({tokenBalanceCap: 0, tokenSupplyCap: 0});
-        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: true});
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: 0
+        });
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: lockStart,
+                transferLockEnd: lockEnd
+            });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: true
+        });
 
         LSP8CustomizableTokenInit token = _deployClone(
-            mintableParams, nonTransferableParams, cappedParams, revokableParams
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
         );
 
         bytes32 tokenId = bytes32(uint256(1));
@@ -343,18 +407,28 @@ contract LSP8CustomizableTokenInitTest is Test {
         public
     {
         bytes32[] memory emptyTokenIds = new bytes32[](0);
-        LSP8MintableParams memory mintableParams =
-            LSP8MintableParams({isMintable: true, initialMintTokenIds: emptyTokenIds});
-        LSP8NonTransferableParams memory nonTransferableParams = LSP8NonTransferableParams({
-            transferLockStart: 0,
-            transferLockEnd: type(uint256).max
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: true,
+            initialMintTokenIds: emptyTokenIds
         });
-        LSP8CappedParams memory cappedParams =
-            LSP8CappedParams({tokenBalanceCap: 0, tokenSupplyCap: 0});
-        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({isRevokable: true});
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: 0
+        });
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: type(uint256).max
+            });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: true
+        });
 
         LSP8CustomizableTokenInit token = _deployClone(
-            mintableParams, nonTransferableParams, cappedParams, revokableParams
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
         );
 
         bytes32 tokenId = bytes32(uint256(1));

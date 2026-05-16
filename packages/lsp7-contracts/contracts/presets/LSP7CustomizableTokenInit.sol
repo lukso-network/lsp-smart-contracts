@@ -46,7 +46,7 @@ import {
 } from "../extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
 
 /// @title LSP7CustomizableTokenInit
-/// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
+/// @dev A customizable LSP7 token that implements multiple features and uses role-based exemptions. This version of the contract is the implementation to use behind proxies.
 /// Implements {LSP7BurnableInitAbstract} to allow burning.
 /// Implements {LSP7MintableInitAbstract} to allow minting.
 /// Implements {LSP7CappedSupplyInitAbstract} to set balance caps.
