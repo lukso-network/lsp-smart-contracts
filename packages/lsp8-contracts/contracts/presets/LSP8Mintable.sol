@@ -21,7 +21,8 @@ contract LSP8Mintable is LSP8MintableAbstract {
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        uint256 lsp8TokenIdFormat_
+        uint256 lsp8TokenIdFormat_,
+        bool mintable_
     )
         LSP8IdentifiableDigitalAsset(
             name_,
@@ -31,6 +32,6 @@ contract LSP8Mintable is LSP8MintableAbstract {
             lsp8TokenIdFormat_
         )
         AccessControlExtendedAbstract()
-        LSP8MintableAbstract(true)
+        LSP8MintableAbstract(mintable_)
     {}
 }

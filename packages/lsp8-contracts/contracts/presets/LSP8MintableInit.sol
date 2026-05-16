@@ -35,7 +35,8 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
         string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        uint256 lsp8TokenIdFormat_
+        uint256 lsp8TokenIdFormat_,
+        bool mintable_
     ) external virtual initializer {
         LSP8IdentifiableDigitalAssetInitAbstract._initialize(
             name_,
@@ -45,6 +46,6 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
             lsp8TokenIdFormat_
         );
         __AccessControlExtended_init();
-        __LSP8Mintable_init_unchained(true);
+        __LSP8Mintable_init_unchained(mintable_);
     }
 }
