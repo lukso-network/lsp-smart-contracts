@@ -10,7 +10,7 @@ import {
 } from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
 
 /**
- * @dev LSP7DigitalAsset deployable preset contract (proxy version) with a public {mint} function callable only by the contract {owner}.
+ * @dev LSP7DigitalAsset deployable preset contract (proxy version) with a public {mint} function callable by addresses holding `MINTER_ROLE`.
  */
 contract LSP7MintableInit is LSP7MintableInitAbstract {
     /// @dev initialize (= lock) base implementation contract on deployment
@@ -23,7 +23,7 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
     /// @param symbol_ The symbol of the token.
     /// @param newOwner_ The owner of the token contract.
     /// @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
-    /// @param isNonDivisible_ Specify if the LSP7 token is a fungible or non-fungible token.
+    /// @param isNonDivisible_ Specify if the LSP7 token is is divisible (decimals = 18) or non-divisible (decimals = 0).
     /// @param mintable_ True to enable minting initially, false to disable it.
     function initialize(
         string calldata name_,

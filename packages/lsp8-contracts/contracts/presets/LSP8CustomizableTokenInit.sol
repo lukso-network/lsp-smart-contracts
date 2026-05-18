@@ -184,7 +184,10 @@ contract LSP8CustomizableTokenInit is
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
-    /// @dev Combines checks from {LSP8CappedBalance} and {LSP8NonTransferable}. Bypasses all checks for role holders configured by those extensions. Allows burning to address(0) regardless of restrictions.
+    /// @dev Combines checks from {LSP8CappedBalanceInitAbstract} and {LSP8NonTransferableInitAbstract}. 
+    /// - Bypasses {LSP8NonTransferableInitAbstract} checks for senders (`from`) holding the `NON_TRANSFERABLE_BYPASS_ROLE` role. 
+    /// - Bypasses {LSP8CappedBalanceInitAbstract} checks for recipients (`to`) holding the `UNCAPPED_BALANCE_ROLE` role. 
+    /// - Allows minting (from address(0)) and burning to address(0) regardless of restrictions.
     /// @param from The address sending the token.
     /// @param to The address receiving the token.
     /// @param tokenId The unique identifier of the token being transferred.

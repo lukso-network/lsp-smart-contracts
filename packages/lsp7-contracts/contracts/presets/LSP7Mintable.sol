@@ -11,14 +11,15 @@ import {
 } from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 /**
- * @title LSP7DigitalAsset deployable preset contract with a public {mint} function callable only by the contract {owner}.
+ * @title LSP7DigitalAsset deployable preset contract with a public {mint} function callable by addresses holding `MINTER_ROLE`.
  */
 contract LSP7Mintable is LSP7MintableAbstract {
     /// @notice Deploying a `LSP7Mintable` token contract.
+    /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param newOwner_ The owner of the token contract.
     /// @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
-    /// @param isNonDivisible_ Specify if the LSP7 token is a fungible or non-fungible token.
+    /// @param isNonDivisible_ Specify if the LSP7 token is divisible (decimals = 18) or non-divisible (decimals = 0).
     /// @param mintable_ True to enable minting initially, false to disable it.
     constructor(
         string memory name_,
