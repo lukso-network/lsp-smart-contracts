@@ -400,7 +400,10 @@ contract LSP7CustomizableTokenTest is Test {
         assertTrue(lockedToken.transferLockEnabled());
     }
 
-    function test_ConstructorNonMintableInitialMintOverSupplyCapReverts(uint256 supplyCap, uint256 preMintAmount) public {
+    function test_ConstructorNonMintableInitialMintOverSupplyCapReverts(
+        uint256 supplyCap,
+        uint256 preMintAmount
+    ) public {
         vm.assume(supplyCap > 0);
         vm.assume(preMintAmount > supplyCap);
 
@@ -727,17 +730,16 @@ contract LSP7CustomizableTokenTest is Test {
 
         token.grantRole(revokerRole, revoker1);
         token.grantRole(revokerRole, revoker2);
-        token.grantRole(revokerRole, newOwner);
 
-        assertEq(token.getRoleMemberCount(revokerRole), 4);
+        assertEq(token.getRoleMemberCount(revokerRole), 3);
 
         token.transferOwnership(newOwner);
 
         assertEq(token.owner(), newOwner);
-        assertEq(token.getRoleMemberCount(revokerRole), 0);
+        assertEq(token.getRoleMemberCount(revokerRole), 1);
+        assertTrue(token.hasRole(revokerRole, newOwner));
 
         assertFalse(token.hasRole(revokerRole, owner));
-        assertFalse(token.hasRole(revokerRole, newOwner));
         assertFalse(token.hasRole(revokerRole, revoker1));
         assertFalse(token.hasRole(revokerRole, revoker2));
 

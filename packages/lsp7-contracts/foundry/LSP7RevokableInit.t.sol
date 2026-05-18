@@ -297,14 +297,15 @@ contract LSP7RevokableInitTest is Test {
 
         assertEq(
             token.getRoleMemberCount(revokerRole),
-            0,
-            "All revokers should be cleared on ownership transfer"
+            1,
+            "All revokers should be cleared on ownership transfer (except the new owner should have REVOKER_ROLE)"
         );
+        assertTrue(token.hasRole(revokerRole, newOwner));
+        assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, newOwner));
+
         assertFalse(token.hasRole(revokerRole, owner));
         assertFalse(token.hasRole(revokerRole, revoker1));
         assertFalse(token.hasRole(revokerRole, revoker2));
-        assertFalse(token.hasRole(revokerRole, newOwner));
-        assertTrue(token.hasRole(DEFAULT_ADMIN_ROLE, newOwner));
 
         vm.prank(revoker1);
         vm.expectRevert(
