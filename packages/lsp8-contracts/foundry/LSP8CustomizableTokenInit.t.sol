@@ -30,7 +30,9 @@ contract LSP8CustomizableTokenInitTest is Test {
     address internal owner = address(this);
     address internal user1 = vm.addr(101);
     address internal user2 = vm.addr(102);
+    address internal newOwner = vm.addr(103);
     address internal revoker1 = vm.addr(104);
+    address internal revoker2 = vm.addr(105);
 
     function test_InitImplementationCannotBeInitializedAfterDeployment()
         public
@@ -446,5 +448,68 @@ contract LSP8CustomizableTokenInitTest is Test {
 
         assertEq(token.balanceOf(revoker1), 0);
         assertEq(token.tokenOwnerOf(tokenId), user2);
+    }
+
+    function test_TransferOwnershipClearsRevokersAndMigratesOwnerRolesViaEip1167Clone()
+        public
+    {
+        bytes32[] memory initialTokenIds = new bytes32[](3);
+        initialTokenIds[0] = bytes32(uint256(1));
+        initialTokenIds[1] = bytes32(uint256(2));
+        initialTokenIds[2] = bytes32(uint256(3));
+
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: true,
+            initialMintTokenIds: initialTokenIds
+        });
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 5,
+            tokenSupplyCap: 100
+        });
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: true
+        });
+
+        LSP8CustomizableTokenInit token = _deployClone(
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+
+        bytes32 revokerRole = token.REVOKER_ROLE();
+
+        token.grantRole(revokerRole, revoker1);
+        token.grantRole(revokerRole, revoker2);
+
+        // Owner is granted the REVOKER_ROLE on initialize, so we expect 4 holders
+        assertEq(token.getRoleMemberCount(revokerRole), 3);
+
+        token.transferOwnership(newOwner);
+
+        assertEq(token.owner(), newOwner);
+        assertEq(token.getRoleMemberCount(revokerRole), 1);
+        assertTrue(token.hasRole(revokerRole, newOwner));
+
+        assertFalse(token.hasRole(revokerRole, owner));
+        assertFalse(token.hasRole(revokerRole, revoker1));
+        assertFalse(token.hasRole(revokerRole, revoker2));
+
+        assertFalse(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner));
+        assertFalse(token.hasRole(token.MINTER_ROLE(), owner));
+        assertFalse(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), owner));
+        assertFalse(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), owner));
+
+        assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), newOwner));
+        assertTrue(token.hasRole(token.MINTER_ROLE(), newOwner));
+        assertTrue(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), newOwner));
+        assertTrue(
+            token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), newOwner)
+        );
     }
 }

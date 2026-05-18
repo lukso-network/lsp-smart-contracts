@@ -141,6 +141,7 @@ abstract contract LSP7NonTransferableInitAbstract is
     }
 
     /// @inheritdoc ILSP7NonTransferable
+    /// @custom:info The list of addresses holding the `NON_TRANSFERABLE_BYPASS_ROLE` remains populated after the non-transferable feature is switched off.
     function makeTransferable() public virtual override onlyOwner {
         require(transferLockEnabled, LSP7TokenAlreadyTransferable());
 

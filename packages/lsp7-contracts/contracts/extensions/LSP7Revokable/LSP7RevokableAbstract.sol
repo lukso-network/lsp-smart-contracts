@@ -52,6 +52,8 @@ abstract contract LSP7RevokableAbstract is
     }
 
     /// @inheritdoc ILSP7Revokable
+    /// @custom:warning Once this function is called, any address holding the `REVOKER_ROLE` will be inoperable.
+    /// @custom:info The list of addresses holding the `REVOKER_ROLE` remains populated after the revokable feature is switched off.
     function disableRevokable() public virtual override onlyOwner {
         require(isRevokable(), LSP7RevokableFeatureDisabled());
         _isRevokable = false;
@@ -97,19 +99,32 @@ abstract contract LSP7RevokableAbstract is
     }
 
     /// @dev Overridden function to ensure previous revokers do not persist after contract ownership has been transferred.
+    /// The only exception is if the old contract owner had the `REVOKER_ROLE`. This role will be given to the new owner.
+    ///
+    /// @custom:warning This function clears the entire `REVOKER_ROLE` member set.
+    /// - Gas cost scales linearly with the number of addresses with the `REVOKER_ROLE`.
+    /// - If the number of addresses with the `REVOKER_ROLE` is large, it might consume a lot of gas,
+    /// leading the transaction to approach or exceed the block gas limit and fail.
+    /// Consider revoking addresses with the `REVOKER_ROLE` in batches in separate transactions to mitigate this.
     function _transferOwnership(
         address newOwner
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
         // restore default admin hierarchy so a previously-installed custom admin
         // cannot grant REVOKER_ROLE to new accounts post-transfer
         _setRoleAdmin(REVOKER_ROLE, DEFAULT_ADMIN_ROLE);
-        _clearRevokers();
-        super._transferOwnership(newOwner);
-    }
 
-    function _clearRevokers() internal virtual {
-        while (getRoleMemberCount(REVOKER_ROLE) != 0) {
-            _revokeRole(REVOKER_ROLE, getRoleMember(REVOKER_ROLE, 0));
+        // Transfer all roles from old owner to new owner first (including the `REVOKER_ROLE`)
+        // before clearing the list of revokers.
+        super._transferOwnership(newOwner);
+
+        address[] memory revokers = getRoleMembers(REVOKER_ROLE);
+
+        for (uint256 ii = 0; ii < revokers.length; ++ii) {
+            // Exclude the new owner from the list of revokers to delete.
+            address revoker = revokers[ii];
+            if (revoker == newOwner) continue;
+
+            _revokeRole(REVOKER_ROLE, revoker);
         }
     }
 }

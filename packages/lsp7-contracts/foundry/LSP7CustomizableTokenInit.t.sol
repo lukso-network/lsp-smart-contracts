@@ -28,7 +28,9 @@ contract LSP7CustomizableTokenInitTest is Test {
     address internal owner = address(this);
     address internal user1 = vm.addr(101);
     address internal user2 = vm.addr(102);
+    address internal newOwner = vm.addr(103);
     address internal revoker1 = vm.addr(104);
+    address internal revoker2 = vm.addr(105);
 
     function test_InitImplementationCannotBeInitializedAfterDeployment()
         public
@@ -84,16 +86,16 @@ contract LSP7CustomizableTokenInitTest is Test {
             initialMintAmount: preMintAmount
         });
 
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: supplyCap
+        });
+
         LSP7NonTransferableParams
             memory nonTransferableParams = LSP7NonTransferableParams({
                 transferLockStart: 0,
                 transferLockEnd: 0
             });
-
-        LSP7CappedParams memory cappedParams = LSP7CappedParams({
-            tokenBalanceCap: 0,
-            tokenSupplyCap: supplyCap
-        });
 
         LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
             isRevokable: false
@@ -148,15 +150,16 @@ contract LSP7CustomizableTokenInitTest is Test {
             isMintable: true,
             initialMintAmount: supplyCap + 1
         });
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 2_000,
+            tokenSupplyCap: supplyCap
+        });
         LSP7NonTransferableParams
             memory nonTransferableParams = LSP7NonTransferableParams({
                 transferLockStart: 0,
                 transferLockEnd: 0
             });
-        LSP7CappedParams memory cappedParams = LSP7CappedParams({
-            tokenBalanceCap: 2_000,
-            tokenSupplyCap: supplyCap
-        });
+
         LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
             isRevokable: true
         });
@@ -183,16 +186,16 @@ contract LSP7CustomizableTokenInitTest is Test {
             initialMintAmount: preMintAmount
         });
 
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: 0
+        });
+
         LSP7NonTransferableParams
             memory nonTransferableParams = LSP7NonTransferableParams({
                 transferLockStart: 0,
                 transferLockEnd: 0
             });
-
-        LSP7CappedParams memory cappedParams = LSP7CappedParams({
-            tokenBalanceCap: 0,
-            tokenSupplyCap: 0
-        });
 
         LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
             isRevokable: false
@@ -365,5 +368,66 @@ contract LSP7CustomizableTokenInitTest is Test {
 
         assertEq(token.balanceOf(revoker1), 90);
         assertEq(token.balanceOf(user2), 10);
+    }
+
+    function test_TransferOwnershipClearsRevokersAndMigratesOwnerRolesViaEip1167Clone()
+        public
+    {
+        LSP7MintableParams memory mintableParams = LSP7MintableParams({
+            isMintable: true,
+            initialMintAmount: 1_000
+        });
+        LSP7CappedParams memory cappedParams = LSP7CappedParams({
+            tokenBalanceCap: 2_000,
+            tokenSupplyCap: 5_000
+        });
+        LSP7NonTransferableParams
+            memory nonTransferableParams = LSP7NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+        LSP7RevokableParams memory revokableParams = LSP7RevokableParams({
+            isRevokable: true
+        });
+
+        LSP7CustomizableTokenInit token = _deployClone(
+            mintableParams,
+            nonTransferableParams,
+            cappedParams,
+            revokableParams
+        );
+
+        bytes32 revokerRole = token.REVOKER_ROLE();
+
+        assertTrue(token.hasRole(revokerRole, owner));
+
+        token.grantRole(revokerRole, revoker1);
+        token.grantRole(revokerRole, revoker2);
+
+        // Owner is granted the REVOKER_ROLE on initialize, so we expect 3 holders
+        assertEq(token.getRoleMemberCount(revokerRole), 3);
+
+        token.transferOwnership(newOwner);
+
+        // CHECK new owner was passed the REVOKER_ROLE
+        assertEq(token.owner(), newOwner);
+        assertTrue(token.hasRole(revokerRole, newOwner));
+        assertEq(token.getRoleMemberCount(revokerRole), 1);
+
+        assertFalse(token.hasRole(revokerRole, owner));
+        assertFalse(token.hasRole(revokerRole, revoker1));
+        assertFalse(token.hasRole(revokerRole, revoker2));
+
+        assertFalse(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner));
+        assertFalse(token.hasRole(token.MINTER_ROLE(), owner));
+        assertFalse(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), owner));
+        assertFalse(token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), owner));
+
+        assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), newOwner));
+        assertTrue(token.hasRole(token.MINTER_ROLE(), newOwner));
+        assertTrue(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), newOwner));
+        assertTrue(
+            token.hasRole(token.NON_TRANSFERABLE_BYPASS_ROLE(), newOwner)
+        );
     }
 }
