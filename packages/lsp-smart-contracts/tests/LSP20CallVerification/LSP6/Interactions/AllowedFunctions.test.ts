@@ -221,6 +221,7 @@ export const shouldBehaveLikeAllowedFunctions = (buildContext: () => Promise<LSP
         context.accounts[0].address,
         LSP4_TOKEN_TYPES.NFT,
         LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
+        true,
       );
 
       await lsp7Contract

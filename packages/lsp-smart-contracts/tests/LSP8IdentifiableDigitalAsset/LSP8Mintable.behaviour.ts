@@ -35,6 +35,7 @@ export type LSP8MintableDeployParams = {
   newOwner: string;
   lsp4TokenType: number;
   lsp8TokenIdFormat: number;
+  mintable: boolean;
 };
 
 export type LSP8MintableTestContext = {

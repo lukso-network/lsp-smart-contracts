@@ -24,6 +24,7 @@ describe('LSP8Mintable with constructor', () => {
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
+      mintable: true,
     };
 
     const lsp8Mintable: LSP8Mintable = await new LSP8Mintable__factory(accounts.owner).deploy(
@@ -32,6 +33,7 @@ describe('LSP8Mintable with constructor', () => {
       deployParams.newOwner,
       deployParams.lsp4TokenType,
       deployParams.lsp8TokenIdFormat,
+      deployParams.mintable,
     );
 
     return { ethers, accounts, lsp8Mintable, deployParams };

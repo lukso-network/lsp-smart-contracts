@@ -27,6 +27,7 @@ describe('LSP8MintableInit with proxy', () => {
       newOwner: accounts.owner.address,
       lsp4TokenType: LSP4_TOKEN_TYPES.NFT,
       lsp8TokenIdFormat: LSP8_TOKEN_ID_FORMAT.NUMBER,
+      mintable: true,
     };
 
     const LSP8MintableInit: LSP8MintableInit = await new LSP8MintableInit__factory(
@@ -45,12 +46,13 @@ describe('LSP8MintableInit with proxy', () => {
   };
 
   const initializeProxy = async (context: LSP8MintableTestContext) => {
-    return context.lsp8Mintable['initialize(string,string,address,uint256,uint256)'](
+    return context.lsp8Mintable['initialize(string,string,address,uint256,uint256,bool)'](
       context.deployParams.name,
       context.deployParams.symbol,
       context.deployParams.newOwner,
       context.deployParams.lsp4TokenType,
       context.deployParams.lsp8TokenIdFormat,
+      context.deployParams.mintable,
     );
   };
 
@@ -81,13 +83,7 @@ describe('LSP8MintableInit with proxy', () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp8Mintable['initialize(string,string,address,uint256,uint256)'](
-          'XXXXXXXXXXX',
-          'XXX',
-          randomCaller.address,
-          0,
-          12345,
-        ),
+        lsp8Mintable.initialize('XXXXXXXXXXX', 'XXX', randomCaller.address, 0, 12345, true),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });
   });

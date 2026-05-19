@@ -136,10 +136,18 @@ async function deployLsp8MintableProxy(
   owner: HardhatEthersSigner,
   tokenType: number,
   tokenIdFormat: number,
+  isMintable: boolean,
 ) {
   const lsp8MintableAddress = await deployProxy(await lsp8MintableInit.getAddress(), owner);
   const lsp8Mintable = LSP8MintableInit__factory.connect(lsp8MintableAddress, owner);
-  await lsp8Mintable.initialize(tokenName, tokenSymbol, owner.address, tokenType, tokenIdFormat);
+  await lsp8Mintable.initialize(
+    tokenName,
+    tokenSymbol,
+    owner.address,
+    tokenType,
+    tokenIdFormat,
+    isMintable,
+  );
 
   return lsp8Mintable;
 }
@@ -681,6 +689,7 @@ describe('⛽📊 Gas Benchmark', () => {
           context.mainController,
           LSP4_TOKEN_TYPES.NFT,
           LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
+          true,
         );
 
         universalProfile1 = await deployUniversalProfileProxy(
@@ -858,6 +867,7 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController,
             LSP4_TOKEN_TYPES.NFT,
             LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
+            true,
           );
 
           // mint some tokens to the UP
@@ -1070,6 +1080,7 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController,
             LSP4_TOKEN_TYPES.NFT,
             LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
+            true,
           );
 
           lsp8LyxPunks = await deployLsp8MintableProxy(
@@ -1079,6 +1090,7 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController,
             LSP4_TOKEN_TYPES.NFT,
             LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
+            true,
           );
 
           [
