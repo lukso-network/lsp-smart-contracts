@@ -45,7 +45,7 @@ import {
 } from "../extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
 
 /// @title LSP8CustomizableToken
-/// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and role-based exemptions.
+/// @dev A customizable LSP8 token that implements multiple features and uses role-based exemptions.
 /// Implements {LSP8Burnable} to allow burning.
 /// Implements {LSP8Mintable} to allow minting.
 /// Implements {LSP8CappedSupply} to set total supply cap.
@@ -154,7 +154,10 @@ contract LSP8CustomizableToken is
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
-    /// @dev Combines checks from {LSP8CappedBalance} and {LSP8NonTransferable}. Bypasses all checks for role holders configured by those extensions. Allows burning to address(0) regardless of restrictions.
+    /// @dev Combines checks from {LSP8CappedBalance} and {LSP8NonTransferable}. 
+    /// - Bypasses {LSP8NonTransferable} checks for senders (`from`) holding the `NON_TRANSFERABLE_BYPASS_ROLE` role. 
+    /// - Bypasses {LSP8CappedBalance} checks for recipients (`to`) holding the `UNCAPPED_BALANCE_ROLE` role. 
+    /// - Allows minting (from address(0)) and burning to address(0) regardless of restrictions.
     /// @param from The address sending the token.
     /// @param to The address receiving the token.
     /// @param tokenId The unique identifier of the token being transferred.

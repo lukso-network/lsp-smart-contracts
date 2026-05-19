@@ -141,6 +141,7 @@ abstract contract LSP7NonTransferableInitAbstract is
     }
 
     /// @inheritdoc ILSP7NonTransferable
+    /// @custom:info The list of addresses holding the `NON_TRANSFERABLE_BYPASS_ROLE` remains populated after the non-transferable feature is switched off.
     function makeTransferable() public virtual override onlyOwner {
         require(transferLockEnabled, LSP7TokenAlreadyTransferable());
 
@@ -226,4 +227,14 @@ abstract contract LSP7NonTransferableInitAbstract is
         _setRoleAdmin(NON_TRANSFERABLE_BYPASS_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     *
+     * @custom:info The size of the `__gap` array is calculated so that the amount of storage used by the contract
+     * always adds up to the same number (in this case 50 storage slots).
+     */
+    uint256[47] private __gap;
 }

@@ -45,6 +45,8 @@ abstract contract LSP8MintableAbstract is
     }
 
     /// @inheritdoc ILSP8Mintable
+    /// @custom:warning Once this function is called, any address holding the `MINTER_ROLE` will be inoperable.
+    /// @custom:info The list of addresses holding the `MINTER_ROLE` remains populated after the minting feature is switched off.
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP8MintDisabled());
         isMintable = false;

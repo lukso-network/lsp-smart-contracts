@@ -40,7 +40,7 @@ import {
  * Provides:
  * - Standard OZ {IAccessControl} functions: hasRole, grantRole, revokeRole, renounceRole, getRoleAdmin
  * - Standard OZ {IAccessControlEnumerable} functions: getRoleMember, getRoleMemberCount
- * - Extended functions: rolesOf, grantRoleWithData, setRoleData, getRoleData
+ * - Extended functions: rolesOf, getRoleMembers
  * - Explicit role checks for every role-gated function
  * - DEFAULT_ADMIN_ROLE as root admin for granting and revoking roles
  * - Automatic transfer of all roles (and their auxiliary data, if any) between old and new on ownership transfer
@@ -120,7 +120,21 @@ abstract contract AccessControlExtendedAbstract is
         return _roleAdmins[role];
     }
 
-    /// @inheritdoc IAccessControlExtended
+    /**
+     * @inheritdoc IAccessControlExtended
+     *
+     * @dev Sets `adminRole` as the admin of `role`. Available for extensions to configure custom admin hierarchies.
+     *
+     * @custom:warning
+     * - DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
+     * - Be aware that calling `setRoleAdmin(X, X)` creates a self-admin where nobody can grant role `X` unless someone already holds role `X`.
+     *
+     * @custom:requirements
+     * - `role` cannot be the `DEFAULT_ADMIN_ROLE`.
+     * - The caller must hold the `DEFAULT_ADMIN_ROLE`.
+     *
+     * @custom:events {RoleAdminChanged} with the previous and new admin roles.
+     */
     function setRoleAdmin(
         bytes32 role,
         bytes32 adminRole
@@ -252,7 +266,6 @@ abstract contract AccessControlExtendedAbstract is
 
     /**
      * @dev Revokes `role` from `account`. No-op if the account does not hold the role.
-     * Auto-clears auxiliary data if any exists.
      *
      * @custom:events Emits {RoleRevoked} if the role was revoked.
      */
@@ -299,20 +312,6 @@ abstract contract AccessControlExtendedAbstract is
         return _roleMembers[role].contains(account);
     }
 
-    /**
-     * @dev Sets `adminRole` as the admin of `role`. Available for extensions
-     * to configure custom admin hierarchies.
-     *
-     * @custom:warning
-     * - DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
-     * - Be aware that calling `setRoleAdmin(X, X)` creates a self-admin where nobody can grant role `X` unless someone already holds role `X`.
-     *
-     * @custom:requirements
-     * - `role` cannot be the `DEFAULT_ADMIN_ROLE`.
-     * - The caller must hold the `DEFAULT_ADMIN_ROLE`.
-     *
-     * @custom:events {RoleAdminChanged} with the previous and new admin roles.
-     */
     function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
         require(
             role != DEFAULT_ADMIN_ROLE,
@@ -337,15 +336,13 @@ abstract contract AccessControlExtendedAbstract is
      * custom roles the old owner was assigned.
      *
      * For each role held by the old owner:
-     * 1. The role is revoked from the old owner (including clearing auxiliary data).
+     * 1. The role is revoked from the old owner.
      * 2. The role is granted to the new owner (if not already held).
      *
      * @custom:info When renouncing ownership, roles are only removed from the old owner. Roles are not passed to `address(0)` (being the `newOwner` in the case of renounce ownership).
      *
      * @custom:warning
      * - Gas cost scales linearly with the number of roles the old owner holds.
-     * - Auxiliary role data set on the old owner is transferred to the new owner if ownership is transferred.
-     * - Transferring ownership to self will still clear then restore the old owner's auxiliary role data.
      * - If the old owner holds a large number of roles, the transaction may approach or exceed
      *   the block gas limit and fail. Avoid assigning too many roles to the owner to ensure
      *   ownership transfers remain callable.

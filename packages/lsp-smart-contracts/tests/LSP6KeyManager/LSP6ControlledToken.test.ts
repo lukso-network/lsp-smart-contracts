@@ -40,7 +40,6 @@ const buildContext = async () => {
     accounts[0].address,
     LSP4_TOKEN_TYPES.TOKEN,
     true,
-    true,
   );
 
   const keyManager = await new LSP6KeyManager__factory(accounts[0]).deploy(lsp7.target);

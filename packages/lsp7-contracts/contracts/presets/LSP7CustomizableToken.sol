@@ -43,7 +43,7 @@ import {
 } from "../extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
 
 /// @title LSP7CustomizableToken
-/// @dev A customizable LSP7 token (proxy version) implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
+/// @dev A customizable LSP7 token that implements multiple features and uses role-based exemptions.
 /// Implements {LSP7Burnable} to allow burning.
 /// Implements {LSP7Mintable} to allow minting.
 /// Implements {LSP7CappedSupply} to set total supply cap.
@@ -59,10 +59,10 @@ contract LSP7CustomizableToken is
     LSP7RevokableAbstract
 {
     /// @notice Initializes the token with name, symbol, owner, and customizable features.
-    /// @dev Sets up minting, balance cap, transfer restrictions, allowlist, and supply cap. Mints initial tokens if specified. Reverts if initialMintAmount_ exceeds tokenSupplyCap. Inherits constructor logic from parent contracts.
+    /// @dev Sets up minting, balance cap, total supply caps, transfer restrictions, and revoking feature. Mints initial tokens if specified. Reverts if initialMintAmount_ exceeds tokenSupplyCap. Inherits constructor logic from parent contracts.
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
-    /// @param newOwner_ The initial owner of the token, added to the allowlist.
+    /// @param newOwner_ The initial owner of the token.
     /// @param lsp4TokenType_ The LSP4 token type (e.g., 0 for token).
     /// @param isNonDivisible_ True if the token is non-divisible (e.g., for NDTs).
     /// @param mintableParams Deployment configuration for minting feature (see above).
@@ -154,7 +154,10 @@ contract LSP7CustomizableToken is
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
-    /// @dev Combines checks from {LSP7CappedBalance} and {LSP7NonTransferable}. Bypasses all checks for allowlisted senders (from {LSP7NonTransferable}) or recipients (from {LSP7CappedBalance}). Allows burning to address(0) regardless of restrictions.
+    /// @dev Combines checks from {LSP7CappedBalance} and {LSP7NonTransferable}.
+    /// - Bypasses {LSP7NonTransferable} checks for senders (`from`) holding the `NON_TRANSFERABLE_BYPASS_ROLE` role.
+    /// - Bypasses {LSP7CappedBalance} checks for recipients (`to`) holding the `UNCAPPED_BALANCE_ROLE` role.
+    /// - Allows minting (from address(0)) and burning to address(0) regardless of restrictions.
     /// @param from The address sending the tokens.
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.

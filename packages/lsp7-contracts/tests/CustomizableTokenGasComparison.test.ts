@@ -69,7 +69,6 @@ describe('Gas Comparison: LSP7MintableInit vs CustomizableTokenInit', () => {
         owner.address,
         LSP4_TOKEN_TYPES.TOKEN,
         false, // isNonDivisible
-        true, // mintable
       );
       const lsp7InitReceipt = await lsp7InitTx.wait();
       const lsp7InitGasUsed = lsp7InitReceipt?.gasUsed || 0n;

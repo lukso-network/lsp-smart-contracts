@@ -13,6 +13,7 @@ import {LSP7CappedSupplyCannotMintOverCap} from "./LSP7CappedSupplyErrors.sol";
  * @dev LSP7 token extension to add a max token supply cap (proxy version).
  */
 abstract contract LSP7CappedSupplyInitAbstract is LSP7DigitalAssetInitAbstract {
+    /// @notice The maximum token supply.
     uint256 private _tokenSupplyCap;
 
     /// @notice Initializes the LSP7CappedSupply contract with base token params and supply cap.
@@ -82,4 +83,14 @@ abstract contract LSP7CappedSupplyInitAbstract is LSP7DigitalAssetInitAbstract {
         _tokenSupplyCapCheck(to, amount, force, data);
         super._mint(to, amount, force, data);
     }
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     *
+     * @custom:info The size of the `__gap` array is calculated so that the amount of storage used by the contract
+     * always adds up to the same number (in this case 50 storage slots).
+     */
+    uint256[49] private __gap;
 }

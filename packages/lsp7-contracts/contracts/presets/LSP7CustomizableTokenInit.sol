@@ -46,7 +46,7 @@ import {
 } from "../extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
 
 /// @title LSP7CustomizableTokenInit
-/// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
+/// @dev A customizable LSP7 token that implements multiple features and uses role-based exemptions. This version of the contract is the implementation to use behind proxies.
 /// Implements {LSP7BurnableInitAbstract} to allow burning.
 /// Implements {LSP7MintableInitAbstract} to allow minting.
 /// Implements {LSP7CappedSupplyInitAbstract} to set balance caps.
@@ -186,7 +186,10 @@ contract LSP7CustomizableTokenInit is
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
-    /// @dev Combines checks from {LSP7CappedBalanceInitAbstract} and {LSP7NonTransferableInitAbstract}. Bypasses all checks for allowlisted senders (from {LSP7NonTransferableInitAbstract}) or recipients (from {LSP7CappedBalanceInitAbstract}). Allows burning to address(0) regardless of restrictions.
+    /// @dev Combines checks from {LSP7CappedBalanceInitAbstract} and {LSP7NonTransferableInitAbstract}. 
+    /// - Bypasses {LSP7NonTransferableInitAbstract} checks for senders (`from`) holding the `NON_TRANSFERABLE_BYPASS_ROLE` role. 
+    /// - Bypasses {LSP7CappedBalanceInitAbstract} checks for recipients (`to`) holding the `UNCAPPED_BALANCE_ROLE` role. 
+    /// - Allows minting (from address(0)) and burning to address(0) regardless of restrictions.
     /// @param from The address sending the tokens.
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.
