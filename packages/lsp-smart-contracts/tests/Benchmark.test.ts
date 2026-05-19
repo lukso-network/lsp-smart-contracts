@@ -113,7 +113,6 @@ async function deployLsp7MintableProxy(
   owner: HardhatEthersSigner,
   tokenType: number,
   isNonDivisible: boolean,
-  isMintable: boolean,
 ) {
   const lsp7MintableAddress = await deployProxy(await lsp7MintableInit.getAddress(), owner);
   const lsp7Mintable = LSP7MintableInit__factory.connect(lsp7MintableAddress, owner);
@@ -123,7 +122,6 @@ async function deployLsp7MintableProxy(
     owner.address,
     tokenType,
     isNonDivisible,
-    isMintable,
   );
 
   return lsp7Mintable;
@@ -136,7 +134,6 @@ async function deployLsp8MintableProxy(
   owner: HardhatEthersSigner,
   tokenType: number,
   tokenIdFormat: number,
-  isMintable: boolean,
 ) {
   const lsp8MintableAddress = await deployProxy(await lsp8MintableInit.getAddress(), owner);
   const lsp8Mintable = LSP8MintableInit__factory.connect(lsp8MintableAddress, owner);
@@ -146,7 +143,6 @@ async function deployLsp8MintableProxy(
     owner.address,
     tokenType,
     tokenIdFormat,
-    isMintable,
   );
 
   return lsp8Mintable;
@@ -678,7 +674,6 @@ describe('⛽📊 Gas Benchmark', () => {
           context.mainController,
           LSP4_TOKEN_TYPES.TOKEN,
           false,
-          true,
         );
 
         // deploy a LSP8 token
@@ -689,7 +684,6 @@ describe('⛽📊 Gas Benchmark', () => {
           context.mainController,
           LSP4_TOKEN_TYPES.NFT,
           LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
-          true,
         );
 
         universalProfile1 = await deployUniversalProfileProxy(
@@ -856,7 +850,6 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController,
             LSP4_TOKEN_TYPES.TOKEN,
             false,
-            true,
           );
 
           // deploy a LSP8 NFT
@@ -867,7 +860,6 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController,
             LSP4_TOKEN_TYPES.NFT,
             LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
-            true,
           );
 
           // mint some tokens to the UP
@@ -1053,7 +1045,6 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController,
             LSP4_TOKEN_TYPES.TOKEN,
             false,
-            true,
           );
 
           lsp7LyxDai = await deployLsp7MintableProxy(
@@ -1063,7 +1054,6 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController,
             LSP4_TOKEN_TYPES.TOKEN,
             false,
-            true,
           );
 
           [lsp7MetaCoin, lsp7LyxDai].forEach(async (token) => {
@@ -1080,7 +1070,6 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController,
             LSP4_TOKEN_TYPES.NFT,
             LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
-            true,
           );
 
           lsp8LyxPunks = await deployLsp8MintableProxy(
@@ -1090,7 +1079,6 @@ describe('⛽📊 Gas Benchmark', () => {
             context.mainController,
             LSP4_TOKEN_TYPES.NFT,
             LSP8_TOKEN_ID_FORMAT.UNIQUE_ID,
-            true,
           );
 
           [
