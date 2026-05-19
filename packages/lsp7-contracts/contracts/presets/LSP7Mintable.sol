@@ -14,20 +14,21 @@ import {
  * @title LSP7DigitalAsset deployable preset contract with a public {mint} function callable by addresses holding `MINTER_ROLE`.
  */
 contract LSP7Mintable is LSP7MintableAbstract {
-    /// @notice Deploying a `LSP7Mintable` token contract.
-    /// @param name_ The name of the token.
-    /// @param symbol_ The symbol of the token.
-    /// @param newOwner_ The owner of the token contract.
-    /// @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
-    /// @param isNonDivisible_ Specify if the LSP7 token is divisible (decimals = 18) or non-divisible (decimals = 0).
-    /// @param mintable_ True to enable minting initially, false to disable it.
+    /**
+     * @notice Deploying a `LSP7Mintable` token contract.
+     * @dev Set the token to be mintable to allow minting more tokens after deployment.
+     * @param name_ The name of the token.
+     * @param symbol_ The symbol of the token.
+     * @param newOwner_ The owner of the token contract.
+     * @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
+     * @param isNonDivisible_ Specify if the LSP7 token is divisible (decimals = 18) or non-divisible (decimals = 0).
+     */
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        bool isNonDivisible_,
-        bool mintable_
+        bool isNonDivisible_
     )
         LSP7DigitalAsset(
             name_,
@@ -37,6 +38,6 @@ contract LSP7Mintable is LSP7MintableAbstract {
             isNonDivisible_
         )
         AccessControlExtendedAbstract()
-        LSP7MintableAbstract(mintable_)
+        LSP7MintableAbstract(true)
     {}
 }

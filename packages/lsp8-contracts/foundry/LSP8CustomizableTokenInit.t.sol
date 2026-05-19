@@ -487,7 +487,7 @@ contract LSP8CustomizableTokenInitTest is Test {
         token.grantRole(revokerRole, revoker1);
         token.grantRole(revokerRole, revoker2);
 
-        // Owner is granted the REVOKER_ROLE on initialize, so we expect 4 holders
+        // Owner is granted the REVOKER_ROLE on initialize, so we expect 3 holders
         assertEq(token.getRoleMemberCount(revokerRole), 3);
 
         token.transferOwnership(newOwner);
