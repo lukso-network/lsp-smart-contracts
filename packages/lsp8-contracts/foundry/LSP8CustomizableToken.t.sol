@@ -1397,6 +1397,97 @@ contract LSP8CustomizableTokenTest is Test {
         nonRevokableToken.revoke(user1, revoker1, tokenId, "");
     }
 
+    function test_RevokeToOwnerBypassesBalanceCapWhenOwnerLostUncappedRole()
+        public
+    {
+        uint256 cap = 1;
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+        bytes32 ownerTokenId = bytes32(uint256(1));
+        bytes32 revokedTokenId = bytes32(uint256(2));
+
+        LSP8CustomizableToken cappedToken = _deployToken({
+            mintable_: true,
+            initialTokenIds_: emptyTokenIds,
+            tokenBalanceCap_: cap,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            revokable_: true
+        });
+
+        cappedToken.mint(owner, ownerTokenId, true, "");
+        cappedToken.mint(user1, revokedTokenId, true, "");
+        cappedToken.grantRole(cappedToken.REVOKER_ROLE(), revoker1);
+        cappedToken.revokeRole(cappedToken.UNCAPPED_BALANCE_ROLE(), owner);
+
+        assertFalse(
+            cappedToken.hasRole(cappedToken.UNCAPPED_BALANCE_ROLE(), owner)
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8CappedBalanceExceeded.selector,
+                owner,
+                cap,
+                cap
+            )
+        );
+        vm.prank(user1);
+        cappedToken.transfer(user1, owner, revokedTokenId, true, "");
+
+        vm.prank(revoker1);
+        cappedToken.revoke(user1, owner, revokedTokenId, "");
+
+        assertEq(cappedToken.balanceOf(owner), cap + 1);
+        assertEq(cappedToken.balanceOf(user1), 0);
+        assertEq(cappedToken.tokenOwnerOf(revokedTokenId), owner);
+    }
+
+    function test_RevokeToRevokerBypassesBalanceCapWhenRevokerHasNoUncappedRole()
+        public
+    {
+        uint256 cap = 1;
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+        bytes32 revokerTokenId = bytes32(uint256(1));
+        bytes32 revokedTokenId = bytes32(uint256(2));
+
+        LSP8CustomizableToken cappedToken = _deployToken({
+            mintable_: true,
+            initialTokenIds_: emptyTokenIds,
+            tokenBalanceCap_: cap,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            revokable_: true
+        });
+
+        cappedToken.grantRole(cappedToken.REVOKER_ROLE(), revoker1);
+        cappedToken.mint(revoker1, revokerTokenId, true, "");
+        cappedToken.mint(user1, revokedTokenId, true, "");
+
+        assertFalse(
+            cappedToken.hasRole(cappedToken.UNCAPPED_BALANCE_ROLE(), revoker1)
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8CappedBalanceExceeded.selector,
+                revoker1,
+                cap,
+                cap
+            )
+        );
+        vm.prank(user1);
+        cappedToken.transfer(user1, revoker1, revokedTokenId, true, "");
+
+        vm.prank(revoker1);
+        cappedToken.revoke(user1, revoker1, revokedTokenId, "");
+
+        assertEq(cappedToken.balanceOf(revoker1), cap + 1);
+        assertEq(cappedToken.balanceOf(user1), 0);
+        assertEq(cappedToken.tokenOwnerOf(revokedTokenId), revoker1);
+    }
+
     // Fuzzing Tests
     function testFuzz_MintAmountRespectsBalanceCap(
         uint8 cap,

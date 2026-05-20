@@ -121,14 +121,20 @@ contract LSP7CustomizableToken is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (
-            msg.sig == this.revoke.selector &&
-            isRevokable() &&
-            hasRole(REVOKER_ROLE, msg.sender) &&
-            (to == owner() || hasRole(REVOKER_ROLE, to))
-        ) return;
-
+        if (_isRevocationBypass(to)) return;
         super._nonTransferableCheck(from, to, amount, force, data);
+    }
+
+    /// @dev Override to bypass the token balance cap check when revokers revoke users' tokens.
+    function _tokenBalanceCapCheck(
+        address from,
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
+        if (_isRevocationBypass(to)) return;
+        super._tokenBalanceCapCheck(from, to, amount, force, data);
     }
 
     /// @inheritdoc LSP7MintableAbstract
@@ -210,6 +216,14 @@ contract LSP7CustomizableToken is
             LSP7CappedSupplyCannotMintOverCap()
         );
         LSP7DigitalAsset._mint(to, amount, true, "");
+    }
+
+    function _isRevocationBypass(address to) private view returns (bool) {
+        return
+            msg.sig == this.revoke.selector &&
+            isRevokable() &&
+            hasRole(REVOKER_ROLE, msg.sender) &&
+            (to == owner() || hasRole(REVOKER_ROLE, to));
     }
 
     function supportsInterface(

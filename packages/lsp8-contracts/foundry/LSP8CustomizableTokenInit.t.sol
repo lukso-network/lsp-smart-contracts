@@ -21,6 +21,9 @@ import {
     LSP8CappedSupplyCannotMintOverCap
 } from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
 import {
+    LSP8CappedBalanceExceeded
+} from "../contracts/extensions/LSP8CappedBalance/LSP8CappedBalanceErrors.sol";
+import {
     _LSP4_TOKEN_TYPE_NFT
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
@@ -448,6 +451,121 @@ contract LSP8CustomizableTokenInitTest is Test {
 
         assertEq(token.balanceOf(revoker1), 0);
         assertEq(token.tokenOwnerOf(tokenId), user2);
+    }
+
+    function test_RevokeToOwnerBypassesBalanceCapWhenOwnerLostUncappedRoleViaEip1167Clone()
+        public
+    {
+        uint256 cap = 1;
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+        bytes32 ownerTokenId = bytes32(uint256(1));
+        bytes32 revokedTokenId = bytes32(uint256(2));
+
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: true,
+            initialMintTokenIds: emptyTokenIds
+        });
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: cap,
+            tokenSupplyCap: 0
+        });
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: true
+        });
+
+        LSP8CustomizableTokenInit token = _deployClone(
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+
+        token.mint(owner, ownerTokenId, true, "");
+        token.mint(user1, revokedTokenId, true, "");
+        token.grantRole(token.REVOKER_ROLE(), revoker1);
+        token.revokeRole(token.UNCAPPED_BALANCE_ROLE(), owner);
+
+        assertFalse(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), owner));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8CappedBalanceExceeded.selector,
+                owner,
+                cap,
+                cap
+            )
+        );
+        vm.prank(user1);
+        token.transfer(user1, owner, revokedTokenId, true, "");
+
+        vm.prank(revoker1);
+        token.revoke(user1, owner, revokedTokenId, "");
+
+        assertEq(token.balanceOf(owner), cap + 1);
+        assertEq(token.balanceOf(user1), 0);
+        assertEq(token.tokenOwnerOf(revokedTokenId), owner);
+    }
+
+    function test_RevokeToRevokerBypassesBalanceCapWhenRevokerHasNoUncappedRoleViaEip1167Clone()
+        public
+    {
+        uint256 cap = 1;
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+        bytes32 revokerTokenId = bytes32(uint256(1));
+        bytes32 revokedTokenId = bytes32(uint256(2));
+
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: true,
+            initialMintTokenIds: emptyTokenIds
+        });
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: cap,
+            tokenSupplyCap: 0
+        });
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: true
+        });
+
+        LSP8CustomizableTokenInit token = _deployClone(
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+
+        token.grantRole(token.REVOKER_ROLE(), revoker1);
+        token.mint(revoker1, revokerTokenId, true, "");
+        token.mint(user1, revokedTokenId, true, "");
+
+        assertFalse(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), revoker1));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8CappedBalanceExceeded.selector,
+                revoker1,
+                cap,
+                cap
+            )
+        );
+        vm.prank(user1);
+        token.transfer(user1, revoker1, revokedTokenId, true, "");
+
+        vm.prank(revoker1);
+        token.revoke(user1, revoker1, revokedTokenId, "");
+
+        assertEq(token.balanceOf(revoker1), cap + 1);
+        assertEq(token.balanceOf(user1), 0);
+        assertEq(token.tokenOwnerOf(revokedTokenId), revoker1);
     }
 
     function test_TransferOwnershipClearsRevokersAndMigratesOwnerRolesViaEip1167Clone()

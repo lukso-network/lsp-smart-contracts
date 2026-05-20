@@ -163,6 +163,24 @@ contract LSP7CustomizableTokenInit is
         super._nonTransferableCheck(from, to, amount, force, data);
     }
 
+    /// @dev Override to bypass the token balance cap check when revokers revoke users' tokens.
+    function _tokenBalanceCapCheck(
+        address from,
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
+        if (
+            msg.sig == this.revoke.selector &&
+            isRevokable() &&
+            hasRole(REVOKER_ROLE, msg.sender) &&
+            (to == owner() || hasRole(REVOKER_ROLE, to))
+        ) return;
+
+        super._tokenBalanceCapCheck(from, to, amount, force, data);
+    }
+
     /// @inheritdoc LSP7MintableInitAbstract
     /// @dev Overridden function to allow minting only if:
     /// - the minting feature is enabled, from {LSP7MintableInitAbstract}
