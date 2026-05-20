@@ -202,9 +202,9 @@ contract LSP8CustomizableTokenInit is
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
-    /// @dev Combines checks from {LSP8CappedBalanceInitAbstract} and {LSP8NonTransferableInitAbstract}. 
-    /// - Bypasses {LSP8NonTransferableInitAbstract} checks for senders (`from`) holding the `NON_TRANSFERABLE_BYPASS_ROLE` role. 
-    /// - Bypasses {LSP8CappedBalanceInitAbstract} checks for recipients (`to`) holding the `UNCAPPED_BALANCE_ROLE` role. 
+    /// @dev Combines checks from {LSP8CappedBalanceInitAbstract} and {LSP8NonTransferableInitAbstract}.
+    /// - Bypasses {LSP8NonTransferableInitAbstract} checks for senders (`from`) holding the `NON_TRANSFERABLE_BYPASS_ROLE` role.
+    /// - Bypasses {LSP8CappedBalanceInitAbstract} checks for recipients (`to`) holding the `UNCAPPED_BALANCE_ROLE` role.
     /// - Allows minting (from address(0)) and burning to address(0) regardless of restrictions.
     /// @param from The address sending the token.
     /// @param to The address receiving the token.
@@ -253,15 +253,17 @@ contract LSP8CustomizableTokenInit is
     ) private {
         uint256 configuredTokenSupplyCap = LSP8CappedSupplyInitAbstract
             .tokenSupplyCap();
+        bool isCappedSupplyConfigured = configuredTokenSupplyCap > 0;
 
-        bool exceedsSupplyCap = initialMintTokenIds.length >
-            configuredTokenSupplyCap;
+        if (isCappedSupplyConfigured) {
+            bool mintingExceedsSupplyCap = initialMintTokenIds.length >
+                configuredTokenSupplyCap;
 
-        require(
-            configuredTokenSupplyCap == 0 || !exceedsSupplyCap,
-            LSP8CappedSupplyCannotMintOverCap()
-        );
-
+            require(
+                !mintingExceedsSupplyCap,
+                LSP8CappedSupplyCannotMintOverCap()
+            );
+        }
         for (uint256 ii = 0; ii < initialMintTokenIds.length; ++ii) {
             LSP8IdentifiableDigitalAssetInitAbstract._mint(
                 to,
@@ -269,6 +271,18 @@ contract LSP8CustomizableTokenInit is
                 true,
                 ""
             );
+
+            if (isCappedSupplyConfigured) {
+                // CHECK if the `to` address is a contract that minted more tokens
+                // through its `universalReceiver(...)` function after being notified via LSP1.
+                bool currentSupplyExceedsSupplyCap = totalSupply() >
+                    configuredTokenSupplyCap;
+
+                require(
+                    !currentSupplyExceedsSupplyCap,
+                    LSP8CappedSupplyCannotMintOverCap()
+                );
+            }
         }
     }
 

@@ -6,6 +6,9 @@ import {Test} from "forge-std/Test.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 
 import {
+    ILSP1UniversalReceiver
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
+import {
     LSP8CustomizableTokenInit
 } from "../contracts/presets/LSP8CustomizableTokenInit.sol";
 import {
@@ -26,6 +29,39 @@ import {
 import {
     _LSP4_TOKEN_TYPE_NFT
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+
+contract ReentrantLSP8InitialMintOwner is ILSP1UniversalReceiver {
+    LSP8CustomizableTokenInit internal token;
+    bytes32 internal tokenIdToMint;
+    bool internal hasReentered;
+
+    function setReentrantMint(
+        LSP8CustomizableTokenInit token_,
+        bytes32 tokenIdToMint_
+    ) external {
+        token = token_;
+        tokenIdToMint = tokenIdToMint_;
+    }
+
+    function universalReceiver(
+        bytes32 /* typeId */,
+        bytes calldata /* data */
+    ) external payable returns (bytes memory) {
+        if (msg.sender != address(token) || hasReentered) return "";
+
+        hasReentered = true;
+        token.grantRole(token.MINTER_ROLE(), address(this));
+        token.mint(address(this), tokenIdToMint, true, "");
+
+        return "";
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) external pure returns (bool) {
+        return interfaceId == type(ILSP1UniversalReceiver).interfaceId;
+    }
+}
 
 contract LSP8CustomizableTokenInitTest is Test {
     uint256 internal constant tokenIdFormat = 0;
@@ -114,6 +150,55 @@ contract LSP8CustomizableTokenInitTest is Test {
             "Custom NFT",
             "CNFT",
             owner,
+            _LSP4_TOKEN_TYPE_NFT,
+            tokenIdFormat,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+    }
+
+    function test_InitializeRevertsIfLSP1OwnerReentersInitialMintOverSupplyCap()
+        public
+    {
+        uint256 supplyCap = 3;
+        bytes32[] memory initialTokenIds = new bytes32[](supplyCap);
+        initialTokenIds[0] = bytes32(uint256(1));
+        initialTokenIds[1] = bytes32(uint256(2));
+        initialTokenIds[2] = bytes32(uint256(3));
+
+        LSP8CustomizableTokenInit implementation = new LSP8CustomizableTokenInit();
+        address instance = Clones.clone(address(implementation));
+        LSP8CustomizableTokenInit token = LSP8CustomizableTokenInit(
+            payable(instance)
+        );
+
+        ReentrantLSP8InitialMintOwner reentrantOwner = new ReentrantLSP8InitialMintOwner();
+        reentrantOwner.setReentrantMint(token, bytes32(uint256(4)));
+
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: true,
+            initialMintTokenIds: initialTokenIds
+        });
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: supplyCap
+        });
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: 0,
+                transferLockEnd: 0
+            });
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: false
+        });
+
+        vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
+        token.initialize(
+            "Custom NFT",
+            "CNFT",
+            address(reentrantOwner),
             _LSP4_TOKEN_TYPE_NFT,
             tokenIdFormat,
             mintableParams,
