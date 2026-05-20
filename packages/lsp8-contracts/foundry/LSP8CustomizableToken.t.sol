@@ -46,7 +46,8 @@ import {
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 contract ReentrantLSP8ConstructorInitialMintOwner is ILSP1UniversalReceiver {
-    bytes32 internal constant _MINTER_ROLE =
+        // keccak256("MINTER_ROLE")
+        bytes32 internal constant _MINTER_ROLE =
         0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6;
 
     bytes32 internal tokenIdToMint;
@@ -585,6 +586,8 @@ contract LSP8CustomizableTokenTest is Test {
             isRevokable: false
         });
 
+        // Callbacks cannot successfully call code on the token while it is under construction.
+        // This results in an empty revert.
         vm.expectRevert();
         new LSP8CustomizableToken(
             name,
