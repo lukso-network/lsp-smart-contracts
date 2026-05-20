@@ -102,14 +102,18 @@ abstract contract LSP8CappedBalanceInitAbstract is
 
     /// @notice Checks if a token transfer complies with the balance cap.
     /// @dev The address(0) is not subject to balance cap checks as this address is used for burning tokens. Reverts with {LSP8CappedBalanceExceeded} if the recipient's NFT count after receiving the token would exceed the maximum allowed.
+    /// @param from The address sending the token.
     /// @param to The address receiving the token.
     function _tokenBalanceCapCheck(
-        address /* from */,
+        address from,
         address to,
         bytes32 /* tokenId */,
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
+        // self-transfers do not increase the balance of the recipient, so we skip the check
+        if (from == to) return;
+
         // Address(0) and 0x0000...dead addresses are used for burning tokens
         if (to == address(0) || to == _DEAD_ADDRESS) return;
 

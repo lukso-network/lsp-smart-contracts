@@ -65,15 +65,19 @@ abstract contract LSP7CappedBalanceAbstract is
 
     /// @notice Checks if a token transfer complies with the balance cap.
     /// @dev The address(0) is not subject to balance cap checks as this address is used for burning tokens. Reverts with {LSP7CappedBalanceExceeded} if the recipient's balance after receiving tokens would exceed the maximum allowed balance.
+    /// @param from The address sending the tokens.
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.
     function _tokenBalanceCapCheck(
-        address /* from */,
+        address from,
         address to,
         uint256 amount,
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
+        // self-transfers do not increase the balance of the recipient, so we skip the check
+        if (from == to) return;
+
         // Address(0) and 0x0000...dead addresses are used for burning tokens
         if (to == address(0) || to == _DEAD_ADDRESS) return;
 
