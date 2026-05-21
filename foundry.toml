@@ -44,7 +44,6 @@ evm_version = "prague"
 runs = 256
 depth = 100
 fail_on_revert = false
-max_time_delay = "1 days"
 max_block_delay = 1000
 
 [profile.lsp8]
@@ -60,7 +59,6 @@ evm_version = "prague"
 runs = 256
 depth = 100
 fail_on_revert = false
-max_time_delay = "1 days"
 max_block_delay = 1000
 
 [profile.lsp11]
