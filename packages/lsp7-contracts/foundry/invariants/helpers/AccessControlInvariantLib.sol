@@ -1,17 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.28;
 
-import {
-    LSP7CustomizableToken
-} from "../../../contracts/presets/LSP7CustomizableToken.sol";
+import {IAccessControlInvariantTarget} from "./IAccessControlInvariantTarget.sol";
 
-/// @dev Shared view helpers for AccessControlExtended invariants (8–10).
+/// @dev Shared view helpers for AccessControlExtended invariants (8–11).
 library AccessControlInvariantLib {
-    address internal constant DEAD_ADDRESS =
-        0x000000000000000000000000000000000000dEaD;
-
     function assertOwnerHasDefaultAdmin(
-        LSP7CustomizableToken token
+        IAccessControlInvariantTarget token
     ) internal view {
         require(
             token.hasRole(token.DEFAULT_ADMIN_ROLE(), token.owner()),
@@ -20,7 +15,7 @@ library AccessControlInvariantLib {
     }
 
     function assertRoleIndexesConsistent(
-        LSP7CustomizableToken token,
+        IAccessControlInvariantTarget token,
         bytes32[] memory roles,
         address[] memory accounts
     ) internal view {

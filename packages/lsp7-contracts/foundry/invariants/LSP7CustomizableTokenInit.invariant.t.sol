@@ -4,25 +4,36 @@ pragma solidity ^0.8.28;
 import {InvariantTest} from "forge-std/InvariantTest.sol";
 
 import {
-    LSP7CustomizableToken
-} from "../../contracts/presets/LSP7CustomizableToken.sol";
+    LSP7CustomizableTokenInit
+} from "../../contracts/presets/LSP7CustomizableTokenInit.sol";
 import {
-    LSP7CustomizableTokenHandler
-} from "./handlers/LSP7CustomizableTokenHandler.sol";
+    LSP7MintableParams,
+    LSP7NonTransferableParams,
+    LSP7CappedParams,
+    LSP7RevokableParams
+} from "../../contracts/presets/LSP7CustomizableTokenConstants.sol";
+import {
+    LSP7CustomizableTokenInitHandler
+} from "./handlers/LSP7CustomizableTokenInitHandler.sol";
 import {InvariantConstants} from "./helpers/InvariantConstants.sol";
+import {
+    _LSP4_TOKEN_TYPE_TOKEN
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
-/// @dev Invariants 1–7 for LSP7CustomizableToken.sol & LSP7CustomizableTokenInit.sol (preset section).
-/// Run: `FOUNDRY_PROFILE=lsp7 forge test --match-contract LSP7CustomizableTokenInvariantTest`
-contract LSP7CustomizableTokenInvariantTest is InvariantTest {
-    LSP7CustomizableTokenHandler internal handler;
-    LSP7CustomizableToken internal token;
+/// @dev Invariants 1–7 and 12 for LSP7CustomizableTokenInit.sol (preset section).
+/// Run: `FOUNDRY_PROFILE=lsp7 forge test --match-contract LSP7CustomizableTokenInitInvariantTest`
+contract LSP7CustomizableTokenInitInvariantTest is InvariantTest {
+    LSP7CustomizableTokenInitHandler internal handler;
+    LSP7CustomizableTokenInit internal token;
 
     function setUp() public {
-        handler = new LSP7CustomizableTokenHandler();
+        handler = new LSP7CustomizableTokenInitHandler();
         token = handler.token();
 
         targetContract(address(handler));
         vm.warp(InvariantConstants.TRANSFER_LOCK_START);
+
+        _assertImplementationCannotBeInitialized(handler.implementation());
     }
 
     /// @dev 1. Capped supply is never exceeded by any mint, including initial mint. If configuredTokenSupplyCap := LSP7CappedSupply{Init}Abstract.tokenSupplyCap() and configuredTokenSupplyCap != 0, then after any successful mint/initialMint: totalSupply() <= configuredTokenSupplyCap
@@ -66,5 +77,30 @@ contract LSP7CustomizableTokenInvariantTest is InvariantTest {
         if (owner_ == address(0)) return;
 
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner_));
+    }
+
+    /// @dev 12. Proxy implementations cannot be initialized via constructors and can only be initialized once. For *Init contracts, constructor must call _disableInitializers(), and initialize(...) (guarded by initializer) can succeed at most once per proxy instance
+    function invariant_proxyInitializeOnceOnly() public {
+        assertFalse(handler.ghost_secondInitializeSucceeded());
+    }
+
+    function _assertImplementationCannotBeInitialized(
+        LSP7CustomizableTokenInit implementation_
+    ) internal {
+        vm.expectRevert("Initializable: contract is already initialized");
+        implementation_.initialize(
+            "Implementation",
+            "IMPL",
+            address(this),
+            _LSP4_TOKEN_TYPE_TOKEN,
+            false,
+            LSP7MintableParams({isMintable: true, initialMintAmount: 1}),
+            LSP7CappedParams({
+                tokenBalanceCap: InvariantConstants.BALANCE_CAP,
+                tokenSupplyCap: InvariantConstants.SUPPLY_CAP
+            }),
+            LSP7NonTransferableParams({transferLockStart: 0, transferLockEnd: 0}),
+            LSP7RevokableParams({isRevokable: true})
+        );
     }
 }

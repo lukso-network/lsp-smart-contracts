@@ -2,26 +2,30 @@
 pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
+import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 
 import {
-    LSP7CustomizableToken,
+    LSP7CustomizableTokenInit
+} from "../../../contracts/presets/LSP7CustomizableTokenInit.sol";
+import {
     LSP7MintableParams,
     LSP7NonTransferableParams,
     LSP7CappedParams,
     LSP7RevokableParams
-} from "../../../contracts/presets/LSP7CustomizableToken.sol";
+} from "../../../contracts/presets/LSP7CustomizableTokenConstants.sol";
 import {InvariantConstants} from "../helpers/InvariantConstants.sol";
 import {
     _LSP4_TOKEN_TYPE_TOKEN
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
-/// @dev Handler for LSP7CustomizableToken preset invariants 1–7.
-contract LSP7CustomizableTokenHandler is Test {
+/// @dev Handler for LSP7CustomizableTokenInit preset invariants 1–7 and 12.
+contract LSP7CustomizableTokenInitHandler is Test {
     uint256 internal constant NUM_ACTORS = 6;
     address internal constant DEAD_ADDRESS =
         0x000000000000000000000000000000000000dEaD;
 
-    LSP7CustomizableToken public token;
+    LSP7CustomizableTokenInit public implementation;
+    LSP7CustomizableTokenInit public token;
 
     uint256 public configuredSupplyCap;
     uint256 public configuredBalanceCap;
@@ -34,6 +38,7 @@ contract LSP7CustomizableTokenHandler is Test {
     uint256 public ghost_supplyWhenMintDisabled;
     bool public ghost_mintingWasDisabled;
     bool public ghost_transferLockViolation;
+    bool public ghost_secondInitializeSucceeded;
 
     modifier useActor(uint256 actorSeed) {
         currentActor = actors[bound(actorSeed, 0, actors.length - 1)];
@@ -47,7 +52,7 @@ contract LSP7CustomizableTokenHandler is Test {
         configuredBalanceCap = InvariantConstants.BALANCE_CAP;
 
         for (uint256 i; i < NUM_ACTORS; ++i) {
-            actors.push(makeAddr(string(abi.encodePacked("actor", i))));
+            actors.push(makeAddr(string(abi.encodePacked("initActor", i))));
         }
 
         address deployer = address(this);
@@ -56,9 +61,13 @@ contract LSP7CustomizableTokenHandler is Test {
             ? bound(configuredSupplyCap / 4, 1, configuredSupplyCap)
             : 100;
 
-        token = new LSP7CustomizableToken(
-            "Invariant Token",
-            "INV",
+        implementation = new LSP7CustomizableTokenInit();
+        address instance = Clones.clone(address(implementation));
+        token = LSP7CustomizableTokenInit(payable(instance));
+
+        token.initialize(
+            "Invariant Init Token",
+            "INVI",
             deployer,
             _LSP4_TOKEN_TYPE_TOKEN,
             false,
@@ -159,24 +168,25 @@ contract LSP7CustomizableTokenHandler is Test {
         } catch {}
     }
 
-    function disableRevokable() external {
-        if (!token.isRevokable()) return;
-
-        vm.prank(token.owner());
-        try token.disableRevokable() {} catch {}
-    }
-
-    function makeTransferable() external {
-        vm.prank(token.owner());
-        try token.makeTransferable() {} catch {}
-    }
-
-    function updateTransferLockPeriod(uint256 newStart, uint256 newEnd) external {
-        newStart = bound(newStart, 0, 30 days);
-        newEnd = bound(newEnd, newStart, 60 days);
-
-        vm.prank(token.owner());
-        try token.updateTransferLockPeriod(newStart, newEnd) {} catch {}
+    function attemptSecondInitialize() external {
+        try
+            token.initialize(
+                "Reinit",
+                "RE",
+                address(this),
+                _LSP4_TOKEN_TYPE_TOKEN,
+                false,
+                LSP7MintableParams({isMintable: true, initialMintAmount: 1}),
+                LSP7CappedParams({
+                    tokenBalanceCap: configuredBalanceCap,
+                    tokenSupplyCap: configuredSupplyCap
+                }),
+                LSP7NonTransferableParams({transferLockStart: 0, transferLockEnd: 0}),
+                LSP7RevokableParams({isRevokable: true})
+            )
+        {
+            ghost_secondInitializeSucceeded = true;
+        } catch {}
     }
 
     function warpTime(uint256 secondsForward) external {
@@ -191,16 +201,6 @@ contract LSP7CustomizableTokenHandler is Test {
         vm.prank(oldOwner);
         try token.transferOwnership(newOwner) {
             _assertOwnerAdminSync(oldOwner, newOwner);
-            _trackHolder(newOwner);
-        } catch {}
-    }
-
-    function renounceOwnership() external {
-        address oldOwner = token.owner();
-
-        vm.prank(oldOwner);
-        try token.transferOwnership(address(0)) {
-            _assertOwnerAdminSync(oldOwner, address(0));
         } catch {}
     }
 
@@ -210,18 +210,18 @@ contract LSP7CustomizableTokenHandler is Test {
         }
     }
 
-    function isBalanceCapExempt(address account) public view returns (bool) {
-        return
-            account == address(0) ||
-            account == DEAD_ADDRESS ||
-            token.hasRole(token.UNCAPPED_BALANCE_ROLE(), account);
-    }
-
     function _assertRecipientBalanceCap(address to) internal {
         uint256 cap = configuredBalanceCap;
         if (cap == 0 || isBalanceCapExempt(to)) return;
 
         assertLe(token.balanceOf(to), cap);
+    }
+
+    function isBalanceCapExempt(address account) public view returns (bool) {
+        return
+            account == address(0) ||
+            account == DEAD_ADDRESS ||
+            token.hasRole(token.UNCAPPED_BALANCE_ROLE(), account);
     }
 
     function _assertOwnerAdminSync(address oldOwner, address newOwner) internal {

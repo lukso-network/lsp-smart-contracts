@@ -40,6 +40,13 @@ optimizer_runs = 20000
 solc = "0.8.28"
 evm_version = "prague"
 
+[profile.lsp7.invariant]
+runs = 256
+depth = 100
+fail_on_revert = false
+max_time_delay = "1 days"
+max_block_delay = 1000
+
 [profile.lsp8]
 src = 'packages/lsp8-contracts/contracts'
 test = 'packages/lsp8-contracts/foundry'
