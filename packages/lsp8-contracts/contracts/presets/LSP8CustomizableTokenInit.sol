@@ -171,13 +171,7 @@ contract LSP8CustomizableTokenInit is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (
-            msg.sig == this.revoke.selector &&
-            isRevokable() &&
-            hasRole(REVOKER_ROLE, msg.sender) &&
-            (to == owner() || hasRole(REVOKER_ROLE, to))
-        ) return;
-
+        if (_isRevocationBypass(to)) return;
         super._nonTransferableCheck(from, to, tokenId, force, data);
     }
 
@@ -189,13 +183,7 @@ contract LSP8CustomizableTokenInit is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (
-            msg.sig == this.revoke.selector &&
-            isRevokable() &&
-            hasRole(REVOKER_ROLE, msg.sender) &&
-            (to == owner() || hasRole(REVOKER_ROLE, to))
-        ) return;
-
+        if (_isRevocationBypass(to)) return;
         super._tokenBalanceCapCheck(from, to, tokenId, force, data);
     }
 
@@ -313,7 +301,7 @@ contract LSP8CustomizableTokenInit is
     }
 
     /// @dev Returns whether the current call is a legitimate revocation that should bypass the
-    /// {LSP7NonTransferableInitAbstract} and {LSP7CappedBalanceInitAbstract} restrictions when revoking tokens from a token holder.
+    /// {LSP8NonTransferableInitAbstract} and {LSP8CappedBalanceInitAbstract} restrictions when revoking tokens from a token holder.
     ///
     /// Returns `true` only when all of the following conditions are met:
     /// - the function being called is {revoke}.

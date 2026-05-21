@@ -46,7 +46,7 @@ contract ReentrantLSP8InitialMintOwner is ILSP1UniversalReceiver {
     function universalReceiver(
         bytes32 /* typeId */,
         bytes calldata /* data */
-    ) external payable returns (bytes memory) {
+    ) external payable override returns (bytes memory) {
         if (msg.sender != address(token) || hasReentered) return "";
 
         hasReentered = true;

@@ -22,6 +22,8 @@ The **LSP8 Customizable Token** presets and their token extensions listed below 
 - [`LSP8NonTransferable`](contracts/extensions/LSP8NonTransferable/)
 - [`LSP8Revokable`](contracts/extensions/LSP8Revokable/)
 
+> The contracts [`LSP8Votes`](contracts/extensions/LSP8Votes/LSP8Votes.sol) and [`LSP8VotesInitAbstract`](contracts/extensions/LSP8Votes/LSP8VotesInitAbstract.sol) have not been formally audited by an external third party and are not recommended to be used in production without undergoing an independent security audit.
+
 ## Installation
 
 ```console

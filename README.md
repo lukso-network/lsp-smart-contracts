@@ -92,7 +92,12 @@ The following audits and formal verification were conducted. All high-level issu
 - Code4Rena Audit Contest, 2023-06-30 to 2023-07-14, Final Result: [See Code4Rena audit report on Code4rena.com website](https://code4rena.com/reports/2023-06-lukso)
 - MiloTruck, 2023-11-31, Final Result: [MiloTruck_audit_2023_11_31.pdf](./audits/MiloTruck_audit_2023_11_31.pdf)
 - MiloTruck, 2024-01-24, Final Result: [MiloTruck_audit_2024_01_24.pdf](./audits/MiloTruck_audit_2024_01_24.pdf)
-- Nethermind AI Audit Agent, 2026-05-19, Final Result: [Nethermind_AI_Audit_Agent_2026_05_19.pdf](./audits/Nethermind_AI_Audit_Agent_2026_05_19.pdf)
+
+### AI Audit Agent scan (Nethermind)
+
+> **Disclaimer:** The report below was produced by [Nethermind's AI Audit Agent](https://auditagent.nethermind.io/) tool. It is AI-generated output and was **not** manually reviewed by Nethermind's security team. It is **not** a full security audit and must not be presented or interpreted as one.
+
+- Nethermind AI Audit Agent scan, 2026-05-19: [Nethermind_AI_Audit_Agent_2026_05_19.pdf](./audits/Nethermind_AI_Audit_Agent_2026_05_19.pdf) — see [audits/README.md](./audits/README.md#nethermind-ai-audit-agent-scan) for a findings summary.
 
 ## Contribute
 
