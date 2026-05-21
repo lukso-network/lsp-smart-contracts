@@ -93,6 +93,12 @@ The following audits and formal verification were conducted. All high-level issu
 - MiloTruck, 2023-11-31, Final Result: [MiloTruck_audit_2023_11_31.pdf](./audits/MiloTruck_audit_2023_11_31.pdf)
 - MiloTruck, 2024-01-24, Final Result: [MiloTruck_audit_2024_01_24.pdf](./audits/MiloTruck_audit_2024_01_24.pdf)
 
+### AI Audit Agent scan (Nethermind)
+
+> **Disclaimer:** The report below was produced by [Nethermind's AI Audit Agent](https://auditagent.nethermind.io/) tool. It is AI-generated output and was **not** manually reviewed by Nethermind's security team. It is **not** a full security audit and must not be presented or interpreted as one.
+
+- Nethermind AI Audit Agent scan, 2026-05-19: [Nethermind_AI_Audit_Agent_2026_05_19.pdf](./audits/Nethermind_AI_Audit_Agent_2026_05_19.pdf) — see [audits/README.md](./audits/README.md#nethermind-ai-audit-agent-scan) for a findings summary.
+
 ## Contribute
 
 The implementation contracts of the [LSPs](https://github.com/lukso-network/LIPs) exist thanks to their contributors. There are many ways you can participate and help build high quality software. Check out the [contribution guidelines](./CONTRIBUTING.md)!

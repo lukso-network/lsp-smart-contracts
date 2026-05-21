@@ -143,6 +143,26 @@ contract LSP8CustomizableTokenInit is
         return isMintable ? super.tokenSupplyCap() : totalSupply();
     }
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {supportsInterface} functions
+    /// via `super` to aggregate the interface IDs supported across all inherited modules.
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            LSP8IdentifiableDigitalAssetInitAbstract,
+            LSP8MintableInitAbstract,
+            LSP8CappedBalanceInitAbstract,
+            LSP8NonTransferableInitAbstract,
+            LSP8RevokableInitAbstract
+        )
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
     /// @dev Override to bypass the non transferable check when revokers revoke users' tokens.
     function _nonTransferableCheck(
         address from,
@@ -151,14 +171,20 @@ contract LSP8CustomizableTokenInit is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (
-            msg.sig == this.revoke.selector &&
-            isRevokable() &&
-            hasRole(REVOKER_ROLE, msg.sender) &&
-            (to == owner() || hasRole(REVOKER_ROLE, to))
-        ) return;
-
+        if (_isRevocationBypass(to)) return;
         super._nonTransferableCheck(from, to, tokenId, force, data);
+    }
+
+    /// @dev Override to bypass the token balance cap check when revokers revoke users' tokens.
+    function _tokenBalanceCapCheck(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
+        if (_isRevocationBypass(to)) return;
+        super._tokenBalanceCapCheck(from, to, tokenId, force, data);
     }
 
     /// @inheritdoc LSP8MintableInitAbstract
@@ -184,9 +210,9 @@ contract LSP8CustomizableTokenInit is
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
-    /// @dev Combines checks from {LSP8CappedBalanceInitAbstract} and {LSP8NonTransferableInitAbstract}. 
-    /// - Bypasses {LSP8NonTransferableInitAbstract} checks for senders (`from`) holding the `NON_TRANSFERABLE_BYPASS_ROLE` role. 
-    /// - Bypasses {LSP8CappedBalanceInitAbstract} checks for recipients (`to`) holding the `UNCAPPED_BALANCE_ROLE` role. 
+    /// @dev Combines checks from {LSP8CappedBalanceInitAbstract} and {LSP8NonTransferableInitAbstract}.
+    /// - Bypasses {LSP8NonTransferableInitAbstract} checks for senders (`from`) holding the `NON_TRANSFERABLE_BYPASS_ROLE` role.
+    /// - Bypasses {LSP8CappedBalanceInitAbstract} checks for recipients (`to`) holding the `UNCAPPED_BALANCE_ROLE` role.
     /// - Allows minting (from address(0)) and burning to address(0) regardless of restrictions.
     /// @param from The address sending the token.
     /// @param to The address receiving the token.
@@ -211,6 +237,12 @@ contract LSP8CustomizableTokenInit is
         super._beforeTokenTransfer(from, to, tokenId, force, data);
     }
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_transferOwnership} function
+    /// via `super` so that each inherited module updates its ownership-dependent state.
+    ///
+    /// When contract ownership changes, this will:
+    /// - clear the admin role for: `MINTER_ROLE`, `REVOKER_ROLE`, `NON_TRANSFERABLE_BYPASS_ROLE`, `UNCAPPED_BALANCE_ROLE`
+    /// - clear the list of addresses holding the `REVOKER_ROLE`
     function _transferOwnership(
         address newOwner
     )
@@ -235,15 +267,17 @@ contract LSP8CustomizableTokenInit is
     ) private {
         uint256 configuredTokenSupplyCap = LSP8CappedSupplyInitAbstract
             .tokenSupplyCap();
+        bool isCappedSupplyConfigured = configuredTokenSupplyCap > 0;
 
-        bool exceedsSupplyCap = initialMintTokenIds.length >
-            configuredTokenSupplyCap;
+        if (isCappedSupplyConfigured) {
+            bool mintingExceedsSupplyCap = initialMintTokenIds.length >
+                configuredTokenSupplyCap;
 
-        require(
-            configuredTokenSupplyCap == 0 || !exceedsSupplyCap,
-            LSP8CappedSupplyCannotMintOverCap()
-        );
-
+            require(
+                !mintingExceedsSupplyCap,
+                LSP8CappedSupplyCannotMintOverCap()
+            );
+        }
         for (uint256 ii = 0; ii < initialMintTokenIds.length; ++ii) {
             LSP8IdentifiableDigitalAssetInitAbstract._mint(
                 to,
@@ -251,24 +285,34 @@ contract LSP8CustomizableTokenInit is
                 true,
                 ""
             );
+
+            if (isCappedSupplyConfigured) {
+                // CHECK if the `to` address is a contract that minted more tokens
+                // through its `universalReceiver(...)` function after being notified via LSP1.
+                bool currentSupplyExceedsSupplyCap = totalSupply() >
+                    configuredTokenSupplyCap;
+
+                require(
+                    !currentSupplyExceedsSupplyCap,
+                    LSP8CappedSupplyCannotMintOverCap()
+                );
+            }
         }
     }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    )
-        public
-        view
-        virtual
-        override(
-            LSP8IdentifiableDigitalAssetInitAbstract,
-            LSP8MintableInitAbstract,
-            LSP8CappedBalanceInitAbstract,
-            LSP8NonTransferableInitAbstract,
-            LSP8RevokableInitAbstract
-        )
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
+    /// @dev Returns whether the current call is a legitimate revocation that should bypass the
+    /// {LSP8NonTransferableInitAbstract} and {LSP8CappedBalanceInitAbstract} restrictions when revoking tokens from a token holder.
+    ///
+    /// Returns `true` only when all of the following conditions are met:
+    /// - the function being called is {revoke}.
+    /// - the revoking feature is enabled.
+    /// - the caller (`msg.sender`) holds the `REVOKER_ROLE`.
+    /// - the recipient (`to`) is either the contract `owner()` or a revoker (an address holding the `REVOKER_ROLE`).
+    function _isRevocationBypass(address to) private view returns (bool) {
+        return
+            msg.sig == this.revoke.selector &&
+            isRevokable() &&
+            hasRole(REVOKER_ROLE, msg.sender) &&
+            (to == owner() || hasRole(REVOKER_ROLE, to));
     }
 }

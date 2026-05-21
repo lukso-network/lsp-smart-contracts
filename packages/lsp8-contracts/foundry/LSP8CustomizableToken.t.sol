@@ -4,6 +4,10 @@ pragma solidity ^0.8.27;
 // foundry
 import {Test} from "forge-std/Test.sol";
 
+import {
+    ILSP1UniversalReceiver
+} from "@lukso/lsp1-contracts/contracts/ILSP1UniversalReceiver.sol";
+
 // modules
 import {
     LSP8CustomizableToken,
@@ -40,6 +44,46 @@ import {
 import {
     _LSP4_TOKEN_TYPE_NFT
 } from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+
+contract ReentrantLSP8ConstructorInitialMintOwner is ILSP1UniversalReceiver {
+    // keccak256("MINTER_ROLE")
+    bytes32 internal constant _MINTER_ROLE =
+        0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6;
+
+    bytes32 internal tokenIdToMint;
+    bool public hasReentered;
+
+    function setReentrantMint(bytes32 tokenIdToMint_) external {
+        tokenIdToMint = tokenIdToMint_;
+    }
+
+    function universalReceiver(
+        bytes32 /* typeId */,
+        bytes calldata /* data */
+    ) external payable override returns (bytes memory) {
+        if (hasReentered) return "";
+
+        hasReentered = true;
+        LSP8CustomizableToken(payable(msg.sender)).grantRole(
+            _MINTER_ROLE,
+            address(this)
+        );
+        LSP8CustomizableToken(payable(msg.sender)).mint(
+            address(this),
+            tokenIdToMint,
+            true,
+            ""
+        );
+
+        return "";
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) external pure returns (bool) {
+        return interfaceId == type(ILSP1UniversalReceiver).interfaceId;
+    }
+}
 
 contract LSP8CustomizableTokenTest is Test {
     string name = "Custom NFT";
@@ -501,6 +545,54 @@ contract LSP8CustomizableTokenTest is Test {
             name,
             symbol,
             owner,
+            tokenType,
+            tokenIdFormat,
+            mintableParams,
+            cappedParams,
+            nonTransferableParams,
+            revokableParams
+        );
+    }
+
+    function test_ConstructorLSP1OwnerReentrantMintRevertsAgainstAddressUnderConstruction()
+        public
+    {
+        uint256 supplyCap = 3;
+        bytes32[] memory constructorInitialTokenIds = new bytes32[](supplyCap);
+        constructorInitialTokenIds[0] = bytes32(uint256(1));
+        constructorInitialTokenIds[1] = bytes32(uint256(2));
+        constructorInitialTokenIds[2] = bytes32(uint256(3));
+
+        ReentrantLSP8ConstructorInitialMintOwner reentrantOwner = new ReentrantLSP8ConstructorInitialMintOwner();
+        reentrantOwner.setReentrantMint(bytes32(uint256(4)));
+
+        LSP8MintableParams memory mintableParams = LSP8MintableParams({
+            isMintable: true,
+            initialMintTokenIds: constructorInitialTokenIds
+        });
+
+        LSP8CappedParams memory cappedParams = LSP8CappedParams({
+            tokenBalanceCap: 0,
+            tokenSupplyCap: supplyCap
+        });
+
+        LSP8NonTransferableParams
+            memory nonTransferableParams = LSP8NonTransferableParams({
+                transferLockStart: transferLockStart,
+                transferLockEnd: transferLockEnd
+            });
+
+        LSP8RevokableParams memory revokableParams = LSP8RevokableParams({
+            isRevokable: false
+        });
+
+        // Callbacks cannot successfully call code on the token while it is under construction.
+        // This results in an empty revert.
+        vm.expectRevert();
+        new LSP8CustomizableToken(
+            name,
+            symbol,
+            address(reentrantOwner),
             tokenType,
             tokenIdFormat,
             mintableParams,
@@ -1395,6 +1487,97 @@ contract LSP8CustomizableTokenTest is Test {
         vm.expectRevert(LSP8RevokableFeatureDisabled.selector);
         vm.prank(revoker1);
         nonRevokableToken.revoke(user1, revoker1, tokenId, "");
+    }
+
+    function test_RevokeToOwnerBypassesBalanceCapWhenOwnerLostUncappedRole()
+        public
+    {
+        uint256 cap = 1;
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+        bytes32 ownerTokenId = bytes32(uint256(1));
+        bytes32 revokedTokenId = bytes32(uint256(2));
+
+        LSP8CustomizableToken cappedToken = _deployToken({
+            mintable_: true,
+            initialTokenIds_: emptyTokenIds,
+            tokenBalanceCap_: cap,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            revokable_: true
+        });
+
+        cappedToken.mint(owner, ownerTokenId, true, "");
+        cappedToken.mint(user1, revokedTokenId, true, "");
+        cappedToken.grantRole(cappedToken.REVOKER_ROLE(), revoker1);
+        cappedToken.revokeRole(cappedToken.UNCAPPED_BALANCE_ROLE(), owner);
+
+        assertFalse(
+            cappedToken.hasRole(cappedToken.UNCAPPED_BALANCE_ROLE(), owner)
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8CappedBalanceExceeded.selector,
+                owner,
+                cap,
+                cap
+            )
+        );
+        vm.prank(user1);
+        cappedToken.transfer(user1, owner, revokedTokenId, true, "");
+
+        vm.prank(revoker1);
+        cappedToken.revoke(user1, owner, revokedTokenId, "");
+
+        assertEq(cappedToken.balanceOf(owner), cap + 1);
+        assertEq(cappedToken.balanceOf(user1), 0);
+        assertEq(cappedToken.tokenOwnerOf(revokedTokenId), owner);
+    }
+
+    function test_RevokeToRevokerBypassesBalanceCapWhenRevokerHasNoUncappedRole()
+        public
+    {
+        uint256 cap = 1;
+        bytes32[] memory emptyTokenIds = new bytes32[](0);
+        bytes32 revokerTokenId = bytes32(uint256(1));
+        bytes32 revokedTokenId = bytes32(uint256(2));
+
+        LSP8CustomizableToken cappedToken = _deployToken({
+            mintable_: true,
+            initialTokenIds_: emptyTokenIds,
+            tokenBalanceCap_: cap,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            revokable_: true
+        });
+
+        cappedToken.grantRole(cappedToken.REVOKER_ROLE(), revoker1);
+        cappedToken.mint(revoker1, revokerTokenId, true, "");
+        cappedToken.mint(user1, revokedTokenId, true, "");
+
+        assertFalse(
+            cappedToken.hasRole(cappedToken.UNCAPPED_BALANCE_ROLE(), revoker1)
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8CappedBalanceExceeded.selector,
+                revoker1,
+                cap,
+                cap
+            )
+        );
+        vm.prank(user1);
+        cappedToken.transfer(user1, revoker1, revokedTokenId, true, "");
+
+        vm.prank(revoker1);
+        cappedToken.revoke(user1, revoker1, revokedTokenId, "");
+
+        assertEq(cappedToken.balanceOf(revoker1), cap + 1);
+        assertEq(cappedToken.balanceOf(user1), 0);
+        assertEq(cappedToken.tokenOwnerOf(revokedTokenId), revoker1);
     }
 
     // Fuzzing Tests

@@ -36,7 +36,7 @@ interface ILSP8NonTransferable {
     /// - To make the token always non-transferable, set `transferLockStart` to 0 and `transferLockEnd` to type(uint256).max.
     /// - To disable completely the non-transferable feature (= make the token always transferable), set both `transferLockStart` and `transferLockEnd` to 0.
     ///
-    /// @dev Can only be called by the contract owner. Reverts if the current lock period has already started or ended.
+    /// @dev Can only be called by the contract owner. Reverts once {makeTransferable} has been called.
     ///
     /// @custom:emits {TransferLockPeriodChanged} event.
     /// @param newTransferLockStart The new start timestamp for the transfer lock period.

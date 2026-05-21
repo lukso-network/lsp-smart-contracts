@@ -336,6 +336,20 @@ contract LSP8CappedBalanceTest is Test {
         assertEq(lsp8CappedBalance.balanceOf(user2), 2);
     }
 
+    function test_TransferToSelfAtCapSucceedsAndDoesNotCheckForCappedBalance()
+        public
+    {
+        lsp8CappedBalance.mint(user1, bytes32(uint256(1)), true, "");
+        lsp8CappedBalance.mint(user1, bytes32(uint256(2)), true, "");
+        lsp8CappedBalance.mint(user1, bytes32(uint256(3)), true, "");
+
+        vm.prank(user1);
+        lsp8CappedBalance.transfer(user1, user1, bytes32(uint256(1)), true, "");
+
+        assertEq(lsp8CappedBalance.balanceOf(user1), tokenBalanceCap);
+        assertEq(lsp8CappedBalance.tokenOwnerOf(bytes32(uint256(1))), user1);
+    }
+
     // Test owner (UNCAPPED_BALANCE_ROLE holder) can receive unlimited
     function test_OwnerCanReceiveUnlimited() public {
         // Mint many tokens directly to owner

@@ -1154,6 +1154,93 @@ contract LSP7CustomizableTokenTest is Test {
         nonRevokableToken.revoke(user1, revoker1, 10, "");
     }
 
+    function test_RevokeToOwnerBypassesBalanceCapWhenOwnerLostUncappedRole()
+        public
+    {
+        uint256 cap = 100;
+        uint256 revokeAmount = 40;
+
+        LSP7CustomizableToken cappedToken = _deployToken({
+            isMintable_: true,
+            initialMintAmount_: 0,
+            tokenBalanceCap_: cap,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            isRevokable_: true
+        });
+
+        cappedToken.mint(owner, cap, true, "");
+        cappedToken.mint(user1, revokeAmount, true, "");
+        cappedToken.grantRole(cappedToken.REVOKER_ROLE(), revoker1);
+        cappedToken.revokeRole(cappedToken.UNCAPPED_BALANCE_ROLE(), owner);
+
+        assertFalse(
+            cappedToken.hasRole(cappedToken.UNCAPPED_BALANCE_ROLE(), owner)
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP7CappedBalanceExceeded.selector,
+                owner,
+                revokeAmount,
+                cap,
+                cap
+            )
+        );
+        vm.prank(user1);
+        cappedToken.transfer(user1, owner, revokeAmount, true, "");
+
+        vm.prank(revoker1);
+        cappedToken.revoke(user1, owner, revokeAmount, "");
+
+        assertEq(cappedToken.balanceOf(owner), cap + revokeAmount);
+        assertEq(cappedToken.balanceOf(user1), 0);
+    }
+
+    function test_RevokeToRevokerBypassesBalanceCapWhenRevokerHasNoUncappedRole()
+        public
+    {
+        uint256 cap = 100;
+        uint256 revokeAmount = 40;
+
+        LSP7CustomizableToken cappedToken = _deployToken({
+            isMintable_: true,
+            initialMintAmount_: 0,
+            tokenBalanceCap_: cap,
+            tokenSupplyCap_: 0,
+            transferLockStart_: 0,
+            transferLockEnd_: 0,
+            isRevokable_: true
+        });
+
+        cappedToken.grantRole(cappedToken.REVOKER_ROLE(), revoker1);
+        cappedToken.mint(revoker1, cap, true, "");
+        cappedToken.mint(user1, revokeAmount, true, "");
+
+        assertFalse(
+            cappedToken.hasRole(cappedToken.UNCAPPED_BALANCE_ROLE(), revoker1)
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP7CappedBalanceExceeded.selector,
+                revoker1,
+                revokeAmount,
+                cap,
+                cap
+            )
+        );
+        vm.prank(user1);
+        cappedToken.transfer(user1, revoker1, revokeAmount, true, "");
+
+        vm.prank(revoker1);
+        cappedToken.revoke(user1, revoker1, revokeAmount, "");
+
+        assertEq(cappedToken.balanceOf(revoker1), cap + revokeAmount);
+        assertEq(cappedToken.balanceOf(user1), 0);
+    }
+
     // Fuzzing Tests
     function testFuzz_MintAmountRespectsBalanceCap(
         uint256 cap,

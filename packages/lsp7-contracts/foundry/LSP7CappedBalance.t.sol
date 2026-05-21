@@ -363,20 +363,13 @@ contract LSP7CappedBalanceTest is Test {
         );
     }
 
-    function test_TransferToSelfExceedingCapFailsForNonAllowlisted() public {
-        lsp7CappedBalance.mint(nonAllowlistedUser, 900, true, "");
+    function test_TransferToSelfAtCapSucceedsAndDoesNotCheckForCappedBalance()
+        public
+    {
+        lsp7CappedBalance.mint(nonAllowlistedUser, tokenBalanceCap, true, "");
 
         uint256 amount = 200;
 
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                LSP7CappedBalanceExceeded.selector,
-                nonAllowlistedUser,
-                amount,
-                lsp7CappedBalance.balanceOf(nonAllowlistedUser),
-                tokenBalanceCap
-            )
-        );
         vm.prank(nonAllowlistedUser);
         lsp7CappedBalance.transfer(
             nonAllowlistedUser,
@@ -387,8 +380,8 @@ contract LSP7CappedBalanceTest is Test {
         );
         assertEq(
             lsp7CappedBalance.balanceOf(nonAllowlistedUser),
-            900,
-            "nonAllowlistedUser balance should remain 900"
+            tokenBalanceCap,
+            "nonAllowlistedUser balance should remain capped"
         );
     }
 
