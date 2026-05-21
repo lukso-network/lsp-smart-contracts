@@ -1,6 +1,6 @@
 {
   "name": "@lukso/lsp7-contracts",
-  "version": "0.16.8",
+  "version": "0.17.0",
   "description": "Package for the LSP7 Digital Asset standard",
   "license": "Apache-2.0",
   "author": "",
