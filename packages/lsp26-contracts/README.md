@@ -1,6 +1,6 @@
 # LSP26 Follower System &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp26-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp26-contracts)
 
-Package for the LSP26 Follower System standard.
+npm package for the LSP26 Follower System standard.
 
 ## Installation
 

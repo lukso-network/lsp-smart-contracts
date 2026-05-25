@@ -1,6 +1,6 @@
 # `@lukso/lsp-smart-contracts`
 
-This is the _"umbrella"_ package for the LSP smart contracts. It contains all the individual `@lukso/lspN-contracts` packages (where `N` is an LSP number) as dependencies.
+This is the npm _"umbrella"_ package for the LSP smart contracts. It contains all the individual `@lukso/lspN-contracts` packages (where `N` is an LSP number) as dependencies.
 
 ## Installation
 
