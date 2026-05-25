@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   release-please:
@@ -15,8 +16,6 @@ jobs:
       release_outputs: ${{ steps.release.outputs }}
     runs-on: ubuntu-latest
     environment: publish
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
 
     steps:
       - uses: google-github-actions/release-please-action@v3
@@ -44,6 +43,12 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: "@lukso"
           cache: "npm"
+
+      # Trusted publishing (OIDC) requires npm >= 11.5.1.
+      # Node 24 ships with npm 11, but pin to latest to guarantee the version.
+      - name: Upgrade npm
+        if: ${{ steps.release.outputs.releases_created }}
+        run: npm install -g npm@latest
 
       - name: Install Dependencies
         if: ${{ steps.release.outputs.releases_created }}
