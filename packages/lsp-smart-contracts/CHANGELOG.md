@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.17.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.17.0...lsp-smart-contracts-v0.17.1) (2026-05-25)
+
+
+### Bug Fixes
+
+* bump intra-workspace @lukso/* deps to current versions ([89e8341](https://github.com/lukso-network/lsp-smart-contracts/commit/89e83416a077d24cc76b55ade11ecc0d98bd76b4))
+
 ## [0.17.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.16.7...lsp-smart-contracts-v0.17.0) (2026-05-21)
 
 
