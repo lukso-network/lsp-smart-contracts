@@ -57,7 +57,7 @@
     "build:package": "hardhat prepare-package"
   },
   "dependencies": {
-    "@lukso/lsp2-contracts": "~0.15.4",
+    "@lukso/lsp2-contracts": "~0.16.0",
     "@openzeppelin/contracts": "^4.9.3"
   },
   "resolutions": {
