@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.17.1...lsp7-contracts-v0.17.2) (2026-05-25)
+
+
+### Bug Fixes
+
+* repair broken imports in release scripts ([4b4c931](https://github.com/lukso-network/lsp-smart-contracts/commit/4b4c931dda5eb0d1b2b8d286c916484abdeade2e))
+
 ## [0.17.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.17.0...lsp7-contracts-v0.17.1) (2026-05-25)
 
 

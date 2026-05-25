@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp26-contracts-v0.2.1...lsp26-contracts-v0.2.2) (2026-05-25)
+
+
+### Bug Fixes
+
+* repair broken imports in release scripts ([4b4c931](https://github.com/lukso-network/lsp-smart-contracts/commit/4b4c931dda5eb0d1b2b8d286c916484abdeade2e))
+
 ## [0.2.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp26-contracts-v0.2.0...lsp26-contracts-v0.2.1) (2026-05-25)
 
 
