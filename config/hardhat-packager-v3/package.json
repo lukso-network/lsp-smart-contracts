@@ -9,7 +9,8 @@
   "author": "LUKSO",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lukso-network/lsp-smart-contracts.git"
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "config/hardhat-packager-v3"
   },
   "license": "Apache-2.0",
   "keywords": [

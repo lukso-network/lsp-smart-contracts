@@ -6,7 +6,8 @@
   "author": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lukso-network/lsp-smart-contracts.git"
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp14-contracts"
   },
   "type": "module",
   "keywords": [

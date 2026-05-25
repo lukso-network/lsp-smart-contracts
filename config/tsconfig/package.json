@@ -5,7 +5,8 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lukso-network/lsp-smart-contracts.git"
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "config/tsconfig"
   },
   "files": [
     "contracts.json",
