@@ -1,6 +1,11 @@
 {
   "name": "solhint-config-lsp-solidity-linting-rules",
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "config/solhint-config-lsp-solidity-linting-rules"
+  },
   "private": true,
   "exports": {
     ".": "./index.js"

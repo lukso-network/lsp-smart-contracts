@@ -5,14 +5,14 @@ npm package for the LSP20 Call Verification standard.
 ## Installation
 
 ```bash
-npm i @lukso/lsp20-contracts
+npm install @lukso/lsp20-contracts
 ```
 
 ## Available Constants & Types
 
 The `@lukso/lsp20-contracts` npm package contains useful constants such as interface IDs, and specific constants related to the LSP20 Standard. You can import and access them as follows.
 
-In Javascript.
+In JavaScript.
 
 ```javascript
 import {

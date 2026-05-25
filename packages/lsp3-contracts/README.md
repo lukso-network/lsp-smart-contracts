@@ -1,6 +1,6 @@
 # LSP3 Profile Metadata &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp3-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp3-contracts)
 
-npm package for the LSP3 Profile Metadata standard.
+npm package for the LSP3 Profile Metadata standard (profile JSON schema and data keys).
 
 ## Installation
 
@@ -12,7 +12,7 @@ npm install @lukso/lsp3-contracts
 
 The `@lukso/lsp3-contracts` npm package contains useful constants such as ERC725Y data keys related to the LSP3 Standard. You can import and access them as follows.
 
-In Javascript.
+In JavaScript.
 
 ```javascript
 import {

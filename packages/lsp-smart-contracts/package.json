@@ -4,6 +4,11 @@
   "description": "The reference smart contract implementation for the LUKSO LSP standards",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp-smart-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",

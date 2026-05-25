@@ -12,7 +12,7 @@ npm install @lukso/lsp0-contracts
 
 The `@lukso/lsp0-contracts` npm package contains useful constants such as interface IDs, and ERC725Y data keys related to the LSP0 Standard. You can import and access them as follows.
 
-In Javascript.
+In JavaScript.
 
 ```js
 import {
@@ -39,9 +39,9 @@ import {
 } from "@lukso/lsp0-contracts/contracts/LSP0Constants.sol";
 ```
 
-## Typescript types
+## TypeScript types
 
-You can also import the [type-safe ABI](https://abitype.dev/) of each LSP smart contracts from the `/abi` path.
+You can also import the [type-safe ABI](https://abitype.dev/) of each LSP smart contract from the `/abi` path.
 
 ```ts
 import {

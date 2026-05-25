@@ -4,6 +4,11 @@
   "description": "Package for the LSP4 Digital Asset Metadata standard",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp4-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",

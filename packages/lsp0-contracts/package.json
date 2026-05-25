@@ -4,6 +4,11 @@
   "description": "Package for the LSP0ERC725Account standard",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp0-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",

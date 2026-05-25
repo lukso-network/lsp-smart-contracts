@@ -1,6 +1,6 @@
 # LSP8 Identifiable Digital Asset &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp8-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp8-contracts)
 
-npm package for the LSP8 Identifiable Digital Asset standard.
+npm package for the LSP8 Identifiable Digital Asset standard (NFTs and similar token IDs).
 
 ## Audits
 
@@ -34,7 +34,7 @@ npm install @lukso/lsp8-contracts
 
 The `@lukso/lsp8-contracts` npm package contains useful constants such as interface IDs or ERC725Y data keys related to the LSP8 Standard. You can import and access them as follows.
 
-In Javascript.
+In JavaScript.
 
 ```javascript
 import {
@@ -73,7 +73,7 @@ import {
 } from "@lukso/lsp8-contracts/contracts/LSP8Constants.sol";
 ```
 
-## Typescript types
+## TypeScript types
 
 You can also import the [type-safe ABI](https://abitype.dev/) from the `/abi` path.
 
@@ -101,7 +101,7 @@ Set your deployer key first:
 export PRIVATE_KEY=0x...
 ```
 
-## Dry run against LUKSO Testnet
+## Dry run against LUKSO Testnet
 
 ```console
 FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network
@@ -109,7 +109,7 @@ FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8Cust
 
 ## Broadcast the deployment
 
-> Use one of the method described in the [foundry docs](https://www.getfoundry.sh/forge/scripting#providing-a-private-key) to broadcast from a specific address
+> Use one of the methods described in the [foundry docs](https://www.getfoundry.sh/forge/scripting#providing-a-private-key) to broadcast from a specific address
 
 ```console
 FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast

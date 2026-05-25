@@ -1,6 +1,6 @@
 # LSP4 Digital Asset Metadata &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp4-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp4-contracts)
 
-npm package for the LSP4 Digital Asset Metadata standard.
+npm package for the LSP4 Digital Asset Metadata standard (token metadata schema and data keys).
 
 ## Installation
 
@@ -12,7 +12,7 @@ npm install @lukso/lsp4-contracts
 
 The `@lukso/lsp4-contracts` npm package contains useful constants such as ERC725Y data keys related to the LSP4 Standard. You can import and access them as follows.
 
-In Javascript.
+In JavaScript.
 
 ```javascript
 import {
