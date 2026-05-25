@@ -7,6 +7,10 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "author": "LUKSO",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git"
+  },
   "license": "Apache-2.0",
   "keywords": [
     "hardhat",

@@ -1,6 +1,6 @@
 # LSP7 Digital Asset &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp7-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp7-contracts)
 
-npm package for the LSP7 Digital Asset standard.
+npm package for the LSP7 Digital Asset standard (fungible and similar tokens).
 
 ## Audits
 
@@ -34,7 +34,7 @@ npm install @lukso/lsp7-contracts
 
 The `@lukso/lsp7-contracts` npm package contains useful constants such as interface IDs or ERC725Y data keys related to the LSP7 Standard. You can import and access them as follows.
 
-In Javascript.
+In JavaScript.
 
 ```javascript
 import {
@@ -60,7 +60,7 @@ import {
 } from "@lukso/lsp7-contracts/contracts/LSP7Constants.sol";
 ```
 
-The `LSP7_TYPE_IDS` includes type IDs for the following type of notifications:
+The `LSP7_TYPE_IDS` object includes type IDs for the following types of notifications:
 
 ```console
 'LSP7Tokens_SenderNotification';
@@ -70,7 +70,7 @@ The `LSP7_TYPE_IDS` includes type IDs for the following type of notifications:
 'LSP7Tokens_VotesDelegateeNotification';
 ```
 
-## Typescript types
+## TypeScript types
 
 You can also import the [type-safe ABI](https://abitype.dev/) from the `/abi` path.
 
@@ -98,15 +98,15 @@ Set your deployer key first:
 export PRIVATE_KEY=0x...
 ```
 
-## Dry run against LUKSO Testnet
+## Dry run against LUKSO Testnet
 
 ```console
 FOUNDRY_PROFILE=lsp7 forge script packages/lsp7-contracts/scripts/DeployLSP7CustomizableTokenInit.s.sol:DeployLSP7CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network
 ```
 
-## Broadcast the deployment
+## Broadcast the deployment
 
-> Use one of the method described in the [foundry docs](https://www.getfoundry.sh/forge/scripting#providing-a-private-key) to broadcast from a specific address
+> Use one of the methods described in the [foundry docs](https://www.getfoundry.sh/forge/scripting#providing-a-private-key) to broadcast from a specific address
 
 ```console
 FOUNDRY_PROFILE=lsp7 forge script packages/lsp7-contracts/scripts/DeployLSP7CustomizableTokenInit.s.sol:DeployLSP7CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast

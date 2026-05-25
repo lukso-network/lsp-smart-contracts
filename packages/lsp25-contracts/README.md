@@ -5,14 +5,14 @@ npm package for the LSP25 Execute Relay Call standard.
 ## Installation
 
 ```bash
-npm i @lukso/lsp25-contracts
+npm install @lukso/lsp25-contracts
 ```
 
 ## Available Constants & Types
 
 The `@lukso/lsp25-contracts` npm package contains useful constants such as interface IDs, and specific constants related to the LSP25 Standard. You can import and access them as follows.
 
-In Javascript.
+In JavaScript.
 
 ```javascript
 import { LSP25_VERSION, INTERFACE_ID_LSP25 } from "@lukso/lsp25-contracts";

@@ -10,9 +10,9 @@ npm install @lukso/lsp-smart-contracts
 
 ## Usage
 
-### in Javascript
+### in JavaScript
 
-The JSON ABIs of the smart contracts can be imported as follow:
+The JSON ABIs of the smart contracts can be imported as follows:
 
 ```javascript
 import LSP0ERC725Account from "@lukso/lsp-smart-contracts/artifacts/LSP0ERC725Account.json";
@@ -72,23 +72,23 @@ It also includes constant values [Array data keys](https://github.com/lukso-netw
 },
 ```
 
-### Note for Hardhat Typescript projects
+### Note for Hardhat TypeScript projects
 
-If you are trying to import the constants in a Hardhat project that uses Typescript, you will need to import the constants from the `dist` folder directly, as shown in the code snippet:
+If you are trying to import the constants in a Hardhat project that uses TypeScript, you will need to import the constants from the `dist` folder directly, as shown in the code snippet:
 
 ```js
 import { INTERFACE_IDS } from "@lukso/lsp-smart-contracts/dist/constants.cjs.js";
 
 // This will raise an error if you have ES Lint enabled,
-// but will allow you to import the constants in a Hardhat + Typescript based project.
+// but will allow you to import the constants in a Hardhat + TypeScript based project.
 const LSP0InterfaceId = INTERFACE_IDS.LSP0ERC725Account;
 ```
 
-See the [issue related to Hardhat Typescript + ES Modules](https://hardhat.org/hardhat-runner/docs/advanced/using-esm#esm-and-typescript-projects) in the Hardhat docs for more infos.
+See the [issue related to Hardhat TypeScript + ES Modules](https://hardhat.org/hardhat-runner/docs/advanced/using-esm#esm-and-typescript-projects) in the Hardhat docs for more information.
 
-## Typescript types
+## TypeScript types
 
-The following additional typescript types are also available, including types for the JSON format of the LSP3 Profile and LSP4 Digital Asset metadata.
+The following additional TypeScript types are also available, including types for the JSON format of the LSP3 Profile and LSP4 Digital Asset metadata.
 
 ```ts
 import {
@@ -105,7 +105,7 @@ import {
 } from "@lukso/lsp-smart-contracts";
 ```
 
-You can also import the [type-safe ABI](https://abitype.dev/) of each LSP smart contracts from the `/abi` path.
+You can also import the [type-safe ABI](https://abitype.dev/) of each LSP smart contract from the `/abi` path.
 
 ```ts
 import {
