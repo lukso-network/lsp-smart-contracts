@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp11-contracts-v0.2.2...lsp11-contracts-v0.2.3) (2026-05-25)
+
+
+### Bug Fixes
+
+* add repository field to all child package.json files ([6d1265e](https://github.com/lukso-network/lsp-smart-contracts/commit/6d1265e772eae52aa321fa06e9e0a6863e6ea91d))
+
 ## [0.2.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp11-contracts-v0.2.1...lsp11-contracts-v0.2.2) (2026-05-25)
 
 
