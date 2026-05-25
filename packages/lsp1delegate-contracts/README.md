@@ -1,6 +1,6 @@
 # LSP1 Universal Receiver Delegate &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp1delegate-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp1delegate-contracts)
 
-Smart contract implementations of [LSP1 Universal Receiver Delegate](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md#universalreceiver-delegation)
+npm package with smart contract implementations of [LSP1 Universal Receiver Delegate](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-1-UniversalReceiver.md#universalreceiver-delegation)
 to register and manage:
 
 - LSP5 Received Assets
