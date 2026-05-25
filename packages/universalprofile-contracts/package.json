@@ -61,8 +61,8 @@
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
-    "@lukso/lsp0-contracts": "~0.15.5",
-    "@lukso/lsp3-contracts": "~0.16.6",
+    "@lukso/lsp0-contracts": "~0.16.0",
+    "@lukso/lsp3-contracts": "~0.17.0",
     "@openzeppelin/contracts": "^4.9.3"
   },
   "resolutions": {

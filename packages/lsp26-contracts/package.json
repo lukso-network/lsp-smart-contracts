@@ -61,7 +61,7 @@
     "deploy": "npx hardhat ignition deploy --verify"
   },
   "dependencies": {
-    "@lukso/lsp1-contracts": "~0.15.5",
+    "@lukso/lsp1-contracts": "~0.16.0",
     "@openzeppelin/contracts": "^4.9.6"
   },
   "resolutions": {
@@ -70,7 +70,7 @@
   "devDependencies": {
     "@lukso/hardhat-packager-v3": "*",
     "@lukso/hardhat-verify-balance": "*",
-    "@lukso/lsp0-contracts": "~0.15.5",
+    "@lukso/lsp0-contracts": "~0.16.0",
     "@nomicfoundation/hardhat-ignition-ethers": "^3.0.0",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "eslint-config-custom": "*",
