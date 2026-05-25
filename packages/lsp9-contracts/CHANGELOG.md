@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp9-contracts-v0.16.0...lsp9-contracts-v0.16.1) (2026-05-25)
+
+
+### Bug Fixes
+
+* bump intra-workspace @lukso/* deps to current versions ([89e8341](https://github.com/lukso-network/lsp-smart-contracts/commit/89e83416a077d24cc76b55ade11ecc0d98bd76b4))
+
 ## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp9-contracts-v0.15.5...lsp9-contracts-v0.16.0) (2026-05-21)
 
 
