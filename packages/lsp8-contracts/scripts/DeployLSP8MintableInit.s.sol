@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.27;
 
-import {Script} from "../../../lib/forge-std/src/Script.sol";
 import {console2} from "../../../lib/forge-std/src/console2.sol";
 import {LSP8MintableInit} from "../contracts/presets/LSP8MintableInit.sol";
+import {NickFactoryDeployScript} from "./NickFactoryDeployScript.sol";
 
-contract DeployLSP8MintableInitScript is Script {
+contract DeployLSP8MintableInitScript is NickFactoryDeployScript {
     function run() public returns (LSP8MintableInit deployedContract) {
         vm.startBroadcast();
 
-        deployedContract = new LSP8MintableInit();
+        deployedContract = LSP8MintableInit(
+            payable(_deployViaNickFactory(type(LSP8MintableInit).creationCode))
+        );
 
         vm.stopBroadcast();
 
