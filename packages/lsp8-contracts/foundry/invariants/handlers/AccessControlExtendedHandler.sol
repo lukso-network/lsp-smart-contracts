@@ -133,6 +133,16 @@ contract AccessControlExtendedHandler is Test {
         address newOwner,
         bytes32[] memory oldOwnerRoles
     ) internal {
+        // Self-transfer revokes then re-grants each role to the same address,
+        // so the post-state retains every role on `newOwner == oldOwner`.
+        if (oldOwner == newOwner) {
+            for (uint256 i; i < oldOwnerRoles.length; ++i) {
+                assertTrue(token.hasRole(oldOwnerRoles[i], newOwner));
+            }
+            assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), newOwner));
+            return;
+        }
+
         for (uint256 i; i < oldOwnerRoles.length; ++i) {
             bytes32 role = oldOwnerRoles[i];
             assertFalse(token.hasRole(role, oldOwner));

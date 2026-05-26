@@ -229,6 +229,10 @@ contract LSP7CustomizableTokenInitHandler is Test {
             assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), newOwner));
         }
 
+        // Self-transfer revokes then re-grants each role to the same address,
+        // so the post-state retains every role on `newOwner == oldOwner`.
+        if (oldOwner == newOwner) return;
+
         assertFalse(token.hasRole(token.DEFAULT_ADMIN_ROLE(), oldOwner));
         assertFalse(token.hasRole(token.MINTER_ROLE(), oldOwner));
         assertFalse(token.hasRole(token.UNCAPPED_BALANCE_ROLE(), oldOwner));
