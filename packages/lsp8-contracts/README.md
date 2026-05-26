@@ -93,7 +93,10 @@ import {
 
 ## Foundry deployment
 
-This package includes a Foundry script at `scripts/DeployLSP8CustomizableTokenInit.s.sol` to deploy the `LSP8CustomizableTokenInit` implementation contract.
+This package includes two Foundry scripts to deploy the `LSP8CustomizableTokenInit` and `LSP8MintableInit` implementation contracts.
+
+- `scripts/DeployLSP8CustomizableTokenInit.s.sol`
+- `scripts/DeployLSP8MintableInit.s.sol`
 
 Set your deployer key first:
 
@@ -103,20 +106,62 @@ export PRIVATE_KEY=0x...
 
 ## Dry run against LUKSO Testnet
 
+<details>
+  <summary><code>LSP8CustomizableTokenInit</code></summary>
+
 ```console
 FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network
 ```
+
+</details>
+
+<details>
+  <summary><code>LSP8MintableInit</code></summary>
+
+```console
+FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8MintableInit.s.sol:DeployLSP8MintableInitScript --rpc-url https://rpc.testnet.lukso.network
+```
+
+</details>
 
 ## Broadcast the deployment
 
 > Use one of the methods described in the [foundry docs](https://www.getfoundry.sh/forge/scripting#providing-a-private-key) to broadcast from a specific address
 
+<details>
+  <summary><code>LSP8CustomizableTokenInit</code></summary>
+
 ```console
 FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast
 ```
 
-Broadcast and verify on the LUKSO Testnet Blockscout explorer:
+</details>
+
+<details>
+  <summary><code>LSP8MintableInit</code></summary>
 
 ```console
-FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast --verify --verifier blockscout --verifier-url https://api.explorer.execution.testnet.lukso.network/api?
+FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8MintableInit.s.sol:DeployLSP8MintableInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast
 ```
+
+</details>
+
+Broadcast and verify on the LUKSO Testnet Blockscout explorer:
+
+<details>
+  <summary><code>LSP8CustomizableTokenInit</code></summary>
+
+```console
+FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8CustomizableTokenInit.s.sol:DeployLSP8CustomizableTokenInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast --verify --verifier blockscout --verifier-url https://explorer.execution.testnet.lukso.network/api/
+```
+
+</details>
+
+<details>
+  <summary><code>LSP8MintableInit</code></summary>
+
+```console
+FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8MintableInit.s.sol:DeployLSP8MintableInitScript --rpc-url https://rpc.testnet.lukso.network --broadcast --verify --verifier blockscout --verifier-url https://explorer.execution.testnet.lukso.network/api/
+```
+
+</details>
