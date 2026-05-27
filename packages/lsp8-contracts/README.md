@@ -1,28 +1,8 @@
 # LSP8 Identifiable Digital Asset &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp8-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp8-contracts)
 
-npm package for the LSP8 Identifiable Digital Asset standard (NFTs and similar token IDs).
-
-## Audits
-
-The **LSP8 Customizable Token** presets and their token extensions listed below were reviewed by the AI auditing tool [Nethermind AI Audit Agent](https://www.nethermind.io/) (May 2026). See the [audit report PDF](../../audits/Nethermind_AI_Audit_Agent_2026_05_19.pdf).
-
-**Presets**
-
-- [`LSP8CustomizableToken`](contracts/presets/LSP8CustomizableToken.sol) (constructor-based deployment)
-- [`LSP8CustomizableTokenInit`](contracts/presets/LSP8CustomizableTokenInit.sol) (proxy / upgradeable deployment)
-- [`LSP8CustomizableTokenConstants`](contracts/presets/LSP8CustomizableTokenConstants.sol)
-
-**Extensions** (standard and `Init` variants)
-
-- [`AccessControlExtended`](contracts/extensions/AccessControlExtended/)
-- [`LSP8Burnable`](contracts/extensions/LSP8Burnable/)
-- [`LSP8Mintable`](contracts/extensions/LSP8Mintable/)
-- [`LSP8CappedSupply`](contracts/extensions/LSP8CappedSupply/)
-- [`LSP8CappedBalance`](contracts/extensions/LSP8CappedBalance/)
-- [`LSP8NonTransferable`](contracts/extensions/LSP8NonTransferable/)
-- [`LSP8Revokable`](contracts/extensions/LSP8Revokable/)
-
 > The contracts [`LSP8Votes`](contracts/extensions/LSP8Votes/LSP8Votes.sol) and [`LSP8VotesInitAbstract`](contracts/extensions/LSP8Votes/LSP8VotesInitAbstract.sol) have not been formally audited by an external third party and are not recommended to be used in production without undergoing an independent security audit.
+
+npm package for the LSP8 Identifiable Digital Asset standard (NFTs and similar token IDs).
 
 ## Installation
 
@@ -165,3 +145,23 @@ FOUNDRY_PROFILE=lsp8 forge script packages/lsp8-contracts/scripts/DeployLSP8Mint
 ```
 
 </details>
+
+## Audits
+
+The **LSP8 Customizable Token** presets and their token extensions listed below were reviewed by the AI auditing tool [Nethermind AI Audit Agent](https://www.nethermind.io/) (May 2026). See the [audit report PDF](../../audits/Nethermind_AI_Audit_Agent_2026_05_19.pdf).
+
+**Presets**
+
+- [`LSP8CustomizableToken`](contracts/presets/LSP8CustomizableToken.sol) (constructor-based deployment)
+- [`LSP8CustomizableTokenInit`](contracts/presets/LSP8CustomizableTokenInit.sol) (proxy / upgradeable deployment)
+- [`LSP8CustomizableTokenConstants`](contracts/presets/LSP8CustomizableTokenConstants.sol)
+
+**Extensions** (standard and `Init` variants)
+
+- [`AccessControlExtended`](contracts/extensions/AccessControlExtended/)
+- [`LSP8Burnable`](contracts/extensions/LSP8Burnable/)
+- [`LSP8Mintable`](contracts/extensions/LSP8Mintable/)
+- [`LSP8CappedSupply`](contracts/extensions/LSP8CappedSupply/)
+- [`LSP8CappedBalance`](contracts/extensions/LSP8CappedBalance/)
+- [`LSP8NonTransferable`](contracts/extensions/LSP8NonTransferable/)
+- [`LSP8Revokable`](contracts/extensions/LSP8Revokable/)
