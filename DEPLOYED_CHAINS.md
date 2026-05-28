@@ -2,9 +2,8 @@
 
 > See also: [DEPLOYMENT.md](./DEPLOYMENT.md) for instructions on how to deploy these contracts on new EVM chains.
 
-## Overview
-
-This file is the per-contract address registry for Universal Profile base contracts across supported EVM chains. Deployments use deterministic CREATE2, so each contract version resolves to the same address on every chain where it is deployed.
+This file is the per-contract address registry for Universal Profile base contracts across supported EVM chains.
+Deployments use deterministic CREATE2, so each contract version resolves to the same address on every chain where it is deployed.
 
 ## Networks
 
@@ -610,7 +609,7 @@ Version: v0.17.3
 | Lens                    | 232       |                                                                                                                           |                                                                                                                           |
 | Linea                   | 59144     |                                                                                                                           |                                                                                                                           |
 | LUKSO                   | 42        | [view on Blockscout](https://explorer.execution.mainnet.lukso.network/address/0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8) | [view on Blockscout](https://explorer.execution.mainnet.lukso.network/address/0xf006554F96bf91616dAda3FdB73Ca213874DcFF9) |
-| Mantle                  | 5000      |                                                                                                                           |                                                                                                                           |
+| Mantle                  | 5000      | [mantlescan.xyz](https://mantlescan.xyz/address/0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8)                               | [mantlescan.xyz](https://mantlescan.xyz/address/0xf006554F96bf91616dAda3FdB73Ca213874DcFF9)                               |
 | MegaETH                 | 4326      |                                                                                                                           |                                                                                                                           |
 | MemeCore                | 4352      |                                                                                                                           |                                                                                                                           |
 | Mode                    | 34443     |                                                                                                                           |                                                                                                                           |
@@ -692,7 +691,7 @@ Version: v0.17.3
 | Lens                    | 232       |                                                                                                                           |                                                                                                                           |
 | Linea                   | 59144     |                                                                                                                           |                                                                                                                           |
 | LUKSO                   | 42        | [view on Blockscout](https://explorer.execution.mainnet.lukso.network/address/0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997) | [view on Blockscout](https://explorer.execution.mainnet.lukso.network/address/0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB) |
-| Mantle                  | 5000      |                                                                                                                           |                                                                                                                           |
+| Mantle                  | 5000      | [mantlescan.xyz](https://mantlescan.xyz/address/0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997)                               | [mantlescan.xyz](https://mantlescan.xyz/address/0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB)                               |
 | MegaETH                 | 4326      |                                                                                                                           |                                                                                                                           |
 | MemeCore                | 4352      |                                                                                                                           |                                                                                                                           |
 | Mode                    | 34443     |                                                                                                                           |                                                                                                                           |
