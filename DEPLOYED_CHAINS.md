@@ -5,6 +5,39 @@
 This file is the per-contract address registry for Universal Profile base contracts across supported EVM chains.
 Deployments use deterministic CREATE2, so each contract version resolves to the same address on every chain where it is deployed.
 
+## Contract versions
+
+### Universal Profile Base contracts
+
+| Contract                          | Version | Address                                      |
+| --------------------------------- | ------- | -------------------------------------------- |
+| `UniversalProfileInit`            | v0.12.1 | `0x52c90985AF970D4E0DC26Cb5D052505278aF32A9` |
+| `UniversalProfileInit`            | v0.14.0 | `0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F` |
+| `LSP6KeyManagerInit`              | v0.12.1 | `0xa75684d7D048704a2DB851D05Ba0c3cbe226264C` |
+| `LSP6KeyManagerInit`              | v0.14.0 | `0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4` |
+| `LSP1UniversalReceiverDelegateUP` | v0.12.1 | `0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8` |
+| `LSP1UniversalReceiverDelegateUP` | v0.14.0 | `0x7870C5B8BC9572A8001C3f96f7ff59961B23500D` |
+| `ERCTokenCallback`                |         | `TBD`                                        |
+
+### Universal Profile factories
+
+| Contract                                 | Version | Address                                      |
+| ---------------------------------------- | ------- | -------------------------------------------- |
+| LSP23LinkedContractsFactory              | -       | `0x2300000A84D25dF63081feAa37ba6b62C4c89a30` |
+| UniversalProfilePostDeploymentModule     | -       | `0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7` |
+| UniversalProfileInitPostDeploymentModule | -       | `0x000000000066093407b6704B89793beFfD0D8F00` |
+
+### LSP7/8 Token Base contracts
+
+| Contract                    | Version | Address                                      |
+| --------------------------- | ------- | -------------------------------------------- |
+| `LSP7CustomizableTokenInit` | v0.17.3 | `0xCC26FA84f720249ef40a3f685A354b062af363c0` |
+| `LSP8CustomizableTokenInit` | v0.17.3 | `0x263dFD9158f51b4B9C39C558561D328660fb67ce` |
+| `LSP7MintableInit`          | v0.14.0 | `0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8` |
+| `LSP7MintableInit`          | v0.17.3 | `0xf006554F96bf91616dAda3FdB73Ca213874DcFF9` |
+| `LSP8MintableInit`          | v0.14.0 | `0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997` |
+| `LSP8MintableInit`          | v0.17.3 | `0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB` |
+
 ## Networks
 
 | Chain                   | Chain ID  | Native Token     | Explorer                                                             |
@@ -85,11 +118,6 @@ Deployments use deterministic CREATE2, so each contract version resolves to the 
 
 ### UniversalProfileInit
 
-| Version | Address                                      |
-| ------- | -------------------------------------------- |
-| v0.12.1 | `0x52c90985AF970D4E0DC26Cb5D052505278aF32A9` |
-| v0.14.0 | `0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F` |
-
 | Chain                   | Chain ID  | v0.12.1                                                                                 | v0.14.0                                                                                                       |
 | ----------------------- | --------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | 0G Mainnet              | 16661     |                                                                                         |                                                                                                               |
@@ -166,11 +194,6 @@ Deployments use deterministic CREATE2, so each contract version resolves to the 
 
 ### LSP6KeyManagerInit
 
-| Version | Address                                      |
-| ------- | -------------------------------------------- |
-| v0.12.1 | `0xa75684d7D048704a2DB851D05Ba0c3cbe226264C` |
-| v0.14.0 | `0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4` |
-
 | Chain                   | Chain ID  | v0.12.1                                                                                 | v0.14.0                                                                                                       |
 | ----------------------- | --------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | 0G Mainnet              | 16661     |                                                                                         |                                                                                                               |
@@ -246,11 +269,6 @@ Deployments use deterministic CREATE2, so each contract version resolves to the 
 | Zora                    | 7777777   |                                                                                         |                                                                                                               |
 
 ### LSP1UniversalReceiverDelegateUP
-
-| Version | Address                                      |
-| ------- | -------------------------------------------- |
-| v0.12.1 | `0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8` |
-| v0.14.0 | `0x7870C5B8BC9572A8001C3f96f7ff59961B23500D` |
 
 | Chain                   | Chain ID  | v0.12.1                                                                                 | v0.14.0                                                                                                       |
 | ----------------------- | --------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -406,9 +424,6 @@ Address: `TBD`
 
 ### LSP7CustomizableTokenInit
 
-Address: `0xCC26FA84f720249ef40a3f685A354b062af363c0`
-Version: v0.17.3
-
 | Chain                   | Chain ID  | Explorer                                                                                                                  |
 | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------- |
 | 0G Mainnet              | 16661     |                                                                                                                           |
@@ -485,9 +500,6 @@ Version: v0.17.3
 | Zora                    | 7777777   |                                                                                                                           |
 
 ### LSP8CustomizableTokenInit
-
-Address: `0x263dFD9158f51b4B9C39C558561D328660fb67ce`
-Version: v0.17.3
 
 | Chain                   | Chain ID  | Explorer                                                                                                                  |
 | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -566,11 +578,6 @@ Version: v0.17.3
 
 ### LSP7MintableInit
 
-| Version | Address                                      |
-| ------- | -------------------------------------------- |
-| v0.14.0 | `0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8` |
-| v0.17.3 | `0xf006554F96bf91616dAda3FdB73Ca213874DcFF9` |
-
 | Chain                   | Chain ID  | v0.14.0                                                                                                                   | v0.17.3                                                                                                                   |
 | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | 0G Mainnet              | 16661     |                                                                                                                           |                                                                                                                           |
@@ -647,11 +654,6 @@ Version: v0.17.3
 | Zora                    | 7777777   |                                                                                                                           |                                                                                                                           |
 
 ### LSP8MintableInit
-
-| Version | Address                                      |
-| ------- | -------------------------------------------- |
-| v0.14.0 | `0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997` |
-| v0.17.3 | `0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB` |
 
 | Chain                   | Chain ID  | v0.14.0                                                                                                                   | v0.17.3                                                                                                                   |
 | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -730,7 +732,7 @@ Version: v0.17.3
 
 ### LSP23LinkedContractsFactory
 
-Address: `0x2300000A84D25dF63081feAa37ba6b62C4c89a30`
+Address:
 
 | Chain                   | Chain ID  | Explorer                                                                                                      |
 | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
@@ -808,7 +810,7 @@ Address: `0x2300000A84D25dF63081feAa37ba6b62C4c89a30`
 
 ### UniversalProfilePostDeploymentModule
 
-Address: `0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7`
+Address:
 
 | Chain                   | Chain ID  | Explorer                                                                                                      |
 | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
@@ -886,7 +888,7 @@ Address: `0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7`
 
 ### UniversalProfileInitPostDeploymentModule
 
-Address: `0x000000000066093407b6704B89793beFfD0D8F00`
+Address:
 
 | Chain                   | Chain ID  | Explorer                                                                                                      |
 | ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
