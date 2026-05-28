@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.17.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.17.2...lsp-smart-contracts-v0.17.3) (2026-05-25)
+
+
+### Bug Fixes
+
+* add repository field to all child package.json files ([6d1265e](https://github.com/lukso-network/lsp-smart-contracts/commit/6d1265e772eae52aa321fa06e9e0a6863e6ea91d))
+
+## [0.17.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.17.1...lsp-smart-contracts-v0.17.2) (2026-05-25)
+
+
+### Bug Fixes
+
+* repair broken imports in release scripts ([4b4c931](https://github.com/lukso-network/lsp-smart-contracts/commit/4b4c931dda5eb0d1b2b8d286c916484abdeade2e))
+
 ## [0.17.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp-smart-contracts-v0.17.0...lsp-smart-contracts-v0.17.1) (2026-05-25)
 
 

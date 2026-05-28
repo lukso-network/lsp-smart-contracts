@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.17.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17contractextension-contracts-v0.17.1...lsp17contractextension-contracts-v0.17.2) (2026-05-25)
+
+
+### Bug Fixes
+
+* add repository field to all child package.json files ([6d1265e](https://github.com/lukso-network/lsp-smart-contracts/commit/6d1265e772eae52aa321fa06e9e0a6863e6ea91d))
+
+## [0.17.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17contractextension-contracts-v0.17.0...lsp17contractextension-contracts-v0.17.1) (2026-05-25)
+
+
+### Bug Fixes
+
+* repair broken imports in release scripts ([4b4c931](https://github.com/lukso-network/lsp-smart-contracts/commit/4b4c931dda5eb0d1b2b8d286c916484abdeade2e))
+
 ## [0.17.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17contractextension-contracts-v0.16.7...lsp17contractextension-contracts-v0.17.0) (2026-05-21)
 
 

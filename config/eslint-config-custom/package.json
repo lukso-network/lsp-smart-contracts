@@ -1,6 +1,11 @@
 {
   "name": "eslint-config-custom",
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "config/eslint-config-custom"
+  },
   "type": "module",
   "private": true,
   "exports": {

@@ -1,6 +1,6 @@
 # LSP14 Ownable 2 Step &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp14-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp14-contracts)
 
-Package for the LSP14 Ownable 2 Step standard.
+npm package for the LSP14 Ownable2Step standard.
 
 ## Installation
 
@@ -12,7 +12,7 @@ npm install @lukso/lsp14-contracts
 
 The `@lukso/lsp14-contracts` npm package contains useful constants such as interface IDs, and ERC725Y data keys related to the LSP14 Standard. You can import and access them as follows.
 
-In Javascript.
+In JavaScript.
 
 ```javascript
 import { LSP14_TYPE_IDS, INTERFACE_ID_LSP14 } from "@lukso/lsp14-contracts";

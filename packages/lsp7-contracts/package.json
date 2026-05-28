@@ -1,9 +1,14 @@
 {
   "name": "@lukso/lsp7-contracts",
-  "version": "0.17.1",
+  "version": "0.17.3",
   "description": "Package for the LSP7 Digital Asset standard",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp7-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",

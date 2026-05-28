@@ -1,9 +1,14 @@
 {
   "name": "@lukso/lsp23-contracts",
-  "version": "0.16.1",
+  "version": "0.16.3",
   "description": "Package for the LSP23 Linked Contracts Factory standard",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp23-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",

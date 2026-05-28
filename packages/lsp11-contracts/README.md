@@ -1,6 +1,6 @@
 # LSP11 Social Recovery
 
-Package for the [LSP11 Social Recovery](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md) standard.
+npm package for the [LSP11 Social Recovery](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-11-BasicSocialRecovery.md) standard.
 
 ## Installation
 
@@ -10,9 +10,9 @@ npm install @lukso/lsp11-contracts
 
 ## Available Constants & Types
 
-The `@lukso/lsp11-contracts` npm package contains useful constants such as interface IDs related to the LSP11 standard. You can import and access them as follows.
+The `@lukso/lsp11-contracts` npm package contains useful constants such as interface IDs related to the LSP11 Standard. You can import and access them as follows.
 
-In Javascript.
+In JavaScript.
 
 ```javascript
 import { INTERFACE_ID_LSP11 } from "@lukso/lsp11-contracts";

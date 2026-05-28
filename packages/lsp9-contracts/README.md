@@ -1,6 +1,6 @@
 # LSP9 Vault &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp9-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp9-contracts)
 
-Package for the LSP9 Vault standard.
+npm package for the LSP9 Vault standard (standalone vault accounts).
 
 ## Installation
 
@@ -10,7 +10,7 @@ npm install @lukso/lsp9-contracts
 
 ## Available Constants & Types
 
-The `@lukso/lsp9-contracts` npm package contains useful constants such as interface IDs, ERC725Y Data Keys related to the LSP9 Standard. You can import and access them as follows.
+The `@lukso/lsp9-contracts` npm package contains useful constants such as interface IDs and ERC725Y data keys related to the LSP9 Standard. You can import and access them as follows.
 
 ```javascript
 import {

@@ -1,6 +1,6 @@
 # LSP1 Universal Receiver &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp1-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp1-contracts)
 
-Package for the LSP1 Universal Receiver standard.
+npm package for the LSP1 Universal Receiver standard (notifications and delegate hooks).
 
 ## Installation
 
@@ -10,9 +10,9 @@ npm install @lukso/lsp1-contracts
 
 ## Available Constants & Types
 
-The `@lukso/lsp1-contracts` npm package contains useful constants such as interface IDs, and ERC725Y data keys related to the LSP1 Standard. You can import and access them as follow.
+The `@lukso/lsp1-contracts` npm package contains useful constants such as interface IDs, and ERC725Y data keys related to the LSP1 Standard. You can import and access them as follows.
 
-In Javascript.
+In JavaScript.
 
 ```js
 import { INTERFACE_ID_LSP1, LSP1DataKeys } from "@lukso/lsp1-contracts";

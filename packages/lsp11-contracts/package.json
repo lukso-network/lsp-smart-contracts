@@ -1,9 +1,14 @@
 {
   "name": "@lukso/lsp11-contracts",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "Package for the LSP11 Social Recovery standard",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp11-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",

@@ -1,9 +1,14 @@
 {
   "name": "@lukso/lsp14-contracts",
-  "version": "0.16.1",
+  "version": "0.16.3",
   "description": "Package for the LSP14 Ownable 2 Step standard",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp14-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",
