@@ -84,6 +84,14 @@ abstract contract LSP8RevokableAbstract is
             force: true,
             data: data
         });
+
+        emit TokenRevoked({
+            revoker: msg.sender,
+            from: from,
+            to: to,
+            tokenId: tokenId,
+            data: data
+        });
     }
 
     function supportsInterface(

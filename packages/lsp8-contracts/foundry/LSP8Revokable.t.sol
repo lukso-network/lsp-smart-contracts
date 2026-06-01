@@ -5,11 +5,20 @@ pragma solidity ^0.8.27;
 import {Test, Vm} from "forge-std/Test.sol";
 
 // interfaces
-import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {
+    ILSP8Revokable
+} from "../contracts/extensions/LSP8Revokable/ILSP8Revokable.sol";
 
 // modules
-import {LSP8RevokableAbstract} from "../contracts/extensions/LSP8Revokable/LSP8RevokableAbstract.sol";
-import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
+import {
+    LSP8RevokableAbstract
+} from "../contracts/extensions/LSP8Revokable/LSP8RevokableAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 import {
     AccessControlExtendedAbstract
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
@@ -18,11 +27,18 @@ import {
 import {
     AccessControlUnauthorizedAccount
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
-import {LSP8NotTokenOwner, LSP8NonExistentTokenId} from "../contracts/LSP8Errors.sol";
-import {LSP8RevokableFeatureDisabled} from "../contracts/extensions/LSP8Revokable/LSP8RevokableErrors.sol";
+import {
+    LSP8NotTokenOwner,
+    LSP8NonExistentTokenId
+} from "../contracts/LSP8Errors.sol";
+import {
+    LSP8RevokableFeatureDisabled
+} from "../contracts/extensions/LSP8Revokable/LSP8RevokableErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_NFT
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
 
 contract MockLSP8Revokable is LSP8RevokableAbstract {
@@ -34,12 +50,23 @@ contract MockLSP8Revokable is LSP8RevokableAbstract {
         uint256 lsp8TokenIdFormat_,
         bool isRevokable_
     )
-        LSP8IdentifiableDigitalAsset(name_, symbol_, newOwner_, lsp4TokenType_, lsp8TokenIdFormat_)
+        LSP8IdentifiableDigitalAsset(
+            name_,
+            symbol_,
+            newOwner_,
+            lsp4TokenType_,
+            lsp8TokenIdFormat_
+        )
         AccessControlExtendedAbstract()
         LSP8RevokableAbstract(isRevokable_)
     {}
 
-    function mint(address to, bytes32 tokenId, bool force, bytes memory data) public {
+    function mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) public {
         _mint(to, tokenId, force, data);
     }
 }
@@ -70,7 +97,14 @@ contract LSP8RevokableTest is Test {
     MockLSP8Revokable lsp8Revokable;
 
     function setUp() public {
-        lsp8Revokable = new MockLSP8Revokable(name, symbol, owner, tokenType, tokenIdFormat, isRevokable);
+        lsp8Revokable = new MockLSP8Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            isRevokable
+        );
     }
 
     function test_ConstructorInitializesRolesCorrectly() public {
@@ -103,7 +137,9 @@ contract LSP8RevokableTest is Test {
         lsp8Revokable.disableRevokable();
     }
 
-    function test_DeployWithoutRevokableFeatureDoesNotGrantRevokerRoleToOwner() public {
+    function test_DeployWithoutRevokableFeatureDoesNotGrantRevokerRoleToOwner()
+        public
+    {
         address contractOwner = makeAddr("contractOwner");
         bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
 
@@ -124,12 +160,18 @@ contract LSP8RevokableTest is Test {
         assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
     }
 
-    function test_DeployWithRevokableFeatureGrantsRevokerRoleToOwnerAndEmitsRoleGranted() public {
+    function test_DeployWithRevokableFeatureGrantsRevokerRoleToOwnerAndEmitsRoleGranted()
+        public
+    {
         address contractOwner = makeAddr("contractOwner");
         bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
 
         vm.expectEmit(true, true, true, true);
-        emit IAccessControl.RoleGranted(revokerRole, contractOwner, address(this));
+        emit IAccessControl.RoleGranted(
+            revokerRole,
+            contractOwner,
+            address(this)
+        );
         MockLSP8Revokable tokenContract = new MockLSP8Revokable(
             name,
             symbol,
@@ -152,31 +194,64 @@ contract LSP8RevokableTest is Test {
         bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
 
         vm.recordLogs();
-        new MockLSP8Revokable(name, symbol, owner, tokenType, tokenIdFormat, true);
+        new MockLSP8Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            true
+        );
 
         Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
 
         uint256 lastLog = recordedLogs.length - 1;
 
         // First `RoleGranted` event MUST be for `DEFAULT_ADMIN_ROLE`
-        assertEq(recordedLogs[lastLog - 1].topics[0], IAccessControl.RoleGranted.selector);
+        assertEq(
+            recordedLogs[lastLog - 1].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
         assertEq(recordedLogs[lastLog - 1].topics[1], DEFAULT_ADMIN_ROLE);
-        assertEq(recordedLogs[lastLog - 1].topics[2], bytes32(uint256(uint160(owner))));
-        assertEq(recordedLogs[lastLog - 1].topics[3], bytes32(uint256(uint160(owner))));
+        assertEq(
+            recordedLogs[lastLog - 1].topics[2],
+            bytes32(uint256(uint160(owner)))
+        );
+        assertEq(
+            recordedLogs[lastLog - 1].topics[3],
+            bytes32(uint256(uint160(owner)))
+        );
 
         // Another `RoleGranted` event MUST be for `REVOKER_ROLE`
-        assertEq(recordedLogs[lastLog].topics[0], IAccessControl.RoleGranted.selector);
+        assertEq(
+            recordedLogs[lastLog].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
         assertEq(recordedLogs[lastLog].topics[1], revokerRole);
-        assertEq(recordedLogs[lastLog].topics[2], bytes32(uint256(uint160(owner))));
-        assertEq(recordedLogs[lastLog].topics[3], bytes32(uint256(uint160(owner))));
+        assertEq(
+            recordedLogs[lastLog].topics[2],
+            bytes32(uint256(uint160(owner)))
+        );
+        assertEq(
+            recordedLogs[lastLog].topics[3],
+            bytes32(uint256(uint160(owner)))
+        );
     }
 
-    function test_ConstructorDoesNotGrantRevokerRoleToOwnerWhenNotRevokable() public {
+    function test_ConstructorDoesNotGrantRevokerRoleToOwnerWhenNotRevokable()
+        public
+    {
         bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
 
         vm.recordLogs();
-        MockLSP8Revokable nonRevokableToken =
-            new MockLSP8Revokable(name, symbol, owner, tokenType, tokenIdFormat, false);
+        MockLSP8Revokable nonRevokableToken = new MockLSP8Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            false
+        );
 
         assertFalse(nonRevokableToken.isRevokable());
         assertFalse(nonRevokableToken.hasRole(revokerRole, owner));
@@ -185,7 +260,9 @@ contract LSP8RevokableTest is Test {
         Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
 
         for (uint256 i = 0; i < recordedLogs.length; i++) {
-            if (recordedLogs[i].topics[0] == IAccessControl.RoleGranted.selector) {
+            if (
+                recordedLogs[i].topics[0] == IAccessControl.RoleGranted.selector
+            ) {
                 assertTrue(
                     bytes32(recordedLogs[i].topics[1]) != revokerRole,
                     "REVOKER_ROLE should not be granted on deployment"
@@ -205,6 +282,26 @@ contract LSP8RevokableTest is Test {
         assertEq(lsp8Revokable.getRoleMember(revokerRole, 0), owner);
         assertEq(lsp8Revokable.getRoleMember(revokerRole, 1), revoker1);
         assertEq(lsp8Revokable.getRoleMember(revokerRole, 2), revoker2);
+    }
+
+    function test_RevokeEmitsTokenRevoked() public {
+        bytes memory data = "revoke-data";
+        _mintTo(user1, tokenId1);
+
+        vm.expectEmit(true, true, true, true);
+        emit ILSP8Revokable.TokenRevoked(owner, user1, owner, tokenId1, data);
+        lsp8Revokable.revoke(user1, owner, tokenId1, data);
+    }
+
+    function test_RevokeEmitsTokenRevokedWithDelegatedRevoker() public {
+        bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
+        lsp8Revokable.grantRole(revokerRole, revoker1);
+        _mintTo(user1, tokenId1);
+
+        vm.prank(revoker1);
+        vm.expectEmit(true, true, true, true);
+        emit ILSP8Revokable.TokenRevoked(revoker1, user1, owner, tokenId1, "");
+        lsp8Revokable.revoke(user1, owner, tokenId1, "");
     }
 
     function test_RevokeAsOwner() public {
@@ -262,14 +359,26 @@ contract LSP8RevokableTest is Test {
         _mintTo(user1, tokenId1);
 
         vm.prank(nonOwner);
-        vm.expectRevert(abi.encodeWithSelector(AccessControlUnauthorizedAccount.selector, nonOwner, revokerRole));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                nonOwner,
+                revokerRole
+            )
+        );
         lsp8Revokable.revoke(user1, owner, tokenId1, "");
     }
 
     function test_RevokeFailsWhenRevocationIsDisabled() public {
         bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
-        MockLSP8Revokable nonRevokableToken =
-            new MockLSP8Revokable(name, symbol, owner, tokenType, tokenIdFormat, false);
+        MockLSP8Revokable nonRevokableToken = new MockLSP8Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            false
+        );
 
         nonRevokableToken.mint(user1, tokenId1, true, "");
 
@@ -288,23 +397,40 @@ contract LSP8RevokableTest is Test {
         _mintTo(user1, tokenId1);
 
         vm.prank(revoker1);
-        vm.expectRevert(abi.encodeWithSelector(AccessControlUnauthorizedAccount.selector, user2, revokerRole));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                user2,
+                revokerRole
+            )
+        );
         lsp8Revokable.revoke(user1, user2, tokenId1, "");
     }
 
     function test_RevokeFailsForWrongFrom() public {
         _mintTo(user1, tokenId1);
 
-        vm.expectRevert(abi.encodeWithSelector(LSP8NotTokenOwner.selector, user1, tokenId1, user2));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                LSP8NotTokenOwner.selector,
+                user1,
+                tokenId1,
+                user2
+            )
+        );
         lsp8Revokable.revoke(user2, owner, tokenId1, "");
     }
 
     function test_RevokeFailsForNonExistentToken() public {
-        vm.expectRevert(abi.encodeWithSelector(LSP8NonExistentTokenId.selector, tokenId4));
+        vm.expectRevert(
+            abi.encodeWithSelector(LSP8NonExistentTokenId.selector, tokenId4)
+        );
         lsp8Revokable.revoke(user1, owner, tokenId4, "");
     }
 
-    function test_TransferOwnershipClearsRevokerListAndRequiresNewOwnerToGrantRole() public {
+    function test_TransferOwnershipClearsRevokerListAndRequiresNewOwnerToGrantRole()
+        public
+    {
         bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
         address newOwner = vm.addr(200);
 
@@ -320,7 +446,13 @@ contract LSP8RevokableTest is Test {
         assertTrue(lsp8Revokable.hasRole(DEFAULT_ADMIN_ROLE, newOwner));
 
         vm.prank(revoker1);
-        vm.expectRevert(abi.encodeWithSelector(AccessControlUnauthorizedAccount.selector, revoker1, revokerRole));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                revoker1,
+                revokerRole
+            )
+        );
         lsp8Revokable.revoke(user1, newOwner, tokenId1, "");
 
         vm.prank(newOwner);
@@ -355,7 +487,11 @@ contract LSP8RevokableTest is Test {
 
         // Test previous admin cannot use its role
         vm.expectRevert(
-            abi.encodeWithSelector(AccessControlUnauthorizedAccount.selector, revokerAdmin, DEFAULT_ADMIN_ROLE)
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                revokerAdmin,
+                DEFAULT_ADMIN_ROLE
+            )
         );
         vm.prank(revokerAdmin);
         lsp8Revokable.grantRole(revokerRole, address(22222));
@@ -364,7 +500,9 @@ contract LSP8RevokableTest is Test {
         assertFalse(lsp8Revokable.hasRole(revokerRole, address(11111)));
     }
 
-    function testFuzz_DelegatedRevokerCanRevoke(address delegatedRevoker) public {
+    function testFuzz_DelegatedRevokerCanRevoke(
+        address delegatedRevoker
+    ) public {
         bytes32 revokerRole = lsp8Revokable.REVOKER_ROLE();
 
         vm.assume(delegatedRevoker != owner);

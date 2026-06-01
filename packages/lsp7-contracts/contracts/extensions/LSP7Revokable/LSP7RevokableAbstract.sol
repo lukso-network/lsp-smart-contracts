@@ -73,6 +73,14 @@ abstract contract LSP7RevokableAbstract is
             AccessControlUnauthorizedAccount(to, REVOKER_ROLE)
         );
 
+        emit TokenRevoked({
+            revoker: msg.sender,
+            from: from,
+            to: to,
+            amount: amount,
+            data: data
+        });
+
         // We assume revokers are trusted when specifying revocation destinations.
         // Therefore, we bypass LSP1 receiver checks.
         _transfer({
