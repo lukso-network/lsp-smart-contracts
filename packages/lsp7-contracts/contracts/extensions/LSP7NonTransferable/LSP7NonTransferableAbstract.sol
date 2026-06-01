@@ -37,7 +37,7 @@ abstract contract LSP7NonTransferableAbstract is
     uint256 public transferLockEnd;
 
     /// @inheritdoc ILSP7NonTransferable
-    bool public transferLockEnabled;
+    bool public nonTransferabilityEnabled;
 
     /// @notice Initializes the contract with non-transferable locking period.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
@@ -49,9 +49,13 @@ abstract contract LSP7NonTransferableAbstract is
         );
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
-        transferLockEnabled = true;
+        nonTransferabilityEnabled = true;
 
-        emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
+        emit TransferLockPeriodChanged({
+            nonTransferabilityEnabled: true,
+            start: transferLockStart_,
+            end: transferLockEnd_
+        });
         _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, owner());
     }
 
@@ -71,7 +75,7 @@ abstract contract LSP7NonTransferableAbstract is
 
     /// @inheritdoc ILSP7NonTransferable
     function isTransferable() public view virtual override returns (bool) {
-        if (!transferLockEnabled) return true;
+        if (!nonTransferabilityEnabled) return true;
 
         bool isTransferLockStartEnabled = transferLockStart != 0;
         bool isTransferLockEndEnabled = transferLockEnd != 0;
@@ -100,13 +104,17 @@ abstract contract LSP7NonTransferableAbstract is
     /// @inheritdoc ILSP7NonTransferable
     /// @custom:info The list of addresses holding the `NON_TRANSFERABLE_BYPASS_ROLE` remains populated after the non-transferable feature is switched off.
     function makeTransferable() public virtual override onlyOwner {
-        require(transferLockEnabled, LSP7TokenAlreadyTransferable());
+        require(nonTransferabilityEnabled, LSP7TokenAlreadyTransferable());
 
-        transferLockEnabled = false;
+        nonTransferabilityEnabled = false;
         transferLockStart = 0;
         transferLockEnd = 0;
 
-        emit TransferLockPeriodChanged({start: 0, end: 0});
+        emit TransferLockPeriodChanged({
+            nonTransferabilityEnabled: false,
+            start: 0,
+            end: 0
+        });
     }
 
     /// @inheritdoc ILSP7NonTransferable
@@ -114,7 +122,7 @@ abstract contract LSP7NonTransferableAbstract is
         uint256 newTransferLockStart,
         uint256 newTransferLockEnd
     ) public virtual override onlyOwner {
-        require(transferLockEnabled, LSP7CannotUpdateTransferLockPeriod());
+        require(nonTransferabilityEnabled, LSP7CannotUpdateTransferLockPeriod());
 
         // When `transferLockEnd` is 0, it means no end time is set (transfers locked indefinitely since `transferLockStart`)
         // When `transferLockStart` is 0, it means no start time is set (transfers locked up until `transferLockEnd`)
@@ -129,6 +137,7 @@ abstract contract LSP7NonTransferableAbstract is
         transferLockEnd = newTransferLockEnd;
 
         emit TransferLockPeriodChanged({
+            nonTransferabilityEnabled: true,
             start: newTransferLockStart,
             end: newTransferLockEnd
         });
