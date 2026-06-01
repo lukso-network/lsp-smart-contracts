@@ -256,6 +256,8 @@ contract LSP7RevokableInitTest is Test {
     function test_RevokeThroughProxy() public {
         token.mint(user1, 1000, true, "");
 
+        vm.expectEmit(true, true, true, true);
+        emit ILSP7Revokable.TokenRevoked(owner, user1, owner, 500, "");
         token.revoke(user1, owner, 500, "");
 
         assertEq(token.balanceOf(user1), 500);
