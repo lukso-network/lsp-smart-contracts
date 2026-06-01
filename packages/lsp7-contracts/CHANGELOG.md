@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.18.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.17.3...lsp7-contracts-v0.18.0) (2026-06-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename `transferLockEnabled()` by `tnonTransferabilityEnabled()`
+
+### Features
+
+* add `TokenRevoked` event when calling `revoke(...)` ([f4b0f49](https://github.com/lukso-network/lsp-smart-contracts/commit/f4b0f49c39ed048d7026586bc98b7bdfd130f593))
+
+
+### Code Refactoring
+
+* rename `transferLockEnabled()` by `tnonTransferabilityEnabled()` ([3b851ef](https://github.com/lukso-network/lsp-smart-contracts/commit/3b851eff19f36d9044255a4665b8e992017680b2))
+
 ## [0.17.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.17.2...lsp7-contracts-v0.17.3) (2026-05-25)
 
 
