@@ -158,8 +158,9 @@ contract LSP8NonTransferableTest is Test {
         uint256 token1TransferLockStart = 0;
         uint256 token1TransferLockEnd = 0;
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(true, true, true, false);
         emit ILSP8NonTransferable.TransferLockPeriodChanged(
+            true,
             token1TransferLockStart,
             token1TransferLockEnd
         );
@@ -182,8 +183,9 @@ contract LSP8NonTransferableTest is Test {
         uint256 token2TransferLockStart = 0;
         uint256 token2TransferLockEnd = type(uint256).max;
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(true, true, true, false);
         emit ILSP8NonTransferable.TransferLockPeriodChanged(
+            true,
             token2TransferLockStart,
             token2TransferLockEnd
         );
@@ -199,6 +201,7 @@ contract LSP8NonTransferableTest is Test {
         );
 
         assertFalse(token2.isTransferable());
+        assertTrue(token2.nonTransferabilityEnabled());
     }
 
     function test_ConstructorRevertsWithInvalidLockPeriod() public {
@@ -339,6 +342,12 @@ contract LSP8NonTransferableTest is Test {
     }
 
     // makeTransferable() Function
+    function test_MakeTransferableEmitsTransferLockPeriodChanged() public {
+        vm.expectEmit(true, true, true, false);
+        emit ILSP8NonTransferable.TransferLockPeriodChanged(false, 0, 0);
+        lsp8NonTransferable.makeTransferable();
+    }
+
     function test_MakeTransferableEnablesTransfers() public {
         // lsp8NonTransferable has start=0, end=max (always non-transferable)
         assertFalse(lsp8NonTransferable.isTransferable());
@@ -413,14 +422,14 @@ contract LSP8NonTransferableTest is Test {
             0
         );
         assertTrue(transferableToken.isTransferable());
-        assertTrue(transferableToken.transferLockEnabled());
+        assertTrue(transferableToken.nonTransferabilityEnabled());
         assertEq(transferableToken.transferLockStart(), 0);
         assertEq(transferableToken.transferLockEnd(), 0);
 
         // Calling makeTransferable shouldn't revert since the transfer lock is enabled
         transferableToken.makeTransferable();
         assertTrue(transferableToken.isTransferable());
-        assertFalse(transferableToken.transferLockEnabled());
+        assertFalse(transferableToken.nonTransferabilityEnabled());
         assertEq(transferableToken.transferLockStart(), 0);
         assertEq(transferableToken.transferLockEnd(), 0);
     }
@@ -443,8 +452,9 @@ contract LSP8NonTransferableTest is Test {
         uint256 newTransferLockStart = lockPeriodStart + 150;
         uint256 newTransferLockEnd = lockPeriodEnd + 250;
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(true, true, true, false);
         emit ILSP8NonTransferable.TransferLockPeriodChanged(
+            true,
             newTransferLockStart,
             newTransferLockEnd
         );
@@ -517,8 +527,9 @@ contract LSP8NonTransferableTest is Test {
         uint256 newTransferLockStart = 0;
         uint256 newTransferLockEnd = lockPeriodEnd + 250;
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(true, true, true, false);
         emit ILSP8NonTransferable.TransferLockPeriodChanged(
+            true,
             newTransferLockStart,
             newTransferLockEnd
         );
@@ -548,8 +559,9 @@ contract LSP8NonTransferableTest is Test {
         uint256 newTransferLockStart = lockPeriodStart + 150;
         uint256 newTransferLockEnd = 0;
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(true, true, true, false);
         emit ILSP8NonTransferable.TransferLockPeriodChanged(
+            true,
             newTransferLockStart,
             newTransferLockEnd
         );
@@ -580,8 +592,9 @@ contract LSP8NonTransferableTest is Test {
         uint256 newTransferLockStart = 0;
         uint256 newTransferLockEnd = 0;
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(true, true, true, false);
         emit ILSP8NonTransferable.TransferLockPeriodChanged(
+            true,
             newTransferLockStart,
             newTransferLockEnd
         );
@@ -886,8 +899,9 @@ contract LSP8NonTransferableTest is Test {
             vm.expectRevert(LSP8InvalidTransferLockPeriod.selector);
             lsp8NonTransferable.updateTransferLockPeriod(newStart, newEnd);
         } else {
-            vm.expectEmit(true, true, false, false);
+            vm.expectEmit(true, true, true, false);
             emit ILSP8NonTransferable.TransferLockPeriodChanged(
+                true,
                 newStart,
                 newEnd
             );

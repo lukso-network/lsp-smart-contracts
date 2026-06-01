@@ -367,6 +367,26 @@ contract LSP7RevokableTest is Test {
     // Revoke Tests
     // =========================================================================
 
+    function test_RevokeEmitsTokenRevoked() public {
+        bytes memory data = "revoke-data";
+        _mintTo(user1, 1000);
+
+        vm.expectEmit(true, true, true, true);
+        emit ILSP7Revokable.TokenRevoked(owner, user1, owner, 500, data);
+        lsp7Revokable.revoke(user1, owner, 500, data);
+    }
+
+    function test_RevokeEmitsTokenRevokedWithDelegatedRevoker() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+        lsp7Revokable.grantRole(revokerRole, revoker1);
+        _mintTo(user1, 1000);
+
+        vm.prank(revoker1);
+        vm.expectEmit(true, true, true, true);
+        emit ILSP7Revokable.TokenRevoked(revoker1, user1, owner, 300, "");
+        lsp7Revokable.revoke(user1, owner, 300, "");
+    }
+
     function test_RevokeAsOwner() public {
         _mintTo(user1, 1000);
 

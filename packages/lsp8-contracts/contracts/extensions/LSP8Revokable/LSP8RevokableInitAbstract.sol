@@ -109,9 +109,23 @@ abstract contract LSP8RevokableInitAbstract is
             AccessControlUnauthorizedAccount(to, REVOKER_ROLE)
         );
 
+        emit TokenRevoked({
+            revoker: msg.sender,
+            from: from,
+            to: to,
+            tokenId: tokenId,
+            data: data
+        });
+
         // We assume revokers are trusted when specifying revocation destinations.
         // Therefore, we bypass LSP1 receiver checks.
-        _transfer(from, to, tokenId, true, data);
+        _transfer({
+            from: from,
+            to: to,
+            tokenId: tokenId,
+            force: true,
+            data: data
+        });
     }
 
     function supportsInterface(

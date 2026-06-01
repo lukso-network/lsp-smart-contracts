@@ -9,6 +9,15 @@ interface ILSP8Revokable {
     /// @dev Emitted when revokable status is changed.
     event RevokableStatusChanged(bool indexed enabled);
 
+    /// @dev Emitted when a token is revoked from a holder.
+    event TokenRevoked(
+        address indexed revoker,
+        address indexed from,
+        address indexed to,
+        bytes32 tokenId,
+        bytes data
+    );
+
     /// @notice Returns whether the feature to revoke tokens from users is enabled or not.
     function isRevokable() external view returns (bool);
 

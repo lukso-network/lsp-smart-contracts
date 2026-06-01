@@ -391,13 +391,13 @@ contract LSP7CustomizableTokenTest is Test {
             "Token should be transferable before the lock starts"
         );
         assertTrue(
-            lockedToken.transferLockEnabled(),
+            lockedToken.nonTransferabilityEnabled(),
             "Transfer lock should stay enabled until makeTransferable is called"
         );
 
         vm.warp(lockStart + 1);
         assertFalse(lockedToken.isTransferable());
-        assertTrue(lockedToken.transferLockEnabled());
+        assertTrue(lockedToken.nonTransferabilityEnabled());
     }
 
     function test_ConstructorNonMintableInitialMintOverSupplyCapReverts(
@@ -970,12 +970,12 @@ contract LSP7CustomizableTokenTest is Test {
         });
 
         assertFalse(lockedToken.isTransferable());
-        assertTrue(lockedToken.transferLockEnabled());
+        assertTrue(lockedToken.nonTransferabilityEnabled());
 
         lockedToken.makeTransferable();
 
         assertTrue(lockedToken.isTransferable());
-        assertFalse(lockedToken.transferLockEnabled());
+        assertFalse(lockedToken.nonTransferabilityEnabled());
         assertEq(lockedToken.transferLockStart(), 0);
         assertEq(lockedToken.transferLockEnd(), 0);
 

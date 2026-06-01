@@ -258,6 +258,8 @@ contract LSP8RevokableInitTest is Test {
     function test_RevokeThroughProxy() public {
         token.mint(user1, tokenId1, true, "");
 
+        vm.expectEmit(true, true, true, true);
+        emit ILSP8Revokable.TokenRevoked(owner, user1, owner, tokenId1, "");
         token.revoke(user1, owner, tokenId1, "");
 
         assertEq(token.balanceOf(user1), 0);
