@@ -39,7 +39,8 @@ interface ILSP8NonTransferable {
     /// - When `transferLockStart` is set to a value and `transferLockEnd` is 0, it means the tokens becomes non-transferable at a certain point in time and indefinitely (no end time).
     ///
     /// - To make the token always non-transferable, set `transferLockStart` to 0 and `transferLockEnd` to type(uint256).max.
-    /// - To disable completely the non-transferable feature (= make the token always transferable), set both `transferLockStart` and `transferLockEnd` to 0.
+    /// - To remove the active lock while keeping the non-transferability feature configurable, set both `newTransferLockStart` and `newTransferLockEnd` to 0. In this state, transfers are currently unrestricted, but the owner can still configure a new lock period later.
+    /// - To permanently disable the non-transferability feature and prevent future lock-period updates, use the {makeTransferable} function.
     ///
     /// @dev Can only be called by the contract owner. Reverts once {makeTransferable} has been called.
     ///
