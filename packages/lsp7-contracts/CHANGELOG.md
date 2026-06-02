@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.18.0...lsp7-contracts-v0.18.1) (2026-06-02)
+
+
+### Bug Fixes
+
+* `package-lock.json` to re-trigger release of LSP7/8 packages ([6c4747c](https://github.com/lukso-network/lsp-smart-contracts/commit/6c4747cbec5e116a90fd2ac11ac381859c86f2b7))
+
 ## [0.18.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.17.3...lsp7-contracts-v0.18.0) (2026-06-01)
 
 
