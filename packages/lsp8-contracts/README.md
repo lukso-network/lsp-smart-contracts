@@ -2,7 +2,7 @@
 
 > The contracts [`LSP8Votes`](contracts/extensions/LSP8Votes/LSP8Votes.sol) and [`LSP8VotesInitAbstract`](contracts/extensions/LSP8Votes/LSP8VotesInitAbstract.sol) have not been formally audited by an external third party and are not recommended to be used in production without undergoing an independent security audit.
 
-npm package for the LSP8 Identifiable Digital Asset standard (NFTs and similar token IDs).
+npm package for the LSP8 Identifiable Digital Asset standard (NFTs token IDs).
 
 ## Installation
 

@@ -2,7 +2,7 @@
 
 > The contracts [`LSP7Votes`](contracts/extensions/LSP7Votes/LSP7Votes.sol) and [`LSP7VotesInitAbstract`](contracts/extensions/LSP7Votes/LSP7VotesInitAbstract.sol) have not been formally audited by an external third party and are not recommended to be used in production without undergoing an independent security audit.
 
-npm package for the LSP7 Digital Asset standard (fungible and similar tokens).
+npm package for the LSP7 Digital Asset standard (fungible token).
 
 ## Installation
 
