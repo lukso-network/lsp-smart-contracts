@@ -45,7 +45,7 @@ contract DeployUPStackScript is NickFactoryArtifactDeployer {
 
         for (uint256 i = 0; i < singletons.length; i++) {
             console2.log("--- Singleton:", singletons[i]);
-            deployed[i] = _deployEntry(json, singletons[i]);
+            deployed[i] = _deployContractFromArtifact(json, singletons[i]);
         }
 
         for (uint256 i = 0; i < implementations.length; i++) {
@@ -54,7 +54,7 @@ contract DeployUPStackScript is NickFactoryArtifactDeployer {
                 implementations[i],
                 TARGET_VERSION
             );
-            deployed[singletons.length + i] = _deployEntry(
+            deployed[singletons.length + i] = _deployContractFromArtifact(
                 json,
                 _findVersionKey(json, implementations[i], TARGET_VERSION)
             );
@@ -83,9 +83,7 @@ contract DeployUPStackScript is NickFactoryArtifactDeployer {
                 json,
                 string.concat(entryKey, ".version")
             );
-            if (
-                keccak256(bytes(entryVersion)) == keccak256(bytes(version))
-            ) {
+            if (keccak256(bytes(entryVersion)) == keccak256(bytes(version))) {
                 return entryKey;
             }
         }

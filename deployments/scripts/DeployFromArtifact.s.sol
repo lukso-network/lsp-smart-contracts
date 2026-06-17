@@ -26,6 +26,6 @@ contract DeployFromArtifactScript is NickFactoryArtifactDeployer {
         string memory json = vm.readFile(vm.envString("ARTIFACT"));
         string memory key = vm.envOr("ARTIFACT_KEY", string(""));
 
-        deployed = _deployEntry(json, key);
+        deployed = _deployContractFromArtifact(json, key);
     }
 }

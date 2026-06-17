@@ -4,6 +4,12 @@ pragma solidity ^0.8.17;
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
 
+// Constants
+import {
+    NICK_FACTORY_ADDRESS,
+    NICK_FACTORY_BYTECODE
+} from "./NickFactoryConstants.sol";
+
 /// @dev Typed JSON cheatcodes implemented by the forge binary but missing from
 /// the (older) vendored forge-std Vm interface in `lib/forge-std`.
 interface VmJsonCheats {
@@ -45,75 +51,177 @@ interface VmJsonCheats {
 /// guarantees byte-identical deployments (and therefore identical addresses)
 /// on every chain, regardless of the local toolchain.
 abstract contract NickFactoryArtifactDeployer is Script {
-    address internal constant NICK_FACTORY =
-        0x4e59b44847b379578588920cA78FbF26c0B4956C;
-
     VmJsonCheats internal constant vmJson = VmJsonCheats(VM_ADDRESS);
 
-    /// @dev Deploys the artifact entry at JSON path prefix `key` (empty string
-    /// for a flat artifact). Idempotent: skips if code already exists at the
-    /// predicted address. Reverts if the predicted CREATE2 address does not
-    /// match the canonical `address` field of the entry.
-    function _deployEntry(
+    function _extractFromArtifact(
         string memory json,
         string memory key
-    ) internal returns (address deployed) {
-        bytes32 salt = vmJson.parseJsonBytes32(
-            json,
-            string.concat(key, ".salt")
+    )
+        internal
+        view
+        returns (
+            bytes32 salt,
+            bytes memory creationBytecode,
+            bytes memory runtimeBytecode,
+            address expectedAddress
+        )
+    {
+        console2.log(
+            unicode"🔍 Extracting deployment parameters from artifact..."
         );
-        bytes memory creationBytecode = vmJson.parseJsonBytes(
+
+        salt = vmJson.parseJsonBytes32(json, string.concat(key, ".salt"));
+
+        creationBytecode = vmJson.parseJsonBytes(
             json,
             string.concat(key, ".creationBytecode")
         );
-        address expected = vmJson.parseJsonAddress(
+
+        runtimeBytecode = vmJson.parseJsonBytes(
+            json,
+            string.concat(key, ".bytecode")
+        );
+
+        expectedAddress = vmJson.parseJsonAddress(
             json,
             string.concat(key, ".address")
         );
+    }
 
-        require(
-            NICK_FACTORY.code.length > 0,
-            "Nick Factory not deployed on this chain. See DEPLOYMENT.md (Prerequisites) "
-            "for how to deploy it via its presigned keyless transaction."
+    function _checkNickFactoryDeployed() internal view {
+        console2.log(
+            unicode"🏭 Checking if Nick Factory is deployed on the target chain..."
         );
 
-        deployed = computeCreate2Address(
+        require(
+            NICK_FACTORY_ADDRESS.code.length > 0,
+            string.concat(
+                unicode"❌ Nick Factory not deployed on this chain. See DEPLOYMENT.md (Prerequisites) ",
+                "for how to deploy it via its presigned keyless transaction."
+            )
+        );
+
+        require(
+            keccak256(NICK_FACTORY_ADDRESS.code) ==
+                keccak256(NICK_FACTORY_BYTECODE),
+            unicode"⚠️ Nick Factory bytecode mismatch! Aborting deployment."
+        );
+
+        console2.log(unicode"✅ Nick Factory is deployed on the target chain.");
+    }
+
+    function _checkExpectedAddressAfterDeployment(
+        bytes32 salt,
+        bytes memory creationBytecode,
+        address expectedAddress
+    ) internal view {
+        console2.log(
+            unicode"🔍 Checking if we will obtain the expected address after deployment..."
+        );
+
+        address deployed = computeCreate2Address(
             salt,
             keccak256(creationBytecode),
-            NICK_FACTORY
+            NICK_FACTORY_ADDRESS
         );
 
         // Fail fast if the artifact no longer reproduces the canonical address
         // (corrupted bytecode, wrong salt, wrong entry...).
         require(
-            deployed == expected,
+            deployed == expectedAddress,
             string.concat(
-                "Predicted CREATE2 address does not match the canonical address in the artifact ",
+                unicode"❌ Predicted CREATE2 address does not match the canonical address in the artifact ",
                 "(predicted: ",
                 vmJson.toString(deployed),
                 ", expected: ",
-                vmJson.toString(expected),
+                vmJson.toString(expectedAddress),
                 "). Refusing to deploy."
             )
         );
 
-        if (deployed.code.length > 0) {
-            console2.log("Already deployed, skipping:", deployed);
+        console2.log(
+            unicode"✅ Predicted CREATE2 address matches the canonical address in the artifact."
+        );
+    }
+
+    function _checkIfAlreadyDeployed(
+        address deployed,
+        bytes memory expectedBytecode
+    ) internal view returns (bool isAlreadyDeployed) {
+        if (deployed.code.length == 0) {
+            return false;
+        }
+
+        if (keccak256(deployed.code) != keccak256(expectedBytecode)) {
+            revert(
+                string.concat(
+                    unicode"❌ Aborting deployment... Contract already deployed at address",
+                    vmJson.toString(deployed),
+                    " but bytecode on-chain mismatch with expected bytecode."
+                )
+            );
+        }
+
+        return true;
+    }
+
+    /// @dev Deploys the artifact entry at JSON path prefix `key` (empty string
+    /// for a flat artifact).
+    /// - Idempotent: skips if code already exists at the predicted address.
+    /// - Reverts if the predicted CREATE2 address does not match the canonical `address` field of the entry.
+    /// - Reverts if the contract is already deployed at the predicted address but with a different bytecode.
+    /// - Skips deployment if the contract is already deployed at the predicted address and with the expected bytecode.
+    function _deployContractFromArtifact(
+        string memory json,
+        string memory key
+    ) internal returns (address deployed) {
+        // Extra artifact deployment parameters
+        (
+            bytes32 salt,
+            bytes memory creationBytecode,
+            bytes memory runtimeBytecode,
+            address expectedAddress
+        ) = _extractFromArtifact(json, key);
+
+        // CHECK if Nick Factory is deployed on the target chain
+        _checkNickFactoryDeployed();
+
+        // CHECK if we will obtain the expected address after deployment
+        _checkExpectedAddressAfterDeployment(
+            salt,
+            creationBytecode,
+            expectedAddress
+        );
+
+        bool isAlreadyDeployed = _checkIfAlreadyDeployed(
+            deployed,
+            runtimeBytecode
+        );
+        if (isAlreadyDeployed) {
+            console2.log(
+                unicode"☑️ Contract already deployed, skipping:",
+                deployed
+            );
             return deployed;
         }
 
+        // finally start the broadcast to deploy
         vm.startBroadcast();
-        (bool success, ) = NICK_FACTORY.call(
+        (bool success, ) = NICK_FACTORY_ADDRESS.call(
             abi.encodePacked(salt, creationBytecode)
         );
         vm.stopBroadcast();
 
-        require(success, "NickFactory: deployment transaction failed");
+        require(
+            success,
+            unicode"❌ NickFactory: deployment transaction failed"
+        );
         require(
             deployed.code.length > 0,
-            "NickFactory: no code at predicted address after deployment"
+            unicode"❌ NickFactory: no code at predicted address after deployment"
         );
 
-        console2.log("Deployed at:", deployed);
+        // TODO: add contract name extracted from JSON artifact
+        console2.log("Successfully deployed at:", deployed);
     }
 }
