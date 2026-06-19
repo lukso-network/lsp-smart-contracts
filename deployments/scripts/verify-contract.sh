@@ -4,6 +4,7 @@ set -euo pipefail
 # Grabbed as arguments from CLI:
 ADDRESS=""
 CHAIN_ID=""
+EXPLORER=""
 
 usage() {
     cat <<'EOF'
@@ -12,37 +13,34 @@ Usage: $0 --address <address> --chain <chain_id>
 Options:
   --address   Deployed contract address
   --chain     Chain ID (e.g. 42) or name from deployed-chains.json
+  --explorer  Blockchain Explorer backend: etherscan | blockscout
   -h, --help  Show this help
 EOF
 }
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --address)
-            ADDRESS="$2"
-            shift 2
-            ;;
-        --chain)
-            CHAIN="$2"
-            shift 2
-            ;;
-        -h|--help)
-            usage
-            exit 0
-            ;;
-        *)
-            echo "Unknown option: $1" >&2
-            usage
-            exit 1
-            ;;
+        --address) ADDRESS="$2" shift 2 ;;
+        --chain) CHAIN="$2" shift 2 ;;
+        --explorer) EXPLORER="$2" shift 2 ;;
+        -h|--help) usage exit 0 ;;
+        *) echo "Unknown option: $1" >&2  usage exit 1 ;;
     esac
 done
 
-if [ -z "$ADDRESS" ] || [ -z "$CHAIN" ]; then
-    echo "Both --address and --chain are required." >&2
+if [[ -z "$ADDRESS" || -z "$CHAIN" || -z "$EXPLORER" ]]; then
+    echo "Required options: --address, --chain, --explorer." >&2
     usage
     exit 1
 fi
+
+case "$EXPLORER" in
+  etherscan|blockscout) ;;
+  *)
+    echo "Invalid --explorer: $EXPLORER (use: etherscan or blockscout)" >&2
+    exit 1
+    ;;
+esac
 
 # Compiler is either 0.8.17 for UniversalProfile base contracts
 # or 0.8.28 for LSP7/8MintableInit (latest) and LSP7/8CustomizableTokenInit
@@ -110,15 +108,49 @@ case $ADDRESS in
         ;;
 esac
 
-RESPONSE=$(curl -sS -X POST "https://api.etherscan.io/v2/api?chainid=$CHAIN_ID" \
-  --data-urlencode "apikey=$ETHERSCAN_API_KEY" \
-  --data-urlencode "module=contract" \
-  --data-urlencode "action=verifysourcecode" \
-  --data-urlencode "codeformat=solidity-standard-json-input" \
-  --data-urlencode "contractaddress=$ADDRESS" \
-  --data-urlencode "contractname=$CONTRACT_ID" \
-  --data-urlencode "compilerversion=$COMPILER_VERSION" \
-  --data-urlencode "sourceCode@$STANDARD_JSON_INPUT_FILE")
-echo "$RESPONSE"
-GUID=$(echo "$RESPONSE" | python3 -c "import sys,json;print(json.load(sys.stdin)['result'])")
-curl -sS "https://api.etherscan.io/v2/api?chainid=$CHAIN_ID&module=contract&action=checkverifystatus&guid=$GUID&apikey=$ETHERSCAN_API_KEY"
+verify_with_etherscan() {
+    : "${ETHERSCAN_API_KEY:?Set ETHERSCAN_API_KEY}"
+
+    RESPONSE=$(curl -sS -X POST "https://api.etherscan.io/v2/api?chainid=$CHAIN_ID" \
+        --data-urlencode "apikey=$ETHERSCAN_API_KEY" \
+        --data-urlencode "module=contract" \
+        --data-urlencode "action=verifysourcecode" \
+        --data-urlencode "codeformat=solidity-standard-json-input" \
+        --data-urlencode "contractaddress=$ADDRESS" \
+        --data-urlencode "contractname=$CONTRACT_ID" \
+        --data-urlencode "compilerversion=$COMPILER_VERSION" \
+        --data-urlencode "sourceCode@$STANDARD_JSON_INPUT_FILE")
+
+    echo "$RESPONSE"
+    GUID=$(echo "$RESPONSE" | python3 -c "import sys,json;print(json.load(sys.stdin)['result'])")
+    curl -sS "https://api.etherscan.io/v2/api?chainid=$CHAIN_ID&module=contract&action=checkverifystatus&guid=$GUID&apikey=$ETHERSCAN_API_KEY"
+
+}
+
+verify_with_blockscout() {
+    : "${BLOCKSCOUT_BASE:?Set BLOCKSCOUT_BASE (e.g. https://explorer.execution.testnet.lukso.network)}"
+
+    curl -sS -X POST \
+        "$BLOCKSCOUT_BASE/api/v2/smart-contracts/$ADDRESS/verification/via/standard-input" \
+        -F "compiler_version=$COMPILER_VERSION" \
+        -F "contract_name=$CONTRACT_ID" \
+        -F "autodetect_constructor_args=false" \
+        -F "files[0]=@$STANDARD_JSON_INPUT_FILE;type=application/json" \
+        -w "\nhttp=%{http_code}\n"
+    
+    curl -sS "$BLOCKSCOUT_BASE/api/v2/smart-contracts/$ADDRESS" \
+        | python3 -c "import sys,json;d=json.load(sys.stdin);print('verified:', d.get('is_verified'))"
+}
+
+case "$EXPLORER" in
+  etherscan)  verify_with_etherscan ;;
+  blockscout) verify_with_blockscout ;;
+esac
+
+# Always submit to Sourcify (chain-agnostic; many wallets/explorers read from it)
+BODY=$(python3 -c "
+import json
+std=json.load(open('$STANDARD_JSON_INPUT_FILE'))
+print(json.dumps({'stdJsonInput':std,'compilerVersion':'$COMPILER_VERION','contractIdentifier':'$CONTRACT_ID'}))")
+curl -sS -X POST "https://sourcify.dev/server/v2/verify/$CHAIN_ID/$ADDRESS" \
+  -H 'Content-Type: application/json' --data-raw "$BODY"

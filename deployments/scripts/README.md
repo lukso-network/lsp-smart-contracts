@@ -164,54 +164,33 @@ cast code 0x<contract-address> --rpc-url "$RPC_URL"
 
 ### 5 — Verify the contract on Block explorer with the standard JSON input
 
-Pick the **one** command matching the target chain's explorer. Shared values:
+Run the dedicated shell script below with the right parameters to verify the contract on the block explorer of the target chain.
 
-```bash
+> Note that the contract verification shell script **always submits to Sourcify** (chain-agnostic; many wallets/explorers read from it):
+
+<!-- ```bash
 ADDRESS=0x...
 STD_JSON=deployments/scripts/solc-inputs/DummyPingRegistry.json
 COMPILER="v0.8.17+commit.8df45f5f"
 CONTRACT_ID="deployments/scripts/contracts/DummyPingRegistry.sol:DummyPingRegistry"
 # the target chain id
 CHAIN_ID=1
+``` -->
+
+```
+verify-contract.sh --address "0x..." --chain "" --explorer <etherscan|blockscout>
 ```
 
 **If the chain's explorer is an Etherscan-family explorer** (Etherscan,
 Basescan, Arbiscan, Polygonscan, BscScan, Lineascan, …) — one API key works
-across all of them via v2:
+across all of them via Etherscan API v2.
 
-<details>
-  <summary>See instructions for Etherscan</summary>
-
-```
-etherscan-verification.sh --address "0x..." --chain ""
-```
-
-```bash
-RESPONSE=$(curl -sS -X POST "https://api.etherscan.io/v2/api?chainid=$CHAIN_ID" \
-  --data-urlencode "apikey=$ETHERSCAN_API_KEY" \
-  --data-urlencode "module=contract" \
-  --data-urlencode "action=verifysourcecode" \
-  --data-urlencode "codeformat=solidity-standard-json-input" \
-  --data-urlencode "contractaddress=$ADDRESS" \
-  --data-urlencode "contractname=$CONTRACT_ID" \
-  --data-urlencode "compilerversion=$COMPILER" \
-  --data-urlencode "sourceCode@$STD_JSON")
-echo "$RESPONSE"
-GUID=$(echo "$RESPONSE" | python3 -c "import sys,json;print(json.load(sys.stdin)['result'])")
-curl -sS "https://api.etherscan.io/v2/api?chainid=$CHAIN_ID&module=contract&action=checkverifystatus&guid=$GUID&apikey=$ETHERSCAN_API_KEY"
-```
-
-</details>
-
-**If the chain's explorer is a Blockscout instance** — set `BLOCKSCOUT_BASE` to
+**If the chain's explorer is a Blockscout instance** — set `BLOCKSCOUT_BASE` env variable to
 the explorer host from the `explorers` array in `deployed-chains.json`.
 
 ```bash
 BLOCKSCOUT_BASE=https://eth.blockscout.com   # e.g. https://explorer.execution.testnet.lukso.network
 ```
-
-<details>
-  <summary>See instructions for Blockscout</summary>
 
 > Important:
 >
@@ -223,39 +202,12 @@ BLOCKSCOUT_BASE=https://eth.blockscout.com   # e.g. https://explorer.execution.t
 >   (like a wrong host → `exit code 35`, an SSL error) are printed nowhere and
 >   the command appears to "do nothing".
 
-```bash
-curl -sS -X POST \
-  "$BLOCKSCOUT_BASE/api/v2/smart-contracts/$ADDRESS/verification/via/standard-input" \
-  -F "compiler_version=$COMPILER" \
-  -F "contract_name=$CONTRACT_ID" \
-  -F "autodetect_constructor_args=false" \
-  -F "files[0]=@$STD_JSON;type=application/json" \
-  -w "\nhttp=%{http_code}\n"
-```
-
-A successful submission returns `{"message":"Smart-contract verification started"}`
+With Blockscout, a successful submission returns `{"message":"Smart-contract verification started"}`
 with `http=200`. Poll the result (or just open the contract page):
 
 ```bash
 curl -sS "$BLOCKSCOUT_BASE/api/v2/smart-contracts/$ADDRESS" \
   | python3 -c "import sys,json;d=json.load(sys.stdin);print('verified:', d.get('is_verified'))"
-```
-
-</details>
-
-**Always also submit to Sourcify** (chain-agnostic; many wallets/explorers read
-from it):
-
-<details>
-  <summary>See instructions for Sourcify</summary>
-
-```bash
-BODY=$(python3 -c "
-import json
-std=json.load(open('$STD_JSON'))
-print(json.dumps({'stdJsonInput':std,'compilerVersion':'$COMPILER','contractIdentifier':'$CONTRACT_ID'}))")
-curl -sS -X POST "https://sourcify.dev/server/v2/verify/$CHAIN_ID/$ADDRESS" \
-  -H 'Content-Type: application/json' --data-raw "$BODY"
 ```
 
 </details>
