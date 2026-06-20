@@ -7,6 +7,12 @@ For more information see [Documentation](https://docs.lukso.tech/contracts/intro
 | :warning: | _This package is currently in early stages of development,<br/> use for testing or experimentation purposes only._ |
 | :-------: | :----------------------------------------------------------------------------------------------------------------- |
 
+## Deployments & Chains
+
+For the list of chains where the Universal Profile base contracts and factories are deployed on, see [`./deployments/DEPLOYED_CHAINS.md`](./deployments/DEPLOYED_CHAINS.md) and [`./deployments/depployed-chains.json`](./deployments/deployed-chains.json).
+
+For the instructions on how to deploy to a new chain, see [`./deployments/README.md`](./deployments/README.md).
+
 ## Packages
 
 This repo contains packages for the Solidity implementation of the LSP smart contracts.

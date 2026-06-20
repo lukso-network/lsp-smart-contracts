@@ -91,9 +91,9 @@ token and broadcast its
 
 ---
 
-## Deployment Flow
+## Deployment Flow
 
-### 1 — Get the deployment artifact (creation bytecode + salt + address)
+### 1 — 🗃️ Get the deployment artifact (creation bytecode + salt + address)
 
 The artifacts containing the raw creation bytecode + salt for each contracts are located inside the `contracts.json` file. You can deploy by pointing the script at the right contract.
 
@@ -125,7 +125,7 @@ CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0 \
 proof-of-concept contract. Then use **Part B** as the checklist for any real
 contract on any new chain. -->
 
-### 2 — Sanity check (the input reproduces the bytecode)
+### 2 — 🔍 Sanity check (the input reproduces the bytecode)
 
 This is the check that guarantees verification will succeed before you deploy and spend
 gas:
@@ -140,7 +140,7 @@ python3 -c "import json;print(json.load(open('deployments/scripts/artifacts/Dumm
 diff /tmp/from_input.txt /tmp/from_artifact.txt && echo "EXACT MATCH" || echo "MISMATCH"
 ```
 
-### 3 — Deploy the contract
+### 3 — 🚀 Deploy the contract
 
 The `DeployFromArtifact.s.sol` script reads the artifact, computes the predicted
 `CREATE2` address, **reverts if it does not equal the expected `address` mentioned in the
@@ -169,14 +169,14 @@ FOUNDRY_PROFILE=deployments CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0 \
 > Tip: drop `--broadcast` first to do a dry run (simulation only, no
 > transaction sent).
 
-### 4 — Confirm the contract is on-chain
+### 4 — ⛓️ Confirm the contract is on-chain
 
 ```bash
 cast code 0x<contract-address> --rpc-url "$RPC_URL"
 # non-empty bytecode == deployed
 ```
 
-### 5 — Verify the contract on Block explorer with the standard JSON input
+### 5 — 📄 Verify the contract on Block explorer with the standard JSON input
 
 Run the dedicated shell script below with the right parameters to verify the contract on the block explorer of the target chain.
 
@@ -226,7 +226,7 @@ curl -sS "$BLOCKSCOUT_BASE/api/v2/smart-contracts/$ADDRESS" \
 
 </details>
 
-### 6 — Confirm verification
+### 6 — ✅ Confirm verification
 
 Open the contract page on the explorer — you should see the four source files
 listed separately. Or check Sourcify:
@@ -247,7 +247,7 @@ forge script deployments/scripts/DeployUPStack.s.sol \
   --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
 ```
 
-## Producing new artifacts
+<!-- ## Producing new artifacts
 
 **For a brand-new contract**, produce the artifact the same way using the `generate-dummy-artifact.sh`.
 
@@ -274,7 +274,7 @@ This produces two files that are the inputs to the next steps:
   (contains `salt`, `creationBytecode`, `address`).
 - `deployments/scripts/solc-inputs/DummyPingRegistry.json` (the solc standard JSON input) — used to **verify** the contract on block explorer.
 
----
+--- -->
 
 <!-- ### B.2 — Get the standard JSON input (for verification)
 
