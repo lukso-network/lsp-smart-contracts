@@ -30,16 +30,10 @@ contract DeployUPStackScript is NickFactoryArtifactDeployer {
     function run() public returns (address[] memory deployed) {
         string memory json = vm.readFile("deployments/contracts.json");
 
-        string[2] memory singletons = [
-            ".LSP23LinkedContractsFactory",
-            ".UniversalProfileInitPostDeploymentModule"
-        ];
+        string[2] memory singletons = [".LSP23LinkedContractsFactory", ".UniversalProfileInitPostDeploymentModule"];
 
-        string[3] memory implementations = [
-            ".UniversalProfileInit",
-            ".LSP6KeyManagerInit",
-            ".LSP1UniversalReceiverDelegateUP"
-        ];
+        string[3] memory implementations =
+            [".UniversalProfileInit", ".LSP6KeyManagerInit", ".LSP1UniversalReceiverDelegateUP"];
 
         deployed = new address[](singletons.length + implementations.length);
 
@@ -49,52 +43,9 @@ contract DeployUPStackScript is NickFactoryArtifactDeployer {
         }
 
         for (uint256 i = 0; i < implementations.length; i++) {
-            console2.log(
-                "--- Implementation:",
-                implementations[i],
-                TARGET_VERSION
-            );
-            deployed[singletons.length + i] = _deployContractFromArtifact(
-                json,
-                _findVersionKey(json, implementations[i], TARGET_VERSION)
-            );
+            console2.log("--- Implementation:", implementations[i], TARGET_VERSION);
+            deployed[singletons.length + i] =
+                _deployContractFromArtifact(json, _findVersionKey(json, implementations[i], TARGET_VERSION));
         }
-    }
-
-    /// @dev Returns the JSON path of the entry under `<contractKey>.versions[]`
-    /// whose `version` field equals `version`. Reverts if not found, so we never
-    /// silently deploy the wrong release.
-    function _findVersionKey(
-        string memory json,
-        string memory contractKey,
-        string memory version
-    ) internal view returns (string memory) {
-        for (uint256 i = 0; ; i++) {
-            string memory entryKey = string.concat(
-                contractKey,
-                ".versions[",
-                vmJson.toString(i),
-                "]"
-            );
-
-            if (!vmJson.keyExistsJson(json, entryKey)) break;
-
-            string memory entryVersion = vmJson.parseJsonString(
-                json,
-                string.concat(entryKey, ".version")
-            );
-            if (keccak256(bytes(entryVersion)) == keccak256(bytes(version))) {
-                return entryKey;
-            }
-        }
-
-        revert(
-            string.concat(
-                "Version ",
-                version,
-                " not found in contracts.json for ",
-                contractKey
-            )
-        );
     }
 }

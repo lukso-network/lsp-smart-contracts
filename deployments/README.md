@@ -95,12 +95,26 @@ token and broadcast its
 
 ### 1 — Get the deployment artifact (creation bytecode + salt + address)
 
-The artifacts containing the raw creation bytecode + salt for each contracts are located inside the `contracts.json` file. You can deploy by pointing the script at the right entry.
+The artifacts containing the raw creation bytecode + salt for each contracts are located inside the `contracts.json` file. You can deploy by pointing the script at the right contract.
+
+Do this by using the right environnement variable for the contract to deploy.
+
+```
+# Versioned implementation
+CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0
+CONTRACT_TO_DEPLOY=LSP6KeyManagerInit-v0.12.1
+
+# Flat singleton (no version suffix)
+CONTRACT_TO_DEPLOY=LSP23LinkedContractsFactory
+CONTRACT_TO_DEPLOY=UniversalProfileInitPostDeploymentModule
+```
+
+Then run the command
 
 ```bash
 # UniversalProfileInit v0.14.0
-FOUNDRY_PROFILE=deployments ARTIFACT=deployments/contracts.json \
-ARTIFACT_KEY=".UniversalProfileInit.versions[1]" \
+FOUNDRY_PROFILE=deployments \
+CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0 \
   forge script deployments/scripts/DeployFromArtifact.s.sol \
   --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
 ```
@@ -137,7 +151,7 @@ Make sure you have exported in your shell the following environnement variable
 
 ```
 FOUNDRY_PROFILE=
-ARTIFACT=
+CONTRACT_TO_DEPLOY=
 RPC_URL=
 DEPLOYER_PK=
 ```
@@ -145,7 +159,7 @@ DEPLOYER_PK=
 Then run the script.
 
 ```bash
-FOUNDRY_PROFILE=deployments ARTIFACT=deployments/scripts/artifacts/DummyPingRegistry.json \
+FOUNDRY_PROFILE=deployments CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0 \
   forge script deployments/scripts/DeployFromArtifact.s.sol \
   --rpc-url "$RPC_URL" \
   --broadcast \

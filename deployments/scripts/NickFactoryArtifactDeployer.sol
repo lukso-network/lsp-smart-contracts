@@ -53,6 +53,207 @@ interface VmJsonCheats {
 abstract contract NickFactoryArtifactDeployer is Script {
     VmJsonCheats internal constant vmJson = VmJsonCheats(VM_ADDRESS);
 
+    /// @dev Resolves a user-facing contract identifier to the JSON artifact key.
+    /// Examples:
+    /// - `LSP23LinkedContractsFactory` -> `.LSP23LinkedContractsFactory`
+    /// - `UniversalProfileInit-v0.14.0` -> `.UniversalProfileInit.versions[n]`
+    function _resolveArtifactKey(
+        string memory json,
+        string memory contractToDeploy
+    ) internal view returns (string memory) {
+        (
+            string memory contractKey,
+            string memory version,
+            bool hasVersion
+        ) = _parseContractToDeploy(contractToDeploy);
+
+        if (hasVersion) {
+            return _findVersionKey(json, contractKey, version);
+        }
+
+        // This Foundry helper function will check if we have passed an invalid contract name
+        if (!vmJson.keyExistsJson(json, contractKey)) {
+            revert(string.concat("Contract not found: ", contractToDeploy));
+        }
+
+        if (
+            vmJson.keyExistsJson(
+                json,
+                string.concat(contractKey, ".versions[0]")
+            )
+        ) {
+            revert(
+                string.concat(
+                    "Version required for ",
+                    contractToDeploy,
+                    ". Use <contract>-v<version>."
+                )
+            );
+        }
+
+        return contractKey;
+    }
+
+    /// @dev Returns the JSON path of the entry under `<contractKey>.versions[]`
+    /// whose `version` field equals `version`. Reverts if not found, so we never
+    /// silently deploy the wrong release.
+    function _findVersionKey(
+        string memory json,
+        string memory contractKey,
+        string memory version
+    ) internal view returns (string memory) {
+        for (uint256 i = 0; ; i++) {
+            string memory entryKey = string.concat(
+                contractKey,
+                ".versions[",
+                vmJson.toString(i),
+                "]"
+            );
+
+            if (!vmJson.keyExistsJson(json, entryKey)) break;
+
+            string memory entryVersion = vmJson.parseJsonString(
+                json,
+                string.concat(entryKey, ".version")
+            );
+            if (keccak256(bytes(entryVersion)) == keccak256(bytes(version))) {
+                return entryKey;
+            }
+        }
+
+        revert(
+            string.concat(
+                "Version ",
+                version,
+                " not found in contracts.json for ",
+                contractKey
+            )
+        );
+    }
+
+    /// @dev Deploys the artifact entry at JSON path prefix `key` (empty string
+    /// for a flat artifact).
+    /// - Idempotent: skips if code already exists at the predicted address.
+    /// - Reverts if the predicted CREATE2 address does not match the canonical `address` field of the entry.
+    /// - Reverts if the contract is already deployed at the predicted address but with a different bytecode.
+    /// - Skips deployment if the contract is already deployed at the predicted address and with the expected bytecode.
+    function _deployContractFromArtifact(
+        string memory json,
+        string memory key
+    ) internal returns (address deployed) {
+        // Extra artifact deployment parameters
+        (
+            bytes32 salt,
+            bytes memory creationBytecode,
+            bytes memory runtimeBytecode,
+            address expectedAddress
+        ) = _extractFromArtifact(json, key);
+
+        // CHECK if Nick Factory is deployed on the target chain
+        _checkNickFactoryDeployed();
+
+        // CHECK if we will obtain the expected address after deployment
+        _checkExpectedAddressAfterDeployment(
+            salt,
+            creationBytecode,
+            expectedAddress
+        );
+        deployed = expectedAddress;
+
+        bool isAlreadyDeployed = _checkIfAlreadyDeployed(
+            deployed,
+            runtimeBytecode
+        );
+        if (isAlreadyDeployed) {
+            console2.log(
+                unicode"☑️ Contract already deployed, skipping:",
+                deployed
+            );
+            return deployed;
+        }
+
+        // finally start the broadcast to deploy
+        vm.startBroadcast();
+        (bool success, ) = NICK_FACTORY_ADDRESS.call(
+            abi.encodePacked(salt, creationBytecode)
+        );
+        vm.stopBroadcast();
+
+        require(
+            success,
+            unicode"❌ NickFactory: deployment transaction failed"
+        );
+        require(
+            deployed.code.length > 0,
+            unicode"❌ NickFactory: no code at predicted address after deployment"
+        );
+
+        // TODO: add contract name extracted from JSON artifact
+        console2.log("Successfully deployed at:", deployed);
+    }
+
+    function _parseContractToDeploy(
+        string memory contractToDeploy
+    )
+        internal
+        pure
+        returns (
+            string memory contractKey,
+            string memory version,
+            bool hasVersion
+        )
+    {
+        bytes memory contractToDeployBytes = bytes(contractToDeploy);
+        require(
+            contractToDeployBytes.length > 0,
+            "CONTRACT_TO_DEPLOY is required"
+        );
+
+        for (uint256 i = 0; i + 1 < contractToDeployBytes.length; i++) {
+            if (
+                contractToDeployBytes[i] == 0x2d && // 0x2d = "-"
+                contractToDeployBytes[i + 1] == 0x76 // 0x76 = "v"
+            ) {
+                require(
+                    // i > 0 CHECK there must be something before the "-v" separator (a contract name)
+                    // i + 2 < contractToDeployBytes.length CHECK there must be something after the "-v" separator (a version)
+                    i > 0 && i + 2 < contractToDeployBytes.length,
+                    "Invalid CONTRACT_TO_DEPLOY format"
+                );
+
+                return (
+                    // e.g: .UniversalProfileInit
+                    string.concat(".", _substring(contractToDeploy, 0, i)),
+                    // e.g: 0.14.0
+                    _substring(
+                        contractToDeploy,
+                        i + 2,
+                        contractToDeployBytes.length
+                    ),
+                    // is a versioned contract. True if "-v" was found
+                    true
+                );
+            }
+        }
+
+        return (string.concat(".", contractToDeploy), "", false);
+    }
+
+    function _substring(
+        string memory value,
+        uint256 start,
+        uint256 end
+    ) internal pure returns (string memory) {
+        bytes memory valueBytes = bytes(value);
+        bytes memory result = new bytes(end - start);
+
+        for (uint256 i = start; i < end; i++) {
+            result[i - start] = valueBytes[i];
+        }
+
+        return string(result);
+    }
+
     function _extractFromArtifact(
         string memory json,
         string memory key
@@ -163,65 +364,5 @@ abstract contract NickFactoryArtifactDeployer is Script {
         }
 
         return true;
-    }
-
-    /// @dev Deploys the artifact entry at JSON path prefix `key` (empty string
-    /// for a flat artifact).
-    /// - Idempotent: skips if code already exists at the predicted address.
-    /// - Reverts if the predicted CREATE2 address does not match the canonical `address` field of the entry.
-    /// - Reverts if the contract is already deployed at the predicted address but with a different bytecode.
-    /// - Skips deployment if the contract is already deployed at the predicted address and with the expected bytecode.
-    function _deployContractFromArtifact(
-        string memory json,
-        string memory key
-    ) internal returns (address deployed) {
-        // Extra artifact deployment parameters
-        (
-            bytes32 salt,
-            bytes memory creationBytecode,
-            bytes memory runtimeBytecode,
-            address expectedAddress
-        ) = _extractFromArtifact(json, key);
-
-        // CHECK if Nick Factory is deployed on the target chain
-        _checkNickFactoryDeployed();
-
-        // CHECK if we will obtain the expected address after deployment
-        _checkExpectedAddressAfterDeployment(
-            salt,
-            creationBytecode,
-            expectedAddress
-        );
-
-        bool isAlreadyDeployed = _checkIfAlreadyDeployed(
-            deployed,
-            runtimeBytecode
-        );
-        if (isAlreadyDeployed) {
-            console2.log(
-                unicode"☑️ Contract already deployed, skipping:",
-                deployed
-            );
-            return deployed;
-        }
-
-        // finally start the broadcast to deploy
-        vm.startBroadcast();
-        (bool success, ) = NICK_FACTORY_ADDRESS.call(
-            abi.encodePacked(salt, creationBytecode)
-        );
-        vm.stopBroadcast();
-
-        require(
-            success,
-            unicode"❌ NickFactory: deployment transaction failed"
-        );
-        require(
-            deployed.code.length > 0,
-            unicode"❌ NickFactory: no code at predicted address after deployment"
-        );
-
-        // TODO: add contract name extracted from JSON artifact
-        console2.log("Successfully deployed at:", deployed);
     }
 }
