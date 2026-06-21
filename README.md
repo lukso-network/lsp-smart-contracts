@@ -9,7 +9,7 @@ For more information see [Documentation](https://docs.lukso.tech/contracts/intro
 
 ## Deployments & Chains
 
-For the list of chains where the Universal Profile base contracts and factories are deployed on, see [`./deployments/DEPLOYED_CHAINS.md`](./deployments/DEPLOYED_CHAINS.md) and [`./deployments/depployed-chains.json`](./deployments/deployed-chains.json).
+For the list of chains where the Universal Profile base contracts and factories are deployed on, see [`./deployments/DEPLOYED_CHAINS.md`](./deployments/DEPLOYED_CHAINS.md) and [`./deployments/deployed-chains.json`](./deployments/deployed-chains.json).
 
 For the instructions on how to deploy to a new chain, see [`./deployments/README.md`](./deployments/README.md).
 
@@ -76,9 +76,10 @@ See the `README.md` file of each individual package to learn more.
 
 For detailed instructions on how to run tests, please refer to our [Testing Guide](./packages/lsp-smart-contracts/tests/README.md).
 
-### Deployment via hardhat
+<!-- Deprecated Hardhat deployment -->
+<!-- ### Deployment via hardhat
 
-You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./packages/lsp-smart-contracts/DEPLOYMENT.md) page.
+You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./packages/lsp-smart-contracts/DEPLOYMENT.md) page. -->
 
 ---
 

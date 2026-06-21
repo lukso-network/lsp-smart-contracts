@@ -1,6 +1,69 @@
-# Deploying Universal Profile factories and base contracts
+# Deploying Universal Profile smart contracts infrastructure on new EVM networks
 
-This is the step-by-step procedure for deploying the following contract in a new chain.
+This guide covers how to deploy the LUKSO smart contract infrastructure (**LSP23 factory, post deployment module, and base contracts**) on a new EVM-compatible network.
+
+Deployments rely on the [Nick Factory](https://github.com/Arachnid/deterministic-deployment-proxy) and CREATE2 for deterministic address, so that each contract is deployed at the same address across chains.
+
+All contract build artifacts (creation bytecodes, runtime bytecodes, salts, compiler settings) are stored in [`deployments/contracts.json`](./contracts.json).
+
+Below are the step-by-step procedure for deploying each contracts on a new EVM chain.
+
+## Supported EVM Networks
+
+See [DEPLOYED_CHAINS.md](./DEPLOYED_CHAINS.md) for the per-contract address and per-chain deployment registry.
+
+## Contracts Overview
+
+There are two categories of contracts:
+
+- **LSP23 Factory & Post-Deployment Modules** — Used to deploy Universal Profiles & LSP26 Key Managers, and initialize them via the `UniversalProfileInitPostDeploymentModule`.
+- **Base Implementation Contracts** — Base implementation contracts that can be used behind [ERC-1167](https://eips.ethereum.org/EIPS/eip-1167) minimal proxies.
+
+### 🏭 LSP23 Factory & Post-Deployment Modules
+
+The `LSP23LinkedContractsFactory` is the central factory for deploying linked contract pairs. See the [LSP-23 spec](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md#lsp23linkedcontractsfactory-deployment) for the full deployment transaction data.
+
+The `UniversalProfileInitPostDeploymentModule` is called by the LSP23 after deploying a UP + KeyManager proxy pair. Sets initial data keys via `delegatecall` on the UP, then transfers ownership to the KeyManager. See [deployment details](../packages/lsp23-contracts/contracts/modules/deployment-UP-init-module.md).
+
+The `UniversalProfilePostDeploymentModule` is the same role as above, but for non-proxy (direct) UP deployments. See [deployment details](../packages/lsp23-contracts/contracts/modules/deployment-UP-module.md).
+
+| Contract                                 | Address                                      | Purpose                                                                  |
+| ---------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------ |
+| LSP23LinkedContractsFactory              | `0x2300000A84D25dF63081feAa37ba6b62C4c89a30` | Factory for deploying linked contract pairs (UP + KeyManager)            |
+| UniversalProfileInitPostDeploymentModule | `0x000000000066093407b6704B89793beFfD0D8F00` | Sets initial data keys and transfers ownership after UP proxy deployment |
+| UniversalProfilePostDeploymentModule     | `0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7` | Same as above but for non-proxy UP deployments                           |
+
+### 🆙 Universal Profile - Base Implementation Contracts
+
+The Universal Profile implementation contracts are base contracts used behind ERC-1167 minimal proxies. Each disables initializers in its `constructor` — only proxies should be initialized via their `initialize(...)` function.
+
+- **UniversalProfileInit** — Proxy-deployable Universal Profile (ERC725Account + LSP1 + LSP3).
+- **LSP6KeyManagerInit** — Proxy-deployable Key Manager (permission controller for ERC725Account).
+- **LSP1UniversalReceiverDelegateUP** — Stateless delegate that auto-registers LSP5 ReceivedAssets and LSP10 ReceivedVaults data keys.
+
+| Contract                        | Version | Address                                      | Source                                                                                                                                                                                                                |
+| ------------------------------- | ------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UniversalProfileInit            | 0.12.1  | `0x52c90985AF970D4E0DC26Cb5D052505278aF32A9` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/v0.12.1/contracts/UniversalProfileInit.sol)                                                                                      |
+| UniversalProfileInit            | 0.14.0  | `0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp-smart-contracts-v0.14.0/contracts/UniversalProfileInit.sol)                                                                  |
+| LSP6KeyManagerInit              | 0.12.1  | `0xa75684d7D048704a2DB851D05Ba0c3cbe226264C` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/v0.12.1/contracts/LSP6KeyManager/LSP6KeyManagerInit.sol)                                                                         |
+| LSP6KeyManagerInit              | 0.14.0  | `0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp-smart-contracts-v0.14.0/contracts/LSP6KeyManager/LSP6KeyManagerInit.sol)                                                     |
+| LSP1UniversalReceiverDelegateUP | 0.12.1  | `0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/v0.12.1/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol)                     |
+| LSP1UniversalReceiverDelegateUP | 0.14.0  | `0x7870C5B8BC9572A8001C3f96f7ff59961B23500D` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp-smart-contracts-v0.14.0/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol) |
+
+### 🪙 Tokens - Base Implementation Contracts
+
+- **LSP7MintableInit / LSP8MintableInit** — Proxy-deployable mintable token implementations (fungible / non-fungible).
+
+| Contract                                   | Version | Address                                      | Source                                                                                                                                                                                |
+| ------------------------------------------ | ------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LSP7MintableInit                           | 0.14.0  | `0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp-smart-contracts-v0.14.0/contracts/LSP7DigitalAsset/presets/LSP7MintableInit.sol)             |
+| LSP7MintableInit (with `disableMinting()`) | 0.17.3  | `0xf006554F96bf91616dAda3FdB73Ca213874DcFF9` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp7-contracts-v0.17.3/packages/lsp7-contracts/contracts/presets/LSP7MintableInit.sol)           |
+| LSP7CustomizableTokenInit                  | 0.18.1  | `0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp7-contracts-v0.18.1/packages/lsp7-contracts/contracts/presets/LSP7CustomizableTokenInit.sol)  |
+| LSP8MintableInit                           | 0.14.0  | `0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp-smart-contracts-v0.14.0/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInit.sol) |
+| LSP8MintableInit (with `disableMinting()`) | 0.17.3  | `0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp8-contracts-v0.17.3/packages/lsp8-contracts/contracts/presets/LSP8MintableInit.sol)           |
+| LSP8CustomizableTokenInit                  | 0.18.1  | `0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp8-contracts-v0.18.1/packages/lsp8-contracts/contracts/presets/LSP8CustomizableTokenInit.sol)  |
+
+---
 
 ## Overview
 
@@ -21,43 +84,43 @@ The high-level deployment flow works as follow:
 
 Contract verifications works using Etherscan or Blockscout API (depending on the block explorer used by the target chain to deploy onto). Contract verification data is also submitted on Sourcify
 
-**🏭 Factories**
-
-- `LSP23LinkedContractFactory`
-- `UniversalProfilePostDeploymentModuleInit`
-
-**🆙 Universal Profile base contracts**
-
-- `UniversalProfileInit` (v0.14.0)
-- `LSP6KeyManagerInit` (v0.14.0)
-- `LSP1UniversalReceiverDelegateUP` (v0.14.0)
-
-**🪙 Token base contract**
-
-- `LSP7MintableInit`
-- `LSP8MintableInit`
-- `LSP7CustomizableTokenInit`
-- `LSP8CustomizableTokenInit`
-
 > **Note**: deploying the raw bytecode and using Solc Standard JSON input for contract verification provides a better deployment experience. This flow leads to:
 >
 > - not have to checkout at the old repository tag / commit hash at which the contracts were deployed
 > - not have to re-install the dependencies
 > - not have to recompile the smart contracts
 
-# Pre-requisites
+---
 
-## Setup environnement
+## Pre-requisites
 
-1. Install [Foundry](https://getfoundry.sh) (`forge`, `cast`).
+1. **[Foundry](https://getfoundry.sh)** installed (specifically `cast`)
+2. **A funded deployer account** on the target network
+3. **An RPC endpoint** for the target network
+4. **The Nick Factory** contract must exist on the target network at address `0x4e59b44847b379578588920cA78FbF26c0B4956C`. To check if it exists, follow the next section.
 
-2. Create a new `.env` file.
+### Verify Nick Factory is deployed on the target chain
+
+> **Note:** the Foundry deployment scripts check automatically for this.
+
+Confirm the Nick Factory exists on the target chain (it must, for the address
+to be identical):
+
+```bash
+cast code 0x4e59b44847b379578588920cA78FbF26c0B4956C --rpc-url "$RPC_URL"
+```
+
+If it returns `0x`, deploy it first by funding `0x3fab184622dc19b6109349b94811493bf2a45362` with ~`0.0247 ETH` (or the native token) and broadcast the [pre-signed transaction](https://github.com/Arachnid/deterministic-deployment-proxy?tab=readme-ov-file#deployment-transaction). Some networks include the Nick Factory at genesis.
+
+### Setup environnement
+
+1. Create a new `.env` file.
 
 ```bash
 cp .env.example .env
 ```
 
-3. Fill in the right environment variables. Set the target chain's RPC, your funded deployer private key, and the API key of the block explorer for verifying the contract after deployment.
+2. Fill in the right environment variables. Set the target chain's RPC, your funded deployer private key, and the API key of the block explorer for verifying the contract after deployment.
 
 ```
 RPC_URL=
@@ -67,27 +130,11 @@ ETHERSCAN_API_KEY=
 BLOCKSCOUT_API_KEY=
 ```
 
-4. Export the environnement variables into the shell.
+3. Export the environnement variables into the shell.
 
 ```bash
-source. env
+source .env
 ```
-
-## (Sanity check) Verify Nick Factory is deployed on the target chain
-
-> **Note:** the Foundry deployment scripts check
-
-Confirm the Nick Factory exists on the target chain (it must, for the address
-to be identical):
-
-```bash
-cast code 0x4e59b44847b379578588920cA78FbF26c0B4956C --rpc-url "$RPC_URL"
-```
-
-If it returns `0x`, deploy it first: fund
-`0x3fab184622dc19b6109349b94811493bf2a45362` with ~`0.0247` of the native
-token and broadcast its
-[presigned transaction](https://github.com/Arachnid/deterministic-deployment-proxy?tab=readme-ov-file#deployment-transaction).
 
 ---
 
@@ -191,8 +238,14 @@ CONTRACT_ID="deployments/scripts/contracts/DummyPingRegistry.sol:DummyPingRegist
 CHAIN_ID=1
 ``` -->
 
-```
-verify-contract.sh --address "0x..." --chain "" --explorer <etherscan|blockscout>
+```bash
+# Run from the repository root
+# e.g: verify `UniversalProfileInit` (v0.14.0) on Etherscan for Ethereum Mainnet
+# --explorer <etherscan|blockscout>
+deployments/verify-contract.sh \
+  --address "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F" \
+  --chain 1 \
+  --explorer etherscan
 ```
 
 **If the chain's explorer is an Etherscan-family explorer** (Etherscan,
@@ -224,11 +277,9 @@ curl -sS "$BLOCKSCOUT_BASE/api/v2/smart-contracts/$ADDRESS" \
   | python3 -c "import sys,json;d=json.load(sys.stdin);print('verified:', d.get('is_verified'))"
 ```
 
-</details>
-
 ### 6 — ✅ Confirm verification
 
-Open the contract page on the explorer — you should see the four source files
+Open the contract page on the explorer — you should see the source files
 listed separately. Or check Sourcify:
 
 ```bash
@@ -327,15 +378,17 @@ SOLC="$HOME/.svm/0.8.17/solc-0.8.17"
 
 ## Deploy to many chains at once (optional)
 
-Once the single-chain flow works, loop Step 3 over `deployed-chains.json`,
-skipping zkSync-stack chains (different `CREATE2` derivation) and chains without
-the Nick Factory:
+Once the single-chain flow works, loop Step 3 over `deployments/deployed-chains.json`
+(from the repository root), skipping zkSync-stack chains (different `CREATE2`
+derivation) and chains without the Nick Factory:
 
 ```bash
+# Run from the repository root
 export FOUNDRY_PROFILE=deployments
+export CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0
 ZK_DENYLIST="324 50104 232"   # zkSync Era, Sophon, Lens
 
-jq -c '.[]' deployed-chains.json | while read -r chain; do
+jq -c '.[]' deployments/deployed-chains.json | while read -r chain; do
   CHAIN_ID=$(echo "$chain" | jq -r '.chainId')
   NAME=$(echo "$chain" | jq -r '.name')
   RPC=$(echo "$chain" | jq -r '.rpcUrl')
@@ -344,10 +397,52 @@ jq -c '.[]' deployed-chains.json | while read -r chain; do
     echo "skip (no Nick Factory): $NAME ($CHAIN_ID)"; continue
   fi
   echo "==> $NAME ($CHAIN_ID)"
-  ARTIFACT=deployments/scripts/artifacts/DummyPingRegistry.json \
-    forge script deployments/scripts/DeployFromArtifact.s.sol \
+  forge script deployments/scripts/DeployFromArtifact.s.sol \
     --rpc-url "$RPC" --broadcast --private-key "$DEPLOYER_PK" || echo "FAILED: $NAME"
 done
+```
+
+---
+
+## Manual deployment via `cast send`
+
+All contracts can also be deployed manually via Foundry `cast` by sending `salt + creationBytecode` as calldata to the Nick Factory. The salt and creation bytecodes are in the [`contracts.json`](./contracts.json) file.
+
+```bash
+# Generic pattern — send (salt ++ creationBytecode) to Nick Factory
+cast send 0x4e59b44847b379578588920cA78FbF26c0B4956C \
+  "$(cast concat-hex $SALT $CREATION_BYTECODE)" \
+  --rpc-url $RPC_URL \
+  --private-key $DEPLOYER_PK
+```
+
+**Verify each deployment:**
+
+```bash
+# Should return non-empty bytecode
+cast code 0x2300000A84D25dF63081feAa37ba6b62C4c89a30 --rpc-url $RPC_URL
+cast code 0x000000000066093407b6704B89793beFfD0D8F00 --rpc-url $RPC_URL
+cast code 0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7 --rpc-url $RPC_URL
+```
+
+### Bytecode Comparison
+
+After deployment, verify the on-chain bytecode matches `./contracts.json`.
+
+For the LSP23 factory and the post-deployment module.
+
+```bash
+ON_CHAIN=$(cast code $CONTRACT_ADDRESS --rpc-url $RPC_URL)
+EXPECTED=$(python3 -c "import json; print(json.load(open('./contracts.json'))['LSP23LinkedContractsFactory']['bytecode'])")
+[ "$ON_CHAIN" = "$EXPECTED" ] && echo "Bytecode matches" || echo "Bytecode mismatch"
+```
+
+For implementation contracts, they are nested under `['<name>']['versions'][i]['bytecode']`.
+
+```bash
+ON_CHAIN=$(cast code $CONTRACT_ADDRESS --rpc-url $RPC_URL)
+EXPECTED=$(python3 -c "import json; d=json.load(open('./contracts.json')); print(next(v for v in d['UniversalProfileInit']['versions'] if v['version']=='0.14.0')['bytecode'])")
+[ "$ON_CHAIN" = "$EXPECTED" ] && echo "Bytecode matches" || echo "Bytecode mismatch"
 ```
 
 ---
@@ -367,3 +462,13 @@ done
   it recompiles the current project to build the payload; it cannot submit an
   archived standard JSON input. The `curl` submissions above are what let you
   verify a contract whose sources are not in this repo.
+
+---
+
+## Further Reading
+
+- [LSP-23 Linked Contracts Factory spec](https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-23-LinkedContractsFactory.md)
+- [LSP23 modules README](../packages/lsp23-contracts/contracts/modules/README.md)
+- [PostDeploymentModule (Init) deployment guide](../packages/lsp23-contracts/contracts/modules/deployment-UP-init-module.md)
+- [PostDeploymentModule deployment guide](../packages/lsp23-contracts/contracts/modules/deployment-UP-module.md)
+- [Nick Factory / Deterministic Deployment Proxy](https://github.com/Arachnid/deterministic-deployment-proxy)
