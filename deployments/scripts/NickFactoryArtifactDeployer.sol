@@ -356,7 +356,7 @@ abstract contract NickFactoryArtifactDeployer is Script {
         if (keccak256(deployed.code) != keccak256(expectedBytecode)) {
             revert(
                 string.concat(
-                    unicode"❌ Aborting deployment... Contract already deployed at address",
+                    unicode"❌ Aborting deployment... Contract already deployed at address ",
                     vmJson.toString(deployed),
                     " but bytecode on-chain mismatch with expected bytecode."
                 )

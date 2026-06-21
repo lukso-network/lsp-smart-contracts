@@ -122,7 +122,7 @@ If it returns `0x`, deploy it first by funding `0x3fab184622dc19b6109349b9481149
 1. Create a new `.env` file.
 
 ```bash
-cp .env.example .env
+cp deployments/.env.example deployments/.env
 ```
 
 2. Fill in the right environment variables. Set the target chain's RPC, your funded deployer private key, and the block explorer settings used to verify the contract after deployment. Use:
@@ -141,7 +141,7 @@ BLOCKSCOUT_BASE_URL=
 1. Export the environnement variables into the shell.
 
 ```bash
-source .env
+source deployments/.env
 ```
 
 ---
@@ -260,16 +260,16 @@ deployments/verify-contract.sh \
 Basescan, Arbiscan, Polygonscan, BscScan, Lineascan, …) — one API key works
 across all of them via Etherscan API v2.
 
-**If the chain's explorer is a Blockscout instance** — set `BLOCKSCOUT_BASE` env variable to
+**If the chain's explorer is a Blockscout instance** — set `BLOCKSCOUT_BASE_URL` env variable to
 the explorer host from the `explorers` array in `deployed-chains.json`.
 
 ```bash
-BLOCKSCOUT_BASE=https://eth.blockscout.com   # e.g. https://explorer.execution.testnet.lukso.network
+BLOCKSCOUT_BASE_URL=https://eth.blockscout.com
 ```
 
 > Important:
 >
-> - `BLOCKSCOUT_BASE` is just the host (e.g. `https://eth.blockscout.com`,
+> - `BLOCKSCOUT_BASE_URL` is just the host (e.g. `https://eth.blockscout.com` for Ethereum,
 >   or `https://explorer.execution.testnet.lukso.network` for LUKSO Testnet).
 >   Do **not** append `/api` — the path below already adds `/api/v2/...`.
 > - Do **not** use an `api.` sub-domain; use the explorer host itself.
@@ -281,7 +281,7 @@ With Blockscout, a successful submission returns `{"message":"Smart-contract ver
 with `http=200`. Poll the result (or just open the contract page):
 
 ```bash
-curl -sS "$BLOCKSCOUT_BASE/api/v2/smart-contracts/$ADDRESS" \
+curl -sS "$BLOCKSCOUT_BASE_URL/api/v2/smart-contracts/$ADDRESS" \
   | python3 -c "import sys,json;d=json.load(sys.stdin);print('verified:', d.get('is_verified'))"
 ```
 

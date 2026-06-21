@@ -7,7 +7,7 @@ CHAIN=""
 EXPLORER=""
 
 usage() {
-    cat <<'EOF'
+    cat <<EOF
 Usage: $0 --address <address> --chain <chain_id|chain_name>
 
 Options:
