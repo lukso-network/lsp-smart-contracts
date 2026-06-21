@@ -43,7 +43,7 @@ The `postDeploymentModuleCalldata` typically sets:
 - `AddressPermissions:Permissions:<controller>` — permissions for the controller EOA
 - `AddressPermissions[]` — the array of controllers
 
-> See the [LSP23 modules README](./packages/lsp23-contracts/contracts/modules/README.md) and the [PostDeploymentModule source](./packages/lsp23-contracts/contracts/modules/UniversalProfileInitPostDeploymentModule.sol) for the complete flow.
+> See the [LSP23 modules README](../packages/lsp23-contracts/contracts/modules/README.md) and the [PostDeploymentModule source](../packages/lsp23-contracts/contracts/modules/UniversalProfileInitPostDeploymentModule.sol) for the complete flow.
 
 ---
 

@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Grabbed as arguments from CLI:
 ADDRESS=""
-CHAIN_ID=""
+CHAIN=""
 EXPLORER=""
 
 usage() {
@@ -20,11 +20,15 @@ EOF
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --address) ADDRESS="$2" shift 2 ;;
-        --chain) CHAIN="$2" shift 2 ;;
-        --explorer) EXPLORER="$2" shift 2 ;;
-        -h|--help) usage exit 0 ;;
-        *) echo "Unknown option: $1" >&2  usage exit 1 ;;
+        --address) ADDRESS="${2:?Missing value for --address}"; shift 2 ;;
+        --chain) CHAIN="${2:?Missing value for --chain}"; shift 2 ;;
+        --explorer) EXPLORER="${2:?Missing value for --explorer}"; shift 2 ;;
+        -h|--help) usage; exit 0 ;;
+        *) 
+            echo "Unknown option: $1" >&2
+            usage 
+            exit 1 
+            ;;
     esac
 done
 
@@ -51,55 +55,55 @@ COMPILER_VERSION=
 case $ADDRESS in
     # LSP23LinkedContractsFactory
     "0x2300000A84D25dF63081feAa37ba6b62C4c89a30")
-        STANDARD_JSON_INPUT_FILE="deployments/scripts/solc-inputs/Standard-JSON-input-LSP23LinkedContractFactory.json"
+        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP23LinkedContractFactory.json"
         COMPILER_VERSION="v0.8.17+commit.8df45f5f"
         ;;
 
     # UniversalProfileInitPostDeploymentModule 
     "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7")
-        STANDARD_JSON_INPUT_FILE="deployments/scripts/solc-inputs/Standard-JSON-input-UniversalProfileInitPostDeploymentModule.json"
+        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-UniversalProfileInitPostDeploymentModule.json"
         COMPILER_VERSION="v0.8.17+commit.8df45f5f"
         ;;
     
     # UniversalProfileInit (v0.14.0)
-    "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4")
-        STANDARD_JSON_INPUT_FILE="deployments/scripts/solc-inputs/Standard-JSON-input-UniversalProfileInit-v0-14-0.json"
+    "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F")
+        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-UniversalProfileInit-v0-14-0.json"
         COMPILER_VERSION="v0.8.17+commit.8df45f5f"
         ;;
 
     # LSP6KeyManagerInit (v0.14.0)
-    "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F")
-        STANDARD_JSON_INPUT_FILE="deployments/scripts/solc-inputs/Standard-JSON-input-LSP6KeyManagerInit-v0-14-0.json"
+    "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4")
+        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP6KeyManagerInit-v0-14-0.json"
         COMPILER_VERSION="v0.8.17+commit.8df45f5f"
         ;;
         
     # LSP1UniversalReceiverDelegateUP (v0.14.0)
     "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D")
-        STANDARD_JSON_INPUT_FILE="deployments/scripts/solc-inputs/Standard-JSON-input-LSP1UniversalReceiverDelegateUP-v0-14-0.json"
+        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP1UniversalReceiverDelegateUP-v0-14-0.json"
         COMPILER_VERSION="v0.8.17+commit.8df45f5f"
         ;;
 
     # LSP7MintableInit (v0.17.3)
     "0xf006554F96bf91616dAda3FdB73Ca213874DcFF9")
-        STANDARD_JSON_INPUT_FILE="deployments/scripts/solc-inputs/Standard-JSON-input-LSP7MintableInit-v0-17-3.json"
+        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP7MintableInit-v0-17-3.json"
         COMPILER_VERSION="v0.8.28+commit.7893614a"
         ;;
 
     # LSP8MintableInit (v0.17.3)
     "0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB")
-        STANDARD_JSON_INPUT_FILE="deployments/scripts/solc-inputs/Standard-JSON-input-LSP8MintableInit-v0-17-3.json"
+        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP8MintableInit-v0-17-3.json"
         COMPILER_VERSION="v0.8.28+commit.7893614a"
         ;;
 
     # LSP7CustomizableTokenInit (v0.18.1)
     "0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F")
-        STANDARD_JSON_INPUT_FILE="deployments/scripts/solc-inputs/Standard-JSON-input-LSP7CustomizableTokenInit-v0-18-1.json"
+        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP7CustomizableTokenInit-v0-18-1.json"
         COMPILER_VERSION="v0.8.28+commit.7893614a"
         ;;
 
     # LSP8CustomizableTokenInit (v0.18.1)
     "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8")
-        STANDARD_JSON_INPUT_FILE="deployments/scripts/solc-inputs/Standard-JSON-input-LSP8CustomizableTokenInit-v0-18-1.json"
+        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP8CustomizableTokenInit-v0-18-1.json"
         COMPILER_VERSION="v0.8.28+commit.7893614a"
         ;;
     *)
@@ -151,6 +155,6 @@ esac
 BODY=$(python3 -c "
 import json
 std=json.load(open('$STANDARD_JSON_INPUT_FILE'))
-print(json.dumps({'stdJsonInput':std,'compilerVersion':'$COMPILER_VERION','contractIdentifier':'$CONTRACT_ID'}))")
+print(json.dumps({'stdJsonInput':std,'compilerVersion':'$COMPILER_VERSION','contractIdentifier':'$CONTRACT_ID'}))")
 curl -sS -X POST "https://sourcify.dev/server/v2/verify/$CHAIN_ID/$ADDRESS" \
   -H 'Content-Type: application/json' --data-raw "$BODY"

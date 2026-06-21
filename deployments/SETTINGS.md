@@ -41,9 +41,9 @@ Below are the full compiler version string and the compiler settings used for th
 
 | Contract                                                    | Initialization                                                  |
 | ----------------------------------------------------------- | --------------------------------------------------------------- |
-| `UniversalProfileInit` (both v0.12.0 and 0.14.0)            | `initialize(address initialOwner)`                              |
-| `LSP6KeyManagerInit` (both v0.12.0 and 0.14.0)              | `initialize(address target_)` where `target_` is the UP address |
-| `LSP1UniversalReceiverDelegateUP` (both v0.12.0 and 0.14.0) | No initialization needed.                                       |
+| `UniversalProfileInit` (both v0.12.1 and 0.14.0)            | `initialize(address initialOwner)`                              |
+| `LSP6KeyManagerInit` (both v0.12.1 and 0.14.0)              | `initialize(address target_)` where `target_` is the UP address |
+| `LSP1UniversalReceiverDelegateUP` (both v0.12.1 and 0.14.0) | No initialization needed.                                       |
 | `LSP7MintableInit` (both v0.14.0 and v0.17.3)               | No initialization needed                                        |
 | `LSP8MintableInit` (both v0.14.0 and v0.17.3)               | No initialization needed                                        |
 

@@ -297,7 +297,7 @@ abstract contract NickFactoryArtifactDeployer is Script {
         require(
             NICK_FACTORY_ADDRESS.code.length > 0,
             string.concat(
-                unicode"❌ Nick Factory not deployed on this chain. See DEPLOYMENT.md (Prerequisites) ",
+                unicode"❌ Nick Factory not deployed on this chain. See `deployments/README.md` (Prerequisites) ",
                 "for how to deploy it via its presigned keyless transaction."
             )
         );
