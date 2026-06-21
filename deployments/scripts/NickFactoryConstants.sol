@@ -7,8 +7,9 @@ pragma solidity ^0.8.17;
 address constant NICK_FACTORY_ADDRESS = 0x4e59b44847b379578588920cA78FbF26c0B4956C;
 
 /// @dev CREATE2 factory bytecode
-/// Note: the factory expects the calldata to be the creation bytecode
-/// (followed by the salt, which is not used in this implementation)
+/// Note: the factory expects the calldata to be the 32-byte salt followed by
+/// the contract creation bytecode (i.e. `salt ++ creationBytecode`). The first
+/// 32 bytes are loaded via `calldataload(0)` and used as the CREATE2 salt.
 /// -------------------------------------------------------------
 /// Yul assembly code equivalent:
 /// -------------------------------------------------------------

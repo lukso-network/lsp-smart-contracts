@@ -120,17 +120,20 @@ If it returns `0x`, deploy it first by funding `0x3fab184622dc19b6109349b9481149
 cp .env.example .env
 ```
 
-2. Fill in the right environment variables. Set the target chain's RPC, your funded deployer private key, and the API key of the block explorer for verifying the contract after deployment.
+2. Fill in the right environment variables. Set the target chain's RPC, your funded deployer private key, and the block explorer settings used to verify the contract after deployment. Use:
+
+- `ETHERSCAN_API_KEY` for Etherscan-family explorers, or
+- `BLOCKSCOUT_BASE_URL` (the explorer host URL) for Blockscout instances. Do not append `/api` at the end of the URL.
 
 ```
 RPC_URL=
 DEPLOYER_PK=
 
 ETHERSCAN_API_KEY=
-BLOCKSCOUT_API_KEY=
+BLOCKSCOUT_BASE_URL=
 ```
 
-3. Export the environnement variables into the shell.
+1. Export the environnement variables into the shell.
 
 ```bash
 source .env
