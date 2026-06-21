@@ -8,6 +8,11 @@ All contract build artifacts (creation bytecodes, runtime bytecodes, salts, comp
 
 Below are the step-by-step procedure for deploying each contracts on a new EVM chain.
 
+## Related documentation
+
+- [SETTINGS.md](./SETTINGS.md) — deployment salts, compiler settings, initialization details, and `contracts.json` schema.
+- [TUTORIAL.md](./TUTORIAL.md) — guide to learn how to deploy a Universal Profile via the LSP23 factory once the smart contract infrastructure is on-chain.
+
 ## Supported EVM Networks
 
 See [DEPLOYED_CHAINS.md](./DEPLOYED_CHAINS.md) for the per-contract address and per-chain deployment registry.
@@ -74,7 +79,7 @@ This enables to deploy directly the contract through the Nick Factory and verify
 
 The high-level deployment flow works as follow:
 
-1. The Foundry script `scripts/DeployFromArtifact.s.sol` reads the artifacts of the specific contract from `contracts.json`
+1. The Foundry script `./scripts/DeployFromArtifact.s.sol` reads the artifacts of the specific contract from `contracts.json`
 2. The Foundry script then grab for this artifact the salt and the creation bytecode
 3. The Foundry script then **deploys the raw creation bytecode** through the
    [Nick Factory](https://github.com/Arachnid/deterministic-deployment-proxy)

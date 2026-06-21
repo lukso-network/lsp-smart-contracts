@@ -7,9 +7,9 @@
 | `LSP23LinkedContractsFactory`                               | `0x12a6712f113536d8b01d99f72ce168c7e1090124db54cd16f03c20000022178c` |
 | `UniversalProfileInitPostDeploymentModule`                  | `0x12a6712f113536d8b01d99f72ce168c7e10901240d73e80eeb821d01aa4c2b1a` |
 | `UniversalProfilePostDeploymentModule`                      | `0x42ff55d7957589c62da54a4368b10a2bc549f2038bbb6880ec6b3e0ecae2ba58` |
-| `UniversalProfileInit` (both v0.12.0 and 0.14.0)            | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
-| `LSP6KeyManagerInit` (both v0.12.0 and 0.14.0)              | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
-| `LSP1UniversalReceiverDelegateUP` (both v0.12.0 and 0.14.0) | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `UniversalProfileInit` (both v0.12.1 and 0.14.0)            | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `LSP6KeyManagerInit` (both v0.12.1 and 0.14.0)              | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `LSP1UniversalReceiverDelegateUP` (both v0.12.1 and 0.14.0) | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
 | `LSP7MintableInit` (both v0.14.0 and v0.17.3)               | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
 | `LSP8MintableInit` (both v0.14.0 and v0.17.3)               | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
 | `LSP7CustomizableTokenInit` (v0.18.1)                       | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |

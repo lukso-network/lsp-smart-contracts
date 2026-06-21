@@ -8,7 +8,7 @@ EXPLORER=""
 
 usage() {
     cat <<'EOF'
-Usage: $0 --address <address> --chain <chain_id>
+Usage: $0 --address <address> --chain <chain_id|chain_name>
 
 Options:
   --address   Deployed contract address
@@ -37,6 +37,9 @@ if [[ -z "$ADDRESS" || -z "$CHAIN" || -z "$EXPLORER" ]]; then
     usage
     exit 1
 fi
+
+# Normalize to lowercase so mixed-case checksum addresses match the case arms below.
+ADDRESS=$(echo "$ADDRESS" | tr '[:upper:]' '[:lower:]')
 
 case "$EXPLORER" in
   etherscan|blockscout) ;;
@@ -69,63 +72,63 @@ CONTRACT_ID=
 
 case $ADDRESS in
     # LSP23LinkedContractsFactory
-    "0x2300000A84D25dF63081feAa37ba6b62C4c89a30")
+    "0x2300000a84d25df63081fea37ba6b62c4c89a30")
         STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP23LinkedContractFactory.json"
         COMPILER_VERSION="v0.8.17+commit.8df45f5f"
         CONTRACT_ID="contracts/LSP23LinkedContractsFactory/LSP23LinkedContractsFactory.sol:LSP23LinkedContractsFactory"
         ;;
 
     # UniversalProfileInitPostDeploymentModule 
-    "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7")
+    "0x000000000066093407b6704b89793beffd0d8f00")
         STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-UniversalProfileInitPostDeploymentModule.json"
         COMPILER_VERSION="v0.8.17+commit.8df45f5f"
         CONTRACT_ID="contracts/LSP23LinkedContractsDeployment/modules/UniversalProfileInitPostDeploymentModule.sol:UniversalProfileInitPostDeploymentModule"
         ;;
     
     # UniversalProfileInit (v0.14.0)
-    "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F")
+    "0x3024d38ea2434ba6635003dc1bdc0dab5882ed4f")
         STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-UniversalProfileInit-v0-14-0.json"
         COMPILER_VERSION="v0.8.17+commit.8df45f5f"
         CONTRACT_ID="contracts/UniversalProfileInit.sol:UniversalProfileInit"
         ;;
 
     # LSP6KeyManagerInit (v0.14.0)
-    "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4")
+    "0x2fe3aed98684e7351ad2d408a43ce09a738bf8a4")
         STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP6KeyManagerInit-v0-14-0.json"
         COMPILER_VERSION="v0.8.17+commit.8df45f5f"
         CONTRACT_ID="contracts/LSP6KeyManager/LSP6KeyManagerInit.sol:LSP6KeyManagerInit"
         ;;
         
     # LSP1UniversalReceiverDelegateUP (v0.14.0)
-    "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D")
+    "0x7870c5b8bc9572a8001c3f96f7ff59961b23500d")
         STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP1UniversalReceiverDelegateUP-v0-14-0.json"
         COMPILER_VERSION="v0.8.17+commit.8df45f5f"
         CONTRACT_ID="contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol:LSP1UniversalReceiverDelegateUP"
         ;;
 
     # LSP7MintableInit (v0.17.3)
-    "0xf006554F96bf91616dAda3FdB73Ca213874DcFF9")
+    "0xf006554f96bf91616dada3fdb73ca213874dcff9")
         STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP7MintableInit-v0-17-3.json"
         COMPILER_VERSION="v0.8.28+commit.7893614a"
         CONTRACT_ID="packages/lsp7-contracts/contracts/presets/LSP7MintableInit.sol:LSP7MintableInit"
         ;;
 
     # LSP8MintableInit (v0.17.3)
-    "0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB")
+    "0xe0835d37b9b2ed3719409b52499af6411cef49eb")
         STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP8MintableInit-v0-17-3.json"
         COMPILER_VERSION="v0.8.28+commit.7893614a"
         CONTRACT_ID="packages/lsp8-contracts/contracts/presets/LSP8MintableInit.sol:LSP8MintableInit"
         ;;
 
     # LSP7CustomizableTokenInit (v0.18.1)
-    "0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F")
+    "0x2803ba6e11bb5fd9fdd3afba653428f341df5a0f")
         STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP7CustomizableTokenInit-v0-18-1.json"
         COMPILER_VERSION="v0.8.28+commit.7893614a"
         CONTRACT_ID="packages/lsp7-contracts/contracts/presets/LSP7CustomizableTokenInit.sol:LSP7CustomizableTokenInit"
         ;;
 
     # LSP8CustomizableTokenInit (v0.18.1)
-    "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8")
+    "0xc95b5e293d6f1bfcedb803c763a5b83a6484b5b8")
         STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP8CustomizableTokenInit-v0-18-1.json"
         COMPILER_VERSION="v0.8.28+commit.7893614a"
         CONTRACT_ID="packages/lsp8-contracts/contracts/presets/LSP8CustomizableTokenInit.sol:LSP8CustomizableTokenInit"
@@ -156,17 +159,17 @@ verify_with_etherscan() {
 }
 
 verify_with_blockscout() {
-    : "${BLOCKSCOUT_BASE:?Set BLOCKSCOUT_BASE (e.g. https://explorer.execution.testnet.lukso.network)}"
+    : "${BLOCKSCOUT_BASE_URL:?Set BLOCKSCOUT_BASE_URL (e.g. https://explorer.execution.testnet.lukso.network)}"
 
     curl -sS -X POST \
-        "$BLOCKSCOUT_BASE/api/v2/smart-contracts/$ADDRESS/verification/via/standard-input" \
+        "$BLOCKSCOUT_BASE_URL/api/v2/smart-contracts/$ADDRESS/verification/via/standard-input" \
         -F "compiler_version=$COMPILER_VERSION" \
         -F "contract_name=$CONTRACT_ID" \
         -F "autodetect_constructor_args=false" \
         -F "files[0]=@$STANDARD_JSON_INPUT_FILE;type=application/json" \
         -w "\nhttp=%{http_code}\n"
     
-    curl -sS "$BLOCKSCOUT_BASE/api/v2/smart-contracts/$ADDRESS" \
+    curl -sS "$BLOCKSCOUT_BASE_URL/api/v2/smart-contracts/$ADDRESS" \
         | python3 -c "import sys,json;d=json.load(sys.stdin);print('verified:', d.get('is_verified'))"
 }
 

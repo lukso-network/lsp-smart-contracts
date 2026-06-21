@@ -4,7 +4,7 @@ pragma solidity ^0.8.27;
 import {Script} from "forge-std/Script.sol";
 
 /// @notice Base script for deterministic CREATE2 deployments via Nick's Factory.
-/// @dev Calldata is `salt ++ creationBytecode`. See DEPLOYMENT.md.
+/// @dev Calldata is `salt ++ creationBytecode`. See `deployments/README.md`.
 abstract contract NickFactoryDeployScript is Script {
     address internal constant NICK_FACTORY =
         0x4e59b44847b379578588920cA78FbF26c0B4956C;
