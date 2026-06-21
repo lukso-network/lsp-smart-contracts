@@ -6,26 +6,21 @@ import {NickFactoryArtifactDeployer} from "./NickFactoryArtifactDeployer.sol";
 /// @title Deterministic CREATE2 deployment of a single artifact entry.
 ///
 /// @dev Environment variables:
-/// - `ARTIFACT`: path to the JSON artifact (e.g. `deployments/contracts.json`)
-/// - `ARTIFACT_KEY` (optional): JSON path prefix to the entry containing
-///   `salt`, `creationBytecode` and `address`. Empty for a flat artifact.
+/// - `CONTRACT_TO_DEPLOY`: contract identifier in `deployments/contracts.json`.
+///   Use `<contract>` for flat entries and `<contract>-v<version>` for versioned
+///   entries (e.g. `UniversalProfileInit-v0.14.0`).
 ///
 /// Examples:
-///   # Dummy POC contract (flat artifact)
-///   ARTIFACT=deployments/scripts/artifacts/DummyPingRegistry.json \
-///     FOUNDRY_PROFILE=deployments forge script deployments/scripts/DeployFromArtifact.s.sol \
-///     --rpc-url <url> --broadcast
-///
 ///   # UniversalProfileInit v0.14.0 straight from contracts.json
-///   ARTIFACT=deployments/contracts.json \
-///   ARTIFACT_KEY=".UniversalProfileInit.versions[1]" \
+///   CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0 \
 ///     FOUNDRY_PROFILE=deployments forge script deployments/scripts/DeployFromArtifact.s.sol \
 ///     --rpc-url <url> --broadcast
 contract DeployFromArtifactScript is NickFactoryArtifactDeployer {
     function run() public returns (address deployed) {
-        string memory json = vm.readFile(vm.envString("ARTIFACT"));
-        string memory key = vm.envOr("ARTIFACT_KEY", string(""));
+        string memory json = vm.readFile("deployments/contracts.json");
+        string memory contractToDeploy = vm.envString("CONTRACT_TO_DEPLOY");
+        string memory key = _resolveArtifactKey(json, contractToDeploy);
 
-        deployed = _deployEntry(json, key);
+        deployed = _deployContractFromArtifact(json, key);
     }
 }
