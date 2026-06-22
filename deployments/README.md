@@ -22,6 +22,9 @@ Below are the step-by-step procedure for deploying each contracts on a new EVM c
     - [Verify Nick Factory is deployed on the target chain](#verify-nick-factory-is-deployed-on-the-target-chain)
     - [Setup environnement](#setup-environnement)
   - [Deployment Flow](#deployment-flow)
+  - [Deploying the whole smart contracts infrastructure](#deploying-the-whole-smart-contracts-infrastructure)
+    - [Deploy the whole Universal Profile stack (LSP23 Factory + Universal Profile implementation contracts)](#deploy-the-whole-universal-profile-stack-lsp23-factory--universal-profile-implementation-contracts)
+    - [Deploy all Token Implementation contracts](#deploy-all-token-implementation-contracts)
   - [Deploy individual artifacts](#deploy-individual-artifacts)
     - [1 — 🗃️ Get the deployment artifact (creation bytecode + salt + address)](#1--️-get-the-deployment-artifact-creation-bytecode--salt--address)
     - [2 — 🔍 Sanity check (the input reproduces the bytecode)](#2---sanity-check-the-input-reproduces-the-bytecode)
@@ -29,7 +32,6 @@ Below are the step-by-step procedure for deploying each contracts on a new EVM c
     - [4 — ⛓️ Confirm the contract is on-chain](#4--️-confirm-the-contract-is-on-chain)
     - [5 — 📄 Verify the contract on Block explorer with the standard JSON input](#5---verify-the-contract-on-block-explorer-with-the-standard-json-input)
     - [6 — ✅ Confirm verification](#6---confirm-verification)
-  - [Deploying the whole Universal Profile stack on a new chain](#deploying-the-whole-universal-profile-stack-on-a-new-chain)
   - [Deploy to many chains at once (optional)](#deploy-to-many-chains-at-once-optional)
   - [Manual deployment via `cast send`](#manual-deployment-via-cast-send)
     - [Bytecode Comparison](#bytecode-comparison)
@@ -190,6 +192,32 @@ Both `DeployUniversalProfileStack.s.sol` and `DeployTokenBaseContracts.s.sol` ar
 2. recompute the `CREATE2` address and abort if it does not match the canonical `address` in `contracts.json`,
 3. and skip any contract already deployed with the expected bytecode (reverting on a bytecode mismatch). Contracts already on-chain are skipped, so the scripts can be safely re-run on a partially deployed chain.
 
+## Deploying the whole smart contracts infrastructure
+
+> Tip: drop `--broadcast` first to do a dry run (simulation only, no transaction
+> sent). Both scripts are idempotent, so re-running them only deploys the
+> contracts that are still missing on the target chain.
+
+### Deploy the whole Universal Profile stack (LSP23 Factory + Universal Profile implementation contracts)
+
+To deploy the **Universal Profile stack** (LSP23 factory + post-deployment module + the three v0.14.0 implementations) in one run, use the convenience script:
+
+```bash
+forge script deployments/scripts/DeployUniversalProfileStack.s.sol \
+  --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
+```
+
+### Deploy all Token Implementation contracts
+
+To deploy the **token base implementation contracts** (`LSP7MintableInit` +
+`LSP8MintableInit` v0.17.3, and `LSP7CustomizableTokenInit` +
+`LSP8CustomizableTokenInit` v0.18.1) in one run, use:
+
+```bash
+forge script deployments/scripts/DeployTokenBaseContracts.s.sol \
+  --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
+```
+
 ## Deploy individual artifacts
 
 ### 1 — 🗃️ Get the deployment artifact (creation bytecode + salt + address)
@@ -317,43 +345,6 @@ listed separately. Or check Sourcify:
 ```bash
 curl -sS "https://sourcify.dev/server/v2/contract/$CHAIN_ID/$ADDRESS?fields=match"
 ```
-
----
-
-## Deploying the whole Universal Profile stack on a new chain
-
-To deploy the **Universal Profile stack** (LSP23 factory + post-deployment module + the three v0.14.0 implementations) in one run, use the convenience script:
-
-```bash
-forge script deployments/scripts/DeployUniversalProfileStack.s.sol \
-  --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
-```
-
-To deploy the **token base implementation contracts** (`LSP7MintableInit` +
-`LSP8MintableInit` v0.17.3, and `LSP7CustomizableTokenInit` +
-`LSP8CustomizableTokenInit` v0.18.1) in one run, use:
-
-```bash
-forge script deployments/scripts/DeployTokenBaseContracts.s.sol \
-  --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
-```
-
-> Tip: drop `--broadcast` first to do a dry run (simulation only, no transaction
-> sent). Both scripts are idempotent, so re-running them only deploys the
-> contracts that are still missing on the target chain.
-
-<!-- ### Always run the sanity check (Step 2) before submitting
-
-Confirm the standard JSON input reproduces the canonical creation bytecode in
-`deployments/contracts.json`. If it matches, verification is guaranteed to
-succeed on every chain. Example for `UniversalProfileInit`:
-
-```bash
-SOLC="$HOME/.svm/0.8.17/solc-0.8.17"
-"$SOLC" --standard-json deployments/scripts/solc-inputs/UniversalProfileInit.json \
-  | python3 -c "import sys,json;o=json.load(sys.stdin);print('0x'+o['contracts']['contracts/UniversalProfileInit.sol']['UniversalProfileInit']['evm']['bytecode']['object'])"
-# Compare with .UniversalProfileInit.versions[1].creationBytecode in deployments/contracts.json
-``` -->
 
 ---
 
