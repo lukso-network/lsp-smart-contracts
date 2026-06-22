@@ -9,12 +9,6 @@ import {NickFactoryArtifactDeployer} from "./NickFactoryArtifactDeployer.sol";
 /// - `CONTRACT_TO_DEPLOY`: contract identifier in `deployments/contracts.json`.
 ///   Use `<contract>` for flat entries and `<contract>-v<version>` for versioned
 ///   entries (e.g. `UniversalProfileInit-v0.14.0`).
-///
-/// Examples:
-///   # UniversalProfileInit v0.14.0 straight from contracts.json
-///   CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0 \
-///     FOUNDRY_PROFILE=deployments forge script deployments/scripts/DeployFromArtifact.s.sol \
-///     --rpc-url <url> --broadcast
 contract DeployFromArtifactScript is NickFactoryArtifactDeployer {
     function run() public returns (address deployed) {
         string memory json = vm.readFile("deployments/contracts.json");

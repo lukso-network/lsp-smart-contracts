@@ -49,18 +49,14 @@ case "$EXPLORER" in
     ;;
 esac
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Resolve CHAIN_ID from --chain: a numeric value is used as-is, otherwise it is
 # treated as a chain name and looked up in deployments/deployed-chains.json.
 if [[ "$CHAIN" =~ ^[0-9]+$ ]]; then
     CHAIN_ID="$CHAIN"
 else
-    CHAIN_ID=$(python3 -c "
-import json, sys
-chains = json.load(open('deployments/deployed-chains.json'))
-match = next((c['chainId'] for c in chains if c['name'] == sys.argv[1]), None)
-if match is None:
-    sys.exit('Unknown chain name: ' + sys.argv[1])
-print(match)" "$CHAIN")
+    CHAIN_ID=$(python3 "$SCRIPT_DIR/python/lookup_chain_id.py" "$CHAIN")
 fi
 
 # Compiler is either 0.8.17 for UniversalProfile base contracts
@@ -179,9 +175,7 @@ case "$EXPLORER" in
 esac
 
 # Always submit to Sourcify (chain-agnostic; many wallets/explorers read from it)
-BODY=$(python3 -c "
-import json
-std=json.load(open('$STANDARD_JSON_INPUT_FILE'))
-print(json.dumps({'stdJsonInput':std,'compilerVersion':'$COMPILER_VERSION','contractIdentifier':'$CONTRACT_ID'}))")
+BODY=$(python3 "$SCRIPT_DIR/python/build_sourcify_body.py" \
+    "$STANDARD_JSON_INPUT_FILE" "$COMPILER_VERSION" "$CONTRACT_ID")
 curl -sS -X POST "https://sourcify.dev/server/v2/verify/$CHAIN_ID/$ADDRESS" \
   -H 'Content-Type: application/json' --data-raw "$BODY"

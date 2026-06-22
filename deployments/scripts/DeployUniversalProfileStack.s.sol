@@ -20,20 +20,22 @@ import {NickFactoryArtifactDeployer} from "./NickFactoryArtifactDeployer.sol";
 ///
 /// The script is idempotent: contracts already deployed are skipped, so it can
 /// be safely re-run on a partially deployed chain.
-///
-/// Usage:
-///   FOUNDRY_PROFILE=deployments forge script deployments/scripts/DeployUPStack.s.sol \
-///     --rpc-url <url> --broadcast [--private-key <key> | --account <name>]
-contract DeployUPStackScript is NickFactoryArtifactDeployer {
+contract DeployUniversalProfileStack is NickFactoryArtifactDeployer {
     string internal constant TARGET_VERSION = "0.14.0";
 
     function run() public returns (address[] memory deployed) {
         string memory json = vm.readFile("deployments/contracts.json");
 
-        string[2] memory singletons = [".LSP23LinkedContractsFactory", ".UniversalProfileInitPostDeploymentModule"];
+        string[2] memory singletons = [
+            ".LSP23LinkedContractsFactory",
+            ".UniversalProfileInitPostDeploymentModule"
+        ];
 
-        string[3] memory implementations =
-            [".UniversalProfileInit", ".LSP6KeyManagerInit", ".LSP1UniversalReceiverDelegateUP"];
+        string[3] memory implementations = [
+            ".UniversalProfileInit",
+            ".LSP6KeyManagerInit",
+            ".LSP1UniversalReceiverDelegateUP"
+        ];
 
         deployed = new address[](singletons.length + implementations.length);
 
@@ -43,9 +45,15 @@ contract DeployUPStackScript is NickFactoryArtifactDeployer {
         }
 
         for (uint256 i = 0; i < implementations.length; i++) {
-            console2.log("--- Implementation:", implementations[i], TARGET_VERSION);
-            deployed[singletons.length + i] =
-                _deployContractFromArtifact(json, _findVersionKey(json, implementations[i], TARGET_VERSION));
+            console2.log(
+                "--- Implementation:",
+                implementations[i],
+                TARGET_VERSION
+            );
+            deployed[singletons.length + i] = _deployContractFromArtifact(
+                json,
+                _findVersionKey(json, implementations[i], TARGET_VERSION)
+            );
         }
     }
 }
