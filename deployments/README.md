@@ -174,12 +174,6 @@ CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0 \
   --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
 ```
 
-<!-- ## Part A — Test the flow with the dummy contract -->
-
-<!-- Follow **Part A** once to test the whole flow with the `DummyPingRegistry`
-proof-of-concept contract. Then use **Part B** as the checklist for any real
-contract on any new chain. -->
-
 ### 2 — 🔍 Sanity check (the input reproduces the bytecode)
 
 This is the check that guarantees verification will succeed before you deploy and spend
@@ -221,8 +215,7 @@ FOUNDRY_PROFILE=deployments CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0 \
   --private-key "$DEPLOYER_PK"
 ```
 
-> Tip: drop `--broadcast` first to do a dry run (simulation only, no
-> transaction sent).
+> Tip: drop `--broadcast` first to do a dry run (simulation only, no transaction sent).
 
 ### 4 — ⛓️ Confirm the contract is on-chain
 
@@ -236,15 +229,6 @@ cast code 0x<contract-address> --rpc-url "$RPC_URL"
 Run the dedicated shell script below with the right parameters to verify the contract on the block explorer of the target chain.
 
 > Note that the contract verification shell script **always submits to Sourcify** (chain-agnostic; many wallets/explorers read from it):
-
-<!-- ```bash
-ADDRESS=0x...
-STD_JSON=deployments/scripts/solc-inputs/DummyPingRegistry.json
-COMPILER="v0.8.17+commit.8df45f5f"
-CONTRACT_ID="deployments/scripts/contracts/DummyPingRegistry.sol:DummyPingRegistry"
-# the target chain id
-CHAIN_ID=1
-``` -->
 
 ```bash
 # Run from the repository root
@@ -306,70 +290,7 @@ forge script deployments/scripts/DeployUPStack.s.sol \
   --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
 ```
 
-<!-- ## Producing new artifacts
-
-**For a brand-new contract**, produce the artifact the same way using the `generate-dummy-artifact.sh`.
-
-The script compiles the standard JSON input with `solc --standard-json` and
-takes the creation bytecode from that **same compile**, so the deployed bytecode
-and the verification input are guaranteed to agree → explorers report an
-**exact match** at the expected deterministic address.
-
-- Copy `generate-dummy-artifact.sh` and change the contract name/paths.
-- reuse the implementation salt
-  `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed`, and
-  compute the address with the CREATE2 formula (the script `generate-dummy-artifact.sh` already does this)
-- compile its standard JSON input using the helper Python script (this uses `solc --standard-json` under the hood)
-
-```bash
-./deployments/scripts/generate-dummy-artifact.sh
-```
-
-- take `evm.bytecode.object` as `creationBytecode`
-
-This produces two files that are the inputs to the next steps:
-
-- `deployments/scripts/artifacts/DummyPingRegistry.json` — used to **deploy**
-  (contains `salt`, `creationBytecode`, `address`).
-- `deployments/scripts/solc-inputs/DummyPingRegistry.json` (the solc standard JSON input) — used to **verify** the contract on block explorer.
-
---- -->
-
-<!-- ### B.2 — Get the standard JSON input (for verification)
-
-Three sources, in order of convenience:
-
-1. **Already verified somewhere → Sourcify.** Pulls the exact input:
-
-   ```bash
-   curl -s "https://sourcify.dev/server/v2/contract/1/0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F?fields=stdJsonInput,compilation" \
-     | python3 -c "import sys,json;d=json.load(sys.stdin);json.dump(d['stdJsonInput'],open('deployments/scripts/solc-inputs/UniversalProfileInit.json','w'),indent=2);print('compiler:',d['compilation']['compilerVersion'])"
-   ```
-
-2. **Verified on Etherscan → `getsourcecode`** (the `SourceCode` field is the
-   standard JSON, double-brace wrapped):
-
-   ```bash
-   curl -s "https://api.etherscan.io/v2/api?chainid=1&module=contract&action=getsourcecode&address=0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4&apikey=$ETHERSCAN_API_KEY" \
-     | python3 -c "import sys,json;r=json.load(sys.stdin)['result'][0];s=r['SourceCode'];s=s[1:-1] if s.startswith('{{') else s;json.dump(json.loads(s),open('deployments/scripts/solc-inputs/LSP6KeyManagerInit.json','w'),indent=2);print('compiler:',r['CompilerVersion'])"
-   ```
-
-3. **From the repo's archived hardhat build** (already committed). The file
-   `deployments/ethereum/solcInputs/4161291361190b59256b0ec264963835.json` is a
-   valid standard JSON input containing all three v0.14.0 implementation
-   contracts. Submit it as-is. Contract identifiers:
-
-   | Contract                        | `contractIdentifier`                                                                                                                  |
-   | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-   | UniversalProfileInit            | `contracts/UniversalProfileInit.sol:UniversalProfileInit`                                                                             |
-   | LSP6KeyManagerInit              | `contracts/LSP6KeyManager/LSP6KeyManagerInit.sol:LSP6KeyManagerInit`                                                                  |
-   | LSP1UniversalReceiverDelegateUP | `contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol:LSP1UniversalReceiverDelegateUP` |
-
-   > The LSP23 factory and the two post-deployment modules were built with a
-   > different optimizer setting (9,999,999 runs); their standard JSON inputs are
-   > not in the repo yet — get them once via source 1 or 2 and commit them.
-
-### B.3 — Always run the sanity check (Step 2) before submitting
+<!-- ### Always run the sanity check (Step 2) before submitting
 
 Confirm the standard JSON input reproduces the canonical creation bytecode in
 `deployments/contracts.json`. If it matches, verification is guaranteed to
