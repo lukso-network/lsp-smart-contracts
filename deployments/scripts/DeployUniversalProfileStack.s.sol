@@ -20,10 +20,6 @@ import {NickFactoryArtifactDeployer} from "./NickFactoryArtifactDeployer.sol";
 ///
 /// The script is idempotent: contracts already deployed are skipped, so it can
 /// be safely re-run on a partially deployed chain.
-///
-/// Usage:
-///   FOUNDRY_PROFILE=deployments forge script deployments/scripts/DeployUniversalProfileStack.s.sol \
-///     --rpc-url <url> --broadcast [--private-key <key> | --account <name>]
 contract DeployUniversalProfileStack is NickFactoryArtifactDeployer {
     string internal constant TARGET_VERSION = "0.14.0";
 

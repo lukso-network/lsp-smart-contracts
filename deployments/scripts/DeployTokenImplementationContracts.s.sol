@@ -17,11 +17,7 @@ import {NickFactoryArtifactDeployer} from "./NickFactoryArtifactDeployer.sol";
 ///
 /// The script is idempotent: contracts already deployed are skipped, so it can
 /// be safely re-run on a partially deployed chain.
-///
-/// Usage:
-///   FOUNDRY_PROFILE=deployments forge script deployments/scripts/DeployTokenBaseContracts.s.sol \
-///     --rpc-url <url> --broadcast [--private-key <key> | --account <name>]
-contract DeployTokenBaseContracts is NickFactoryArtifactDeployer {
+contract DeployTokenImplementationContracts is NickFactoryArtifactDeployer {
     function run() public returns (address[] memory deployed) {
         string memory json = vm.readFile("deployments/contracts.json");
 
