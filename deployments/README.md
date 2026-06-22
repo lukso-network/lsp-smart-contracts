@@ -195,18 +195,29 @@ CONTRACT_TO_DEPLOY=UniversalProfileInitPostDeploymentModule
 
 ### 2 — 🔍 Sanity check (the input reproduces the bytecode)
 
-This is the check that guarantees verification will succeed before you deploy and spend
-gas:
+Before spending gas, confirm that the **Standard JSON input** (the same file used
+later for block explorer verification in step 5) compiles to the exact
+`creationBytecode` recorded in `contracts.json`. A match guarantees the contract
+will verify successfully after deployment.
+
+Run the dedicated script with the same `CONTRACT_TO_DEPLOY` identifier:
 
 ```bash
-SOLC="$HOME/.svm/0.8.17/solc-0.8.17"      # the solc Foundry manages
-"$SOLC" --standard-json deployments/scripts/solc-inputs/DummyPingRegistry.json \
-  | python3 -c "import sys,json;o=json.load(sys.stdin);print('0x'+o['contracts']['deployments/scripts/contracts/DummyPingRegistry.sol']['DummyPingRegistry']['evm']['bytecode']['object'])" \
-  > /tmp/from_input.txt
-python3 -c "import json;print(json.load(open('deployments/scripts/artifacts/DummyPingRegistry.json'))['creationBytecode'])" \
-  > /tmp/from_artifact.txt
-diff /tmp/from_input.txt /tmp/from_artifact.txt && echo "EXACT MATCH" || echo "MISMATCH"
+# Run from the repository root
+deployments/check-bytecode.sh --contract LSP7MintableInit-v0.17.3
 ```
+
+The Standard JSON input embeds its own source code, so this check is
+**self-contained**: it does not depend on the current (or any historical) `.sol`
+files in the repository. It only needs the matching `solc` version, which Foundry
+manages under `~/.svm/` (read automatically from the `compilerSettings` in
+`contracts.json`).
+
+Possible outcomes:
+
+- ✅ **EXACT MATCH** — the input reproduces the recorded creation bytecode; verification will be a full match.
+- ⚠️ **PARTIAL MATCH** — the executable bytecode is identical but the trailing metadata hash differs. This happens for contracts whose on-chain bytecode was produced by a different toolchain (see [`SETTINGS.md`](./SETTINGS.md)); verification will be a partial match.
+- ❌ **MISMATCH** — the input does not reproduce the bytecode; do **not** deploy until this is resolved.
 
 ### 3 — 🚀 Deploy the contract
 
