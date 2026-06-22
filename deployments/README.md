@@ -182,7 +182,7 @@ source deployments/.env
 
 There are 3 different utility scripts that can be used to deploy the Universal Profile smart contract infrastructure on a new target EVM chain.
 
-- `DeployUniversalProfileStack.s.sol`: deploy the `LSP23LinkedContractFactory`, `UniversalProfileInitPostDeploymentModule` and the v0.14.0 of the Universal Profile base implementation contracts (`UniversalProfileInit`, `LSP6KeyManagerInit`, and `LSP1UniversalReceiverDelegateUP`).
+- `DeployUniversalProfileStack.s.sol`: deploy the `LSP23LinkedContractsFactory`, `UniversalProfileInitPostDeploymentModule` and the v0.14.0 of the Universal Profile base implementation contracts (`UniversalProfileInit`, `LSP6KeyManagerInit`, and `LSP1UniversalReceiverDelegateUP`).
 - `DeployTokenImplementationContracts.s.sol`: deploy `LSP7MintableInit` + `LSP8MintableInit` (v0.17.3), and `LSP7CustomizableTokenInit` + `LSP8CustomizableTokenInit` (v0.18.1).
 - `DeployFromArtifact.s.sol`: use this script to deploy a single contract individually. See section **Deploy Individual artifacts** below.
 
@@ -200,23 +200,36 @@ Both `DeployUniversalProfileStack.s.sol` and `DeployTokenBaseContracts.s.sol` ar
 
 ### Deploy the whole Universal Profile stack (LSP23 Factory + Universal Profile implementation contracts)
 
-To deploy the **Universal Profile stack** (LSP23 factory + post-deployment module + the three v0.14.0 implementations) in one run, use the convenience script:
+To deploy the **Universal Profile stack** in one run, use the convenience script:
 
 ```bash
-forge script deployments/scripts/DeployUniversalProfileStack.s.sol \
+FOUNDRY_PROFILE=deployments forge script deployments/scripts/DeployUniversalProfileStack.s.sol \
   --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
 ```
+
+This script deploys the following contracts:
+
+- `LSP23LinkedContractsFactory`
+- `UniversalProfileInitPostDeploymentModule`
+- `UniversalProfileInit` (v0.14.0)
+- `LSP6KeyManagerInit` (v0.14.0)
+- `LSP1UniversalReceiverDelegateUP` (v0.14.0)
 
 ### Deploy all Token Implementation contracts
 
-To deploy the **token base implementation contracts** (`LSP7MintableInit` +
-`LSP8MintableInit` v0.17.3, and `LSP7CustomizableTokenInit` +
-`LSP8CustomizableTokenInit` v0.18.1) in one run, use:
+To deploy the **token base implementation contracts** in one run, uses:
 
 ```bash
-forge script deployments/scripts/DeployTokenBaseContracts.s.sol \
+FOUNDRY_PROFILE=deployments forge script deployments/scripts/DeployTokenImplementationContracts.s.sol \
   --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
 ```
+
+This script deploys the following contracts:
+
+- `LSP7MintableInit` (v0.17.3)
+- `LSP8MintableInit` (v0.17.3)
+- `LSP7CustomizableTokenInit` (v0.18.1)
+- `LSP8CustomizableTokenInit` (v0.18.1)
 
 ## Deploy individual artifacts
 
