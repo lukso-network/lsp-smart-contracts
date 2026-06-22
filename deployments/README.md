@@ -22,13 +22,14 @@ Below are the step-by-step procedure for deploying each contracts on a new EVM c
     - [Verify Nick Factory is deployed on the target chain](#verify-nick-factory-is-deployed-on-the-target-chain)
     - [Setup environnement](#setup-environnement)
   - [Deployment Flow](#deployment-flow)
+  - [Deploy individual artifacts](#deploy-individual-artifacts)
     - [1 — 🗃️ Get the deployment artifact (creation bytecode + salt + address)](#1--️-get-the-deployment-artifact-creation-bytecode--salt--address)
     - [2 — 🔍 Sanity check (the input reproduces the bytecode)](#2---sanity-check-the-input-reproduces-the-bytecode)
     - [3 — 🚀 Deploy the contract](#3---deploy-the-contract)
     - [4 — ⛓️ Confirm the contract is on-chain](#4--️-confirm-the-contract-is-on-chain)
     - [5 — 📄 Verify the contract on Block explorer with the standard JSON input](#5---verify-the-contract-on-block-explorer-with-the-standard-json-input)
     - [6 — ✅ Confirm verification](#6---confirm-verification)
-  - [Deploying the whole stack on a new chain](#deploying-the-whole-stack-on-a-new-chain)
+  - [Deploying the whole Universal Profile stack on a new chain](#deploying-the-whole-universal-profile-stack-on-a-new-chain)
   - [Deploy to many chains at once (optional)](#deploy-to-many-chains-at-once-optional)
   - [Manual deployment via `cast send`](#manual-deployment-via-cast-send)
     - [Bytecode Comparison](#bytecode-comparison)
@@ -177,6 +178,20 @@ source deployments/.env
 
 ## Deployment Flow
 
+There are 3 different utility scripts that can be used to deploy the Universal Profile smart contract infrastructure on a new target EVM chain.
+
+- `DeployUniversalProfileStack.s.sol`: deploy the `LSP23LinkedContractFactory`, `UniversalProfileInitPostDeploymentModule` and the v0.14.0 of the Universal Profile base implementation contracts (`UniversalProfileInit`, `LSP6KeyManagerInit`, and `LSP1UniversalReceiverDelegateUP`).
+- `DeployTokenImplementationContracts.s.sol`: deploy `LSP7MintableInit` + `LSP8MintableInit` (v0.17.3), and `LSP7CustomizableTokenInit` + `LSP8CustomizableTokenInit` (v0.18.1).
+- `DeployFromArtifact.s.sol`: use this script to deploy a single contract individually. See section **Deploy Individual artifacts** below.
+
+Both `DeployUniversalProfileStack.s.sol` and `DeployTokenBaseContracts.s.sol` are **idempotent** and run the same safety checks per contract:
+
+1. they verify the Nick Factory is present
+2. recompute the `CREATE2` address and abort if it does not match the canonical `address` in `contracts.json`,
+3. and skip any contract already deployed with the expected bytecode (reverting on a bytecode mismatch). Contracts already on-chain are skipped, so the scripts can be safely re-run on a partially deployed chain.
+
+## Deploy individual artifacts
+
 ### 1 — 🗃️ Get the deployment artifact (creation bytecode + salt + address)
 
 The artifacts containing the raw creation bytecode + salt for each contracts are located inside the `contracts.json` file. You can deploy by pointing the script at the right contract.
@@ -305,15 +320,27 @@ curl -sS "https://sourcify.dev/server/v2/contract/$CHAIN_ID/$ADDRESS?fields=matc
 
 ---
 
-## Deploying the whole stack on a new chain
+## Deploying the whole Universal Profile stack on a new chain
 
-To deploy the whole stack (LSP23 factory + post-deployment module + the three
-v0.14.0 implementations) in one run, use the convenience script:
+To deploy the **Universal Profile stack** (LSP23 factory + post-deployment module + the three v0.14.0 implementations) in one run, use the convenience script:
 
 ```bash
-forge script deployments/scripts/DeployUPStack.s.sol \
+forge script deployments/scripts/DeployUniversalProfileStack.s.sol \
   --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
 ```
+
+To deploy the **token base implementation contracts** (`LSP7MintableInit` +
+`LSP8MintableInit` v0.17.3, and `LSP7CustomizableTokenInit` +
+`LSP8CustomizableTokenInit` v0.18.1) in one run, use:
+
+```bash
+forge script deployments/scripts/DeployTokenBaseContracts.s.sol \
+  --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
+```
+
+> Tip: drop `--broadcast` first to do a dry run (simulation only, no transaction
+> sent). Both scripts are idempotent, so re-running them only deploys the
+> contracts that are still missing on the target chain.
 
 <!-- ### Always run the sanity check (Step 2) before submitting
 
