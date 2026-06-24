@@ -276,7 +276,7 @@ downloads it automatically on first use if it is not already installed.
 Possible outcomes:
 
 - ✅ **EXACT MATCH** — the input reproduces the recorded creation bytecode; verification will be a full match.
-- ⚠️ **PARTIAL MATCH** — the executable bytecode is identical but the trailing metadata hash differs. This happens for contracts whose on-chain bytecode was produced by a different toolchain (see [`SETTINGS.md`](./SETTINGS.md)); verification will be a partial match.
+- ⚠️ **PARTIAL MATCH** — the executable bytecode is identical but the trailing metadata hash differs. This happens for contracts whose on-chain bytecode was produced by a different toolchain (see [`SETTINGS.md`](./SETTINGS.md)); verification will be a partial match. The script exits successfully (exit code 0) because the executable bytecode still matches and deployment is safe to proceed.
 - ❌ **MISMATCH** — the input does not reproduce the bytecode; do **not** deploy until this is resolved.
 
 ### 3 — 🚀 Deploy the contract

@@ -8,35 +8,12 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from contracts_json import (
+    contract_name_from_id,
+    load_entry_by_contract_id,
+    require_verification_metadata,
+)
 from resolve_solc import ensure_solc_binary
-
-DEPLOYMENTS_DIR = Path(__file__).resolve().parent.parent
-CONTRACTS_JSON = DEPLOYMENTS_DIR / "contracts.json"
-
-
-def parse_contract_id(contract_id):
-    if "-v" in contract_id:
-        name, version = contract_id.split("-v", 1)
-        return name, version
-    return contract_id, None
-
-
-def load_contract_entry(contract_id):
-    name, version = parse_contract_id(contract_id)
-
-    contracts = json.loads(CONTRACTS_JSON.read_text())
-    if name not in contracts:
-        sys.exit(f"❌ {name} not found in deployments/contracts.json")
-
-    entry = contracts[name]
-    if "versions" in entry:
-        if version is None:
-            sys.exit(f"❌ {name} is versioned, use {name}-v<version>")
-        entry = next((v for v in entry["versions"] if v.get("version") == version), None)
-        if entry is None:
-            sys.exit(f"❌ Version {version} not found for {name} in contracts.json")
-
-    return entry
 
 
 def strip_metadata(bytecode):
@@ -81,19 +58,28 @@ def main():
     parser = argparse.ArgumentParser(
         description="Verify that a Standard JSON input reproduces the recorded creation bytecode."
     )
-    parser.add_argument("contract_id", help="Contract identifier, e.g. UniversalProfileInit-v0.14.0")
-    parser.add_argument("contract_name", help="Solidity contract name in the solc output")
-    parser.add_argument("solc_input_file", help="Path to the Standard JSON input file")
+    parser.add_argument(
+        "--contract",
+        required=True,
+        help="Contract identifier (CONTRACT_TO_DEPLOY), e.g. UniversalProfileInit-v0.14.0",
+    )
     args = parser.parse_args()
 
-    entry = load_contract_entry(args.contract_id)
+    name, entry = load_entry_by_contract_id(args.contract)
+    metadata = require_verification_metadata(name, entry, args.contract)
+    solc_input_file = metadata["standardJsonInputFilePath"]
+
+    if not Path(solc_input_file).is_file():
+        sys.exit(f"❌ Standard JSON input file not found: {solc_input_file}")
+
     solc_version = entry["compilerSettings"]["solcVersion"]
     expected = entry["creationBytecode"].removeprefix("0x")
-    compiled = compile_creation_bytecode(solc_version, args.solc_input_file, args.contract_name)
+    contract_name = contract_name_from_id(args.contract)
+    compiled = compile_creation_bytecode(solc_version, solc_input_file, contract_name)
 
-    print(f"Contract : {args.contract_id}")
+    print(f"Contract : {args.contract}")
     print(f"solc     : {solc_version}")
-    print(f"Input    : {args.solc_input_file}")
+    print(f"Input    : {solc_input_file}")
 
     if compiled == expected:
         print("Result   : ✅ EXACT MATCH (creation bytecode reproduced)")
@@ -103,7 +89,8 @@ def main():
         print("Result   : ⚠️  PARTIAL MATCH (executable bytecode identical, metadata hash differs)")
         print("           The on-chain bytecode was produced by a different toolchain")
         print("           (see deployments/SETTINGS.md). Verification will be a partial match.")
-        sys.exit(2)
+        # Partial match is acceptable for deployment: executable bytecode matches.
+        sys.exit(0)
 
     print("Result   : ❌ MISMATCH (compiled bytecode != contracts.json)")
     print(f"           compiled length={len(compiled)} expected length={len(expected)}")
