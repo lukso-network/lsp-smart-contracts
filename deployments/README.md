@@ -129,7 +129,10 @@ Contract verifications works using Etherscan or Blockscout API (depending on the
 
 ## Pre-requisites
 
-1. **[Foundry](https://getfoundry.sh)** installed (specifically `cast`)
+1. **[Foundry](https://getfoundry.sh)** installed (`forge` and `cast`). The bytecode
+   sanity check (`check-bytecode.sh`) uses `forge` to resolve and, if needed,
+   download the matching `solc` version automatically (no manual `svm install`
+   required, but network access is needed on first run).
 2. **A funded deployer account** on the target network
 3. **An RPC endpoint** for the target network
 4. **The Nick Factory** contract must exist on the target network at address `0x4e59b44847b379578588920cA78FbF26c0B4956C`. To check if it exists, follow the next section.
@@ -265,9 +268,10 @@ deployments/check-bytecode.sh --contract LSP7MintableInit-v0.17.3
 
 The Standard JSON input embeds its own source code, so this check is
 **self-contained**: it does not depend on the current (or any historical) `.sol`
-files in the repository. It only needs the matching `solc` version, which Foundry
-manages under `~/.svm/` (read automatically from the `compilerSettings` in
-`contracts.json`).
+files in the repository. It needs the matching `solc` version from
+`compilerSettings` in `contracts.json`. The script resolves the compiler via
+Foundry (checking `~/.svm/` and other platform-specific svm directories) and
+downloads it automatically on first use if it is not already installed.
 
 Possible outcomes:
 

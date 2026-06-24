@@ -3,10 +3,12 @@
 
 import argparse
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from resolve_solc import ensure_solc_binary
 
 DEPLOYMENTS_DIR = Path(__file__).resolve().parent.parent
 CONTRACTS_JSON = DEPLOYMENTS_DIR / "contracts.json"
@@ -48,12 +50,7 @@ def strip_metadata(bytecode):
 
 
 def compile_creation_bytecode(solc_version, solc_input_file, contract_name):
-    solc_bin = Path(os.path.expanduser(f"~/.svm/{solc_version}/solc-{solc_version}"))
-    if not solc_bin.is_file():
-        sys.exit(
-            f"❌ solc {solc_version} not found at {solc_bin}\n"
-            f"   Install it with: svm install {solc_version}  (or run `forge build` once)"
-        )
+    solc_bin = ensure_solc_binary(solc_version)
 
     std_input = json.loads(Path(solc_input_file).read_text())
     std_input.setdefault("settings", {})["outputSelection"] = {
