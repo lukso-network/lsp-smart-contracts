@@ -313,7 +313,11 @@ cast code 0x<contract-address> --rpc-url "$RPC_URL"
 
 Run the dedicated shell script below with the right parameters to verify the contract on the block explorer of the target chain.
 
-> Note that the contract verification shell script **always submits to Sourcify** (chain-agnostic; many wallets/explorers read from it):
+> Note that the contract verification shell script **also submits to Sourcify**
+> (chain-agnostic; many wallets/explorers read from it). Sourcify runs as an
+> independent step after the explorer submission, so an explorer failure does
+> not prevent Sourcify from being submitted. Use `--sourcify-only` (or
+> `--skip-explorer`) to submit to Sourcify without touching the block explorer.
 
 ```bash
 # Run from the repository root
@@ -323,6 +327,12 @@ bash deployments/verify-contract.sh \
   --address "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F" \
   --chain 1 \
   --explorer etherscan
+
+# Sourcify only (no explorer API key required)
+bash deployments/verify-contract.sh \
+  --address "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F" \
+  --chain 1 \
+  --sourcify-only
 ```
 
 **If the chain's explorer is an Etherscan-family explorer** (Etherscan,
