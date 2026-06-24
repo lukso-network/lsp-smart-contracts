@@ -38,7 +38,8 @@ if [[ -z "$ADDRESS" || -z "$CHAIN" || -z "$EXPLORER" ]]; then
     exit 1
 fi
 
-# Normalize to lowercase so mixed-case checksum addresses match the case arms below.
+# Normalize to lowercase for consistent explorer API calls (the contracts.json
+# lookup below is case-insensitive regardless).
 ADDRESS=$(echo "$ADDRESS" | tr '[:upper:]' '[:lower:]')
 
 case "$EXPLORER" in
@@ -59,81 +60,16 @@ else
     CHAIN_ID=$(python3 "$SCRIPT_DIR/python/lookup_chain_id.py" "$CHAIN")
 fi
 
-# Compiler is either 0.8.17 for UniversalProfile base contracts
-# or 0.8.28 for LSP7/8MintableInit (latest) and LSP7/8CustomizableTokenInit
-# Grab the Standard JSON input file depending on the address and the contract it corresponds to
-STANDARD_JSON_INPUT_FILE=
-COMPILER_VERSION=
-CONTRACT_ID=
-
-case $ADDRESS in
-    # LSP23LinkedContractsFactory
-    "0x2300000a84d25df63081fea37ba6b62c4c89a30")
-        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP23LinkedContractFactory.json"
-        COMPILER_VERSION="v0.8.17+commit.8df45f5f"
-        CONTRACT_ID="contracts/LSP23LinkedContractsFactory/LSP23LinkedContractsFactory.sol:LSP23LinkedContractsFactory"
-        ;;
-
-    # UniversalProfileInitPostDeploymentModule 
-    "0x000000000066093407b6704b89793beffd0d8f00")
-        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-UniversalProfileInitPostDeploymentModule.json"
-        COMPILER_VERSION="v0.8.17+commit.8df45f5f"
-        CONTRACT_ID="contracts/LSP23LinkedContractsDeployment/modules/UniversalProfileInitPostDeploymentModule.sol:UniversalProfileInitPostDeploymentModule"
-        ;;
-    
-    # UniversalProfileInit (v0.14.0)
-    "0x3024d38ea2434ba6635003dc1bdc0dab5882ed4f")
-        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-UniversalProfileInit-v0-14-0.json"
-        COMPILER_VERSION="v0.8.17+commit.8df45f5f"
-        CONTRACT_ID="contracts/UniversalProfileInit.sol:UniversalProfileInit"
-        ;;
-
-    # LSP6KeyManagerInit (v0.14.0)
-    "0x2fe3aed98684e7351ad2d408a43ce09a738bf8a4")
-        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP6KeyManagerInit-v0-14-0.json"
-        COMPILER_VERSION="v0.8.17+commit.8df45f5f"
-        CONTRACT_ID="contracts/LSP6KeyManager/LSP6KeyManagerInit.sol:LSP6KeyManagerInit"
-        ;;
-        
-    # LSP1UniversalReceiverDelegateUP (v0.14.0)
-    "0x7870c5b8bc9572a8001c3f96f7ff59961b23500d")
-        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP1UniversalReceiverDelegateUP-v0-14-0.json"
-        COMPILER_VERSION="v0.8.17+commit.8df45f5f"
-        CONTRACT_ID="contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol:LSP1UniversalReceiverDelegateUP"
-        ;;
-
-    # LSP7MintableInit (v0.17.3)
-    "0xf006554f96bf91616dada3fdb73ca213874dcff9")
-        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP7MintableInit-v0-17-3.json"
-        COMPILER_VERSION="v0.8.28+commit.7893614a"
-        CONTRACT_ID="packages/lsp7-contracts/contracts/presets/LSP7MintableInit.sol:LSP7MintableInit"
-        ;;
-
-    # LSP8MintableInit (v0.17.3)
-    "0xe0835d37b9b2ed3719409b52499af6411cef49eb")
-        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP8MintableInit-v0-17-3.json"
-        COMPILER_VERSION="v0.8.28+commit.7893614a"
-        CONTRACT_ID="packages/lsp8-contracts/contracts/presets/LSP8MintableInit.sol:LSP8MintableInit"
-        ;;
-
-    # LSP7CustomizableTokenInit (v0.18.1)
-    "0x2803ba6e11bb5fd9fdd3afba653428f341df5a0f")
-        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP7CustomizableTokenInit-v0-18-1.json"
-        COMPILER_VERSION="v0.8.28+commit.7893614a"
-        CONTRACT_ID="packages/lsp7-contracts/contracts/presets/LSP7CustomizableTokenInit.sol:LSP7CustomizableTokenInit"
-        ;;
-
-    # LSP8CustomizableTokenInit (v0.18.1)
-    "0xc95b5e293d6f1bfcedb803c763a5b83a6484b5b8")
-        STANDARD_JSON_INPUT_FILE="deployments/solc-inputs/Standard-JSON-input-LSP8CustomizableTokenInit-v0-18-1.json"
-        COMPILER_VERSION="v0.8.28+commit.7893614a"
-        CONTRACT_ID="packages/lsp8-contracts/contracts/presets/LSP8CustomizableTokenInit.sol:LSP8CustomizableTokenInit"
-        ;;
-    *)
-        echo "Unknown base contract / factory address: $ADDRESS" >&2
-        exit 1
-        ;;
-esac
+# Resolve the verification metadata (Standard JSON input file, full compiler
+# version and contract identifier) for the given address from contracts.json.
+# The helper prints the three values, one per line, in this exact order:
+#   1. standardJsonInputFilePath
+#   2. compilerVersion
+#   3. contractId
+CONTRACT_METADATA=$(python3 "$SCRIPT_DIR/python/lookup_contract_by_address.py" "$ADDRESS")
+STANDARD_JSON_INPUT_FILE=$(sed -n '1p' <<<"$CONTRACT_METADATA")
+COMPILER_VERSION=$(sed -n '2p' <<<"$CONTRACT_METADATA")
+CONTRACT_ID=$(sed -n '3p' <<<"$CONTRACT_METADATA")
 
 verify_with_etherscan() {
     : "${ETHERSCAN_API_KEY:?Set ETHERSCAN_API_KEY}"
