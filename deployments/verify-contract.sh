@@ -11,11 +11,12 @@ usage() {
     cat <<EOF
 Usage: $0 --address <address> --chain <chain_id|chain_name> [options]
 
-Submits contract verification to a block explorer and/or Sourcify.
+Submits contract verification to a block explorer (Etherscan or Sourcify). 
+Contract verification is always submitted to Sourcify by default for the specified `chain`.
 
 Options:
   --address        Deployed contract address
-  --chain          Chain ID (e.g. 42) or name from deployed-chains.json
+  --chain          Chain name from deployed-chains.json
   --explorer       Blockchain Explorer backend: etherscan | blockscout
   --skip-explorer  Skip the explorer submission and only submit to Sourcify
   --sourcify-only  Alias for --skip-explorer
@@ -59,8 +60,8 @@ if [[ "$SKIP_EXPLORER" != true && -z "$EXPLORER" ]]; then
     exit 1
 fi
 
-# Normalize to lowercase for consistent explorer API calls (the contracts.json
-# lookup below is case-insensitive regardless).
+# Normalize to lowercase for consistent explorer API calls 
+# (the contracts.json lookup below is case-insensitive regardless).
 ADDRESS=$(echo "$ADDRESS" | tr '[:upper:]' '[:lower:]')
 
 if [[ "$SKIP_EXPLORER" != true ]]; then
@@ -75,91 +76,120 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Resolve CHAIN_ID from --chain: a numeric value is used as-is, otherwise it is
-# treated as a chain name and looked up in deployments/deployed-chains.json.
-if [[ "$CHAIN" =~ ^[0-9]+$ ]]; then
-    CHAIN_ID="$CHAIN"
-else
-    CHAIN_ID=$(python3 "$SCRIPT_DIR/python/lookup_chain_id.py" "$CHAIN")
-fi
+# python3 "$SCRIPT_DIR/python/cli.py get-verification-data"
 
-# Resolve the verification metadata (Standard JSON input file, full compiler
-# version and contract identifier) for the given address from contracts.json.
-CONTRACT_METADATA=$(python3 "$SCRIPT_DIR/python/lookup_contract_by_address.py" "$ADDRESS")
-STANDARD_JSON_INPUT_FILE=$(sed -n '1p' <<<"$CONTRACT_METADATA")
-COMPILER_VERSION=$(sed -n '2p' <<<"$CONTRACT_METADATA")
-CONTRACT_ID=$(sed -n '3p' <<<"$CONTRACT_METADATA")
+CONTRACT_VERIFICATION_DATA=$(python3 "$SCRIPT_DIR/python/get_contract_verification_data.py" "$ADDRESS")
+COMPILER_VERSION=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.compilerVersion')
+CONTRACT_ID=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.contractIdentifier')
 
 verify_with_etherscan() {
     : "${ETHERSCAN_API_KEY:?Set ETHERSCAN_API_KEY}"
+    
+    STANDARD_JSON_INPUT_FILE_PATH=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.stdJsonInputFilePath')
 
     echo "Submitting to Etherscan (chain $CHAIN_ID)..." >&2
 
-    RESPONSE=$(curl -sS -X POST "https://api.etherscan.io/v2/api?chainid=$CHAIN_ID" \
+    RESPONSE=$(curl -sS -X POST "https://api.etherscan.io/v2/api" \
         --data-urlencode "apikey=$ETHERSCAN_API_KEY" \
         --data-urlencode "module=contract" \
         --data-urlencode "action=verifysourcecode" \
+        --data-urlencode "chainid=$CHAIN_ID" \
         --data-urlencode "codeformat=solidity-standard-json-input" \
         --data-urlencode "contractaddress=$ADDRESS" \
         --data-urlencode "contractname=$CONTRACT_ID" \
         --data-urlencode "compilerversion=$COMPILER_VERSION" \
-        --data-urlencode "sourceCode@$STANDARD_JSON_INPUT_FILE")
+        --data-urlencode "sourceCode@$STANDARD_JSON_INPUT_FILE_PATH")
 
-    echo "$RESPONSE"
+    local status message guid
+    
+    status=$(echo "$RESPONSE" | jq -r '.status')
+    message=$(echo "$RESPONSE" | jq -r '.message')
+    # Result is the GUID for polling the verification status
+    guid=$(echo "$RESPONSE" | jq -r '.result')
 
-    local guid
-    if ! guid=$(echo "$RESPONSE" | python3 "$SCRIPT_DIR/python/parse_etherscan_guid.py"); then
-        echo "Etherscan submission failed; not polling verification status." >&2
+    if [[ "$status" != "1" ]]; then
+        echo "🔍❌ Etherscan submission failed. Not polling verification status. Etherscan API error: (status=$status, message=$message): $guid" >&2
         return 1
     fi
 
+    echo "🔍🔄 Etherscan submission response: $RESPONSE"
+
     echo "Polling Etherscan verification status..." >&2
     curl -sS -G "https://api.etherscan.io/v2/api" \
-        --data-urlencode "chainid=$CHAIN_ID" \
+        --data-urlencode "apikey=$ETHERSCAN_API_KEY" \
         --data-urlencode "module=contract" \
         --data-urlencode "action=checkverifystatus" \
-        --data-urlencode "guid=$guid" \
-        --data-urlencode "apikey=$ETHERSCAN_API_KEY"
+        --data-urlencode "chainid=$CHAIN_ID" \
+        --data-urlencode "guid=$guid" 
     echo
 }
 
 verify_with_blockscout() {
     : "${BLOCKSCOUT_BASE_URL:?Set BLOCKSCOUT_BASE_URL (e.g. https://explorer.execution.testnet.lukso.network)}"
 
-    echo "Submitting to Blockscout ($BLOCKSCOUT_BASE_URL)..." >&2
+    CONTRACT_NAME=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.contractName')
+    STANDARD_JSON_INPUT_FILE_PATH=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.stdJsonInputFilePath')
 
-    local response http_code
+    echo "🔍🔄 Submitting verification request to Blockscout ($BLOCKSCOUT_BASE_URL)..." >&2
+
+    local response http_code is_verified
     response=$(curl -sS -X POST \
         "$BLOCKSCOUT_BASE_URL/api/v2/smart-contracts/$ADDRESS/verification/via/standard-input" \
         -F "compiler_version=$COMPILER_VERSION" \
-        -F "contract_name=$CONTRACT_ID" \
+        -F "contract_name=$CONTRACT_NAME" \
         -F "autodetect_constructor_args=false" \
-        -F "files[0]=@$STANDARD_JSON_INPUT_FILE;type=application/json" \
+        -F "files[0]=@$STANDARD_JSON_INPUT_FILE_PATH;type=application/json" \
         -w "\nhttp=%{http_code}\n")
 
-    echo "$response"
+    echo "🔍🔄 Blockscout submission response: $response"
 
     http_code=$(echo "$response" | sed -n 's/^http=//p' | tail -1)
     if [[ -z "$http_code" || "$http_code" -lt 200 || "$http_code" -ge 300 ]]; then
-        echo "Blockscout submission failed (http=$http_code)." >&2
+        echo "🔍❌ Blockscout submission failed (http=$http_code)." >&2
         return 1
     fi
 
-    curl -sS "$BLOCKSCOUT_BASE_URL/api/v2/smart-contracts/$ADDRESS" \
-        | python3 -c "import sys,json;d=json.load(sys.stdin);print('verified:', d.get('is_verified'))"
+    echo "🔍🔄 Polling Blockscout verification status..." >&2
+
+    is_verified=$(curl -sS "$BLOCKSCOUT_BASE_URL/api/v2/smart-contracts/$ADDRESS" | jq -r ".is_verified")
+    if [[ "$is_verified" != "true" ]]; then
+        echo "🔍❌ Blockscout verification failed (is_verified=$is_verified)." >&2
+        return 1
+    fi
+
+    echo "🔍✅ Blockscout verification successful." >&2
 }
 
 verify_with_sourcify() {
     echo "Submitting to Sourcify (chain $CHAIN_ID)..." >&2
 
-    local body
-    body=$(python3 "$SCRIPT_DIR/python/build_sourcify_body.py" \
-        "$STANDARD_JSON_INPUT_FILE" "$COMPILER_VERSION" "$CONTRACT_ID")
+    # Don't extract as raw since we pass `--argjson` to jq
+    STANDARD_JSON_INPUT=$(echo "$CONTRACT_VERIFICATION_DATA" | jq '.stdJsonInput')
 
-    curl -sS -X POST "https://sourcify.dev/server/v2/verify/$CHAIN_ID/$ADDRESS" \
-        -H 'Content-Type: application/json' \
-        --data-raw "$body"
-    echo
+    local body
+    body=$(jq -n \
+        --argjson stdJsonInput "$STANDARD_JSON_INPUT" \
+        --arg compilerVersion "$COMPILER_VERSION" \
+        --arg contractIdentifier "$CONTRACT_ID" \
+        '{ "stdJsonInput": $stdJsonInput, "compilerVersion": $compilerVersion, "contractIdentifier": $contractIdentifier }'
+    )
+
+    verification_result=$(
+        curl -sS -X POST \
+            "https://sourcify.dev/server/v2/verify/$CHAIN_ID/$ADDRESS" \
+            -H 'Content-Type: application/json' \
+            --data-raw "$body"
+    )
+
+    verification_id=$(echo "$verification_result" | jq -r '.verificationId // empty')
+
+    # Based on Sourcify docs: https://docs.sourcify.dev/docs/api/#verification
+    if [ -n "$verification_id" ]; then
+        curl -sS "https://sourcify.dev/server/v2/verify/${verification_id}"
+    else
+        echo "Sourcify submission failed." >&2
+        return 1
+    fi
 }
 
 EXPLORER_EXIT=0

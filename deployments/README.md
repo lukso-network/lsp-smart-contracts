@@ -129,13 +129,20 @@ Contract verifications works using Etherscan or Blockscout API (depending on the
 
 ## Pre-requisites
 
-1. **[Foundry](https://getfoundry.sh)** installed (`forge` and `cast`). The bytecode
+1. **[🛠️ Foundry](https://getfoundry.sh)** installed (`forge` and `cast`). The bytecode
    sanity check (`check-bytecode.sh`) uses `forge` to resolve and, if needed,
    download the matching `solc` version automatically (no manual `svm install`
    required, but network access is needed on first run).
-2. **A funded deployer account** on the target network
-3. **An RPC endpoint** for the target network
-4. **The Nick Factory** contract must exist on the target network at address `0x4e59b44847b379578588920cA78FbF26c0B4956C`. To check if it exists, follow the next section.
+2. **🐍 Python 3.12**
+3. **A funded deployer account** on the target network
+4. **An RPC endpoint** for the target network
+5. **The Nick Factory** contract must exist on the target network at address `0x4e59b44847b379578588920cA78FbF26c0B4956C`. To check if it exists, follow the next section.
+
+If you do not have Python 3.11 installed, it is recommended to install it via [**mise**](https://mise.jdx.dev/getting-started.html)
+
+```bash
+mise install
+```
 
 ### Verify Nick Factory is deployed on the target chain
 
