@@ -5,9 +5,7 @@
     "rpcUrl": "https://evmrpc.0g.ai",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32265/large/0g.png?1759289710",
     "currencySymbol": "0G",
-    "explorers": [
-      "https://chainscan.0g.ai"
-    ],
+    "explorers": ["https://chainscan.0g.ai"],
     "bridges": [
       "https://xswap.link/bridge?fromChain=1&toChain=16661&fromToken=USDC&toToken=USDC"
     ]
@@ -18,9 +16,7 @@
     "rpcUrl": "https://rpc.apechain.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22184/large/apechain.jpg?1729564324",
     "currencySymbol": "APE",
-    "explorers": [
-      "https://apescan.io"
-    ],
+    "explorers": ["https://apescan.io"],
     "bridges": [
       "https://apechain.portal.caldera.xyz/bridge",
       "https://jumper.exchange/",
@@ -50,13 +46,8 @@
     "rpcUrl": "https://evm.astar.network",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/71/large/Astar.jpeg?1706606537",
     "currencySymbol": "ASTR",
-    "explorers": [
-      "https://astar.subscan.io",
-      "https://blockscout.com/astar"
-    ],
-    "bridges": [
-      "https://portal.astar.network/astar/bridge"
-    ]
+    "explorers": ["https://astar.subscan.io", "https://blockscout.com/astar"],
+    "bridges": ["https://portal.astar.network/astar/bridge"]
   },
   {
     "chainId": 43114,
@@ -100,10 +91,7 @@
     "rpcUrl": "https://berachain-rpc.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/176/large/berachain.jpeg?1706606828",
     "currencySymbol": "BERA",
-    "explorers": [
-      "https://berascan.com",
-      "https://beratrail.io"
-    ],
+    "explorers": ["https://berascan.com", "https://beratrail.io"],
     "bridges": [
       "https://hub.berachain.com/bridge",
       "https://jumper.exchange/",
@@ -116,10 +104,7 @@
     "rpcUrl": "https://blast-rpc.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/192/large/blast.jpeg?1709085131",
     "currencySymbol": "BlastETH",
-    "explorers": [
-      "https://blastscan.io",
-      "https://blastexplorer.io"
-    ],
+    "explorers": ["https://blastscan.io", "https://blastexplorer.io"],
     "bridges": [
       "https://blast.io/bridge",
       "https://jumper.exchange/",
@@ -132,14 +117,8 @@
     "rpcUrl": "https://bsc-rpc.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/1/large/bnb_smart_chain.png?1706606721",
     "currencySymbol": "BNB",
-    "explorers": [
-      "https://bscscan.com",
-      "https://bnb.dex.guru"
-    ],
-    "bridges": [
-      "https://jumper.exchange/",
-      "https://relay.link/bridge"
-    ]
+    "explorers": ["https://bscscan.com", "https://bnb.dex.guru"],
+    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"]
   },
   {
     "chainId": 42220,
@@ -147,10 +126,7 @@
     "rpcUrl": "https://forno.celo.org",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/21/large/celo.jpeg?1711358666",
     "currencySymbol": "CELO",
-    "explorers": [
-      "https://celoscan.io",
-      "https://celo.blockscout.com"
-    ],
+    "explorers": ["https://celoscan.io", "https://celo.blockscout.com"],
     "bridges": [
       "https://app.superbridge.com/celo",
       "https://jumper.exchange/",
@@ -163,13 +139,8 @@
     "rpcUrl": "https://chiliz.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/8834/large/chiliz.png?1710723850",
     "currencySymbol": "CHZ",
-    "explorers": [
-      "https://chiliscan.com",
-      "https://scan.chiliz.com"
-    ],
-    "bridges": [
-      "https://bridge.chiliz.com"
-    ]
+    "explorers": ["https://chiliscan.com", "https://scan.chiliz.com"],
+    "bridges": ["https://bridge.chiliz.com"]
   },
   {
     "chainId": 1030,
@@ -177,12 +148,8 @@
     "rpcUrl": "https://evm.confluxrpc.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/52/large/conflux.png?1724842516",
     "currencySymbol": "CFX",
-    "explorers": [
-      "https://evm.confluxscan.net"
-    ],
-    "bridges": [
-      "https://confluxhub.io/espace-bridge/cross-space"
-    ]
+    "explorers": ["https://evm.confluxscan.net"],
+    "bridges": ["https://confluxhub.io/espace-bridge/cross-space"]
   },
   {
     "chainId": 1116,
@@ -190,12 +157,8 @@
     "rpcUrl": "https://core.drpc.org",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/119/large/core.jpeg?1706606603",
     "currencySymbol": "CORE",
-    "explorers": [
-      "https://scan.coredao.org"
-    ],
-    "bridges": [
-      "https://bridge.coredao.org"
-    ]
+    "explorers": ["https://scan.coredao.org"],
+    "bridges": ["https://bridge.coredao.org"]
   },
   {
     "chainId": 2632500,
@@ -203,12 +166,8 @@
     "rpcUrl": "https://mainnet.coti.io/rpc",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32274/large/coti.jpg?1765937321",
     "currencySymbol": "COTI",
-    "explorers": [
-      "https://mainnet.cotiscan.io"
-    ],
-    "bridges": [
-      "https://bridge.coti.io"
-    ]
+    "explorers": ["https://mainnet.cotiscan.io"],
+    "bridges": ["https://bridge.coti.io"]
   },
   {
     "chainId": 25,
@@ -216,9 +175,7 @@
     "rpcUrl": "https://cronos-evm-rpc.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/46/large/cronos.jpeg?1706606792",
     "currencySymbol": "CRO",
-    "explorers": [
-      "https://explorer.cronos.org"
-    ],
+    "explorers": ["https://explorer.cronos.org"],
     "bridges": [
       "https://cronos.org/bridge",
       "https://jumper.exchange/",
@@ -231,12 +188,8 @@
     "rpcUrl": "https://rpc.degen.tips",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/209/large/degen.jpeg?1711946732",
     "currencySymbol": "DEGEN",
-    "explorers": [
-      "https://explorer.degen.tips/"
-    ],
-    "bridges": [
-      "https://relay.link/bridge"
-    ]
+    "explorers": ["https://explorer.degen.tips/"],
+    "bridges": ["https://relay.link/bridge"]
   },
   {
     "chainId": 61,
@@ -267,10 +220,7 @@
       "https://ethereum.dex.guru",
       "https://ethereum.routescan.io"
     ],
-    "bridges": [
-      "https://jumper.exchange/",
-      "https://relay.link/bridge"
-    ]
+    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"]
   },
   {
     "chainId": 42793,
@@ -278,13 +228,8 @@
     "rpcUrl": "https://node.mainnet.etherlink.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/278/large/etherlink.jpg?1719800793",
     "currencySymbol": "XTZ",
-    "explorers": [
-      "https://explorer.etherlink.com"
-    ],
-    "bridges": [
-      "https://bridge.etherlink.com",
-      "https://jumper.exchange/"
-    ]
+    "explorers": ["https://explorer.etherlink.com"],
+    "bridges": ["https://bridge.etherlink.com", "https://jumper.exchange/"]
   },
   {
     "chainId": 314,
@@ -300,9 +245,7 @@
       "https://filscan.io",
       "https://filscout.io/en"
     ],
-    "bridges": [
-      "https://app.squidrouter.com/"
-    ]
+    "bridges": ["https://app.squidrouter.com/"]
   },
   {
     "chainId": 14,
@@ -347,10 +290,7 @@
       "https://gscan.xyz",
       "https://www.oklink.com/gravity-alpha"
     ],
-    "bridges": [
-      "https://gravity.xyz",
-      "https://jumper.exchange/"
-    ]
+    "bridges": ["https://gravity.xyz", "https://jumper.exchange/"]
   },
   {
     "chainId": 43419,
@@ -358,9 +298,7 @@
     "rpcUrl": "https://rpc.gunzchain.io/ext/bc/2M47TxWHGnhNtq6pM5zPXdATBtuqubxn5EPFgFmEawCQr9WFML/rpc",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32246/large/gunz.jpg?1753065139",
     "currencySymbol": "GUN",
-    "explorers": [
-      "https://gunzscan.io"
-    ],
+    "explorers": ["https://gunzscan.io"],
     "bridges": [
       "https://gunzillagames.com/en/gunz",
       "https://relay.link/bridge"
@@ -372,12 +310,8 @@
     "rpcUrl": "https://haqq-evm-rpc.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/272/large/haqq-sign.png?1717594659",
     "currencySymbol": "ISLM",
-    "explorers": [
-      "https://explorer.haqq.network"
-    ],
-    "bridges": [
-      "https://bridge.haqq.network"
-    ]
+    "explorers": ["https://explorer.haqq.network"],
+    "bridges": ["https://bridge.haqq.network"]
   },
   {
     "chainId": 177,
@@ -385,13 +319,8 @@
     "rpcUrl": "https://mainnet.hsk.xyz",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32250/large/hashkey.jpg?1754898883",
     "currencySymbol": "HSK",
-    "explorers": [
-      "https://hashkey.blockscout.com",
-      "https://explorer.hsk.xyz"
-    ],
-    "bridges": [
-      "https://global.hashkey.com/en-US/bridge"
-    ]
+    "explorers": ["https://hashkey.blockscout.com", "https://explorer.hsk.xyz"],
+    "bridges": ["https://global.hashkey.com/en-US/bridge"]
   },
   {
     "chainId": 43111,
@@ -399,9 +328,7 @@
     "rpcUrl": "https://rpc.hemi.network/rpc",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22232/large/hemi.jpg?1748333319",
     "currencySymbol": "HemiETH",
-    "explorers": [
-      "https://explorer.hemi.xyz"
-    ],
+    "explorers": ["https://explorer.hemi.xyz"],
     "bridges": [
       "https://app.hemi.xyz",
       "https://jumper.exchange/",
@@ -414,10 +341,7 @@
     "rpcUrl": "https://rpc.hyperliquid.xyz/evm",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22208/large/hyperliquid.jpg?1740125774",
     "currencySymbol": "HYPE",
-    "explorers": [
-      "https://hyperevmscan.io/",
-      "https://www.hyperscan.com/"
-    ],
+    "explorers": ["https://hyperevmscan.io/", "https://www.hyperscan.com/"],
     "bridges": [
       "https://app.hyperliquid.xyz/bridge",
       "https://jumper.exchange/",
@@ -430,9 +354,7 @@
     "rpcUrl": "https://rpc.immutable.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/159/large/immutable.jpeg?1706606759",
     "currencySymbol": "IMX",
-    "explorers": [
-      "https://explorer.immutable.com"
-    ],
+    "explorers": ["https://explorer.immutable.com"],
     "bridges": [
       "https://toolkit.immutable.com/bridge",
       "https://jumper.exchange/"
@@ -444,9 +366,7 @@
     "rpcUrl": "https://rpc-gel.inkonchain.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22194/large/ink.jpg?1737600222",
     "currencySymbol": "InkETH",
-    "explorers": [
-      "https://explorer.inkonchain.com"
-    ],
+    "explorers": ["https://explorer.inkonchain.com"],
     "bridges": [
       "https://inkonchain.com/bridge",
       "https://jumper.exchange/",
@@ -459,12 +379,8 @@
     "rpcUrl": "https://babel-api.mainnet.iotex.io",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/16/large/iotex.png?1706606819",
     "currencySymbol": "IOTX",
-    "explorers": [
-      "https://iotexscan.io"
-    ],
-    "bridges": [
-      "https://iotex.io/bridge"
-    ]
+    "explorers": ["https://iotexscan.io"],
+    "bridges": ["https://iotex.io/bridge"]
   },
   {
     "chainId": 747474,
@@ -472,10 +388,7 @@
     "rpcUrl": "https://rpc.katanarpc.com/",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32239/large/katana.jpg?1751496126",
     "currencySymbol": "KatanaETH",
-    "explorers": [
-      "https://katanascan.com",
-      "https://explorer.katanarpc.com"
-    ],
+    "explorers": ["https://katanascan.com", "https://explorer.katanarpc.com"],
     "bridges": [
       "https://app.katana.network/bridge",
       "https://jumper.exchange/",
@@ -488,12 +401,8 @@
     "rpcUrl": "https://kava-evm-rpc.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/2/large/kava.jpeg?1707096364",
     "currencySymbol": "KAVA",
-    "explorers": [
-      "https://kavascan.com"
-    ],
-    "bridges": [
-      "https://app.kava.io/bridge"
-    ]
+    "explorers": ["https://kavascan.com"],
+    "bridges": ["https://app.kava.io/bridge"]
   },
   {
     "chainId": 232,
@@ -501,13 +410,8 @@
     "rpcUrl": "https://rpc.lens.xyz",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22228/large/light-removebg-preview.png?1746161920",
     "currencySymbol": "GHO",
-    "explorers": [
-      "https://explorer.lens.xyz"
-    ],
-    "bridges": [
-      "https://relay.link/bridge/lens",
-      "https://jumper.exchange/"
-    ]
+    "explorers": ["https://explorer.lens.xyz"],
+    "bridges": ["https://relay.link/bridge/lens", "https://jumper.exchange/"]
   },
   {
     "chainId": 59144,
@@ -532,10 +436,7 @@
     "rpcUrl": "https://rpc.mantle.xyz",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/140/large/mantle.jpeg?1706606701",
     "currencySymbol": "MNT",
-    "explorers": [
-      "https://mantlescan.xyz",
-      "https://explorer.mantle.xyz"
-    ],
+    "explorers": ["https://mantlescan.xyz", "https://explorer.mantle.xyz"],
     "bridges": [
       "https://bridge.mantle.xyz",
       "https://jumper.exchange/",
@@ -569,9 +470,7 @@
       "https://memecorescan.io",
       "https://blockscout.memecore.com"
     ],
-    "bridges": [
-      "https://www.memecore.com"
-    ]
+    "bridges": ["https://www.memecore.com"]
   },
   {
     "chainId": 34443,
@@ -579,10 +478,7 @@
     "rpcUrl": "https://mainnet.mode.network/",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/191/large/mode.jpeg?1708666179",
     "currencySymbol": "ModeETH",
-    "explorers": [
-      "https://explorer.mode.network",
-      "https://modescan.io"
-    ],
+    "explorers": ["https://explorer.mode.network", "https://modescan.io"],
     "bridges": [
       "https://app.mode.network/bridge",
       "https://jumper.exchange/",
@@ -595,14 +491,8 @@
     "rpcUrl": "https://rpc.monad.xyz",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22182/large/monad.png?1729046263",
     "currencySymbol": "MON",
-    "explorers": [
-      "https://monadvision.com",
-      "https://monadscan.com"
-    ],
-    "bridges": [
-      "https://jumper.exchange/",
-      "https://relay.link/bridge"
-    ]
+    "explorers": ["https://monadvision.com", "https://monadscan.com"],
+    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"]
   },
   {
     "chainId": 1284,
@@ -610,9 +500,7 @@
     "rpcUrl": "https://moonbeam-rpc.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/56/large/cropped-Moonbeam-Favicon-550px.png?1706606533",
     "currencySymbol": "GLMR",
-    "explorers": [
-      "https://moonbeam.moonscan.io"
-    ],
+    "explorers": ["https://moonbeam.moonscan.io"],
     "bridges": [
       "https://apps.moonbeam.network/moonbeam/bridge",
       "https://jumper.exchange/"
@@ -624,12 +512,8 @@
     "rpcUrl": "https://moonriver-rpc.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/38/large/moonriver.jpg?1725875159",
     "currencySymbol": "MOVR",
-    "explorers": [
-      "https://moonriver.moonscan.io"
-    ],
-    "bridges": [
-      "https://apps.moonbeam.network/moonriver/bridge"
-    ]
+    "explorers": ["https://moonriver.moonscan.io"],
+    "bridges": ["https://apps.moonbeam.network/moonriver/bridge"]
   },
   {
     "chainId": 10,
@@ -656,12 +540,8 @@
     "rpcUrl": "https://quicknode1.peaq.xyz",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32233/large/peaq.jpg?1748597584",
     "currencySymbol": "PEAQ",
-    "explorers": [
-      "https://peaq.subscan.io"
-    ],
-    "bridges": [
-      "https://portal.peaq.xyz/bridge"
-    ]
+    "explorers": ["https://peaq.subscan.io"],
+    "bridges": ["https://portal.peaq.xyz/bridge"]
   },
   {
     "chainId": 9745,
@@ -669,13 +549,8 @@
     "rpcUrl": "https://rpc.plasma.to",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32256/large/plasma.jpg?1758000963",
     "currencySymbol": "XPL",
-    "explorers": [
-      "https://plasmascan.to"
-    ],
-    "bridges": [
-      "https://jumper.exchange/",
-      "https://relay.link/bridge"
-    ]
+    "explorers": ["https://plasmascan.to"],
+    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"]
   },
   {
     "chainId": 98866,
@@ -683,9 +558,7 @@
     "rpcUrl": "https://rpc.plume.org",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22226/large/Logomark-BG-Red.png?1746672975",
     "currencySymbol": "PLUME",
-    "explorers": [
-      "https://explorer.plume.org"
-    ],
+    "explorers": ["https://explorer.plume.org"],
     "bridges": [
       "https://bridge.plume.org",
       "https://jumper.exchange/",
@@ -698,14 +571,28 @@
     "rpcUrl": "https://polygon-bor-rpc.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/15/large/polygon_pos.png?1706606645",
     "currencySymbol": "POL",
-    "explorers": [
-      "https://polygonscan.com",
-      "https://www.oklink.com/polygon"
-    ],
+    "explorers": ["https://polygonscan.com", "https://www.oklink.com/polygon"],
     "bridges": [
       "https://portal.polygon.technology/bridge",
       "https://jumper.exchange/",
       "https://relay.link/bridge"
+    ]
+  },
+  {
+    "chainId": 369,
+    "name": "PulseChain",
+    "rpcUrl": "https://rpc.pulsechain.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/130/large/pulse.jpeg?1706606525",
+    "currencySymbol": "PLS",
+    "explorers": [
+      "https://otherscan.pulsechain.box",
+      "https://scan.pulsechain.com",
+      "https://scan.pulsechainfoundation.org",
+      "https://otter.pulsechain.com"
+    ],
+    "bridges": [
+      "https://bridge.pulsechain.com/",
+      "https://ipfs.bridge.pulsechain.com/"
     ]
   },
   {
@@ -714,9 +601,7 @@
     "rpcUrl": "https://api.roninchain.com/rpc",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/45/large/ronin.png?1706606769",
     "currencySymbol": "RON",
-    "explorers": [
-      "https://app.roninchain.com"
-    ],
+    "explorers": ["https://app.roninchain.com"],
     "bridges": [
       "https://app.roninchain.com/bridge",
       "https://jumper.exchange/",
@@ -733,10 +618,7 @@
       "https://explorer.rootstock.io",
       "https://rootstock.blockscout.com"
     ],
-    "bridges": [
-      "https://powpeg.rootstock.io",
-      "https://jumper.exchange/"
-    ]
+    "bridges": ["https://powpeg.rootstock.io", "https://jumper.exchange/"]
   },
   {
     "chainId": 534352,
@@ -744,9 +626,7 @@
     "rpcUrl": "https://rpc.scroll.io",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/153/large/scroll.jpeg?1706606782",
     "currencySymbol": "ScrollETH",
-    "explorers": [
-      "https://scrollscan.com"
-    ],
+    "explorers": ["https://scrollscan.com"],
     "bridges": [
       "https://scroll.io/bridge",
       "https://jumper.exchange/",
@@ -759,13 +639,8 @@
     "rpcUrl": "https://api.infra.mainnet.somnia.network",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32254/large/somi.png?1757319137",
     "currencySymbol": "SOMI",
-    "explorers": [
-      "https://mainnet.somnia.w3us.site"
-    ],
-    "bridges": [
-      "https://somnia.network/ecosystem",
-      "https://relay.link/bridge"
-    ]
+    "explorers": ["https://mainnet.somnia.w3us.site"],
+    "bridges": ["https://somnia.network/ecosystem", "https://relay.link/bridge"]
   },
   {
     "chainId": 1868,
@@ -789,27 +664,11 @@
     "rpcUrl": "https://sonic-rpc.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22192/large/128xS_token_Black-BG_2x.png?1735963719",
     "currencySymbol": "S",
-    "explorers": [
-      "https://sonicscan.org",
-      "https://explorer.soniclabs.com"
-    ],
+    "explorers": ["https://sonicscan.org", "https://explorer.soniclabs.com"],
     "bridges": [
       "https://gateway.soniclabs.com",
       "https://jumper.exchange/",
       "https://relay.link/bridge"
-    ]
-  },
-  {
-    "chainId": 50104,
-    "name": "Sophon",
-    "rpcUrl": "https://rpc.sophon.xyz",
-    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22218/large/Sophon_Logo_Black.png?1758627064",
-    "currencySymbol": "SOPH",
-    "explorers": [
-      "https://explorer.sophon.xyz"
-    ],
-    "bridges": [
-      "https://jumper.exchange/"
     ]
   },
   {
@@ -818,9 +677,7 @@
     "rpcUrl": "https://rpc.stable.xyz",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32271/large/stable.png?1765196531",
     "currencySymbol": "USDT0",
-    "explorers": [
-      "https://stablescan.xyz"
-    ],
+    "explorers": ["https://stablescan.xyz"],
     "bridges": [
       "https://stable.xyz",
       "https://jumper.exchange/",
@@ -833,12 +690,8 @@
     "rpcUrl": "https://mainnet.storyrpc.io",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22207/large/story.jpg?1739437182",
     "currencySymbol": "IP",
-    "explorers": [
-      "https://mainnet.storyscan.xyz"
-    ],
-    "bridges": [
-      "https://relay.link/bridge"
-    ]
+    "explorers": ["https://mainnet.storyscan.xyz"],
+    "bridges": ["https://relay.link/bridge"]
   },
   {
     "chainId": 105105,
@@ -846,12 +699,8 @@
     "rpcUrl": "https://rpc.xertra.com",
     "iconUri": "https://ipfs.io/ipfs/QmV1qG5jcEFhekamTzrMqzMTDRvCGdGQAiJcsHZ9viVwgT",
     "currencySymbol": "STRAX",
-    "explorers": [
-      "https://explorer.xertra.com"
-    ],
-    "bridges": [
-      "https://www.stratisplatform.com"
-    ]
+    "explorers": ["https://explorer.xertra.com"],
+    "bridges": ["https://www.stratisplatform.com"]
   },
   {
     "chainId": 167000,
@@ -859,10 +708,7 @@
     "rpcUrl": "https://rpc.mainnet.taiko.xyz",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/266/large/taiko.jpeg?1716985374",
     "currencySymbol": "TaikoAlethiaETH",
-    "explorers": [
-      "https://taikoscan.io",
-      "https://taikoexplorer.com"
-    ],
+    "explorers": ["https://taikoscan.io", "https://taikoexplorer.com"],
     "bridges": [
       "https://bridge.taiko.xyz",
       "https://jumper.exchange/",
@@ -875,12 +721,8 @@
     "rpcUrl": "https://telos.drpc.org",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/7588/large/TLOS_200.png?1706606551",
     "currencySymbol": "TLOS",
-    "explorers": [
-      "https://teloscan.io"
-    ],
-    "bridges": [
-      "https://jumper.exchange/"
-    ]
+    "explorers": ["https://teloscan.io"],
+    "bridges": ["https://jumper.exchange/"]
   },
   {
     "chainId": 4217,
@@ -888,9 +730,7 @@
     "rpcUrl": "https://rpc.tempo.xyz",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/102132289/large/tempo.png?1773825047",
     "currencySymbol": "PathUSD (Base)",
-    "explorers": [
-      "https://explore.tempo.xyz"
-    ],
+    "explorers": ["https://explore.tempo.xyz"],
     "bridges": [
       "https://docs.tempo.xyz/ecosystem/bridges",
       "https://wallet.tempo.xyz",
@@ -904,12 +744,8 @@
     "rpcUrl": "https://eth-rpc-api.thetatoken.org/rpc",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/59/large/jxOQobOB_400x400.jpeg?1706606764",
     "currencySymbol": "TFUEL",
-    "explorers": [
-      "https://explorer.thetatoken.org"
-    ],
-    "bridges": [
-      "https://bridge.thetatoken.org"
-    ]
+    "explorers": ["https://explorer.thetatoken.org"],
+    "bridges": ["https://bridge.thetatoken.org"]
   },
   {
     "chainId": 130,
@@ -917,10 +753,7 @@
     "rpcUrl": "https://unichain-rpc.publicnode.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22206/large/unichain.png?1739323630",
     "currencySymbol": "UnichainETH",
-    "explorers": [
-      "https://uniscan.xyz",
-      "https://unichain.blockscout.com"
-    ],
+    "explorers": ["https://uniscan.xyz", "https://unichain.blockscout.com"],
     "bridges": [
       "https://app.uniswap.org/bridge",
       "https://jumper.exchange/",
@@ -933,13 +766,8 @@
     "rpcUrl": "https://rpc-mainnet.vechain.energy",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/1167/large/vechain.png?1724843001",
     "currencySymbol": "VET",
-    "explorers": [
-      "https://vechainstats.com",
-      "https://explore.vechain.org"
-    ],
-    "bridges": [
-      "https://www.vechain.org"
-    ]
+    "explorers": ["https://vechainstats.com", "https://explore.vechain.org"],
+    "bridges": ["https://www.vechain.org"]
   },
   {
     "chainId": 1111,
@@ -947,12 +775,8 @@
     "rpcUrl": "https://api.wemix.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/113/large/wemix.png?1706606488",
     "currencySymbol": "WEMIX",
-    "explorers": [
-      "https://explorer.wemix.com"
-    ],
-    "bridges": [
-      "https://wemix.fi/bridge"
-    ]
+    "explorers": ["https://explorer.wemix.com"],
+    "bridges": ["https://wemix.fi/bridge"]
   },
   {
     "chainId": 480,
@@ -976,12 +800,8 @@
     "rpcUrl": "https://rpc.xlayer.tech",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/238/large/x_logo.jpeg?1713243242",
     "currencySymbol": "OKB",
-    "explorers": [
-      "https://www.oklink.com/xlayer"
-    ],
-    "bridges": [
-      "https://web3.okx.com/xlayer/bridge"
-    ]
+    "explorers": ["https://www.oklink.com/xlayer"],
+    "bridges": ["https://web3.okx.com/xlayer/bridge"]
   },
   {
     "chainId": 660279,
@@ -989,12 +809,8 @@
     "rpcUrl": "https://xai-chain.net/rpc",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/189/large/xai.png?1708573604",
     "currencySymbol": "XAI",
-    "explorers": [
-      "https://explorer.xai-chain.net"
-    ],
-    "bridges": [
-      "https://bridge.xai.games"
-    ]
+    "explorers": ["https://explorer.xai-chain.net"],
+    "bridges": ["https://bridge.xai.games"]
   },
   {
     "chainId": 50,
@@ -1002,14 +818,8 @@
     "rpcUrl": "https://erpc.xinfin.network",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/27/large/xdc_%281%29.png?1706606530",
     "currencySymbol": "XDC",
-    "explorers": [
-      "https://xdcscan.com",
-      "https://xdcscan.io"
-    ],
-    "bridges": [
-      "https://bridge.xdc.org",
-      "https://jumper.exchange/"
-    ]
+    "explorers": ["https://xdcscan.com", "https://xdcscan.io"],
+    "bridges": ["https://bridge.xdc.org", "https://jumper.exchange/"]
   },
   {
     "chainId": 7000,
@@ -1017,12 +827,8 @@
     "rpcUrl": "https://zetachain-evm.blockpi.network/v1/rpc/public",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/178/large/zeta.jpeg?1706844749",
     "currencySymbol": "ZETA",
-    "explorers": [
-      "https://zetascan.com"
-    ],
-    "bridges": [
-      "https://hub.zetachain.com"
-    ]
+    "explorers": ["https://zetascan.com"],
+    "bridges": ["https://hub.zetachain.com"]
   },
   {
     "chainId": 324,
@@ -1030,9 +836,7 @@
     "rpcUrl": "https://mainnet.era.zksync.io",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/121/large/zksync.jpeg?1706606814",
     "currencySymbol": "zkSyncMainnetETH",
-    "explorers": [
-      "https://explorer.zksync.io"
-    ],
+    "explorers": ["https://explorer.zksync.io"],
     "bridges": [
       "https://portal.zksync.io/bridge",
       "https://jumper.exchange/",
@@ -1045,12 +849,7 @@
     "rpcUrl": "https://rpc.zora.energy/",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/196/large/zora.jpeg?1709871117",
     "currencySymbol": "ZoraETH",
-    "explorers": [
-      "https://explorer.zora.energy"
-    ],
-    "bridges": [
-      "https://superbridge.app/zora",
-      "https://relay.link/bridge"
-    ]
+    "explorers": ["https://explorer.zora.energy"],
+    "bridges": ["https://superbridge.app/zora", "https://relay.link/bridge"]
   }
 ]
