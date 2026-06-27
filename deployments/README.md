@@ -129,7 +129,7 @@ Contract verifications works using Etherscan or Blockscout API (depending on the
 ## Pre-requisites
 
 1. **[🛠️ Foundry](https://getfoundry.sh)** installed (`forge` and `cast`). The bytecode
-   sanity check (`check-bytecode.sh`) uses `forge` to resolve and, if needed,
+   sanity check (`validate-bytecode.sh`) uses `forge` to resolve and, if needed,
    download the matching `solc` version automatically (no manual `svm install`
    required, but network access is needed on first run).
 2. **🐍 Python 3.12**
@@ -267,7 +267,7 @@ Run the dedicated script with the same `CONTRACT_TO_DEPLOY` identifier:
 
 ```bash
 # Run from the repository root
-bash deployments/check-bytecode.sh --contract LSP7MintableInit-v0.17.3
+bash deployments/validate-bytecode.sh --contract LSP7MintableInit-v0.17.3
 ```
 
 The Standard JSON input embeds its own source code, so this check is
