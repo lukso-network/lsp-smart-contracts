@@ -7,7 +7,6 @@ set -euo pipefail
 # verification) compiles to the *exact* `creationBytecode` recorded in
 # `deployments/contracts.json` for a given contract.
 #
-# Why this matters:
 # - The Standard JSON input embeds its own source code, so this check is
 #   self-contained: it does NOT depend on the current (or historical) `.sol`
 #   files in the repository.
@@ -51,4 +50,4 @@ if [[ -z "$CONTRACT" ]]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-python3 "$SCRIPT_DIR/python/check_bytecode.py" --contract "$CONTRACT"
+python3 "$SCRIPT_DIR/python/contracts.py" "validate-verification-metadata" --contract "$CONTRACT"

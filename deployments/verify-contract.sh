@@ -3,28 +3,27 @@ set -euo pipefail
 
 ADDRESS=""
 CHAIN=""
-EXPLORER=""
-SKIP_EXPLORER=false
+SKIP_SOURCIFY=false
 SOURCIFY_ONLY=false
 
 usage() {
     cat <<EOF
-Usage: $0 --address <address> --chain <chain_id|chain_name> [options]
+Usage: $0 --address <address> --chain <chain_name> [options]
 
-Submits contract verification to a block explorer (Etherscan or Sourcify). 
+Submits contract verification to a block explorer (Etherscan or Blockscout) + Sourcify. 
 Contract verification is always submitted to Sourcify by default for the specified `chain`.
-
+This can be skipped via `--skip-sourcify` to submit only to the selected explorer.
+To submit to Sourcify only for the specified chain, use `--sourcify-only`.
+ 
 Options:
-  --address        Deployed contract address
-  --chain          Chain name from deployed-chains.json
-  --explorer       Blockchain Explorer backend: etherscan | blockscout
-  --skip-explorer  Skip the explorer submission and only submit to Sourcify
-  --sourcify-only  Alias for --skip-explorer
-  -h, --help       Show this help
+  --address                        Deployed contract address
+  --chain                          A valid chain name from `deployments/deployed-chains.json`
+  --skip-sourcify (optional)       Skip Sourcify for the specified `chain`
+  --sourcify-only (optional)       Submit only to Sourcify for the specified `chain`.
+  -h, --help                       Show this help
 
-By default the script submits to the selected explorer and then always
-submits to Sourcify. Explorer failures do not prevent the Sourcify step from
-running. The script exits non-zero if any step that was requested fails.
+Explorer failures do not prevent the Sourcify step from running. 
+The script exits non-zero if any step that was requested fails.
 EOF
 }
 
@@ -32,9 +31,8 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --address) ADDRESS="${2:?Missing value for --address}"; shift 2 ;;
         --chain) CHAIN="${2:?Missing value for --chain}"; shift 2 ;;
-        --explorer) EXPLORER="${2:?Missing value for --explorer}"; shift 2 ;;
-        --skip-explorer) SKIP_EXPLORER=true; shift ;;
-        --sourcify-only) SOURCIFY_ONLY=true; SKIP_EXPLORER=true; shift ;;
+        --skip-sourcify) SKIP_SOURCIFY=true; shift ;;
+        --sourcify-only) SOURCIFY_ONLY=true; shift ;;
         -h|--help) usage; exit 0 ;;
         *)
             echo "Unknown option: $1" >&2
@@ -44,19 +42,14 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [[ "$SOURCIFY_ONLY" == true ]]; then
-    SKIP_EXPLORER=true
-fi
-
 if [[ -z "$ADDRESS" || -z "$CHAIN" ]]; then
     echo "Required options: --address, --chain." >&2
     usage
     exit 1
 fi
 
-if [[ "$SKIP_EXPLORER" != true && -z "$EXPLORER" ]]; then
-    echo "Required option: --explorer (or pass --skip-explorer / --sourcify-only)." >&2
-    usage
+if [[ "$SKIP_SOURCIFY" == true && "$SOURCIFY_ONLY" == true ]]; then
+    echo "Cannot use --skip-sourcify and --sourcify-only together." >&2
     exit 1
 fi
 
@@ -64,26 +57,28 @@ fi
 # (the contracts.json lookup below is case-insensitive regardless).
 ADDRESS=$(echo "$ADDRESS" | tr '[:upper:]' '[:lower:]')
 
-if [[ "$SKIP_EXPLORER" != true ]]; then
-    case "$EXPLORER" in
-        etherscan|blockscout) ;;
-        *)
-            echo "Invalid --explorer: $EXPLORER (use: etherscan or blockscout)" >&2
-            exit 1
-            ;;
-    esac
+if ! [[ "$ADDRESS" =~ ^0x[a-f0-9]{40}$ ]]; then
+    echo "Error: Contract address must be 20 bytes long (40 hex chars), 0x-prefixed." >&2
+    exit 1
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# python3 "$SCRIPT_DIR/python/cli.py get-verification-data"
-
-CONTRACT_VERIFICATION_DATA=$(python3 "$SCRIPT_DIR/python/get_contract_verification_data.py" "$ADDRESS")
+CONTRACT_VERIFICATION_DATA=$(python3 "$SCRIPT_DIR/python/contracts.py" "get-verification-metadata" --address "$ADDRESS")
 COMPILER_VERSION=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.compilerVersion')
 CONTRACT_ID=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.contractIdentifier')
 
+CHAIN_ID=$(python3 "$SCRIPT_DIR/python/chains.py" "get-chain-id" "$CHAIN")
+if [[ -z "$CHAIN_ID" ]]; then
+    echo "Error: Failed to get chain ID for chain: $CHAIN" >&2
+    exit 1
+fi
+
 verify_with_etherscan() {
-    : "${ETHERSCAN_API_KEY:?Set ETHERSCAN_API_KEY}"
+    if [[ -z "${ETHERSCAN_API_KEY:-}" ]]; then
+        echo "🔍❌ Missing ETHERSCAN_API_KEY, skipping Etherscan." >&2
+        return 1
+    fi
     
     STANDARD_JSON_INPUT_FILE_PATH=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.stdJsonInputFilePath')
 
@@ -124,17 +119,21 @@ verify_with_etherscan() {
     echo
 }
 
+# Params $1: Blockscout base URL
 verify_with_blockscout() {
-    : "${BLOCKSCOUT_BASE_URL:?Set BLOCKSCOUT_BASE_URL (e.g. https://explorer.execution.testnet.lukso.network)}"
+    local blockscout_base_url
+    blockscout_base_url="$1"
+
+    : "${blockscout_base_url:?❌🔍 Missing Blockscout base URL for explorer. (required as first argument)}"
 
     CONTRACT_NAME=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.contractName')
     STANDARD_JSON_INPUT_FILE_PATH=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.stdJsonInputFilePath')
 
-    echo "🔍🔄 Submitting verification request to Blockscout ($BLOCKSCOUT_BASE_URL)..." >&2
+    echo "🔍🔄 Submitting verification request to Blockscout ($blockscout_base_url)..." >&2
 
     local response http_code is_verified
     response=$(curl -sS -X POST \
-        "$BLOCKSCOUT_BASE_URL/api/v2/smart-contracts/$ADDRESS/verification/via/standard-input" \
+        "$blockscout_base_url/api/v2/smart-contracts/$ADDRESS/verification/via/standard-input" \
         -F "compiler_version=$COMPILER_VERSION" \
         -F "contract_name=$CONTRACT_NAME" \
         -F "autodetect_constructor_args=false" \
@@ -151,7 +150,7 @@ verify_with_blockscout() {
 
     echo "🔍🔄 Polling Blockscout verification status..." >&2
 
-    is_verified=$(curl -sS "$BLOCKSCOUT_BASE_URL/api/v2/smart-contracts/$ADDRESS" | jq -r ".is_verified")
+    is_verified=$(curl -sS "$blockscout_base_url/api/v2/smart-contracts/$ADDRESS" | jq -r ".is_verified")
     if [[ "$is_verified" != "true" ]]; then
         echo "🔍❌ Blockscout verification failed (is_verified=$is_verified)." >&2
         return 1
@@ -195,16 +194,41 @@ verify_with_sourcify() {
 EXPLORER_EXIT=0
 SOURCIFY_EXIT=0
 
-if [[ "$SKIP_EXPLORER" != true ]]; then
-    case "$EXPLORER" in
-        etherscan) verify_with_etherscan || EXPLORER_EXIT=$? ;;
-        blockscout) verify_with_blockscout || EXPLORER_EXIT=$? ;;
-    esac
+if [[ "$SOURCIFY_ONLY" != true ]]; then
+    # Get all the block explorers for the specified chain
+    all_explorers=$(python3 "$SCRIPT_DIR/python/chains.py" "get-all-explorers" "$CHAIN")
+    
+    while IFS= read -r explorer; do
+        explorer_category=$(echo "$explorer" | jq -r '.category')
+        explorer_url=$(echo "$explorer" | jq -r '.url')
+
+        case "$explorer_category" in
+            etherscan)
+                echo "Submitting contract verification on $explorer_url" >&2
+                verify_with_etherscan || EXPLORER_EXIT=$?
+                ;;
+            blockscout)
+                echo "Submitting contract verification on $explorer_url" >&2
+                verify_with_blockscout "$explorer_url" || EXPLORER_EXIT=$?
+                ;;
+            subscan)
+                echo "Contract verification on Subscan not supported yet" >&2
+                ;;
+            routescan)
+                echo "Contract verification on Routerscan not supported yet" >&2
+                ;;
+            other)
+                echo "Contract verification not supported for this type of explorer. Please verify contract manually. Skipping: $explorer_url" >&2
+                ;;
+        esac
+    done < <(echo "$all_explorers" | jq -c '.[]')
 else
-    echo "Skipping explorer submission (--skip-explorer / --sourcify-only)." >&2
+    echo "Skipping explorer submission because of --sourcify-only option." >&2
 fi
 
-verify_with_sourcify || SOURCIFY_EXIT=$?
+if [[ "$SKIP_SOURCIFY" != true ]]; then
+    verify_with_sourcify || SOURCIFY_EXIT=$?
+fi
 
 if [[ $EXPLORER_EXIT -ne 0 ]]; then
     echo "Explorer verification failed." >&2

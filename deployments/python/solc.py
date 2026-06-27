@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Resolve (and if needed, install) a solc binary for a given version."""
+"""Solc toolchain: resolve/install a solc binary and compile Standard JSON input."""
 
+import json
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
-
 
 def svm_base_dirs():
     """Return candidate svm install roots, in priority order.
@@ -43,7 +43,6 @@ def svm_base_dirs():
             unique.append(base)
     return unique
 
-
 def resolve_solc_binary(version):
     """Return the path to an installed ``solc-{version}`` binary, or ``None``."""
     binary_name = f"solc-{version}"
@@ -52,7 +51,6 @@ def resolve_solc_binary(version):
         if candidate.is_file():
             return candidate
     return None
-
 
 def install_solc_via_forge(version):
     """Trigger a Foundry-managed solc download for ``version``."""
@@ -92,7 +90,6 @@ def install_solc_via_forge(version):
 
     return resolve_solc_binary(version)
 
-
 def ensure_solc_binary(version):
     """Return the solc binary path, installing it via Foundry if missing."""
     found = resolve_solc_binary(version)
@@ -119,3 +116,55 @@ def ensure_solc_binary(version):
         )
 
     return installed
+
+def strip_cbor_metadata(bytecode):
+    """Strip the CBOR metadata blob from the bytecode
+    The CBOR metadata blob is appended at the end of the bytecode, and its last
+    2 bytes encode the blob length. Removing it isolates the executable code.
+    
+    @param: bytecode The bytecode to strip the CBOR metadata blob from
+    @return: The bytecode with the CBOR metadata blob stripped
+    """
+    
+    if len(bytecode) < 4:
+        return bytecode
+    meta_len = int(bytecode[-4:], 16)
+    cut = (meta_len + 2) * 2
+    return bytecode[:-cut] if cut < len(bytecode) else bytecode
+
+def compile_creation_bytecode(solc_version, std_json_input_file, contract_name):
+    """Return the compiled bytecode
+
+    @param: solc_version The Solidity compiler version to use
+    @param: std_json_input_file The path to the std-json-input file to use for compilation
+    @param: contract_name The name of the contract to compile
+
+    @return: The generated compiled creation bytecode
+    """
+    solc_bin = ensure_solc_binary(solc_version)
+
+    std_input = json.loads(Path(std_json_input_file).read_text())
+    std_input.setdefault("settings", {})["outputSelection"] = {
+        "*": {"*": ["evm.bytecode.object"]}
+    }
+
+    # Run solc compiler
+    result = subprocess.run(
+        [str(solc_bin), "--standard-json"],
+        input=json.dumps(std_input),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    output = json.loads(result.stdout)
+
+    errors = [error for error in output.get("errors", []) if error.get("severity") == "error"]
+    if errors:
+        sys.exit("❌ Compilation failed:\n" + errors[0].get("formattedMessage", "")[:500])
+
+    for source_contracts in output.get("contracts", {}).values():
+        if contract_name in source_contracts:
+            return source_contracts[contract_name]["evm"]["bytecode"]["object"]
+
+    sys.exit(f"❌ Contract {contract_name} not found in compiler output")
+

@@ -170,14 +170,12 @@ cp deployments/.env.example deployments/.env
 - `RPC_URL` of the chain to deploy on.
 - `DEPLOYER_PK`: the raw hex private key to use for deploying on the target EVM network (must hold enough native tokens to pay for gas).
 - `ETHERSCAN_API_KEY` for Etherscan-family explorers, or
-- `BLOCKSCOUT_BASE_URL` (the explorer host URL) for Blockscout instances. Do not append `/api` at the end of the URL.
 
 ```
 RPC_URL=
 DEPLOYER_PK=
 
 ETHERSCAN_API_KEY=
-BLOCKSCOUT_BASE_URL=
 ```
 
 1. Export the environment variables into the shell.
@@ -270,7 +268,7 @@ Run the dedicated script with the same `CONTRACT_TO_DEPLOY` identifier:
 
 ```bash
 # Run from the repository root
-deployments/check-bytecode.sh --contract LSP7MintableInit-v0.17.3
+bash deployments/check-bytecode.sh --contract LSP7MintableInit-v0.17.3
 ```
 
 The Standard JSON input embeds its own source code, so this check is
@@ -318,22 +316,25 @@ cast code 0x<contract-address> --rpc-url "$RPC_URL"
 
 ### 5 — 📄 Verify the contract on Block explorer with the standard JSON input
 
-Run the dedicated shell script below with the right parameters to verify the contract on the block explorer of the target chain.
+> Make sure you have the explorer hosts written correctly in the `explorers` array
+> for the target chain in `deployed-chains.json`.
+
+Run the dedicated shell script below with the right parameters to verify the contract on the block explorers of the target chain.
 
 > Note that the contract verification shell script **also submits to Sourcify**
 > (chain-agnostic; many wallets/explorers read from it). Sourcify runs as an
 > independent step after the explorer submission, so an explorer failure does
-> not prevent Sourcify from being submitted. Use `--sourcify-only` (or
-> `--skip-explorer`) to submit to Sourcify without touching the block explorer.
+> not prevent Sourcify from being submitted. Use `--sourcify-only` to submit to
+> Sourcify without the block explorer, or `--skip-sourcify` to submit to the
+> explorer only.
 
 ```bash
 # Run from the repository root
 # e.g: verify `UniversalProfileInit` (v0.14.0) on Etherscan for Ethereum Mainnet
-# --explorer <etherscan|blockscout>
+# will verify on all the block explorers listed under the `explorers` entry for the chain (etherscan, blockscout)
 bash deployments/verify-contract.sh \
   --address "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F" \
-  --chain 1 \
-  --explorer etherscan
+  --chain 1
 
 # Sourcify only (no explorer API key required)
 bash deployments/verify-contract.sh \
@@ -344,32 +345,8 @@ bash deployments/verify-contract.sh \
 
 **If the chain's explorer is an Etherscan-family explorer** (Etherscan,
 Basescan, Arbiscan, Polygonscan, BscScan, Lineascan, …) — one API key works
-across all of them via Etherscan API v2.
-
-**If the chain's explorer is a Blockscout instance** — set `BLOCKSCOUT_BASE_URL` env variable to
-the explorer host from the `explorers` array in `deployed-chains.json`.
-
-```bash
-BLOCKSCOUT_BASE_URL=https://eth.blockscout.com
-```
-
-> Important:
->
-> - `BLOCKSCOUT_BASE_URL` is just the host (e.g. `https://eth.blockscout.com` for Ethereum,
->   or `https://explorer.execution.testnet.lukso.network` for LUKSO Testnet).
->   Do **not** append `/api` — the path below already adds `/api/v2/...`.
-> - Do **not** use an `api.` sub-domain; use the explorer host itself.
-> - Use `curl -sS` (capital S), not `-s`. With plain `-s`, connection errors
->   (like a wrong host → `exit code 35`, an SSL error) are printed nowhere and
->   the command appears to "do nothing".
-
-With Blockscout, a successful submission returns `{"message":"Smart-contract verification started"}`
-with `http=200`. Poll the result (or just open the contract page):
-
-```bash
-curl -sS "$BLOCKSCOUT_BASE_URL/api/v2/smart-contracts/$ADDRESS" \
-  | python3 -c "import sys,json;d=json.load(sys.stdin);print('verified:', d.get('is_verified'))"
-```
+across all of them via Etherscan API v2. Make sure the `ETHERSCAN_API_KEY` is set
+in your `.env` file.
 
 ### 6 — ✅ Confirm verification
 
