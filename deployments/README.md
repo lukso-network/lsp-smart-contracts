@@ -32,7 +32,6 @@ Below are the step-by-step procedure for deploying each contract on a new EVM ch
     - [4 — ⛓️ Confirm the contract is on-chain](#4--️-confirm-the-contract-is-on-chain)
     - [5 — 📄 Verify the contract on Block explorer with the standard JSON input](#5---verify-the-contract-on-block-explorer-with-the-standard-json-input)
     - [6 — ✅ Confirm verification](#6---confirm-verification)
-  - [Deploy to many chains at once (optional)](#deploy-to-many-chains-at-once-optional)
   - [Manual deployment via `cast send`](#manual-deployment-via-cast-send)
     - [Bytecode Comparison](#bytecode-comparison)
   - [Notes \& caveats](#notes--caveats)
@@ -169,7 +168,7 @@ cp deployments/.env.example deployments/.env
 
 - `RPC_URL` of the chain to deploy on.
 - `DEPLOYER_PK`: the raw hex private key to use for deploying on the target EVM network (must hold enough native tokens to pay for gas).
-- `ETHERSCAN_API_KEY` for Etherscan-family explorers, or
+- `ETHERSCAN_API_KEY` to verify deployed contracts on Etherscan-family explorers.
 
 ```
 RPC_URL=
@@ -332,21 +331,22 @@ Run the dedicated shell script below with the right parameters to verify the con
 # Run from the repository root
 # e.g: verify `UniversalProfileInit` (v0.14.0) on Etherscan for Ethereum Mainnet
 # will verify on all the block explorers listed under the `explorers` entry for the chain (etherscan, blockscout)
+#
+# --chain = valid chain name defined in `deployed-chains.json`
 bash deployments/verify-contract.sh \
   --address "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F" \
-  --chain 1
+  --chain "Ethereum Mainnet"
 
 # Sourcify only (no explorer API key required)
 bash deployments/verify-contract.sh \
   --address "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F" \
-  --chain 1 \
+  --chain "Ethereum Mainnet" \
   --sourcify-only
 ```
 
 **If the chain's explorer is an Etherscan-family explorer** (Etherscan,
 Basescan, Arbiscan, Polygonscan, BscScan, Lineascan, …) — one API key works
-across all of them via Etherscan API v2. Make sure the `ETHERSCAN_API_KEY` is set
-in your `.env` file.
+across all of them via Etherscan API v2. Make sure the `ETHERSCAN_API_KEY` is set in your `.env` file.
 
 ### 6 — ✅ Confirm verification
 
@@ -355,34 +355,6 @@ listed separately. Or check Sourcify:
 
 ```bash
 curl -sS "https://sourcify.dev/server/v2/contract/$CHAIN_ID/$ADDRESS?fields=match"
-```
-
----
-
-## Deploy to many chains at once (optional)
-
-Once the single-chain flow works, loop Step 3 over `deployments/deployed-chains.json`
-(from the repository root), skipping zkSync-stack chains (different `CREATE2`
-derivation) and chains without the Nick Factory:
-
-```bash
-# Run from the repository root
-export FOUNDRY_PROFILE=deployments
-export CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0
-ZK_DENYLIST="324 50104 232"   # zkSync Era, Sophon, Lens
-
-jq -c '.[]' deployments/deployed-chains.json | while read -r chain; do
-  CHAIN_ID=$(echo "$chain" | jq -r '.chainId')
-  NAME=$(echo "$chain" | jq -r '.name')
-  RPC=$(echo "$chain" | jq -r '.rpcUrl')
-  case " $ZK_DENYLIST " in *" $CHAIN_ID "*) echo "skip (zk): $NAME"; continue;; esac
-  if [ "$(cast code 0x4e59b44847b379578588920cA78FbF26c0B4956C --rpc-url "$RPC" 2>/dev/null)" = "0x" ]; then
-    echo "skip (no Nick Factory): $NAME ($CHAIN_ID)"; continue
-  fi
-  echo "==> $NAME ($CHAIN_ID)"
-  forge script deployments/scripts/DeployFromArtifact.s.sol \
-    --rpc-url "$RPC" --broadcast --private-key "$DEPLOYER_PK" || echo "FAILED: $NAME"
-done
 ```
 
 ---

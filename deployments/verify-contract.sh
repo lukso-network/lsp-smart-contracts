@@ -68,11 +68,7 @@ CONTRACT_VERIFICATION_DATA=$(python3 "$SCRIPT_DIR/python/contracts.py" "get-veri
 COMPILER_VERSION=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.compilerVersion')
 CONTRACT_ID=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.contractIdentifier')
 
-CHAIN_ID=$(python3 "$SCRIPT_DIR/python/chains.py" "get-chain-id" "$CHAIN")
-if [[ -z "$CHAIN_ID" ]]; then
-    echo "Error: Failed to get chain ID for chain: $CHAIN" >&2
-    exit 1
-fi
+CHAIN_ID=$(python3 "$SCRIPT_DIR/python/chains.py" "get-chain-id" --chain "$CHAIN")
 
 verify_with_etherscan() {
     if [[ -z "${ETHERSCAN_API_KEY:-}" ]]; then
@@ -196,7 +192,9 @@ SOURCIFY_EXIT=0
 
 if [[ "$SOURCIFY_ONLY" != true ]]; then
     # Get all the block explorers for the specified chain
-    all_explorers=$(python3 "$SCRIPT_DIR/python/chains.py" "get-all-explorers" "$CHAIN")
+    all_explorers=$(python3 "$SCRIPT_DIR/python/chains.py" "get-all-explorers" --chain "$CHAIN") ||
+        echo "⚠️ Could not fetch explorers for chain $CHAIN; continuing to Sourcify only." >&2 &&
+        all_explorers='[]'
     
     while IFS= read -r explorer; do
         explorer_category=$(echo "$explorer" | jq -r '.category')
@@ -215,7 +213,7 @@ if [[ "$SOURCIFY_ONLY" != true ]]; then
                 echo "Contract verification on Subscan not supported yet" >&2
                 ;;
             routescan)
-                echo "Contract verification on Routerscan not supported yet" >&2
+                echo "Contract verification on Routescan not supported yet" >&2
                 ;;
             other)
                 echo "Contract verification not supported for this type of explorer. Please verify contract manually. Skipping: $explorer_url" >&2

@@ -45,9 +45,6 @@ class ContractRegistry:
 
         self._validate_verification_metadata(entry, name)
 
-        if entry is None:
-            sys.exit(f"Unknown contract address: {address}")
-
         # Load the content of the standard json input file
         stdJsonInputFilePath = entry["standardJsonInputFilePath"]
 
@@ -164,11 +161,8 @@ def main():
     if args.command == "get-verification-metadata":
         contract_verification_data = contract_registry.get_contract_verification_data(args.address)
         print(json.dumps(contract_verification_data))
-        return json.dumps(contract_verification_data)
     elif args.command == "validate-verification-metadata":
         contract_registry.validate_contract_verification_metadata(args.contract)
-
-    
 
 if __name__ == "__main__":
     main()
