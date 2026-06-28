@@ -83,7 +83,7 @@ CHAIN_ID=$(python3 "$SCRIPT_DIR/python/chains.py" "get-chain-id" --chain "$CHAIN
 
 verify_with_etherscan() {
     if [[ -z "${ETHERSCAN_API_KEY:-}" ]]; then
-        echo "🔍❌ Missing ETHERSCAN_API_KEY, skipping Etherscan." >&2
+        echo "🔍❌ Missing ETHERSCAN_API_KEY. Cannot submit verification to Etherscan-family explorers. Use --sourcify-only or set ETHERSCAN_API_KEY." >&2
         return 1
     fi
     
