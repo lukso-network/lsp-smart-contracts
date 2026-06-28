@@ -1,7 +1,7 @@
 # Deployed Chains
 
 > See also: [README.md](./README.md) for instructions on how to deploy these contracts on new EVM chains.
-> The list of chains is also available in the JSON file [`deployed-chains.json`](./deployed-chains.json) for easier parsing.
+> The list of chains is also available in the JSON file [`chains-mainnet.json`](./chains-mainnet.json) for easier parsing.
 
 This file is the per-contract address registry for Universal Profile base contracts across supported EVM chains.
 Deployments use deterministic CREATE2, so each contract version resolves to the same address on every chain where it is deployed.

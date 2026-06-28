@@ -60,7 +60,9 @@ fi
 # Relay the tier selection to the python subprocesses via the environment.
 # `chains.py` reads DEPLOY_TESTNET (must be exactly "true" or "false") and
 # inherits it automatically, so no per-call flag forwarding is needed.
-export DEPLOY_TESTNET="$TESTNET"
+if [[ "$TESTNET" == true ]]; then
+    export DEPLOY_TESTNET=true
+fi
 
 # Normalize to lowercase for consistent explorer API calls 
 # (the contracts.json lookup below is case-insensitive regardless).
