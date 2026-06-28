@@ -48,7 +48,7 @@ class ContractRegistry:
         # Load the content of the standard json input file
         stdJsonInputFilePath = entry["standardJsonInputFilePath"]
 
-        # close the file after loading the content
+        # close the file after loading the content\
         with open(stdJsonInputFilePath) as file:
             # save as JSON string
             stdJsonInput = json.load(file)

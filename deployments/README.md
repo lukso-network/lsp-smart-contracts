@@ -316,7 +316,7 @@ cast code 0x<contract-address> --rpc-url "$RPC_URL"
 ### 5 — 📄 Verify the contract on Block explorer with the standard JSON input
 
 > Make sure you have the explorer hosts written correctly in the `explorers` array
-> for the target chain in `deployed-chains.json`.
+> for the target chain in `chains-mainnet.json`.
 
 Run the dedicated shell script below with the right parameters to verify the contract on the block explorers of the target chain.
 
@@ -332,7 +332,7 @@ Run the dedicated shell script below with the right parameters to verify the con
 # e.g: verify `UniversalProfileInit` (v0.14.0) on Etherscan for Ethereum Mainnet
 # will verify on all the block explorers listed under the `explorers` entry for the chain (etherscan, blockscout)
 #
-# --chain = valid chain name defined in `deployed-chains.json`
+# --chain = valid chain name defined in `chains-mainnet.json`
 bash deployments/verify-contract.sh \
   --address "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F" \
   --chain "Ethereum Mainnet"

@@ -8,7 +8,7 @@ import argparse
 
 # Constants
 DEPLOYMENTS_DIR = Path(__file__).resolve().parent.parent
-CHAINS_JSON_FILE_NAME = "deployed-chains.json"
+CHAINS_JSON_FILE_NAME = "chains-mainnet.json"
 CHAINS_JSON_FILE_PATH = DEPLOYMENTS_DIR / CHAINS_JSON_FILE_NAME
 
 class ChainRegistry:

@@ -17,7 +17,7 @@ To submit to Sourcify only for the specified chain, use `--sourcify-only`.
  
 Options:
   --address                        Deployed contract address
-  --chain                          A valid chain name from `deployments/deployed-chains.json`
+  --chain                          A valid chain name from `deployments/chains-mainnet.json`
   --skip-sourcify (optional)       Skip Sourcify for the specified `chain`
   --sourcify-only (optional)       Submit only to Sourcify for the specified `chain`.
   -h, --help                       Show this help
@@ -192,9 +192,10 @@ SOURCIFY_EXIT=0
 
 if [[ "$SOURCIFY_ONLY" != true ]]; then
     # Get all the block explorers for the specified chain
-    all_explorers=$(python3 "$SCRIPT_DIR/python/chains.py" "get-all-explorers" --chain "$CHAIN") ||
-        echo "⚠️ Could not fetch explorers for chain $CHAIN; continuing to Sourcify only." >&2 &&
+    if ! all_explorers=$(python3 "$SCRIPT_DIR/python/chains.py" "get-all-explorers" --chain "$CHAIN"); then
+        echo "⚠️ Could not fetch explorers for chain $CHAIN; continuing to Sourcify only." >&2
         all_explorers='[]'
+    fi
     
     while IFS= read -r explorer; do
         explorer_category=$(echo "$explorer" | jq -r '.category')
