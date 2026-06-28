@@ -6,7 +6,7 @@ Deployments rely on the [Nick Factory](https://github.com/Arachnid/deterministic
 
 All contract build artifacts (creation bytecodes, runtime bytecodes, salts, compiler settings) are stored in [`deployments/contracts.json`](./contracts.json).
 
-Below are the step-by-step procedure for deploying each contract on a new EVM chain.
+Below is the step-by-step procedure for deploying each contract on a new EVM chain.
 
 **Table of Contents**
 
@@ -137,7 +137,7 @@ Contract verifications works using Etherscan or Blockscout API (depending on the
 4. **An RPC endpoint** for the target network
 5. **The Nick Factory** contract must exist on the target network at address `0x4e59b44847b379578588920cA78FbF26c0B4956C`. To check if it exists, follow the next section.
 
-If you do not have Python 3.11 installed, it is recommended to install it via [**mise**](https://mise.jdx.dev/getting-started.html)
+If you do not have Python 3.12 installed, it is recommended to install it via [**mise**](https://mise.jdx.dev/getting-started.html)
 
 ```bash
 mise install
@@ -320,6 +320,15 @@ cast code 0x<contract-address> --rpc-url "$RPC_URL"
 
 Run the dedicated shell script below with the right parameters to verify the contract on the block explorers of the target chain.
 
+> **Mainnet vs testnet:** by default the chain is looked up in `chains-mainnet.json`.
+> To target a testnet chain (looked up in `chains-testnet.json`), either:
+>
+> - add the `--testnet` flag when running the command,
+> - or set the `DEPLOY_TESTNET` environment variable.
+>
+> The env variable accepts **only** `true` or `false` — any other value fails.
+> The `--testnet` flag takes precedence over the environment variable.
+
 > Note that the contract verification shell script **also submits to Sourcify**
 > (chain-agnostic; many wallets/explorers read from it). Sourcify runs as an
 > independent step after the explorer submission, so an explorer failure does
@@ -341,6 +350,13 @@ bash deployments/verify-contract.sh \
 bash deployments/verify-contract.sh \
   --address "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F" \
   --chain "Ethereum Mainnet" \
+  --sourcify-only
+
+# To verify for testnet networks
+bash deployments/verify-contract.sh \
+  --testnet \
+  --address "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F" \
+  --chain "Ethereum Sepolia" \
   --sourcify-only
 ```
 

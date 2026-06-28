@@ -354,8 +354,8 @@
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22208/large/hyperliquid.jpg?1740125774",
     "currencySymbol": "HYPE",
     "explorers": [
-      { "url": "https://hyperevmscan.io/", "category": "etherscan" },
-      { "url": "https://www.hyperscan.com/", "category": "blockscout" }
+      { "url": "https://hyperevmscan.io", "category": "etherscan" },
+      { "url": "https://www.hyperscan.com", "category": "blockscout" }
     ],
     "bridges": [
       "https://app.hyperliquid.xyz/bridge",
@@ -471,7 +471,7 @@
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32266/large/megaeth.jpg?1762329010",
     "currencySymbol": "MegaETH",
     "explorers": [
-      { "url": "https://megaeth.blockscout.com/", "category": "blockscout" },
+      { "url": "https://megaeth.blockscout.com", "category": "blockscout" },
       { "url": "https://mega.etherscan.io", "category": "etherscan" }
     ],
     "bridges": [

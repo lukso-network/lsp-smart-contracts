@@ -17,7 +17,7 @@ set -euo pipefail
 CONTRACT=""
 
 usage() {
-    cat <<EOF
+    cat <<'EOF'
 Usage: $0 --contract <CONTRACT_TO_DEPLOY>
 
 Verifies that the Standard JSON input in deployments/solc-inputs/ compiles to the

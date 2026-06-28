@@ -5,9 +5,10 @@ ADDRESS=""
 CHAIN=""
 SKIP_SOURCIFY=false
 SOURCIFY_ONLY=false
+TESTNET=false
 
 usage() {
-    cat <<EOF
+    cat <<'EOF'
 Usage: $0 --address <address> --chain <chain_name> [options]
 
 Submits contract verification to a block explorer (Etherscan or Blockscout) + Sourcify. 
@@ -18,6 +19,8 @@ To submit to Sourcify only for the specified chain, use `--sourcify-only`.
 Options:
   --address                        Deployed contract address
   --chain                          A valid chain name from `deployments/chains-mainnet.json`
+                                   (or `deployments/chains-testnet.json` with --testnet)
+  --testnet (optional)             Use the testnet chain registry (chains-testnet.json) instead of mainnet
   --skip-sourcify (optional)       Skip Sourcify for the specified `chain`
   --sourcify-only (optional)       Submit only to Sourcify for the specified `chain`.
   -h, --help                       Show this help
@@ -33,6 +36,7 @@ while [[ $# -gt 0 ]]; do
         --chain) CHAIN="${2:?Missing value for --chain}"; shift 2 ;;
         --skip-sourcify) SKIP_SOURCIFY=true; shift ;;
         --sourcify-only) SOURCIFY_ONLY=true; shift ;;
+        --testnet) TESTNET=true; shift ;;
         -h|--help) usage; exit 0 ;;
         *)
             echo "Unknown option: $1" >&2
@@ -52,6 +56,11 @@ if [[ "$SKIP_SOURCIFY" == true && "$SOURCIFY_ONLY" == true ]]; then
     echo "Cannot use --skip-sourcify and --sourcify-only together." >&2
     exit 1
 fi
+
+# Relay the tier selection to the python subprocesses via the environment.
+# `chains.py` reads DEPLOY_TESTNET (must be exactly "true" or "false") and
+# inherits it automatically, so no per-call flag forwarding is needed.
+export DEPLOY_TESTNET="$TESTNET"
 
 # Normalize to lowercase for consistent explorer API calls 
 # (the contracts.json lookup below is case-insensitive regardless).
