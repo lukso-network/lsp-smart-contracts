@@ -9,6 +9,7 @@ from solc import (
 )
 
 DEPLOYMENTS_DIR = Path(__file__).resolve().parent.parent
+REPO_ROOT = DEPLOYMENTS_DIR.parent
 CONTRACTS_JSON_FILE = DEPLOYMENTS_DIR / "contracts.json"
 
 VERIFICATION_FIELDS = ("standardJsonInputFilePath", "compilerVersion", "contractId")
@@ -45,10 +46,12 @@ class ContractRegistry:
 
         self._validate_verification_metadata(entry, name)
 
-        # Load the content of the standard json input file
-        stdJsonInputFilePath = entry["standardJsonInputFilePath"]
+        # Resolve the repo-root-relative path to an absolute one so the lookup
+        # (and the shell `curl ...@<path>` submissions that consume it) work
+        # regardless of the current working directory.
+        stdJsonInputFilePath = self._resolve_std_json_input_path(entry)
 
-        # close the file after loading the content\
+        # close the file after loading the content
         with open(stdJsonInputFilePath) as file:
             # save as JSON string
             stdJsonInput = json.load(file)
@@ -58,7 +61,7 @@ class ContractRegistry:
 
         return {
             "stdJsonInput": stdJsonInput,
-            "stdJsonInputFilePath": stdJsonInputFilePath, # for blockscout
+            "stdJsonInputFilePath": str(stdJsonInputFilePath), # for blockscout
             "compilerVersion": compilerVersion,
             "contractName": name,
             "contractIdentifier": contractIdentifier
@@ -69,7 +72,7 @@ class ContractRegistry:
 
         self._validate_verification_metadata(entry, contract_option_name)
 
-        std_json_input_file = entry["standardJsonInputFilePath"]
+        std_json_input_file = self._resolve_std_json_input_path(entry)
         solc_version = entry["compilerSettings"]["solcVersion"]
         
         expected_bytecode = entry["creationBytecode"].removeprefix("0x")
@@ -91,6 +94,16 @@ class ContractRegistry:
     # ------------------
 
     @staticmethod
+    def _resolve_std_json_input_path(entry):
+        """Resolve the repo-root-relative `standardJsonInputFilePath` to an absolute path.
+
+        Paths in contracts.json are stored relative to the repository root
+        (e.g. `deployments/solc-inputs/...`), so they must be resolved against
+        REPO_ROOT to work from any current working directory.
+        """
+        return REPO_ROOT / entry["standardJsonInputFilePath"]
+
+    @staticmethod
     def _validate_verification_metadata(entry, contract_name):
         missing = [field for field in VERIFICATION_FIELDS if entry.get(field) is None]
         if missing:
@@ -99,10 +112,8 @@ class ContractRegistry:
                 f"Missing fields in contracts.json: {', '.join(missing)}"
             )
 
-        std_json_input_file = entry["standardJsonInputFilePath"]
-        
-        if not Path(std_json_input_file).is_file():
-            sys.exit(f"❌ Standard JSON input file not found: {std_json_input_file}")
+        if not ContractRegistry._resolve_std_json_input_path(entry).is_file():
+            sys.exit(f"❌ Standard JSON input file not found: {entry['standardJsonInputFilePath']}")
 
     @staticmethod
     def _get_flat_entry_list(contracts_with_versions):

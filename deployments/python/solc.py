@@ -156,7 +156,21 @@ def compile_creation_bytecode(solc_version, std_json_input_file, contract_name):
         text=True,
         check=False,
     )
-    output = json.loads(result.stdout)
+    # solc failures often produce empty/non-JSON stdout with the real error on
+    # stderr, so guard the parse to surface the underlying compiler error.
+    if not result.stdout.strip():
+        sys.exit(
+            f"❌ solc produced no output (exit code {result.returncode}).\n"
+            + (result.stderr or "").strip()[:500]
+        )
+
+    try:
+        output = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        sys.exit(
+            f"❌ Could not parse solc output as JSON (exit code {result.returncode}).\n"
+            + (result.stderr or result.stdout or "").strip()[:500]
+        )
 
     errors = [error for error in output.get("errors", []) if error.get("severity") == "error"]
     if errors:
