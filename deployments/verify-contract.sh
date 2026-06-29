@@ -157,9 +157,16 @@ verify_with_blockscout() {
 
     echo "🔍🔄 Polling Blockscout verification status..." >&2
 
-    is_verified=$(curl -sS "$blockscout_base_url/api/v2/smart-contracts/$ADDRESS" | jq -r ".is_verified")
+    # Poll in a loop
+    is_verified="null"
+    for attempt in $(seq 1 30); do
+        is_verified=$(curl -sS "$blockscout_base_url/api/v2/smart-contracts/$ADDRESS" | jq -r ".is_verified")
+        [[ "$is_verified" != "true" ]] && break
+        sleep 5
+    done
+
     if [[ "$is_verified" != "true" ]]; then
-        echo "🔍❌ Blockscout verification failed (is_verified=$is_verified)." >&2
+        echo "🔍❌ Blockscout verification failed/timed out (is_verified=$is_verified)." >&2
         return 1
     fi
 
@@ -187,13 +194,13 @@ verify_with_sourcify() {
             --data-raw "$body"
     )
 
+    echo "🔍🔄 Sourcify submission response: $verification_result"
     verification_id=$(echo "$verification_result" | jq -r '.verificationId // empty')
 
     # Based on Sourcify docs: https://docs.sourcify.dev/docs/api/#verification
     if [ -n "$verification_id" ]; then
         curl -sS "https://sourcify.dev/server/v2/verify/${verification_id}"
     else
-        echo "Sourcify submission failed." >&2
         return 1
     fi
 }
