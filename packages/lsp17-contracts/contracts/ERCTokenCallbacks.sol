@@ -19,7 +19,6 @@ import {LSP17Extension} from "@lukso/lsp17contractextension-contracts/contracts/
  * @dev LSP17 Extension that can be attached to a LSP17Extendable contract
  * to allow it to receive ERC721 tokens via `safeTransferFrom`.
  */
-// solhint-disable-next-line no-empty-blocks
 contract ERCTokenCallbacks is
     ERC721Holder,
     ERC1155Holder,
