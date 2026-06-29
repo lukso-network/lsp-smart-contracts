@@ -14,6 +14,7 @@
 | `LSP8MintableInit` (both v0.14.0 and v0.17.3)               | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
 | `LSP7CustomizableTokenInit` (v0.18.1)                       | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
 | `LSP8CustomizableTokenInit` (v0.18.1)                       | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `ERCTokenCallbacks` (v0.17.4)                               | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
 
 ## Compiler Settings
 
@@ -36,6 +37,7 @@ Below are the full compiler version string and the compiler settings used for th
 | `LSP8MintableInit` (v0.14.0)                         | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
 | `LSP8MintableInit` (v0.17.3 with `disableMinting()`) | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
 | `LSP8CustomizableTokenInit` (v0.18.1)                | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
+| `ERCTokenCallbacks` (v0.17.4)                        | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
 
 ## Note on bytecode generated with Foundry (not Hardhat)
 
