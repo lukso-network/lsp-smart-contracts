@@ -74,6 +74,7 @@ The Universal Profile implementation contracts are base contracts used behind ER
 - **UniversalProfileInit** — Proxy-deployable Universal Profile (ERC725Account + LSP1 + LSP3).
 - **LSP6KeyManagerInit** — Proxy-deployable Key Manager (permission controller for ERC725Account).
 - **LSP1UniversalReceiverDelegateUP** — Stateless delegate that auto-registers LSP5 ReceivedAssets and LSP10 ReceivedVaults data keys.
+- **ERCTokenCallbacks** - Contract to register as handler when receiving ERC721 and ERC1155 tokens via `safeTransferFrom(...)`.
 
 | Contract                        | Version | Address                                      | Source                                                                                                                                                                                                                |
 | ------------------------------- | ------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -83,6 +84,7 @@ The Universal Profile implementation contracts are base contracts used behind ER
 | LSP6KeyManagerInit              | 0.14.0  | `0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp-smart-contracts-v0.14.0/contracts/LSP6KeyManager/LSP6KeyManagerInit.sol)                                                     |
 | LSP1UniversalReceiverDelegateUP | 0.12.1  | `0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/v0.12.1/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol)                     |
 | LSP1UniversalReceiverDelegateUP | 0.14.0  | `0x7870C5B8BC9572A8001C3f96f7ff59961B23500D` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp-smart-contracts-v0.14.0/contracts/LSP1UniversalReceiver/LSP1UniversalReceiverDelegateUP/LSP1UniversalReceiverDelegateUP.sol) |
+| ERCTokenCallbacks               | 0.17.4  | `0x082d49D8487d2ed2527440c7879C66d850daaBc5` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/main/packages/lsp17-contracts/contracts/ERCTokenCallbacks.sol)                                                                   |
 
 ### 🪙 Tokens - Base Implementation Contracts
 
@@ -356,8 +358,7 @@ bash deployments/verify-contract.sh \
 bash deployments/verify-contract.sh \
   --testnet \
   --address "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F" \
-  --chain "Ethereum Sepolia" \
-  --sourcify-only
+  --chain "Ethereum Sepolia"
 ```
 
 **If the chain's explorer is an Etherscan-family explorer** (Etherscan,

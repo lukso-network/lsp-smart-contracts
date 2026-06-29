@@ -59,6 +59,15 @@ src = 'packages/lsp16-contracts/contracts'
 test = 'packages/lsp16-contracts/foundry'
 out = 'packages/lsp16-contracts/contracts/foundry_artifacts'
 
+[profile.lsp17]
+src = 'packages/lsp17-contracts/contracts'
+test = 'packages/lsp17-contracts/foundry'
+out = 'packages/lsp17-contracts/contracts/foundry_artifacts'
+optimizer = true
+optimizer_runs = 20000
+solc = "0.8.28"
+evm_version = "prague"
+
 [profile.lsp_smart_contracts]
 src = 'packages/lsp-smart-contracts/contracts'
 test = 'packages/lsp-smart-contracts/tests/foundry'

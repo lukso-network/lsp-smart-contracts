@@ -1,0 +1,16 @@
+[
+  {
+    "chainId": 4201,
+    "name": "LUKSO Testnet",
+    "rpcUrl": "https://rpc.testnet.lukso.network",
+    "iconUri": "https://assets.coingecko.com/coins/images/31010/standard/LYX.png?1696529847",
+    "currencySymbol": "LYXt",
+    "explorers": [
+      {
+        "url": "https://explorer.execution.testnet.lukso.network/",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": []
+  }
+]

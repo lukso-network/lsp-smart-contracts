@@ -12,6 +12,7 @@ import {NickFactoryArtifactDeployer} from "./NickFactoryArtifactDeployer.sol";
 /// Singletons:
 /// - LSP23LinkedContractsFactory
 /// - UniversalProfileInitPostDeploymentModule
+/// - ERCTokenCallbacks
 ///
 /// Implementation contracts (v0.14.0):
 /// - UniversalProfileInit
@@ -26,9 +27,10 @@ contract DeployUniversalProfileStack is NickFactoryArtifactDeployer {
     function run() public returns (address[] memory deployed) {
         string memory json = vm.readFile("deployments/contracts.json");
 
-        string[2] memory singletons = [
+        string[3] memory singletons = [
             ".LSP23LinkedContractsFactory",
-            ".UniversalProfileInitPostDeploymentModule"
+            ".UniversalProfileInitPostDeploymentModule",
+            ".ERCTokenCallbacks"
         ];
 
         string[3] memory implementations = [
@@ -39,20 +41,20 @@ contract DeployUniversalProfileStack is NickFactoryArtifactDeployer {
 
         deployed = new address[](singletons.length + implementations.length);
 
-        for (uint256 i = 0; i < singletons.length; i++) {
-            console2.log("--- Singleton:", singletons[i]);
-            deployed[i] = _deployContractFromArtifact(json, singletons[i]);
+        for (uint256 ii = 0; ii < singletons.length; ii++) {
+            console2.log("--- Singleton:", singletons[ii]);
+            deployed[ii] = _deployContractFromArtifact(json, singletons[ii]);
         }
 
-        for (uint256 i = 0; i < implementations.length; i++) {
+        for (uint256 ii = 0; ii < implementations.length; ii++) {
             console2.log(
                 "--- Implementation:",
-                implementations[i],
+                implementations[ii],
                 TARGET_VERSION
             );
-            deployed[singletons.length + i] = _deployContractFromArtifact(
+            deployed[singletons.length + ii] = _deployContractFromArtifact(
                 json,
-                _findVersionKey(json, implementations[i], TARGET_VERSION)
+                _findVersionKey(json, implementations[ii], TARGET_VERSION)
             );
         }
     }

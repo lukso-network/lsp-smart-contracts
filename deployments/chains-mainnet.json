@@ -452,6 +452,20 @@
     ]
   },
   {
+    "chainId": 42,
+    "name": "LUKSO Mainnet",
+    "rpcUrl": "https://rpc.mainnet.lukso.network",
+    "iconUri": "https://assets.coingecko.com/coins/images/31010/standard/LYX.png?1696529847",
+    "currencySymbol": "LYX",
+    "explorers": [
+      {
+        "url": "https://explorer.execution.mainnet.lukso.network",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": []
+  },
+  {
     "chainId": 5000,
     "name": "Mantle",
     "rpcUrl": "https://rpc.mantle.xyz",

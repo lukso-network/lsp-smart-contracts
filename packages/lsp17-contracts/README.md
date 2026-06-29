@@ -19,3 +19,33 @@ The `@lukso/lsp17-contracts` npm package contains useful constants such as inter
 ```javascript
 import { INTERFACE_ID_LSP17Extension } from "@lukso/lsp17-contracts";
 ```
+
+## Foundry deployment
+
+This package includes two Foundry scripts to deploy the `ERCTokenCallbacks` implementation contract extension via `scripts/DeployERCTokenCallbacks.s.sol`.
+
+Set your deployer key first:
+
+```console
+export PRIVATE_KEY=0x...
+```
+
+## Dry run against LUKSO Testnet
+
+```console
+FOUNDRY_PROFILE=lsp17 forge script packages/lsp17-contracts/scripts/DeployERCTokenCallbacks.s.sol:DeployERCTokenCallbacksScript --rpc-url https://rpc.testnet.lukso.network
+```
+
+## Broadcast the deployment
+
+> Use one of the methods described in the [foundry docs](https://www.getfoundry.sh/forge/scripting#providing-a-private-key) to broadcast from a specific address
+
+```console
+FOUNDRY_PROFILE=lsp17 forge script packages/lsp17-contracts/scripts/DeployERCTokenCallbacks.s.sol:DeployERCTokenCallbacksScript --rpc-url https://rpc.testnet.lukso.network --broadcast
+```
+
+Broadcast and verify on the LUKSO Testnet Blockscout explorer:
+
+```console
+FOUNDRY_PROFILE=lsp17 forge script packages/lsp17-contracts/scripts/DeployERCTokenCallbacks.s.sol:DeployERCTokenCallbacksScript --rpc-url https://rpc.testnet.lukso.network --broadcast --verify --verifier blockscout --verifier-url https://explorer.execution.testnet.lukso.network/api/
+```
