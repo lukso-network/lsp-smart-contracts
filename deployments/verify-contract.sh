@@ -161,7 +161,7 @@ verify_with_blockscout() {
     is_verified="null"
     for attempt in $(seq 1 30); do
         is_verified=$(curl -sS "$blockscout_base_url/api/v2/smart-contracts/$ADDRESS" | jq -r ".is_verified")
-        [[ "$is_verified" != "true" ]] && break
+        [[ "$is_verified" == "true" ]] && break
         sleep 5
     done
 

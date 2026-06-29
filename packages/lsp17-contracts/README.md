@@ -47,5 +47,5 @@ FOUNDRY_PROFILE=lsp17 forge script packages/lsp17-contracts/scripts/DeployERCTok
 Broadcast and verify on the LUKSO Testnet Blockscout explorer:
 
 ```console
-FOUNDRY_PROFILE=lsp17 forge script ppackages/lsp17-contracts/scripts/DeployERCTokenCallbacks.s.sol:DeployERCTokenCallbacksScript --rpc-url https://rpc.testnet.lukso.network --broadcast --verify --verifier blockscout --verifier-url https://explorer.execution.testnet.lukso.network/api/
+FOUNDRY_PROFILE=lsp17 forge script packages/lsp17-contracts/scripts/DeployERCTokenCallbacks.s.sol:DeployERCTokenCallbacksScript --rpc-url https://rpc.testnet.lukso.network --broadcast --verify --verifier blockscout --verifier-url https://explorer.execution.testnet.lukso.network/api/
 ```
