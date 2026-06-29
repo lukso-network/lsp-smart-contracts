@@ -65,3 +65,17 @@ test = 'packages/lsp-smart-contracts/tests/foundry'
 out = 'packages/lsp-smart-contracts/contracts/foundry_artifacts'
 solc = "0.8.27"
 via_ir = true
+
+# Profile for the multi-chain deterministic deployment scripts in deployments/scripts/.
+# solc + optimizer settings mirror the v0.14.0 production builds (solc 0.8.17, 1000 runs).
+[profile.deployments]
+src = 'deployments/scripts'
+script = 'deployments/scripts'
+test = 'deployments/scripts'
+out = 'deployments/scripts/out'
+cache_path = 'deployments/scripts/forge-cache'
+solc = "0.8.17"
+evm_version = "london"
+optimizer = true
+optimizer_runs = 1000
+fs_permissions = [{ access = "read", path = "./deployments" }]

@@ -1,0 +1,104 @@
+# Contracts Settings
+
+## Deployment salts
+
+| Contract                                                    | Salt                                                                 |
+| ----------------------------------------------------------- | -------------------------------------------------------------------- |
+| `LSP23LinkedContractsFactory`                               | `0x12a6712f113536d8b01d99f72ce168c7e1090124db54cd16f03c20000022178c` |
+| `UniversalProfileInitPostDeploymentModule`                  | `0x12a6712f113536d8b01d99f72ce168c7e10901240d73e80eeb821d01aa4c2b1a` |
+| `UniversalProfilePostDeploymentModule`                      | `0x42ff55d7957589c62da54a4368b10a2bc549f2038bbb6880ec6b3e0ecae2ba58` |
+| `UniversalProfileInit` (both v0.12.1 and 0.14.0)            | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `LSP6KeyManagerInit` (both v0.12.1 and 0.14.0)              | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `LSP1UniversalReceiverDelegateUP` (both v0.12.1 and 0.14.0) | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `LSP7MintableInit` (both v0.14.0 and v0.17.3)               | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `LSP8MintableInit` (both v0.14.0 and v0.17.3)               | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `LSP7CustomizableTokenInit` (v0.18.1)                       | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `LSP8CustomizableTokenInit` (v0.18.1)                       | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+
+## Compiler Settings
+
+Below are the full compiler version string and the compiler settings used for the contracts deployed.
+
+| Contract                                             | solc                    | EVM version                                                 | Optimization Runs              |
+| ---------------------------------------------------- | ----------------------- | ----------------------------------------------------------- | ------------------------------ |
+| `LSP23LinkedContractsFactory`                        | v0.8.17+commit.8df45f5f | London                                                      | optimizer = ON; runs=1,000     |
+| `UniversalProfileInitPostDeploymentModule`           | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=9,999,999 |
+| `UniversalProfilePostDeploymentModule`               | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=9,999,999 |
+| `UniversalProfileInit` (v0.12.1)                     | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
+| `UniversalProfileInit` (v0.14.0)                     | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
+| `LSP6KeyManagerInit` (v0.12.1)                       | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
+| `LSP6KeyManagerInit` (v0.14.0)                       | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
+| `LSP1UniversalReceiverDelegateUP` (v0.12.1)          | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
+| `LSP1UniversalReceiverDelegateUP` (v0.14.0)          | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
+| `LSP7MintableInit` (v0.14.0)                         | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
+| `LSP7MintableInit` (v0.17.3 with `disableMinting()`) | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
+| `LSP7CustomizableTokenInit` (v0.18.1)                | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
+| `LSP8MintableInit` (v0.14.0)                         | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
+| `LSP8MintableInit` (v0.17.3 with `disableMinting()`) | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
+| `LSP8CustomizableTokenInit` (v0.18.1)                | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
+
+## Note on bytecode generated with Foundry (not Hardhat)
+
+> [!IMPORTANT]
+> The **creation bytecode** and **deployed/runtime bytecode** for the
+> following contracts were generated by compiling with **Foundry (`forge`)**, and **not**
+> with Hardhat:
+>
+> - `LSP7MintableInit` (v0.17.3, with `disableMinting()`) — `0xf006554F96bf91616dAda3FdB73Ca213874DcFF9`
+> - `LSP8MintableInit` (v0.17.3, with `disableMinting()`) — `0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB`
+> - `LSP7CustomizableTokenInit` (v0.18.1) — `0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F`
+> - `LSP8CustomizableTokenInit` (v0.18.1) — `0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8`
+>
+> The creation and runtime bytecode stored in [`contracts.json`](./contracts.json) (and
+> deployed on-chain) correspond to the **Foundry** build for these contracts.
+
+### Why this matters
+
+Foundry and Hardhat produce the **same executable opcodes** for these contracts (same
+`solc` version, EVM version and optimizer settings), but they produce a **different trailing
+metadata hash**. Solidity appends a CBOR-encoded IPFS hash of the contract metadata to the
+end of the bytecode, and that metadata embeds the source file paths and remappings. Because
+Foundry resolves sources via `lib/` + remappings while Hardhat resolves them via
+`node_modules/`, the metadata JSON differs between the two toolchains, so the appended IPFS
+hash (the last ~32 bytes of both the creation and runtime bytecode) differs even though the
+logic is identical.
+
+### Caveats
+
+- **Reproduce/verify with Foundry only.** To reproduce the exact bytecode or verify these
+  contracts as a full match, compile with Foundry using the matching standard JSON input in
+  [`solc-inputs/`](./solc-inputs/) (e.g. `Standard-JSON-input-LSP7MintableInit-v0-17-3.json`).
+  A Hardhat build will differ in the metadata hash and only ever produce a **partial match**
+  on Sourcify (runtime matches except metadata), never a full match.
+- **Do not regenerate these entries from Hardhat artifacts.** Doing so would change the
+  metadata hash and therefore the creation/runtime bytecode recorded in `contracts.json`.
+- **The metadata hash affects the CREATE2 address.** Since deployment sends
+  `salt ++ creationBytecode` to the Nick Factory, the metadata hash is part of the bytecode
+  that is hashed into the deterministic address. A Hardhat-built version of these contracts
+  would deploy at a **different address** than the canonical ones listed above.
+
+## Initialization details
+
+| Contract                                                    | Initialization                                                  |
+| ----------------------------------------------------------- | --------------------------------------------------------------- |
+| `UniversalProfileInit` (both v0.12.1 and 0.14.0)            | `initialize(address initialOwner)`                              |
+| `LSP6KeyManagerInit` (both v0.12.1 and 0.14.0)              | `initialize(address target_)` where `target_` is the UP address |
+| `LSP1UniversalReceiverDelegateUP` (both v0.12.1 and 0.14.0) | No initialization needed.                                       |
+| `LSP7MintableInit` (both v0.14.0 and v0.17.3)               | No initialization needed                                        |
+| `LSP8MintableInit` (both v0.14.0 and v0.17.3)               | No initialization needed                                        |
+
+## `deployments/contracts.json` Reference
+
+The JSON file contains all contract build artifacts needed for deployment.
+
+**Structure:**
+
+- **Singletons** have a flat structure: `type`, `version`, `address`, `salt`, `compilerSettings`, `creationBytecode`, `bytecode`
+- **Implementation contracts** have a `versions` array, each entry with: `version`, `address`, `salt`, `compilerSettings`, `creationBytecode`, `bytecode`, `releaseurl`
+
+| Field              | Description                                                                      |
+| ------------------ | -------------------------------------------------------------------------------- |
+| `creationBytecode` | Full contract creation bytecode — concatenate with salt and send to Nick Factory |
+| `bytecode`         | Runtime bytecode — what ends up on-chain after deployment, used for verification |
+| `salt`             | The CREATE2 salt for deterministic address computation                           |
+| `compilerSettings` | Solidity compiler version and optimization settings                              |
