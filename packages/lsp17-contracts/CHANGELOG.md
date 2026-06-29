@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.4](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17-contracts-v0.17.3...lsp17-contracts-v0.17.4) (2026-06-29)
+
+
+### Bug Fixes
+
+* remove unecessary solhint inlint comment ([bbd3de1](https://github.com/lukso-network/lsp-smart-contracts/commit/bbd3de183eb31b2428f742b171272ad1ee2e3553))
+
 ## [0.17.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp17-contracts-v0.17.2...lsp17-contracts-v0.17.3) (2026-05-25)
 
 
