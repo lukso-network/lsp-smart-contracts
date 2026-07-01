@@ -566,7 +566,7 @@
     "currencySymbol": "OPMainnetETH",
     "explorers": [
       { "url": "https://optimistic.etherscan.io", "category": "etherscan" },
-      { "url": "https://optimism.blockscout.com", "category": "blockscout" },
+      { "url": "https://explorer.optimism.io/", "category": "blockscout" },
       { "url": "https://optimism.dex.guru", "category": "other" },
       { "url": "https://mainnet.superscan.network", "category": "other" }
     ],
