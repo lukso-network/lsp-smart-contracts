@@ -12,6 +12,7 @@ import {NickFactoryArtifactDeployer} from "./NickFactoryArtifactDeployer.sol";
 /// Singletons:
 /// - LSP23LinkedContractsFactory
 /// - UniversalProfileInitPostDeploymentModule
+/// - UniversalProfilePostDeploymentModule
 /// - ERCTokenCallbacks
 ///
 /// Implementation contracts (v0.14.0):
@@ -27,9 +28,10 @@ contract DeployUniversalProfileStack is NickFactoryArtifactDeployer {
     function run() public returns (address[] memory deployed) {
         string memory json = vm.readFile("deployments/contracts.json");
 
-        string[3] memory singletons = [
+        string[4] memory singletons = [
             ".LSP23LinkedContractsFactory",
             ".UniversalProfileInitPostDeploymentModule",
+            ".UniversalProfilePostDeploymentModule",
             ".ERCTokenCallbacks"
         ];
 
