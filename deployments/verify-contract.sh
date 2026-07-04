@@ -108,8 +108,6 @@ if [[ -z "$CHAIN" ]]; then
     exit 1
 fi
 
-readonly CHAIN_ID=$(python3 "$SCRIPT_DIR/python/chains.py" "get-chain-id" --chain "$CHAIN")
-
 if [[ "$SKIP_SOURCIFY" == true && "$SOURCIFY_ONLY" == true ]]; then
     echo "Cannot use --skip-sourcify and --sourcify-only together." >&2
     exit 1
@@ -118,9 +116,16 @@ fi
 # Relay the tier selection to the python subprocesses via the environment.
 # `chains.py` reads DEPLOY_TESTNET (must be exactly "true" or "false") and
 # inherits it automatically, so no per-call flag forwarding is needed.
+# Must be exported before resolving CHAIN_ID below, so that testnet chain
+# names are looked up in the right registry (chains-testnet.json).
 if [[ "$TESTNET" == true ]]; then
     export DEPLOY_TESTNET=true
 fi
+
+# Keep the assignment separate from `readonly` so that a failing Python call
+# aborts the script (`readonly VAR=$(...)` masks the exit status).
+CHAIN_ID=$(python3 "$SCRIPT_DIR/python/chains.py" "get-chain-id" --chain "$CHAIN")
+readonly CHAIN_ID
 
 # Normalize to lowercase for consistent explorer API calls 
 # (the contracts.json lookup below is case-insensitive regardless).
@@ -430,8 +435,8 @@ for address in "${ADDRESSES[@]}"; do
     printf '%-42s %-45s explorers: %-12s sourcify: %s\n' \
         "$address" \
         "${CONTRACT_NAMES[$address]}" \
-        "${EXPLORER_RESULTS[$address]:-"⏭️ skipped"}" \
-        "${SOURCIFY_RESULTS[$address]:-"⏭️ skipped"}" >&2
+        "${EXPLORER_RESULTS[$address]:-⏭️ skipped}" \
+        "${SOURCIFY_RESULTS[$address]:-⏭️ skipped}" >&2
 done
 echo "" >&2
 
