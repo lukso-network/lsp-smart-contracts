@@ -69,7 +69,7 @@ logic is identical.
 
 - **Reproduce/verify with Foundry only.** To reproduce the exact bytecode or verify these
   contracts as a full match, compile with Foundry using the matching standard JSON input in
-  [`solc-inputs/`](./solc-inputs/) (e.g. `Standard-JSON-input-LSP7MintableInit-v0-17-3.json`).
+  [`std-json-inputs/`](./std-json-inputs/) (e.g. `Standard-JSON-input-LSP7MintableInit-v0-17-3.json`).
   A Hardhat build will differ in the metadata hash and only ever produce a **partial match**
   on Sourcify (runtime matches except metadata), never a full match.
 - **Do not regenerate these entries from Hardhat artifacts.** Doing so would change the

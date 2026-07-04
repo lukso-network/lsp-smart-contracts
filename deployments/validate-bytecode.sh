@@ -20,7 +20,7 @@ usage() {
     cat <<'EOF'
 Usage: $0 --contract <CONTRACT_TO_DEPLOY>
 
-Verifies that the Standard JSON input in deployments/solc-inputs/ compiles to the
+Verifies that the Standard JSON input in deployments/std-json-inputs/ compiles to the
 exact creationBytecode recorded in deployments/contracts.json for the contract.
 
 Options:
