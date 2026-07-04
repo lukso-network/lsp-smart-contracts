@@ -191,7 +191,7 @@ source deployments/.env
 
 There are 3 different utility scripts that can be used to deploy the Universal Profile smart contract infrastructure on a new target EVM chain.
 
-- `DeployUniversalProfileStack.s.sol`: deploy the `LSP23LinkedContractsFactory`, `UniversalProfileInitPostDeploymentModule` and the v0.14.0 of the Universal Profile base implementation contracts (`UniversalProfileInit`, `LSP6KeyManagerInit`, and `LSP1UniversalReceiverDelegateUP`).
+- `DeployUniversalProfileStack.s.sol`: deploy the `LSP23LinkedContractsFactory`, `UniversalProfileInitPostDeploymentModule`, `UniversalProfilePostDeploymentModule`, `ERCTokenCallbacks` and the v0.14.0 of the Universal Profile base implementation contracts (`UniversalProfileInit`, `LSP6KeyManagerInit`, and `LSP1UniversalReceiverDelegateUP`).
 - `DeployTokenImplementationContracts.s.sol`: deploy `LSP7MintableInit` + `LSP8MintableInit` (v0.17.3), and `LSP7CustomizableTokenInit` + `LSP8CustomizableTokenInit` (v0.18.1).
 - `DeployFromArtifact.s.sol`: use this script to deploy a single contract individually. See section **Deploy Individual artifacts** below.
 
@@ -220,9 +220,17 @@ This script deploys the following contracts:
 
 - `LSP23LinkedContractsFactory`
 - `UniversalProfileInitPostDeploymentModule`
+- `UniversalProfilePostDeploymentModule`
 - `UniversalProfileInit` (v0.14.0)
 - `LSP6KeyManagerInit` (v0.14.0)
 - `LSP1UniversalReceiverDelegateUP` (v0.14.0)
+- `ERCTokenCallbacks`
+
+Once deployed, all 7 contracts can be verified in one run with the `--all-up-contracts` flag of the verification script (see [step 5](#5---verify-the-contract-on-block-explorer-with-the-standard-json-input) for details):
+
+```bash
+bash deployments/verify-contract.sh --all-up-contracts --chain "<chain name>"
+```
 
 ### Deploy all Token Implementation contracts
 
@@ -239,6 +247,12 @@ This script deploys the following contracts:
 - `LSP8MintableInit` (v0.17.3)
 - `LSP7CustomizableTokenInit` (v0.18.1)
 - `LSP8CustomizableTokenInit` (v0.18.1)
+
+Once deployed, all 4 contracts can be verified in one run with the `--all-token-contracts` flag of the verification script (see [step 5](#5---verify-the-contract-on-block-explorer-with-the-standard-json-input) for details):
+
+```bash
+bash deployments/verify-contract.sh --all-token-contracts --chain "<chain name>"
+```
 
 ## Deploy individual artifacts
 
@@ -359,6 +373,43 @@ bash deployments/verify-contract.sh \
   --testnet \
   --address "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F" \
   --chain "Ethereum Sepolia"
+```
+
+**Verifying multiple contracts at once**
+
+Instead of `--address`, the script accepts two batch flags that verify a whole
+group of contracts in one run (addresses are resolved automatically from
+`contracts.json`, since CREATE2 deployments land at the same address on every
+chain):
+
+- `--all-up-contracts` — the 7 contracts of the Universal Profile stack deployed
+  by `DeployUniversalProfileStack.s.sol` (`LSP23LinkedContractsFactory`,
+  `UniversalProfileInitPostDeploymentModule`, `UniversalProfilePostDeploymentModule`,
+  `ERCTokenCallbacks`, and the v0.14.0 `UniversalProfileInit`, `LSP6KeyManagerInit`,
+  `LSP1UniversalReceiverDelegateUP`).
+- `--all-token-contracts` — the 4 token base implementation contracts deployed
+  by `DeployTokenImplementationContracts.s.sol` (`LSP7MintableInit` +
+  `LSP8MintableInit` v0.17.3, `LSP7CustomizableTokenInit` +
+  `LSP8CustomizableTokenInit` v0.18.1).
+
+Exactly one of `--address`, `--all-up-contracts` or `--all-token-contracts` must
+be provided. In batch mode, a failure on one contract does not stop the others:
+the script processes every contract, prints a per-contract summary at the end,
+and exits non-zero if any verification failed. Contracts already verified on an
+explorer or Sourcify are reported as successful, so batch runs can be safely
+re-run (e.g. after a partial failure).
+
+```bash
+# Verify the whole Universal Profile stack (7 contracts) on LUKSO Mainnet
+bash deployments/verify-contract.sh \
+  --all-up-contracts \
+  --chain "LUKSO Mainnet"
+
+# Verify all token implementation contracts (4 contracts), Sourcify only
+bash deployments/verify-contract.sh \
+  --all-token-contracts \
+  --chain "LUKSO Mainnet" \
+  --sourcify-only
 ```
 
 **If the chain's explorer is an Etherscan-family explorer** (Etherscan,

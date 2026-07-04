@@ -1,31 +1,65 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 ADDRESS=""
 CHAIN=""
+ALL_UP_CONTRACTS=false
+ALL_TOKEN_CONTRACTS=false
 SKIP_SOURCIFY=false
 SOURCIFY_ONLY=false
 TESTNET=false
 
+readonly UP_STACK_CONTRACTS=(
+    "LSP23LinkedContractsFactory"
+    "UniversalProfileInitPostDeploymentModule"
+    "UniversalProfilePostDeploymentModule"
+    "ERCTokenCallbacks"
+    "UniversalProfileInit-v0.14.0"
+    "LSP6KeyManagerInit-v0.14.0"
+    "LSP1UniversalReceiverDelegateUP-v0.14.0"
+)
+readonly TOKEN_CONTRACTS=(
+    "LSP7MintableInit-v0.17.3"
+    "LSP8MintableInit-v0.17.3"
+    "LSP7CustomizableTokenInit-v0.18.1"
+    "LSP8CustomizableTokenInit-v0.18.1"
+)
+
 usage() {
     cat <<'EOF'
-Usage: $0 --address <address> --chain <chain_name> [options]
+Usage: $0 (--address <address> | --all-up-contracts | --all-token-contracts) --chain <chain_name> [options]
 
 Submits contract verification to a block explorer (Etherscan or Blockscout) + Sourcify. 
 Contract verification is always submitted to Sourcify by default for the specified `chain`.
 This can be skipped via `--skip-sourcify` to submit only to the selected explorer.
 To submit to Sourcify only for the specified chain, use `--sourcify-only`.
  
-Options:
-  --address                        Deployed contract address
+Options (required at least one of the following):
+  --address                        Address of the deployed contract to verify the source code on-chain
+
+  --all-up-contracts               Verify all the 7 x contracts of the Universal Profile stack 
+                                   (LSP23LinkedContractsFactory, UniversalProfileInitPostDeploymentModule, UniversalProfilePostDeploymentModule, 
+                                   ERCTokenCallbacks, UniversalProfile (v0.14.0), LSP6KeyManager (v0.14.0), LSP1UniversalReceiverDelegate (v0.14.0))
+                                   
+  --all-token-contracts            Verify all the 4 x contracts of the LSP7/8 token stack (LSP7/8 Mintable + LSP7/8 Customizable Token)
+  
+Options (required):
   --chain                          A valid chain name from `deployments/chains-mainnet.json`
                                    (or `deployments/chains-testnet.json` with --testnet)
+
+Additional options:
   --testnet (optional)             Use the testnet chain registry (chains-testnet.json) instead of mainnet
   --skip-sourcify (optional)       Skip Sourcify for the specified `chain`
   --sourcify-only (optional)       Submit only to Sourcify for the specified `chain`.
   -h, --help                       Show this help
 
-Explorer failures do not prevent the Sourcify step from running. 
+Explorer failures do not prevent the Sourcify step from running.
+A failure on one contract does not stop the remaining ones: every contract is
+processed and a per-contract summary is printed at the end.
+Contracts already verified are treated as successful, so the script can be
+safely re-run (e.g. after a partial failure).
 The script exits non-zero if any step that was requested fails.
 EOF
 }
@@ -33,6 +67,8 @@ EOF
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --address) ADDRESS="${2:?Missing value for --address}"; shift 2 ;;
+        --all-up-contracts) ALL_UP_CONTRACTS=true; shift ;;
+        --all-token-contracts) ALL_TOKEN_CONTRACTS=true; shift ;;
         --chain) CHAIN="${2:?Missing value for --chain}"; shift 2 ;;
         --skip-sourcify) SKIP_SOURCIFY=true; shift ;;
         --sourcify-only) SOURCIFY_ONLY=true; shift ;;
@@ -46,11 +82,25 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [[ -z "$ADDRESS" || -z "$CHAIN" ]]; then
-    echo "Required options: --address, --chain." >&2
+MODE=""
+MODE_COUNT=0
+[[ -n "$ADDRESS" ]] && MODE="address" && MODE_COUNT=$((MODE_COUNT + 1))
+[[ "$ALL_UP_CONTRACTS" == true ]] && MODE="all-up-contracts" && MODE_COUNT=$((MODE_COUNT + 1))
+[[ "$ALL_TOKEN_CONTRACTS" == true ]] && MODE="all-token-contracts" && MODE_COUNT=$((MODE_COUNT + 1))
+
+if [[ $MODE_COUNT -ne 1 ]]; then
+    echo "Only one of this option is required (cannot be used together): --address, --all-up-contracts, or --all-token-contracts" >&2
     usage
     exit 1
 fi
+
+if [[ -z "$CHAIN" ]]; then
+    echo "Option --chain is required." >&2
+    usage
+    exit 1
+fi
+
+readonly CHAIN_ID=$(python3 "$SCRIPT_DIR/python/chains.py" "get-chain-id" --chain "$CHAIN")
 
 if [[ "$SKIP_SOURCIFY" == true && "$SOURCIFY_ONLY" == true ]]; then
     echo "Cannot use --skip-sourcify and --sourcify-only together." >&2
@@ -66,55 +116,112 @@ fi
 
 # Normalize to lowercase for consistent explorer API calls 
 # (the contracts.json lookup below is case-insensitive regardless).
-ADDRESS=$(echo "$ADDRESS" | tr '[:upper:]' '[:lower:]')
+# Params $1: Address to normalize
+normalize_address() {
+    address_to_normalize="$1"
+    address_to_normalize=$(echo "$address_to_normalize" | tr '[:upper:]' '[:lower:]')
 
-if ! [[ "$ADDRESS" =~ ^0x[a-f0-9]{40}$ ]]; then
-    echo "Error: Contract address must be 20 bytes long (40 hex chars), 0x-prefixed." >&2
-    exit 1
-fi
+    if ! [[ "$address_to_normalize" =~ ^0x[a-f0-9]{40}$ ]]; then
+        echo "Error: Contract address must be 20 bytes long (40 hex chars), 0x-prefixed." >&2
+        exit 1
+    fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    echo "$address_to_normalize"
+}
 
-CONTRACT_VERIFICATION_DATA=$(python3 "$SCRIPT_DIR/python/contracts.py" "get-verification-metadata" --address "$ADDRESS")
-COMPILER_VERSION=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.compilerVersion')
-CONTRACT_ID=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.contractIdentifier')
+# Resolve a contract option name to its address and prefetch its verification metadata.
+# Params $1: contract option name (e.g. "UniversalProfileInit-v0.14.0")
+resolve_and_prefetch_contract() {
+    local contract_name="$1"
+    local addr metadata
 
-CHAIN_ID=$(python3 "$SCRIPT_DIR/python/chains.py" "get-chain-id" --chain "$CHAIN")
+    addr=$(python3 "$SCRIPT_DIR/python/contracts.py" get-address --contract "$contract_name")
+    addr=$(normalize_address "$addr")
+    ADDRESSES+=("$addr")
 
+    metadata=$(python3 "$SCRIPT_DIR/python/contracts.py" get-verification-metadata --address "$addr")
+    CONTRACT_VERIFICATION_DATA[$addr]="$metadata"
+    COMPILER_VERSION[$addr]=$(jq -r '.compilerVersion' <<< "$metadata")
+    CONTRACT_ID[$addr]=$(jq -r '.contractIdentifier' <<< "$metadata")
+    CONTRACT_NAMES[$addr]="$contract_name"
+}
+
+ADDRESSES=()
+
+declare -A CONTRACT_VERIFICATION_DATA
+declare -A COMPILER_VERSION
+declare -A CONTRACT_ID
+declare -A CONTRACT_NAMES
+
+# Per-address results for the final summary ("✅ ok" / "❌ failed",
+# unset means the step was skipped or unsupported).
+declare -A EXPLORER_RESULTS
+declare -A SOURCIFY_RESULTS
+
+case "$MODE" in
+    "address")
+        addr=$(normalize_address "$ADDRESS")
+        ADDRESSES+=("$addr")
+        metadata=$(python3 "$SCRIPT_DIR/python/contracts.py" get-verification-metadata --address "$addr")
+        CONTRACT_VERIFICATION_DATA[$addr]="$metadata"
+        COMPILER_VERSION[$addr]=$(jq -r '.compilerVersion' <<< "$metadata")
+        CONTRACT_ID[$addr]=$(jq -r '.contractIdentifier' <<< "$metadata")
+        CONTRACT_NAMES[$addr]=$(jq -r '.contractName' <<< "$metadata")
+        ;;
+    "all-up-contracts")
+        for contract in "${UP_STACK_CONTRACTS[@]}"; do resolve_and_prefetch_contract "$contract"; done
+        ;;
+    "all-token-contracts")
+        for contract in "${TOKEN_CONTRACTS[@]}"; do resolve_and_prefetch_contract "$contract"; done
+        ;;
+esac
+
+# Params $1: Address to verify
 verify_with_etherscan() {
+    local address="$1"
+    local metadata="${CONTRACT_VERIFICATION_DATA[$address]}"
+    local compiler_version="${COMPILER_VERSION[$address]}"
+    local contract_id="${CONTRACT_ID[$address]}"
+    local standard_json_input_file_path=$(echo "$metadata" | jq -r '.stdJsonInputFilePath')
+
     if [[ -z "${ETHERSCAN_API_KEY:-}" ]]; then
         echo "🔍❌ Missing ETHERSCAN_API_KEY. Cannot submit verification to Etherscan-family explorers. Use --sourcify-only or set ETHERSCAN_API_KEY." >&2
         return 1
     fi
-    
-    STANDARD_JSON_INPUT_FILE_PATH=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.stdJsonInputFilePath')
 
     echo "Submitting to Etherscan (chain $CHAIN_ID)..." >&2
 
-    RESPONSE=$(curl -sS -X POST "https://api.etherscan.io/v2/api" \
+    local response=$(curl -sS -X POST "https://api.etherscan.io/v2/api" \
         --data-urlencode "apikey=$ETHERSCAN_API_KEY" \
         --data-urlencode "module=contract" \
         --data-urlencode "action=verifysourcecode" \
         --data-urlencode "chainid=$CHAIN_ID" \
         --data-urlencode "codeformat=solidity-standard-json-input" \
-        --data-urlencode "contractaddress=$ADDRESS" \
-        --data-urlencode "contractname=$CONTRACT_ID" \
-        --data-urlencode "compilerversion=$COMPILER_VERSION" \
-        --data-urlencode "sourceCode@$STANDARD_JSON_INPUT_FILE_PATH")
+        --data-urlencode "contractaddress=$address" \
+        --data-urlencode "contractname=$contract_id" \
+        --data-urlencode "compilerversion=$compiler_version" \
+        --data-urlencode "sourceCode@$standard_json_input_file_path")
 
     local status message guid
     
-    status=$(echo "$RESPONSE" | jq -r '.status')
-    message=$(echo "$RESPONSE" | jq -r '.message')
+    status=$(echo "$response" | jq -r '.status')
+    message=$(echo "$response" | jq -r '.message')
     # Result is the GUID for polling the verification status
-    guid=$(echo "$RESPONSE" | jq -r '.result')
+    guid=$(echo "$response" | jq -r '.result')
 
     if [[ "$status" != "1" ]]; then
+        # Etherscan responds with status=0 and "Contract source code already verified"
+        # when re-submitting an already verified contract. Treat this as success so
+        # that batch re-runs are idempotent.
+        if [[ "${guid,,}" == *"already verified"* || "${message,,}" == *"already verified"* ]]; then
+            echo "🔍✅ Contract $address already verified on Etherscan. Skipping." >&2
+            return 0
+        fi
         echo "🔍❌ Etherscan submission failed. Not polling verification status. Etherscan API error: (status=$status, message=$message): $guid" >&2
         return 1
     fi
 
-    echo "🔍🔄 Etherscan submission response: $RESPONSE"
+    echo "🔍🔄 Etherscan submission response: $response"
 
     echo "Polling Etherscan verification status..." >&2
     curl -sS -G "https://api.etherscan.io/v2/api" \
@@ -127,30 +234,40 @@ verify_with_etherscan() {
 }
 
 # Params $1: Blockscout base URL
+# Params $2: Address to verify
 verify_with_blockscout() {
-    local blockscout_base_url
-    blockscout_base_url="$1"
+    local blockscout_base_url="$1"
+    local address="$2"
 
     : "${blockscout_base_url:?❌🔍 Missing Blockscout base URL for explorer. (required as first argument)}"
 
-    CONTRACT_NAME=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.contractName')
-    STANDARD_JSON_INPUT_FILE_PATH=$(echo "$CONTRACT_VERIFICATION_DATA" | jq -r '.stdJsonInputFilePath')
+    local contract_name=$(echo "${CONTRACT_VERIFICATION_DATA[$address]}" | jq -r '.contractName')
+    local standard_json_input_file_path=$(echo "${CONTRACT_VERIFICATION_DATA[$address]}" | jq -r '.stdJsonInputFilePath')
+    local compiler_version="${COMPILER_VERSION[$address]}"
 
     echo "🔍🔄 Submitting verification request to Blockscout ($blockscout_base_url)..." >&2
 
     local response http_code is_verified
     response=$(curl -sS -X POST \
-        "$blockscout_base_url/api/v2/smart-contracts/$ADDRESS/verification/via/standard-input" \
-        -F "compiler_version=$COMPILER_VERSION" \
-        -F "contract_name=$CONTRACT_NAME" \
+        "$blockscout_base_url/api/v2/smart-contracts/$address/verification/via/standard-input" \
+        -F "compiler_version=$compiler_version" \
+        -F "contract_name=$contract_name" \
         -F "autodetect_constructor_args=false" \
-        -F "files[0]=@$STANDARD_JSON_INPUT_FILE_PATH;type=application/json" \
+        -F "files[0]=@$standard_json_input_file_path;type=application/json" \
         -w "\nhttp=%{http_code}\n")
 
     echo "🔍🔄 Blockscout submission response: $response"
 
     http_code=$(echo "$response" | sed -n 's/^http=//p' | tail -1)
     if [[ -z "$http_code" || "$http_code" -lt 200 || "$http_code" -ge 300 ]]; then
+        # Blockscout rejects re-submissions of already verified contracts (e.g. with
+        # "Smart-contract verification is not required"). Treat this as success so
+        # that batch re-runs are idempotent.
+        is_verified=$(curl -sS "$blockscout_base_url/api/v2/smart-contracts/$address" | jq -r '.is_verified')
+        if [[ "$is_verified" == "true" ]]; then
+            echo "🔍✅ Contract $address already verified on Blockscout. Skipping." >&2
+            return 0
+        fi
         echo "🔍❌ Blockscout submission failed (http=$http_code)." >&2
         return 1
     fi
@@ -160,7 +277,7 @@ verify_with_blockscout() {
     # Poll in a loop
     is_verified="null"
     for attempt in $(seq 1 30); do
-        is_verified=$(curl -sS "$blockscout_base_url/api/v2/smart-contracts/$ADDRESS" | jq -r ".is_verified")
+        is_verified=$(curl -sS "$blockscout_base_url/api/v2/smart-contracts/$address" | jq -r ".is_verified")
         [[ "$is_verified" == "true" ]] && break
         sleep 5
     done
@@ -173,28 +290,44 @@ verify_with_blockscout() {
     echo "🔍✅ Blockscout verification successful." >&2
 }
 
+# Params $1: Address to verify
 verify_with_sourcify() {
+    local address="$1"
     echo "Submitting to Sourcify (chain $CHAIN_ID)..." >&2
 
     # Don't extract as raw since we pass `--argjson` to jq
-    STANDARD_JSON_INPUT=$(echo "$CONTRACT_VERIFICATION_DATA" | jq '.stdJsonInput')
+    local standard_json_input=$(echo "${CONTRACT_VERIFICATION_DATA[$address]}" | jq '.stdJsonInput')
+    local compiler_version="${COMPILER_VERSION[$address]}"
+    local contract_id="${CONTRACT_ID[$address]}"
 
     local body
     body=$(jq -n \
-        --argjson stdJsonInput "$STANDARD_JSON_INPUT" \
-        --arg compilerVersion "$COMPILER_VERSION" \
-        --arg contractIdentifier "$CONTRACT_ID" \
+        --argjson stdJsonInput "$standard_json_input" \
+        --arg compilerVersion "$compiler_version" \
+        --arg contractIdentifier "$contract_id" \
         '{ "stdJsonInput": $stdJsonInput, "compilerVersion": $compilerVersion, "contractIdentifier": $contractIdentifier }'
     )
 
-    verification_result=$(
+    local verification_result=$(
         curl -sS -X POST \
-            "https://sourcify.dev/server/v2/verify/$CHAIN_ID/$ADDRESS" \
+            "https://sourcify.dev/server/v2/verify/$CHAIN_ID/$address" \
             -H 'Content-Type: application/json' \
             --data-raw "$body"
     )
 
     echo "🔍🔄 Sourcify submission response: $verification_result"
+
+    # Sourcify rejects re-submissions of already verified contracts with the
+    # custom error code "already_verified". Treat this as success so that
+    # batch re-runs are idempotent.
+    local custom_code
+    custom_code=$(echo "$verification_result" | jq -r '.customCode // empty')
+    if [[ "$custom_code" == "already_verified" ]]; then
+        echo "🔍✅ Contract $address already verified on Sourcify. Skipping." >&2
+        return 0
+    fi
+
+    local verification_id
     verification_id=$(echo "$verification_result" | jq -r '.verificationId // empty')
 
     # Based on Sourcify docs: https://docs.sourcify.dev/docs/api/#verification
@@ -207,6 +340,23 @@ verify_with_sourcify() {
 
 EXPLORER_EXIT=0
 SOURCIFY_EXIT=0
+
+# Record the outcome of an explorer verification for the final summary.
+# A chain can have several explorers: a contract is only marked "ok"
+# if none of them failed for it.
+# Params $1: Address verified
+# Params $2: Exit code of the verification function
+record_explorer_result() {
+    local address="$1"
+    local exit_code="$2"
+
+    if [[ "$exit_code" -ne 0 ]]; then
+        EXPLORER_EXIT="$exit_code"
+        EXPLORER_RESULTS[$address]="❌ failed"
+    elif [[ "${EXPLORER_RESULTS[$address]:-}" != "❌ failed" ]]; then
+        EXPLORER_RESULTS[$address]="✅ ok"
+    fi
+}
 
 if [[ "$SOURCIFY_ONLY" != true ]]; then
     # Get all the block explorers for the specified chain
@@ -221,12 +371,22 @@ if [[ "$SOURCIFY_ONLY" != true ]]; then
 
         case "$explorer_category" in
             etherscan)
-                echo "Submitting contract verification on $explorer_url" >&2
-                verify_with_etherscan || EXPLORER_EXIT=$?
+                for address in "${ADDRESSES[@]}"; do
+                    echo "Submitting contract verification on $explorer_url for address $address" >&2
+                    exit_code=0; verify_with_etherscan "$address" || exit_code=$?
+                    record_explorer_result "$address" "$exit_code"
+                    # Wait for 2 seconds to avoid rate limiting
+                    sleep 2
+                done
                 ;;
             blockscout)
-                echo "Submitting contract verification on $explorer_url" >&2
-                verify_with_blockscout "$explorer_url" || EXPLORER_EXIT=$?
+                for address in "${ADDRESSES[@]}"; do
+                    echo "Submitting contract verification on $explorer_url for address $address" >&2
+                    exit_code=0; verify_with_blockscout "$explorer_url" "$address" || exit_code=$?
+                    record_explorer_result "$address" "$exit_code"
+                    # Wait for 2 seconds to avoid rate limiting
+                    sleep 2
+                done
                 ;;
             subscan)
                 echo "Contract verification on Subscan not supported yet" >&2
@@ -244,8 +404,28 @@ else
 fi
 
 if [[ "$SKIP_SOURCIFY" != true ]]; then
-    verify_with_sourcify || SOURCIFY_EXIT=$?
+    for address in "${ADDRESSES[@]}"; do
+        echo "Submitting contract verification to Sourcify for address $address" >&2
+        exit_code=0; verify_with_sourcify "$address" || exit_code=$?
+        if [[ "$exit_code" -ne 0 ]]; then
+            SOURCIFY_EXIT="$exit_code"
+            SOURCIFY_RESULTS[$address]="❌ failed"
+        else
+            SOURCIFY_RESULTS[$address]="✅ ok"
+        fi
+    done
 fi
+
+echo "" >&2
+echo "===== 📋 Verification summary ($CHAIN, chain ID: $CHAIN_ID) =====" >&2
+for address in "${ADDRESSES[@]}"; do
+    printf '%-42s %-45s explorers: %-12s sourcify: %s\n' \
+        "$address" \
+        "${CONTRACT_NAMES[$address]}" \
+        "${EXPLORER_RESULTS[$address]:-"⏭️ skipped"}" \
+        "${SOURCIFY_RESULTS[$address]:-"⏭️ skipped"}" >&2
+done
+echo "" >&2
 
 if [[ $EXPLORER_EXIT -ne 0 ]]; then
     echo "Explorer verification failed." >&2

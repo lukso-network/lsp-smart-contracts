@@ -30,6 +30,15 @@ class ContractRegistry:
         ]
         return sorted(all_contract_option_names)
 
+    def get_contract_address(self, contract_option_name):
+        _, entry = self._find_entry_from_contract_option_name(contract_option_name)
+
+        address = entry.get("address")
+        if not address:
+            sys.exit(f"❌ No address set for contract option name: {contract_option_name}")
+
+        return address
+
     def get_contract_verification_data(self, address):
         """Load the contract verification data for a given address.
 
@@ -151,20 +160,24 @@ class ContractRegistry:
         sys.exit(f"❌ Contract option name not found: {contract_option_name}")
 
 def main():
+    contract_option_help = (
+        "Contract name options available:\n"
+        + "\n".join(ContractRegistry.list_all_contract_options())
+    )
+
     parser = argparse.ArgumentParser(
         description="Get verification metadata for a contract + validate if this metadata is valid (reproduce the expected creation bytecode)."
     )
     sub_parser = parser.add_subparsers(dest="command", required=True)
 
-    parser_get = sub_parser.add_parser("get-verification-metadata")
-    parser_get.add_argument("--address", required=True, help="Deployed contract address")
+    parser_get_metadata = sub_parser.add_parser("get-verification-metadata")
+    parser_get_metadata.add_argument("--address", required=True, help="Deployed contract address")
+
+    parser_get_address = sub_parser.add_parser("get-address")
+    parser_get_address.add_argument("--contract", required=True, help=contract_option_help)
 
     parser_validate = sub_parser.add_parser("validate-verification-metadata")
-    parser_validate.add_argument(
-        "--contract", required=True,
-        help="Contract name options available:\n"
-             + "\n".join(ContractRegistry.list_all_contract_options()),
-    )
+    parser_validate.add_argument("--contract", required=True, help=contract_option_help)
 
     args = parser.parse_args()
     contract_registry = ContractRegistry()
@@ -174,6 +187,9 @@ def main():
         print(json.dumps(contract_verification_data))
     elif args.command == "validate-verification-metadata":
         contract_registry.validate_contract_verification_metadata(args.contract)
+    elif args.command == "get-address":
+        contract_address = contract_registry.get_contract_address(args.contract)
+        print(contract_address)
 
 if __name__ == "__main__":
     main()
