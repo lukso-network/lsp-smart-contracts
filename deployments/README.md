@@ -135,9 +135,10 @@ Contract verifications works using Etherscan or Blockscout API (depending on the
    download the matching `solc` version automatically (no manual `svm install`
    required, but network access is needed on first run).
 2. **🐍 Python 3.12**
-3. **A funded deployer account** on the target network
-4. **An RPC endpoint** for the target network
-5. **The Nick Factory** contract must exist on the target network at address `0x4e59b44847b379578588920cA78FbF26c0B4956C`. To check if it exists, follow the next section.
+3. **Bash 4** (checked via `bash --version`)
+4. **A funded deployer account** on the target network
+5. **An RPC endpoint** for the target network
+6. **The Nick Factory** contract must exist on the target network at address `0x4e59b44847b379578588920cA78FbF26c0B4956C`. To check if it exists, follow the next section.
 
 If you do not have Python 3.12 installed, it is recommended to install it via [**mise**](https://mise.jdx.dev/getting-started.html)
 

@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# This script requires Bash >= 4 (associative arrays `declare -A`,
+# lowercase expansion `${var,,}`). macOS ships Bash 3.2 at /bin/bash.
+if (( BASH_VERSINFO[0] < 4 )); then
+    echo "Error: this script requires Bash >= 4, but you are running Bash $BASH_VERSION." >&2
+    echo "On macOS, install a newer Bash with 'brew install bash' and re-run." >&2
+    exit 1
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 ADDRESS=""
@@ -89,7 +97,7 @@ MODE_COUNT=0
 [[ "$ALL_TOKEN_CONTRACTS" == true ]] && MODE="all-token-contracts" && MODE_COUNT=$((MODE_COUNT + 1))
 
 if [[ $MODE_COUNT -ne 1 ]]; then
-    echo "Only one of this option is required (cannot be used together): --address, --all-up-contracts, or --all-token-contracts" >&2
+    echo "Exactly one of this option is required (cannot be used together): --address, --all-up-contracts, or --all-token-contracts" >&2
     usage
     exit 1
 fi
@@ -118,7 +126,7 @@ fi
 # (the contracts.json lookup below is case-insensitive regardless).
 # Params $1: Address to normalize
 normalize_address() {
-    address_to_normalize="$1"
+    local address_to_normalize="$1"
     address_to_normalize=$(echo "$address_to_normalize" | tr '[:upper:]' '[:lower:]')
 
     if ! [[ "$address_to_normalize" =~ ^0x[a-f0-9]{40}$ ]]; then
