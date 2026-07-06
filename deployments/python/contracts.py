@@ -107,7 +107,7 @@ class ContractRegistry:
         """Resolve the repo-root-relative `standardJsonInputFilePath` to an absolute path.
 
         Paths in contracts.json are stored relative to the repository root
-        (e.g. `deployments/solc-inputs/...`), so they must be resolved against
+        (e.g. `deployments/std-json-inputs/...`), so they must be resolved against
         REPO_ROOT to work from any current working directory.
         """
         return REPO_ROOT / entry["standardJsonInputFilePath"]
