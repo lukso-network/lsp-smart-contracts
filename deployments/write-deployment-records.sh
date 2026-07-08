@@ -23,6 +23,8 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CHAIN_ID=""
 RPC_URL="${RPC_URL:-}"
 
+readonly NICK_FACTORY_ADDRESS="0x4e59b44847b379578588920ca78fbf26c0b4956c"
+
 readonly DEPLOYMENT_SCRIPTS=(
     "DeployFromArtifact.s.sol"
     "DeployUniversalProfileStack.s.sol"
@@ -61,6 +63,23 @@ fi
 declare -A TX_BY_ADDRESS=()
 declare -A BLOCK_BY_ADDRESS=()
 
+# Computes the CREATE2 address for a raw Nick Factory deployment calldata
+# (`salt ++ creationBytecode`). Used as a fallback when the broadcast file does
+# not record the created contract address. Requires `cast` (Foundry).
+compute_create2_address_from_calldata() {
+    local input="${1#0x}"
+
+    command -v cast >/dev/null 2>&1 || return 1
+    # Calldata must contain at least the 32-byte salt plus some init code.
+    (( ${#input} > 64 )) || return 1
+
+    cast create2 \
+        --deployer "$NICK_FACTORY_ADDRESS" \
+        --salt "0x${input:0:64}" \
+        --init-code "0x${input:64}" 2>/dev/null \
+        | grep -oE '0x[0-9a-fA-F]{40}' | head -n 1
+}
+
 for script_name in "${DEPLOYMENT_SCRIPTS[@]}"; do
     broadcast_file="$REPO_ROOT/broadcast/$script_name/$CHAIN_ID/run-latest.json"
 
@@ -68,33 +87,67 @@ for script_name in "${DEPLOYMENT_SCRIPTS[@]}"; do
         continue
     fi
 
-    while IFS=$'\t' read -r address tx_hash block_number; do
+    # Deployments go through the Nick Factory, so the created contract address
+    # can appear in three different shapes in the broadcast file:
+    #  1. `transactionType: "CREATE2"` with a top-level `contractAddress`
+    #     (forge special-cases the canonical CREATE2 deployer proxy);
+    #  2. a factory `CALL` with the created contract listed under
+    #     `additionalContracts[]`;
+    #  3. a factory `CALL` with no recorded address at all, in which case the
+    #     CREATE2 address is recomputed from the calldata (salt ++ init code).
+    # Note: the jq query emits "-" instead of an empty address, because bash
+    # `read` collapses leading tab-separated empty fields (tab is IFS whitespace).
+    while IFS=$'\t' read -r address tx_hash block_number input; do
+        [[ -z "$tx_hash" ]] && continue
+        [[ "$address" == "-" ]] && address=""
+
+        if [[ -z "$address" && -n "$input" ]]; then
+            address="$(compute_create2_address_from_calldata "$input" || true)"
+            if [[ -z "$address" ]]; then
+                echo "Warning: could not derive CREATE2 address for factory tx $tx_hash (is 'cast' installed?)" >&2
+                continue
+            fi
+        fi
         [[ -z "$address" ]] && continue
+
         address="${address,,}"
         TX_BY_ADDRESS["$address"]="$tx_hash"
         BLOCK_BY_ADDRESS["$address"]="$block_number"
     done < <(
-        jq -r '
+        jq -r --arg factory "$NICK_FACTORY_ADDRESS" '
             . as $root
             | ($root.transactions // []) as $txs
             | ($root.receipts // []) as $receipts
-            | range(0; ($txs | length)) as $i
-            | ($txs[$i]) as $tx
-            | select($tx.transactionType == "CREATE2")
-            | ($tx.contractAddress // "") as $addr
-            | select($addr != "")
+            | $txs[]
+            | . as $tx
             | (
                 ($receipts[]? | select(.transactionHash == $tx.hash) | .blockNumber)
                 // ""
               ) as $block
-            | [$addr, ($tx.hash // ""), $block]
+            | (
+                # 1. forge recorded the created address on the tx itself
+                ( select($tx.transactionType == "CREATE2" and ($tx.contractAddress // "") != "")
+                  | [$tx.contractAddress, ($tx.hash // ""), $block, ""] ),
+                # 2. contracts created inside a factory call
+                ( $tx.additionalContracts[]?
+                  | select(.transactionType == "CREATE2" and ((.address // "") != ""))
+                  | [.address, ($tx.hash // ""), $block, ""] ),
+                # 3. raw call to the Nick Factory with no recorded address:
+                #    emit the calldata so the address can be recomputed
+                ( select(
+                      ((($tx.transaction.to // "") | ascii_downcase) == $factory)
+                      and (($tx.contractAddress // "") == "")
+                      and ((($tx.additionalContracts // []) | length) == 0)
+                    )
+                  | ["-", ($tx.hash // ""), $block, ($tx.transaction.input // $tx.transaction.data // "")] )
+              )
             | @tsv
         ' "$broadcast_file"
     )
 done
 
 if [[ ${#TX_BY_ADDRESS[@]} -eq 0 ]]; then
-    echo "No CREATE2 transactions found in broadcast files for chain $CHAIN_ID." >&2
+    echo "No deployment transactions found in broadcast files for chain $CHAIN_ID." >&2
     exit 0
 fi
 

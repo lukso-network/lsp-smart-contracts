@@ -502,10 +502,21 @@ bash deployments/write-deployment-records.sh \
   --rpc-url "$RPC_URL"
 ```
 
-This reads `broadcast/<Script>.s.sol/<chainId>/run-latest.json`, matches CREATE2
-transactions by contract address, and fills `txHash`, `blockNumber`, and
-`rpcUrlUsed` for records with `status: "deployed"` and `txHash: null`. Records
-with `status: "already-deployed"` are left unchanged.
+This reads `broadcast/<Script>.s.sol/<chainId>/run-latest.json` and maps each
+deployed contract address to its transaction hash and block number, covering
+all the shapes a Nick Factory deployment can take in the broadcast file:
+
+- transactions recorded as `CREATE2` with a top-level `contractAddress` (forge
+  special-cases the canonical CREATE2 deployer proxy),
+- factory `CALL` transactions whose created contract is listed under
+  `additionalContracts[]`,
+- factory `CALL` transactions with no recorded address, in which case the
+  CREATE2 address is recomputed from the calldata (`salt ++ creationBytecode`)
+  via `cast create2`.
+
+It then fills `txHash`, `blockNumber`, and `rpcUrlUsed` for records with
+`status: "deployed"` and `txHash: null`. Records with
+`status: "already-deployed"` are left unchanged.
 
 ---
 
