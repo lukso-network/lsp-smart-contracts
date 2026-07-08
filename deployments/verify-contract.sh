@@ -204,11 +204,10 @@ verify_with_etherscan() {
 
     echo "Submitting to Etherscan (chain $CHAIN_ID)..." >&2
 
-    local response=$(curl -sS -X POST "https://api.etherscan.io/v2/api" \
+    local response=$(curl -sS -X POST "https://api.etherscan.io/v2/api?chainid=$CHAIN_ID" \
         --data-urlencode "apikey=$ETHERSCAN_API_KEY" \
         --data-urlencode "module=contract" \
         --data-urlencode "action=verifysourcecode" \
-        --data-urlencode "chainid=$CHAIN_ID" \
         --data-urlencode "codeformat=solidity-standard-json-input" \
         --data-urlencode "contractaddress=$address" \
         --data-urlencode "contractname=$contract_id" \
