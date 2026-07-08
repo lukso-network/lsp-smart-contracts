@@ -87,4 +87,7 @@ solc = "0.8.17"
 evm_version = "london"
 optimizer = true
 optimizer_runs = 1000
-fs_permissions = [{ access = "read", path = "./deployments" }]
+fs_permissions = [
+  { access = "read", path = "./deployments" },
+  { access = "read-write", path = "./deployments/chains" }
+]

@@ -32,10 +32,14 @@ Below is the step-by-step procedure for deploying each contract on a new EVM cha
     - [4 — ⛓️ Confirm the contract is on-chain](#4--️-confirm-the-contract-is-on-chain)
     - [5 — 📄 Verify the contract on Block explorer with the standard JSON input](#5---verify-the-contract-on-block-explorer-with-the-standard-json-input)
     - [6 — ✅ Confirm verification](#6---confirm-verification)
+  - [Per-chain deployment records](#per-chain-deployment-records)
+    - [Deployment Record schema](#deployment-record-schema)
+    - [Save records after broadcast](#save-records-after-broadcast)
   - [Manual deployment via `cast send`](#manual-deployment-via-cast-send)
     - [Bytecode Comparison](#bytecode-comparison)
   - [Notes \& caveats](#notes--caveats)
   - [Further Reading](#further-reading)
+  - [Script deployment flow](#script-deployment-flow)
 
 ## Related documentation
 
@@ -215,6 +219,9 @@ To deploy the **Universal Profile stack** in one run, use the convenience script
 ```bash
 FOUNDRY_PROFILE=deployments forge script deployments/scripts/DeployUniversalProfileStack.s.sol \
   --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
+
+# Save deployment records with txHash / blockNumber from the broadcast file
+bash deployments/write-deployment-records.sh --chain-id <chainId> --rpc-url "$RPC_URL"
 ```
 
 This script deploys the following contracts:
@@ -240,6 +247,9 @@ To deploy the **token base implementation contracts** in one run, use:
 ```bash
 FOUNDRY_PROFILE=deployments forge script deployments/scripts/DeployTokenImplementationContracts.s.sol \
   --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
+
+# Save deployment records with txHash / blockNumber from the broadcast file
+bash deployments/write-deployment-records.sh --chain-id <chainId> --rpc-url "$RPC_URL"
 ```
 
 This script deploys the following contracts:
@@ -319,6 +329,9 @@ FOUNDRY_PROFILE=deployments CONTRACT_TO_DEPLOY=UniversalProfileInit-v0.14.0 \
   --rpc-url "$RPC_URL" \
   --broadcast \
   --private-key "$DEPLOYER_PK"
+
+# Save deployment records with txHash / blockNumber from the broadcast file
+bash deployments/write-deployment-records.sh --chain-id <chainId> --rpc-url "$RPC_URL"
 ```
 
 > Tip: drop `--broadcast` first to do a dry run (simulation only, no transaction sent).
@@ -428,6 +441,85 @@ curl -sS "https://sourcify.dev/server/v2/contract/$CHAIN_ID/$ADDRESS?fields=matc
 
 ---
 
+## Per-chain deployment records
+
+Each broadcast run of the three Foundry deploy scripts save the deployment record for the contract and chain deployed on into a machine-readable JSON file located as follows.
+
+```
+deployments/chains/<mainnet|testnet>/<chainSlug>/deploy-<Contract>[-v<version>].json
+```
+
+Examples:
+
+- `deployments/chains/mainnet/arbitrum-one/deploy-UniversalProfileInit-v0.14.0.json`
+- `deployments/chains/testnet/lukso-testnet/deploy-LSP23LinkedContractsFactory.json`
+
+The target chain must exist in [`chains-mainnet.json`](./chains-mainnet.json) or
+[`chains-testnet.json`](./chains-testnet.json) with a unique `slug` field before
+deploying. The script resolves `mainnet` vs `testnet` and the folder name from
+`block.chainid`.
+
+Records are written only when using `--broadcast` (dry runs do not create files).
+Both newly deployed contracts and already-on-chain contracts (skipped) produce a
+record, so the folder acts as a per-chain status registry.
+
+### Deployment Record schema
+
+```json
+{
+  "chainId": 4201,
+  "chainSlug": "lukso-testnet",
+  "network": "testnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0xA391Bb04ac8F7ee49Af3E996d43D80F1194d81b7",
+  "status": "already-deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783170468,
+  "rpcUrlUsed": null,
+  "txHash": null,
+  "blockNumber": null
+}
+```
+
+| Field                                 | Description                                                             |
+| ------------------------------------- | ----------------------------------------------------------------------- |
+| `status`                              | `"deployed"` (broadcast this run) or `"already-deployed"` (skipped)     |
+| `version`                             | `null` for flat singletons; semver string for versioned implementations |
+| `runtimeBytecodeMatch`                | On-chain runtime bytecode matches `contracts.json`                      |
+| `rpcUrlUsed`, `txHash`, `blockNumber` | Filled by the step below                                                |
+
+### Save records after broadcast
+
+> This step must be done separately from the Foundry deployment scripts as the Foundry scripts cannot access transaction receipts to save the tx hash.
+
+After a broadcast that deployed new contracts, run the command below to save the deployment infos of the contracts for the new chain.
+
+```bash
+bash deployments/write-deployment-records.sh \
+  --chain-id <chainId> \
+  --rpc-url "$RPC_URL"
+```
+
+This reads `broadcast/<Script>.s.sol/<chainId>/run-latest.json` and maps each
+deployed contract address to its transaction hash and block number, covering
+all the shapes a Nick Factory deployment can take in the broadcast file:
+
+- transactions recorded as `CREATE2` with a top-level `contractAddress` (forge
+  special-cases the canonical CREATE2 deployer proxy),
+- factory `CALL` transactions whose created contract is listed under
+  `additionalContracts[]`,
+- factory `CALL` transactions with no recorded address, in which case the
+  CREATE2 address is recomputed from the calldata (`salt ++ creationBytecode`)
+  via `cast create2`.
+
+It then fills `txHash`, `blockNumber`, and `rpcUrlUsed` for records with
+`status: "deployed"` and `txHash: null`. Records with
+`status: "already-deployed"` are left unchanged.
+
+---
+
 ## Manual deployment via `cast send`
 
 All contracts can also be deployed manually via Foundry `cast` by sending `salt + creationBytecode` as calldata to the Nick Factory. The salt and creation bytecodes are in the [`contracts.json`](./contracts.json) file.
@@ -496,3 +588,25 @@ EXPECTED=$(python3 -c "import json; d=json.load(open('./contracts.json')); print
 - [PostDeploymentModule (Init) deployment guide](../packages/lsp23-contracts/contracts/modules/deployment-UP-init-module.md)
 - [PostDeploymentModule deployment guide](../packages/lsp23-contracts/contracts/modules/deployment-UP-module.md)
 - [Nick Factory / Deterministic Deployment Proxy](https://github.com/Arachnid/deterministic-deployment-proxy)
+
+---
+
+## Script deployment flow
+
+The diagram below illustrate the sequence when deploying new contracts to a new EVM chain via the Foundry scripts.
+
+1. Ensure the target chain is listed in `chains-mainnet.json` or `chains-testnet.json` with a `slug` field.
+2. Run the desired deploy script with `--broadcast` (optionally dry-run first without `--broadcast`).
+3. During broadcast, `DeploymentRecorder` writes one JSON record per contract under `deployments/chains/<network>/<slug>/`.
+4. Foundry stores transaction receipts in `broadcast/<Script>.s.sol/<chainId>/run-latest.json`.
+5. Run `write-deployment-records.sh` to fill `txHash`, `blockNumber`, and `rpcUrlUsed` from the broadcast file.
+6. Verify contracts on block explorers (see [step 5](#5---verify-the-contract-on-block-explorer-with-the-standard-json-input)).
+
+```mermaid
+flowchart LR
+    forgeScript["forge script --broadcast"] --> recorder["DeploymentRecorder (Solidity)"]
+    recorder -->|"writes base record (txHash: null)"| recordFile["deployments/chains/mainnet/arbitrum-one/deploy-X-v0.14.0.json"]
+    forgeScript -->|receipts| broadcastFile["broadcast/.../run-latest.json"]
+    enrich["write-deployment-records.sh"] --> broadcastFile
+    enrich -->|"fills txHash, blockNumber, rpcUrlUsed"| recordFile
+```

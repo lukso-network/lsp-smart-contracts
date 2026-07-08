@@ -1,47 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.17;
 
-import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
+
+import {DeploymentRecorder} from "./DeploymentRecorder.sol";
 
 // Constants
 import {
     NICK_FACTORY_ADDRESS,
     NICK_FACTORY_BYTECODE
 } from "./NickFactoryConstants.sol";
-
-/// @dev Typed JSON cheatcodes implemented by the forge binary but missing from
-/// the (older) vendored forge-std Vm interface in `lib/forge-std`.
-interface VmJsonCheats {
-    function parseJsonBytes32(
-        string calldata json,
-        string calldata key
-    ) external pure returns (bytes32);
-
-    function parseJsonBytes(
-        string calldata json,
-        string calldata key
-    ) external pure returns (bytes memory);
-
-    function parseJsonAddress(
-        string calldata json,
-        string calldata key
-    ) external pure returns (address);
-
-    function parseJsonString(
-        string calldata json,
-        string calldata key
-    ) external pure returns (string memory);
-
-    function keyExistsJson(
-        string calldata json,
-        string calldata key
-    ) external view returns (bool);
-
-    function toString(uint256 value) external pure returns (string memory);
-
-    function toString(address value) external pure returns (string memory);
-}
 
 /// @title Shared logic for deterministic CREATE2 deployments from archived bytecode.
 ///
@@ -50,9 +18,7 @@ interface VmJsonCheats {
 /// fields). No compilation of the target contract is involved, which
 /// guarantees byte-identical deployments (and therefore identical addresses)
 /// on every chain, regardless of the local toolchain.
-abstract contract NickFactoryArtifactDeployer is Script {
-    VmJsonCheats internal constant vmJson = VmJsonCheats(VM_ADDRESS);
-
+abstract contract NickFactoryArtifactDeployer is DeploymentRecorder {
     /// @dev Resolves a user-facing contract identifier to the JSON artifact key.
     /// Examples:
     /// - `LSP23LinkedContractsFactory` -> `.LSP23LinkedContractsFactory`
@@ -72,12 +38,12 @@ abstract contract NickFactoryArtifactDeployer is Script {
         }
 
         // This Foundry helper function will check if we have passed an invalid contract name
-        if (!vmJson.keyExistsJson(json, contractKey)) {
+        if (!vmCheats.keyExistsJson(json, contractKey)) {
             revert(string.concat("Contract not found: ", contractToDeploy));
         }
 
         if (
-            vmJson.keyExistsJson(
+            vmCheats.keyExistsJson(
                 json,
                 string.concat(contractKey, ".versions[0]")
             )
@@ -106,13 +72,13 @@ abstract contract NickFactoryArtifactDeployer is Script {
             string memory entryKey = string.concat(
                 contractKey,
                 ".versions[",
-                vmJson.toString(i),
+                vm.toString(i),
                 "]"
             );
 
-            if (!vmJson.keyExistsJson(json, entryKey)) break;
+            if (!vmCheats.keyExistsJson(json, entryKey)) break;
 
-            string memory entryVersion = vmJson.parseJsonString(
+            string memory entryVersion = vmCheats.parseJsonString(
                 json,
                 string.concat(entryKey, ".version")
             );
@@ -140,7 +106,7 @@ abstract contract NickFactoryArtifactDeployer is Script {
     function _deployContractFromArtifact(
         string memory json,
         string memory key
-    ) internal returns (address deployed) {
+    ) internal returns (address deployedContract) {
         // Extra artifact deployment parameters
         (
             bytes32 salt,
@@ -158,18 +124,28 @@ abstract contract NickFactoryArtifactDeployer is Script {
             creationBytecode,
             expectedAddress
         );
-        deployed = expectedAddress;
+        deployedContract = expectedAddress;
 
         bool isAlreadyDeployed = _checkIfAlreadyDeployed(
-            deployed,
+            deployedContract,
             runtimeBytecode
         );
         if (isAlreadyDeployed) {
             console2.log(
                 unicode"☑️ Contract already deployed, skipping:",
-                deployed
+                deployedContract
             );
-            return deployed;
+            // `msg.sender` in the script context is the configured sender
+            // (the broadcaster when a private key / account is provided).
+            _recordDeployment({
+                json: json,
+                artifactKey: key,
+                deployedContract: deployedContract,
+                deployer: msg.sender,
+                status: "already-deployed",
+                runtimeBytecodeMatch: true
+            });
+            return deployedContract;
         }
 
         // finally start the broadcast to deploy
@@ -184,12 +160,19 @@ abstract contract NickFactoryArtifactDeployer is Script {
             unicode"❌ NickFactory: deployment transaction failed"
         );
         require(
-            deployed.code.length > 0,
+            deployedContract.code.length > 0,
             unicode"❌ NickFactory: no code at predicted address after deployment"
         );
 
-        // TODO: add contract name extracted from JSON artifact
-        console2.log("Successfully deployed at:", deployed);
+        _recordDeployment({
+            json: json,
+            artifactKey: key,
+            deployedContract: deployedContract,
+            deployer: msg.sender,
+            status: "deployed",
+            runtimeBytecodeMatch: true
+        });
+        console2.log("Successfully deployed at:", deployedContract);
     }
 
     function _parseContractToDeploy(
@@ -239,21 +222,6 @@ abstract contract NickFactoryArtifactDeployer is Script {
         return (string.concat(".", contractToDeploy), "", false);
     }
 
-    function _substring(
-        string memory value,
-        uint256 start,
-        uint256 end
-    ) internal pure returns (string memory) {
-        bytes memory valueBytes = bytes(value);
-        bytes memory result = new bytes(end - start);
-
-        for (uint256 i = start; i < end; i++) {
-            result[i - start] = valueBytes[i];
-        }
-
-        return string(result);
-    }
-
     function _extractFromArtifact(
         string memory json,
         string memory key
@@ -271,19 +239,19 @@ abstract contract NickFactoryArtifactDeployer is Script {
             unicode"🔍 Extracting deployment parameters from artifact..."
         );
 
-        salt = vmJson.parseJsonBytes32(json, string.concat(key, ".salt"));
+        salt = vmCheats.parseJsonBytes32(json, string.concat(key, ".salt"));
 
-        creationBytecode = vmJson.parseJsonBytes(
+        creationBytecode = vmCheats.parseJsonBytes(
             json,
             string.concat(key, ".creationBytecode")
         );
 
-        runtimeBytecode = vmJson.parseJsonBytes(
+        runtimeBytecode = vmCheats.parseJsonBytes(
             json,
             string.concat(key, ".bytecode")
         );
 
-        expectedAddress = vmJson.parseJsonAddress(
+        expectedAddress = vmCheats.parseJsonAddress(
             json,
             string.concat(key, ".address")
         );
@@ -333,9 +301,9 @@ abstract contract NickFactoryArtifactDeployer is Script {
             string.concat(
                 unicode"❌ Predicted CREATE2 address does not match the canonical address in the artifact ",
                 "(predicted: ",
-                vmJson.toString(deployed),
+                vm.toString(deployed),
                 ", expected: ",
-                vmJson.toString(expectedAddress),
+                vm.toString(expectedAddress),
                 "). Refusing to deploy."
             )
         );
@@ -357,7 +325,7 @@ abstract contract NickFactoryArtifactDeployer is Script {
             revert(
                 string.concat(
                     unicode"❌ Aborting deployment... Contract already deployed at address ",
-                    vmJson.toString(deployed),
+                    vm.toString(deployed),
                     " but bytecode on-chain mismatch with expected bytecode."
                 )
             );

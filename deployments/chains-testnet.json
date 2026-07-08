@@ -11,6 +11,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": []
+    "bridges": [],
+    "slug": "lukso-testnet"
   }
 ]
