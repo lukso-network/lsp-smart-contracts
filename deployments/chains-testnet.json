@@ -13,5 +13,35 @@
     ],
     "bridges": [],
     "slug": "lukso-testnet"
+  },
+  {
+    "chainId": 80002,
+    "name": "Polygon Amoy",
+    "rpcUrl": "https://rpc-amoy.polygon.technology/",
+    "iconUri": "none",
+    "currencySymbol": "POL",
+    "explorers": [
+      {
+        "url": "https://amoy.polygonscan.com/",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": [],
+    "slug": "polygon-amoy"
+  },
+  {
+    "chainId": 560048,
+    "name": "Ethereum Hoodi",
+    "rpcUrl": "https://ethereum-hoodi-rpc.publicnode.com",
+    "iconUri": "none",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://eth-hoodi.blockscout.com/",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [],
+    "slug": "ethereum-hoodi"
   }
 ]
