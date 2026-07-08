@@ -6,9 +6,9 @@
   "version": null,
   "address": "0x2300000A84D25dF63081feAa37ba6b62C4c89a30",
   "deployer": "0xF0efeD8d49c0FA6CFC861Bf0311b6B3a4414e4b7",
-  "status": "deployed",
+  "status": "already-deployed",
   "runtimeBytecodeMatch": true,
-  "timestamp": 1783516851,
+  "timestamp": 1783519285,
   "rpcUrlUsed": null,
   "txHash": null,
   "blockNumber": null
