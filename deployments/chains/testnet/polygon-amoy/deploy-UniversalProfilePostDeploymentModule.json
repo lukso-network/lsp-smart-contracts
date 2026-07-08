@@ -1,0 +1,15 @@
+{
+  "chainId": 80002,
+  "chainSlug": "polygon-amoy",
+  "network": "testnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0xF0efeD8d49c0FA6CFC861Bf0311b6B3a4414e4b7",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783516851,
+  "rpcUrlUsed": null,
+  "txHash": null,
+  "blockNumber": null
+}
