@@ -12,6 +12,11 @@ if (( BASH_VERSINFO[0] < 4 )); then
     exit 1
 fi
 
+if ! command -v jq >/dev/null 2>&1; then
+    echo "Error: this script requires 'jq' but it was not found in PATH." >&2
+    exit 1
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
@@ -130,10 +135,17 @@ while IFS= read -r record_file; do
     fi
 
     tmp_file="$(mktemp)"
+
+    rpc_url_used="${RPC_URL}"
+     if [[ -n "$rpc_url_used" ]]; then
+         rpc_url_used="${rpc_url_used%%\?*}" # drop query params (often contain API keys)
+         rpc_url_used="$(sed -E 's#(https?://)[^/@]+@#\1#' <<<"$rpc_url_used")" # drop userinfo
+     fi
+     
     jq \
         --arg txHash "$tx_hash" \
         --argjson blockNumber "${block_number:-null}" \
-        --arg rpcUrlUsed "${RPC_URL}" \
+        --arg rpcUrlUsed "${rpc_url_used}" \
         '
             .txHash = $txHash
             | .blockNumber = (if ($blockNumber | type) == "number" then $blockNumber else .blockNumber end)
