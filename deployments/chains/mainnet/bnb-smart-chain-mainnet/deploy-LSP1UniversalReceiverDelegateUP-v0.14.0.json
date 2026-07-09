@@ -1,0 +1,15 @@
+{
+  "chainId": 56,
+  "chainSlug": "bnb-smart-chain-mainnet",
+  "network": "mainnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.14.0",
+  "address": "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783615257,
+  "rpcUrlUsed": "https://bsc-rpc.publicnode.com",
+  "txHash": "0xa6dac8b9e78ad67cc9f507bc937d021f8dbe594751c1d6b6022524ce157c76d8",
+  "blockNumber": 109013410
+}

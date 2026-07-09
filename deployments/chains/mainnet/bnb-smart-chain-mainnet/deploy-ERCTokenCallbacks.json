@@ -1,0 +1,15 @@
+{
+  "chainId": 56,
+  "chainSlug": "bnb-smart-chain-mainnet",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783615257,
+  "rpcUrlUsed": "https://bsc-rpc.publicnode.com",
+  "txHash": "0x8f5b63c7e4f91a0c228db615fded077f021b9f436be31afe310ad3fc04fe5811",
+  "blockNumber": 109013410
+}
