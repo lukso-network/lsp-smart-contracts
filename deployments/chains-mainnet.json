@@ -74,9 +74,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://portal.astar.network/astar/bridge"
-    ],
+    "bridges": ["https://portal.astar.network/astar/bridge"],
     "slug": "astar-evm"
   },
   {
@@ -196,10 +194,7 @@
         "category": "other"
       }
     ],
-    "bridges": [
-      "https://jumper.exchange/",
-      "https://relay.link/bridge"
-    ],
+    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"],
     "slug": "bnb-smart-chain-mainnet"
   },
   {
@@ -241,9 +236,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://bridge.chiliz.com"
-    ],
+    "bridges": ["https://bridge.chiliz.com"],
     "slug": "chiliz-chain-mainnet"
   },
   {
@@ -258,9 +251,7 @@
         "category": "other"
       }
     ],
-    "bridges": [
-      "https://confluxhub.io/espace-bridge/cross-space"
-    ],
+    "bridges": ["https://confluxhub.io/espace-bridge/cross-space"],
     "slug": "conflux-evm-espace"
   },
   {
@@ -275,9 +266,7 @@
         "category": "etherscan"
       }
     ],
-    "bridges": [
-      "https://bridge.coredao.org"
-    ],
+    "bridges": ["https://bridge.coredao.org"],
     "slug": "core-blockchain-mainnet"
   },
   {
@@ -292,9 +281,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://bridge.coti.io"
-    ],
+    "bridges": ["https://bridge.coti.io"],
     "slug": "coti"
   },
   {
@@ -328,9 +315,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://relay.link/bridge"
-    ],
+    "bridges": ["https://relay.link/bridge"],
     "slug": "degen-chain"
   },
   {
@@ -388,10 +373,7 @@
         "category": "routescan"
       }
     ],
-    "bridges": [
-      "https://jumper.exchange/",
-      "https://relay.link/bridge"
-    ],
+    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"],
     "slug": "ethereum-mainnet"
   },
   {
@@ -406,10 +388,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://bridge.etherlink.com",
-      "https://jumper.exchange/"
-    ],
+    "bridges": ["https://bridge.etherlink.com", "https://jumper.exchange/"],
     "slug": "etherlink-mainnet"
   },
   {
@@ -444,9 +423,7 @@
         "category": "other"
       }
     ],
-    "bridges": [
-      "https://app.squidrouter.com/"
-    ],
+    "bridges": ["https://app.squidrouter.com/"],
     "slug": "filecoin-mainnet"
   },
   {
@@ -518,10 +495,7 @@
         "category": "other"
       }
     ],
-    "bridges": [
-      "https://gravity.xyz",
-      "https://jumper.exchange/"
-    ],
+    "bridges": ["https://gravity.xyz", "https://jumper.exchange/"],
     "slug": "gravity-alpha-mainnet"
   },
   {
@@ -554,9 +528,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://global.hashkey.com/en-US/bridge"
-    ],
+    "bridges": ["https://global.hashkey.com/en-US/bridge"],
     "slug": "hashkey-chain"
   },
   {
@@ -631,9 +603,7 @@
         "category": "other"
       }
     ],
-    "bridges": [
-      "https://iotex.io/bridge"
-    ],
+    "bridges": ["https://iotex.io/bridge"],
     "slug": "iotex-network-mainnet"
   },
   {
@@ -666,9 +636,7 @@
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/2/large/kava.jpeg?1707096364",
     "currencySymbol": "KAVA",
     "explorers": [],
-    "bridges": [
-      "https://app.kava.io/bridge"
-    ],
+    "bridges": ["https://app.kava.io/bridge"],
     "slug": "kava-evm"
   },
   {
@@ -683,10 +651,7 @@
         "category": "other"
       }
     ],
-    "bridges": [
-      "https://relay.link/bridge/lens",
-      "https://jumper.exchange/"
-    ],
+    "bridges": ["https://relay.link/bridge/lens", "https://jumper.exchange/"],
     "slug": "lens"
   },
   {
@@ -701,7 +666,7 @@
         "category": "etherscan"
       },
       {
-        "url": "https://explorer.linea.build",
+        "url": "https://api-explorer.linea.build",
         "category": "blockscout"
       }
     ],
@@ -785,9 +750,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://www.memecore.com"
-    ],
+    "bridges": ["https://www.memecore.com"],
     "slug": "memecore"
   },
   {
@@ -825,10 +788,7 @@
         "category": "etherscan"
       }
     ],
-    "bridges": [
-      "https://jumper.exchange/",
-      "https://relay.link/bridge"
-    ],
+    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"],
     "slug": "monad"
   },
   {
@@ -861,9 +821,7 @@
         "category": "etherscan"
       }
     ],
-    "bridges": [
-      "https://apps.moonbeam.network/moonriver/bridge"
-    ],
+    "bridges": ["https://apps.moonbeam.network/moonriver/bridge"],
     "slug": "moonriver"
   },
   {
@@ -910,9 +868,7 @@
         "category": "subscan"
       }
     ],
-    "bridges": [
-      "https://portal.peaq.xyz/bridge"
-    ],
+    "bridges": ["https://portal.peaq.xyz/bridge"],
     "slug": "peaq"
   },
   {
@@ -927,10 +883,7 @@
         "category": "etherscan"
       }
     ],
-    "bridges": [
-      "https://jumper.exchange/",
-      "https://relay.link/bridge"
-    ],
+    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"],
     "slug": "plasma-mainnet"
   },
   {
@@ -1036,10 +989,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://powpeg.rootstock.io",
-      "https://jumper.exchange/"
-    ],
+    "bridges": ["https://powpeg.rootstock.io", "https://jumper.exchange/"],
     "slug": "rootstock-mainnet"
   },
   {
@@ -1156,9 +1106,7 @@
         "category": "other"
       }
     ],
-    "bridges": [
-      "https://relay.link/bridge"
-    ],
+    "bridges": ["https://relay.link/bridge"],
     "slug": "story"
   },
   {
@@ -1173,9 +1121,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://www.stratisplatform.com"
-    ],
+    "bridges": ["https://www.stratisplatform.com"],
     "slug": "stratis-xertra-mainnet"
   },
   {
@@ -1209,9 +1155,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://jumper.exchange/"
-    ],
+    "bridges": ["https://jumper.exchange/"],
     "slug": "telos-evm-mainnet"
   },
   {
@@ -1246,9 +1190,7 @@
         "category": "other"
       }
     ],
-    "bridges": [
-      "https://bridge.thetatoken.org"
-    ],
+    "bridges": ["https://bridge.thetatoken.org"],
     "slug": "theta-mainnet"
   },
   {
@@ -1290,9 +1232,7 @@
         "category": "other"
       }
     ],
-    "bridges": [
-      "https://www.vechain.org"
-    ],
+    "bridges": ["https://www.vechain.org"],
     "slug": "vechain"
   },
   {
@@ -1307,9 +1247,7 @@
         "category": "other"
       }
     ],
-    "bridges": [
-      "https://wemix.fi/bridge"
-    ],
+    "bridges": ["https://wemix.fi/bridge"],
     "slug": "wemix3-0-mainnet"
   },
   {
@@ -1347,9 +1285,7 @@
         "category": "other"
       }
     ],
-    "bridges": [
-      "https://web3.okx.com/xlayer/bridge"
-    ],
+    "bridges": ["https://web3.okx.com/xlayer/bridge"],
     "slug": "x-layer-mainnet"
   },
   {
@@ -1364,9 +1300,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://bridge.xai.games"
-    ],
+    "bridges": ["https://bridge.xai.games"],
     "slug": "xai-mainnet"
   },
   {
@@ -1385,10 +1319,7 @@
         "category": "etherscan"
       }
     ],
-    "bridges": [
-      "https://bridge.xdc.org",
-      "https://jumper.exchange/"
-    ],
+    "bridges": ["https://bridge.xdc.org", "https://jumper.exchange/"],
     "slug": "xdc-network"
   },
   {
@@ -1403,9 +1334,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://hub.zetachain.com"
-    ],
+    "bridges": ["https://hub.zetachain.com"],
     "slug": "zetachain-mainnet"
   },
   {
@@ -1439,10 +1368,7 @@
         "category": "blockscout"
       }
     ],
-    "bridges": [
-      "https://superbridge.app/zora",
-      "https://relay.link/bridge"
-    ],
+    "bridges": ["https://superbridge.app/zora", "https://relay.link/bridge"],
     "slug": "zora"
   }
 ]

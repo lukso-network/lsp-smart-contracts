@@ -1,0 +1,15 @@
+{
+  "chainId": 59144,
+  "chainSlug": "linea",
+  "network": "mainnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.14.0",
+  "address": "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783612538,
+  "rpcUrlUsed": "https://rpc.linea.build",
+  "txHash": "0x2537d06bb5554ec4dcd2c3546951459c479289c496839e55d8019a7346173536",
+  "blockNumber": 31311233
+}
