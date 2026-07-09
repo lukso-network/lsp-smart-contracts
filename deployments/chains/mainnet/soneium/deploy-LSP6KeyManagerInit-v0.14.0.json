@@ -1,0 +1,15 @@
+{
+  "chainId": 1868,
+  "chainSlug": "soneium",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.14.0",
+  "address": "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783618955,
+  "rpcUrlUsed": "https://rpc.soneium.org",
+  "txHash": "0x02f9133c8ac36fa7939c372a6e89f6ce7303b959fbfe0d2d9b89c7c946981dcc",
+  "blockNumber": 25242105
+}
