@@ -2,9 +2,11 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {
     LSP8IdentifiableDigitalAsset
 } from "../LSP8IdentifiableDigitalAsset.sol";
+import {LSP8Burnable} from "../extensions/LSP8Burnable/LSP8Burnable.sol";
 import {
     LSP8MintableAbstract
 } from "../extensions/LSP8Mintable/LSP8MintableAbstract.sol";
@@ -13,9 +15,11 @@ import {
 } from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 /**
- * @title LSP8IdentifiableDigitalAsset deployable preset contract with a public {mint} function callable by addresses holding `MINTER_ROLE`.
+ * @title LSP8IdentifiableDigitalAsset deployable preset contract with:
+ * - a public {mint} function callable by addresses holding `MINTER_ROLE`.
+ * - a public {burn} function callable by any token holder.
  */
-contract LSP8Mintable is LSP8MintableAbstract {
+contract LSP8Mintable is LSP8MintableAbstract, LSP8Burnable {
     /**
      * @notice Deploying a `LSP8Mintable` token contract.
      * @dev Set the token to be mintable to allow minting more tokens after deployment.
@@ -42,4 +46,35 @@ contract LSP8Mintable is LSP8MintableAbstract {
         AccessControlExtendedAbstract()
         LSP8MintableAbstract(true)
     {}
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(LSP8MintableAbstract, LSP8IdentifiableDigitalAsset)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function _mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    )
+        internal
+        virtual
+        override(LSP8MintableAbstract, LSP8IdentifiableDigitalAsset)
+    {
+        LSP8MintableAbstract._mint(to, tokenId, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(LSP8MintableAbstract, Ownable) {
+        LSP8MintableAbstract._transferOwnership(newOwner);
+    }
 }

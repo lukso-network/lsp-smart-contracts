@@ -3,6 +3,12 @@ pragma solidity ^0.8.27;
 
 // modules
 import {
+    OwnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {
+    LSP8BurnableInitAbstract
+} from "../extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol";
+import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 import {
@@ -10,9 +16,14 @@ import {
 } from "../extensions/LSP8Mintable/LSP8MintableInitAbstract.sol";
 
 /**
- * @dev LSP8IdentifiableDigitalAsset deployable preset contract (proxy version) with a public {mint} function callable by addresses holding `MINTER_ROLE`.
+ * @dev LSP8IdentifiableDigitalAsset deployable preset contract (proxy version) with:
+ * - a public {mint} function callable by addresses holding `MINTER_ROLE`.
+ * - a public {burn} function callable by any token holder.
  */
-contract LSP8MintableInit is LSP8MintableInitAbstract {
+contract LSP8MintableInit is
+    LSP8MintableInitAbstract,
+    LSP8BurnableInitAbstract
+{
     /**
      * @dev initialize (= lock) base implementation contract on deployment
      */
@@ -46,5 +57,42 @@ contract LSP8MintableInit is LSP8MintableInitAbstract {
         );
         __AccessControlExtended_init();
         __LSP8Mintable_init_unchained(true);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            LSP8MintableInitAbstract,
+            LSP8IdentifiableDigitalAssetInitAbstract
+        )
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function _mint(
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    )
+        internal
+        virtual
+        override(
+            LSP8MintableInitAbstract,
+            LSP8IdentifiableDigitalAssetInitAbstract
+        )
+    {
+        LSP8MintableInitAbstract._mint(to, tokenId, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(LSP8MintableInitAbstract, OwnableUpgradeable) {
+        LSP8MintableInitAbstract._transferOwnership(newOwner);
     }
 }
