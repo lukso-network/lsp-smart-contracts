@@ -40,7 +40,7 @@ Deployments use deterministic CREATE2, so each contract version resolves to the 
 | `LSP7CustomizableTokenInit`                  | v0.18.1 | `0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F`  |
 | `LSP8MintableInit`                           | v0.14.0 | `0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997`  |
 | `LSP8MintableInit` (with `disableMinting()`) | v0.17.3 | `0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB`  |
-| `LSP8MintableInit` (with `burn()`)           | v0.19.0 | `0x80697c826bee616C0a1648EA0EDf34aBeb2eC9Ef.` |
+| `LSP8MintableInit` (with `burn()`)           | v0.19.0 | `0x80697c826bee616C0a1648EA0EDf34aBeb2eC9Ef`  |
 | `LSP8CustomizableTokenInit`                  | v0.18.1 | `0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8`  |
 
 ## Networks
