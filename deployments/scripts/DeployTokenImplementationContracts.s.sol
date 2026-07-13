@@ -10,8 +10,8 @@ import {NickFactoryArtifactDeployer} from "./NickFactoryArtifactDeployer.sol";
 /// (CREATE2), the token base implementation contracts used behind ERC-1167 minimal proxies:
 ///
 /// Implementation contracts:
-/// - LSP7MintableInit (v0.17.3)
-/// - LSP8MintableInit (v0.17.3)
+/// - LSP7MintableInit (v0.19.0)
+/// - LSP8MintableInit (v0.19.0)
 /// - LSP7CustomizableTokenInit (v0.18.1)
 /// - LSP8CustomizableTokenInit (v0.18.1)
 ///
@@ -28,7 +28,7 @@ contract DeployTokenImplementationContracts is NickFactoryArtifactDeployer {
             ".LSP8CustomizableTokenInit"
         ];
 
-        string[4] memory versions = ["0.17.3", "0.17.3", "0.18.1", "0.18.1"];
+        string[4] memory versions = ["0.19.0", "0.19.0", "0.18.1", "0.18.1"];
 
         deployed = new address[](implementations.length);
 

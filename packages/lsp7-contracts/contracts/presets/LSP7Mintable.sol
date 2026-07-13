@@ -2,7 +2,9 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
+import {LSP7Burnable} from "../extensions/LSP7Burnable/LSP7Burnable.sol";
 import {
     LSP7MintableAbstract
 } from "../extensions/LSP7Mintable/LSP7MintableAbstract.sol";
@@ -11,9 +13,11 @@ import {
 } from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 /**
- * @title LSP7DigitalAsset deployable preset contract with a public {mint} function callable by addresses holding `MINTER_ROLE`.
+ * @title LSP7DigitalAsset deployable preset contract with:
+ * - a public {mint} function callable by addresses holding `MINTER_ROLE`.
+ * - a public {burn} function callable by any token holder or operator.
  */
-contract LSP7Mintable is LSP7MintableAbstract {
+contract LSP7Mintable is LSP7MintableAbstract, LSP7Burnable {
     /**
      * @notice Deploying a `LSP7Mintable` token contract.
      * @dev Set the token to be mintable to allow minting more tokens after deployment.
@@ -40,4 +44,31 @@ contract LSP7Mintable is LSP7MintableAbstract {
         AccessControlExtendedAbstract()
         LSP7MintableAbstract(true)
     {}
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(LSP7MintableAbstract, LSP7DigitalAsset)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function _mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) internal virtual override(LSP7MintableAbstract, LSP7DigitalAsset) {
+        LSP7MintableAbstract._mint(to, amount, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(LSP7MintableAbstract, Ownable) {
+        LSP7MintableAbstract._transferOwnership(newOwner);
+    }
 }

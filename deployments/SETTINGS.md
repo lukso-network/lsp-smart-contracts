@@ -10,8 +10,8 @@
 | `UniversalProfileInit` (both v0.12.1 and 0.14.0)            | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
 | `LSP6KeyManagerInit` (both v0.12.1 and 0.14.0)              | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
 | `LSP1UniversalReceiverDelegateUP` (both v0.12.1 and 0.14.0) | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
-| `LSP7MintableInit` (both v0.14.0 and v0.17.3)               | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
-| `LSP8MintableInit` (both v0.14.0 and v0.17.3)               | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `LSP7MintableInit` (v0.14.0, v0.17.3, and v0.19.0)          | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
+| `LSP8MintableInit` (v0.14.0, v0.17.3, and v0.19.0)          | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
 | `LSP7CustomizableTokenInit` (v0.18.1)                       | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
 | `LSP8CustomizableTokenInit` (v0.18.1)                       | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
 | `ERCTokenCallbacks` (v0.17.4)                               | `0xfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed` |
@@ -33,9 +33,11 @@ Below are the full compiler version string and the compiler settings used for th
 | `LSP1UniversalReceiverDelegateUP` (v0.14.0)          | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
 | `LSP7MintableInit` (v0.14.0)                         | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
 | `LSP7MintableInit` (v0.17.3 with `disableMinting()`) | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
+| `LSP7MintableInit` (v0.19.0 with `burn()`)           | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
 | `LSP7CustomizableTokenInit` (v0.18.1)                | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
 | `LSP8MintableInit` (v0.14.0)                         | v0.8.17+commit.8df45f5f | Marked as "Default" on explorers, <br/> but normally London | optimizer = ON; runs=1,000     |
 | `LSP8MintableInit` (v0.17.3 with `disableMinting()`) | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
+| `LSP8MintableInit` (v0.19.0 with `burn()`)           | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
 | `LSP8CustomizableTokenInit` (v0.18.1)                | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
 | `ERCTokenCallbacks` (v0.17.4)                        | v0.8.28+commit.7893614a | Prague                                                      | optimizer = ON; runs=20,000    |
 
@@ -47,7 +49,9 @@ Below are the full compiler version string and the compiler settings used for th
 > with Hardhat:
 >
 > - `LSP7MintableInit` (v0.17.3, with `disableMinting()`) — `0xf006554F96bf91616dAda3FdB73Ca213874DcFF9`
+> - `LSP7MintableInit` (v0.19.0, with `burn()`) — `0xB892FE20CF59ce04449372eaF3D76db242a4b5E0`
 > - `LSP8MintableInit` (v0.17.3, with `disableMinting()`) — `0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB`
+> - `LSP8MintableInit` (v0.19.0, with `burn()`) — `0x80697c826bee616C0a1648EA0EDf34aBeb2eC9Ef`
 > - `LSP7CustomizableTokenInit` (v0.18.1) — `0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F`
 > - `LSP8CustomizableTokenInit` (v0.18.1) — `0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8`
 >
@@ -86,8 +90,8 @@ logic is identical.
 | `UniversalProfileInit` (both v0.12.1 and 0.14.0)            | `initialize(address initialOwner)`                              |
 | `LSP6KeyManagerInit` (both v0.12.1 and 0.14.0)              | `initialize(address target_)` where `target_` is the UP address |
 | `LSP1UniversalReceiverDelegateUP` (both v0.12.1 and 0.14.0) | No initialization needed.                                       |
-| `LSP7MintableInit` (both v0.14.0 and v0.17.3)               | No initialization needed                                        |
-| `LSP8MintableInit` (both v0.14.0 and v0.17.3)               | No initialization needed                                        |
+| `LSP7MintableInit` (v0.14.0, v0.17.3, and v0.19.0)          | No initialization needed                                        |
+| `LSP8MintableInit` (v0.14.0, v0.17.3, and v0.19.0)          | No initialization needed                                        |
 
 ## `deployments/contracts.json` Reference
 

@@ -3,6 +3,12 @@ pragma solidity ^0.8.27;
 
 // modules
 import {
+    OwnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {
+    LSP7BurnableInitAbstract
+} from "../extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol";
+import {
     LSP7DigitalAssetInitAbstract
 } from "../LSP7DigitalAssetInitAbstract.sol";
 import {
@@ -10,9 +16,14 @@ import {
 } from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
 
 /**
- * @dev LSP7DigitalAsset deployable preset contract (proxy version) with a public {mint} function callable by addresses holding `MINTER_ROLE`.
+ * @dev LSP7DigitalAsset deployable preset contract (proxy version) with:
+ * - a public {mint} function callable by addresses holding `MINTER_ROLE`.
+ * - a public {burn} function callable by any token holder or operator.
  */
-contract LSP7MintableInit is LSP7MintableInitAbstract {
+contract LSP7MintableInit is
+    LSP7MintableInitAbstract,
+    LSP7BurnableInitAbstract
+{
     /**
      * @dev initialize (= lock) base implementation contract on deployment
      */
@@ -45,5 +56,36 @@ contract LSP7MintableInit is LSP7MintableInitAbstract {
         );
         __AccessControlExtended_init();
         __LSP7Mintable_init_unchained(true);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(LSP7MintableInitAbstract, LSP7DigitalAssetInitAbstract)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function _mint(
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    )
+        internal
+        virtual
+        override(LSP7MintableInitAbstract, LSP7DigitalAssetInitAbstract)
+    {
+        LSP7MintableInitAbstract._mint(to, amount, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(LSP7MintableInitAbstract, OwnableUpgradeable) {
+        LSP7MintableInitAbstract._transferOwnership(newOwner);
     }
 }
