@@ -18,7 +18,7 @@ import {
 /**
  * @dev LSP7DigitalAsset deployable preset contract (proxy version) with:
  * - a public {mint} function callable by addresses holding `MINTER_ROLE`.
- * - a public {burn} function callable by any token holder.
+ * - a public {burn} function callable by any token holder or operator.
  */
 contract LSP7MintableInit is
     LSP7MintableInitAbstract,

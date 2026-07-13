@@ -17,7 +17,7 @@ import {
 /**
  * @title LSP8IdentifiableDigitalAsset deployable preset contract with:
  * - a public {mint} function callable by addresses holding `MINTER_ROLE`.
- * - a public {burn} function callable by any token holder.
+ * - a public {burn} function callable by any token holder or operator.
  */
 contract LSP8Mintable is LSP8MintableAbstract, LSP8Burnable {
     /**
