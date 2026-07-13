@@ -94,14 +94,16 @@ The Universal Profile implementation contracts are base contracts used behind ER
 
 - **LSP7MintableInit / LSP8MintableInit** — Proxy-deployable mintable token implementations (fungible / non-fungible).
 
-| Contract                                   | Version | Address                                      | Source                                                                                                                                                                                |
-| ------------------------------------------ | ------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| LSP7MintableInit                           | 0.14.0  | `0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp-smart-contracts-v0.14.0/contracts/LSP7DigitalAsset/presets/LSP7MintableInit.sol)             |
-| LSP7MintableInit (with `disableMinting()`) | 0.17.3  | `0xf006554F96bf91616dAda3FdB73Ca213874DcFF9` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp7-contracts-v0.17.3/packages/lsp7-contracts/contracts/presets/LSP7MintableInit.sol)           |
-| LSP7CustomizableTokenInit                  | 0.18.1  | `0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp7-contracts-v0.18.1/packages/lsp7-contracts/contracts/presets/LSP7CustomizableTokenInit.sol)  |
-| LSP8MintableInit                           | 0.14.0  | `0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp-smart-contracts-v0.14.0/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInit.sol) |
-| LSP8MintableInit (with `disableMinting()`) | 0.17.3  | `0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp8-contracts-v0.17.3/packages/lsp8-contracts/contracts/presets/LSP8MintableInit.sol)           |
-| LSP8CustomizableTokenInit                  | 0.18.1  | `0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp8-contracts-v0.18.1/packages/lsp8-contracts/contracts/presets/LSP8CustomizableTokenInit.sol)  |
+| Contract                                   | Version | Address                                       | Source                                                                                                                                                                                |
+| ------------------------------------------ | ------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LSP7MintableInit                           | 0.14.0  | `0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8`  | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp-smart-contracts-v0.14.0/contracts/LSP7DigitalAsset/presets/LSP7MintableInit.sol)             |
+| LSP7MintableInit (with `disableMinting()`) | 0.17.3  | `0xf006554F96bf91616dAda3FdB73Ca213874DcFF9`  | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp7-contracts-v0.17.3/packages/lsp7-contracts/contracts/presets/LSP7MintableInit.sol)           |
+| LSP7MintableInit (with `burn()`)           | 0.19.0  | `0xBf52761A84C3dFd4089Ca81A066bbf8018B6441e.` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp7-contracts-v0.19.0/packages/lsp7-contracts/contracts/presets/LSP7MintableInit.sol)           |
+| LSP7CustomizableTokenInit                  | 0.18.1  | `0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F`  | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp7-contracts-v0.18.1/packages/lsp7-contracts/contracts/presets/LSP7CustomizableTokenInit.sol)  |
+| LSP8MintableInit                           | 0.14.0  | `0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997`  | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp-smart-contracts-v0.14.0/contracts/LSP8IdentifiableDigitalAsset/presets/LSP8MintableInit.sol) |
+| LSP8MintableInit (with `disableMinting()`) | 0.17.3  | `0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB`  | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp8-contracts-v0.17.3/packages/lsp8-contracts/contracts/presets/LSP8MintableInit.sol)           |
+| LSP8MintableInit (with `burn()`)           | 0.19.0  | `0x80697c826bee616C0a1648EA0EDf34aBeb2eC9Ef.` | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp8-contracts-v0.19.0/packages/lsp8-contracts/contracts/presets/LSP8MintableInit.sol)           |
+| LSP8CustomizableTokenInit                  | 0.18.1  | `0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8`  | [**Solidity source code**](https://github.com/lukso-network/lsp-smart-contracts/blob/lsp8-contracts-v0.18.1/packages/lsp8-contracts/contracts/presets/LSP8CustomizableTokenInit.sol)  |
 
 ---
 
@@ -197,7 +199,7 @@ source deployments/.env
 There are 3 different utility scripts that can be used to deploy the Universal Profile smart contract infrastructure on a new target EVM chain.
 
 - `DeployUniversalProfileStack.s.sol`: deploy the `LSP23LinkedContractsFactory`, `UniversalProfileInitPostDeploymentModule`, `UniversalProfilePostDeploymentModule`, `ERCTokenCallbacks` and the v0.14.0 of the Universal Profile base implementation contracts (`UniversalProfileInit`, `LSP6KeyManagerInit`, and `LSP1UniversalReceiverDelegateUP`).
-- `DeployTokenImplementationContracts.s.sol`: deploy `LSP7MintableInit` + `LSP8MintableInit` (v0.17.3), and `LSP7CustomizableTokenInit` + `LSP8CustomizableTokenInit` (v0.18.1).
+- `DeployTokenImplementationContracts.s.sol`: deploy `LSP7MintableInit` + `LSP8MintableInit` (v0.19.0), and `LSP7CustomizableTokenInit` + `LSP8CustomizableTokenInit` (v0.18.1).
 - `DeployFromArtifact.s.sol`: use this script to deploy a single contract individually. See section **Deploy Individual artifacts** below.
 
 Both `DeployUniversalProfileStack.s.sol` and `DeployTokenImplementationContracts.s.sol` are **idempotent** and run the same safety checks per contract:
@@ -254,8 +256,8 @@ bash deployments/write-deployment-records.sh --chain-id <chainId> --rpc-url "$RP
 
 This script deploys the following contracts:
 
-- `LSP7MintableInit` (v0.17.3)
-- `LSP8MintableInit` (v0.17.3)
+- `LSP7MintableInit` (v0.19.0)
+- `LSP8MintableInit` (v0.19.0)
 - `LSP7CustomizableTokenInit` (v0.18.1)
 - `LSP8CustomizableTokenInit` (v0.18.1)
 
@@ -294,7 +296,7 @@ Run the dedicated script with the same `CONTRACT_TO_DEPLOY` identifier:
 
 ```bash
 # Run from the repository root
-bash deployments/validate-bytecode.sh --contract LSP7MintableInit-v0.17.3
+bash deployments/validate-bytecode.sh --contract LSP7MintableInit-v0.19.0
 ```
 
 The Standard JSON input embeds its own source code, so this check is
@@ -403,7 +405,7 @@ chain):
   `LSP1UniversalReceiverDelegateUP`).
 - `--all-token-contracts` — the 4 token base implementation contracts deployed
   by `DeployTokenImplementationContracts.s.sol` (`LSP7MintableInit` +
-  `LSP8MintableInit` v0.17.3, `LSP7CustomizableTokenInit` +
+  `LSP8MintableInit` v0.19.0, `LSP7CustomizableTokenInit` +
   `LSP8CustomizableTokenInit` v0.18.1).
 
 Exactly one of `--address`, `--all-up-contracts` or `--all-token-contracts` must
