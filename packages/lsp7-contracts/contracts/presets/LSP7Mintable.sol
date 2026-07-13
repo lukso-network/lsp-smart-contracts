@@ -54,7 +54,7 @@ contract LSP7Mintable is LSP7MintableAbstract, LSP7Burnable {
         override(LSP7MintableAbstract, LSP7DigitalAsset)
         returns (bool)
     {
-        return LSP7MintableAbstract.supportsInterface(interfaceId);
+        return super.supportsInterface(interfaceId);
     }
 
     function _mint(

@@ -49,7 +49,7 @@ Below are the full compiler version string and the compiler settings used for th
 > with Hardhat:
 >
 > - `LSP7MintableInit` (v0.17.3, with `disableMinting()`) — `0xf006554F96bf91616dAda3FdB73Ca213874DcFF9`
-> - `LSP7MintableInit` (v0.19.0, with `burn()`) — `0xBf52761A84C3dFd4089Ca81A066bbf8018B6441e.`
+> - `LSP7MintableInit` (v0.19.0, with `burn()`) — `0xB892FE20CF59ce04449372eaF3D76db242a4b5E0`
 > - `LSP8MintableInit` (v0.17.3, with `disableMinting()`) — `0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB`
 > - `LSP8MintableInit` (v0.19.0, with `burn()`) — `0x80697c826bee616C0a1648EA0EDf34aBeb2eC9Ef`
 > - `LSP7CustomizableTokenInit` (v0.18.1) — `0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F`

@@ -67,7 +67,7 @@ contract LSP7MintableInit is
         override(LSP7MintableInitAbstract, LSP7DigitalAssetInitAbstract)
         returns (bool)
     {
-        return LSP7MintableInitAbstract.supportsInterface(interfaceId);
+        return super.supportsInterface(interfaceId);
     }
 
     function _mint(
