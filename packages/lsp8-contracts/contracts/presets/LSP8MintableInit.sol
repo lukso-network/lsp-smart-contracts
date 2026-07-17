@@ -59,6 +59,8 @@ contract LSP8MintableInit is
         __LSP8Mintable_init_unchained(true);
     }
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {supportsInterface} functions
+    /// via `super` to aggregate the interface IDs supported across all inherited modules.
     function supportsInterface(
         bytes4 interfaceId
     )
@@ -74,6 +76,8 @@ contract LSP8MintableInit is
         return super.supportsInterface(interfaceId);
     }
 
+    /// @inheritdoc LSP8MintableInitAbstract
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_mint} function via `super`.
     function _mint(
         address to,
         bytes32 tokenId,
@@ -87,12 +91,15 @@ contract LSP8MintableInit is
             LSP8IdentifiableDigitalAssetInitAbstract
         )
     {
-        LSP8MintableInitAbstract._mint(to, tokenId, force, data);
+        super._mint(to, tokenId, force, data);
     }
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_transferOwnership} function
+    /// via `super` so that each inherited module updates its ownership-dependent state.
+    /// When contract ownership changes, this will clear the admin role for: `MINTER_ROLE`.
     function _transferOwnership(
         address newOwner
     ) internal virtual override(LSP8MintableInitAbstract, OwnableUpgradeable) {
-        LSP8MintableInitAbstract._transferOwnership(newOwner);
+        super._transferOwnership(newOwner);
     }
 }

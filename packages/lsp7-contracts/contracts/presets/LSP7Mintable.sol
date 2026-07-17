@@ -12,21 +12,17 @@ import {
     AccessControlExtendedAbstract
 } from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
-/**
- * @title LSP7DigitalAsset deployable preset contract with:
- * - a public {mint} function callable by addresses holding `MINTER_ROLE`.
- * - a public {burn} function callable by any token holder or operator.
- */
+/// @title LSP7DigitalAsset deployable preset contract with:
+/// - a public {mint} function callable by addresses holding `MINTER_ROLE`.
+/// - a public {burn} function callable by any token holder or operator.
 contract LSP7Mintable is LSP7MintableAbstract, LSP7Burnable {
-    /**
-     * @notice Deploying a `LSP7Mintable` token contract.
-     * @dev Set the token to be mintable to allow minting more tokens after deployment.
-     * @param name_ The name of the token.
-     * @param symbol_ The symbol of the token.
-     * @param newOwner_ The owner of the token contract.
-     * @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
-     * @param isNonDivisible_ Specify if the LSP7 token is divisible (decimals = 18) or non-divisible (decimals = 0).
-     */
+    /// @notice Deploying a `LSP7Mintable` token contract.
+    /// @dev Set the token to be mintable to allow minting more tokens after deployment.
+    /// @param name_ The name of the token.
+    /// @param symbol_ The symbol of the token.
+    /// @param newOwner_ The owner of the token contract.
+    /// @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
+    /// @param isNonDivisible_ Specify if the LSP7 token is divisible (decimals = 18) or non-divisible (decimals = 0).
     constructor(
         string memory name_,
         string memory symbol_,
@@ -45,6 +41,8 @@ contract LSP7Mintable is LSP7MintableAbstract, LSP7Burnable {
         LSP7MintableAbstract(true)
     {}
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {supportsInterface} functions
+    /// via `super` to aggregate the interface IDs supported across all inherited modules.
     function supportsInterface(
         bytes4 interfaceId
     )
@@ -57,18 +55,23 @@ contract LSP7Mintable is LSP7MintableAbstract, LSP7Burnable {
         return super.supportsInterface(interfaceId);
     }
 
+    /// @inheritdoc LSP7MintableAbstract
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_mint} function via `super`.
     function _mint(
         address to,
         uint256 amount,
         bool force,
         bytes memory data
     ) internal virtual override(LSP7MintableAbstract, LSP7DigitalAsset) {
-        LSP7MintableAbstract._mint(to, amount, force, data);
+        super._mint(to, amount, force, data);
     }
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_transferOwnership} function
+    /// via `super` so that each inherited module updates its ownership-dependent state.
+    /// When contract ownership changes, this will clear the admin role for: `MINTER_ROLE`.
     function _transferOwnership(
         address newOwner
     ) internal virtual override(LSP7MintableAbstract, Ownable) {
-        LSP7MintableAbstract._transferOwnership(newOwner);
+        super._transferOwnership(newOwner);
     }
 }

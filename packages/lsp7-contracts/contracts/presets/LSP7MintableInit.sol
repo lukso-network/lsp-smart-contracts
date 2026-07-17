@@ -15,31 +15,25 @@ import {
     LSP7MintableInitAbstract
 } from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
 
-/**
- * @dev LSP7DigitalAsset deployable preset contract (proxy version) with:
- * - a public {mint} function callable by addresses holding `MINTER_ROLE`.
- * - a public {burn} function callable by any token holder or operator.
- */
+/// @dev LSP7DigitalAsset deployable preset contract (proxy version) with:
+/// - a public {mint} function callable by addresses holding `MINTER_ROLE`.
+/// - a public {burn} function callable by any token holder or operator.
 contract LSP7MintableInit is
     LSP7MintableInitAbstract,
     LSP7BurnableInitAbstract
 {
-    /**
-     * @dev initialize (= lock) base implementation contract on deployment
-     */
+    /// @dev initialize (= lock) base implementation contract on deployment
     constructor() {
         _disableInitializers();
     }
 
-    /**
-     * @notice Initializing a `LSP7MintableInit` token contract.
-     * @dev Set the token to be mintable to allow minting more tokens after deployment.
-     * @param name_ The name of the token.
-     * @param symbol_ The symbol of the token.
-     * @param newOwner_ The owner of the token contract.
-     * @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
-     * @param isNonDivisible_ Specify if the LSP7 token is divisible (decimals = 18) or non-divisible (decimals = 0)
-     */
+    /// @notice Initializing a `LSP7MintableInit` token contract.
+    /// @dev Set the token to be mintable to allow minting more tokens after deployment.
+    /// @param name_ The name of the token.
+    /// @param symbol_ The symbol of the token.
+    /// @param newOwner_ The owner of the token contract.
+    /// @param lsp4TokenType_ The type of token this digital asset contract represents (`0` = Token, `1` = NFT, `2` = Collection).
+    /// @param isNonDivisible_ Specify if the LSP7 token is divisible (decimals = 18) or non-divisible (decimals = 0)
     function initialize(
         string calldata name_,
         string calldata symbol_,
@@ -58,6 +52,8 @@ contract LSP7MintableInit is
         __LSP7Mintable_init_unchained(true);
     }
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {supportsInterface} functions
+    /// via `super` to aggregate the interface IDs supported across all inherited modules.
     function supportsInterface(
         bytes4 interfaceId
     )
@@ -70,6 +66,8 @@ contract LSP7MintableInit is
         return super.supportsInterface(interfaceId);
     }
 
+    /// @inheritdoc LSP7MintableInitAbstract
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_mint} function via `super`.
     function _mint(
         address to,
         uint256 amount,
@@ -80,12 +78,15 @@ contract LSP7MintableInit is
         virtual
         override(LSP7MintableInitAbstract, LSP7DigitalAssetInitAbstract)
     {
-        LSP7MintableInitAbstract._mint(to, amount, force, data);
+        super._mint(to, amount, force, data);
     }
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_transferOwnership} function
+    /// via `super` so that each inherited module updates its ownership-dependent state.
+    /// When contract ownership changes, this will clear the admin role for: `MINTER_ROLE`.
     function _transferOwnership(
         address newOwner
     ) internal virtual override(LSP7MintableInitAbstract, OwnableUpgradeable) {
-        LSP7MintableInitAbstract._transferOwnership(newOwner);
+        super._transferOwnership(newOwner);
     }
 }
