@@ -8,8 +8,8 @@
   "deployer": "0xF0efeD8d49c0FA6CFC861Bf0311b6B3a4414e4b7",
   "status": "deployed",
   "runtimeBytecodeMatch": true,
-  "timestamp": 1783516851,
-  "rpcUrlUsed": null,
-  "txHash": null,
-  "blockNumber": null
+  "timestamp": 1784388641,
+  "rpcUrlUsed": "https://polygon-amoy.drpc.org",
+  "txHash": "0xd0530d99f14a491b236fe533114228c38ceaab515d8d30a56385eb335a7feb8e",
+  "blockNumber": 42570243
 }
