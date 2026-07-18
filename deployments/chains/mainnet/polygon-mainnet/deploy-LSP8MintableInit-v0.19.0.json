@@ -1,0 +1,15 @@
+{
+  "chainId": 137,
+  "chainSlug": "polygon-mainnet",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784392518,
+  "rpcUrlUsed": "https://polygon-bor-rpc.publicnode.com",
+  "txHash": "0x44e422b0b5b3656d48a358baec643b9357fe4c4944b7819de34a9c3ec2b6a10b",
+  "blockNumber": 90458352
+}
