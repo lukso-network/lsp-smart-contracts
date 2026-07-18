@@ -47,6 +47,8 @@ contract LSP8Mintable is LSP8MintableAbstract, LSP8Burnable {
         LSP8MintableAbstract(true)
     {}
 
+    /// @dev Required override to resolve multiple inheritance. Delegates via `super` to the parent implementation
+    /// that aggregates the interface IDs supported across all inherited modules.
     function supportsInterface(
         bytes4 interfaceId
     )
@@ -59,6 +61,8 @@ contract LSP8Mintable is LSP8MintableAbstract, LSP8Burnable {
         return super.supportsInterface(interfaceId);
     }
 
+    /// @inheritdoc LSP8MintableAbstract
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_mint} function via `super`.
     function _mint(
         address to,
         bytes32 tokenId,
@@ -69,12 +73,15 @@ contract LSP8Mintable is LSP8MintableAbstract, LSP8Burnable {
         virtual
         override(LSP8MintableAbstract, LSP8IdentifiableDigitalAsset)
     {
-        LSP8MintableAbstract._mint(to, tokenId, force, data);
+        super._mint(to, tokenId, force, data);
     }
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_transferOwnership} function
+    /// via `super` so that each inherited module updates its ownership-dependent state.
+    /// When contract ownership changes, this resets the admin role of `MINTER_ROLE` back to `DEFAULT_ADMIN_ROLE`.
     function _transferOwnership(
         address newOwner
     ) internal virtual override(LSP8MintableAbstract, Ownable) {
-        LSP8MintableAbstract._transferOwnership(newOwner);
+        super._transferOwnership(newOwner);
     }
 }
