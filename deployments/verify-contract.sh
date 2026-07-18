@@ -29,8 +29,8 @@ readonly UP_STACK_CONTRACTS=(
     "LSP1UniversalReceiverDelegateUP-v0.14.0"
 )
 readonly TOKEN_CONTRACTS=(
-    "LSP7MintableInit-v0.17.3"
-    "LSP8MintableInit-v0.17.3"
+    "LSP7MintableInit-v0.19.0"
+    "LSP8MintableInit-v0.19.0"
     "LSP7CustomizableTokenInit-v0.18.1"
     "LSP8CustomizableTokenInit-v0.18.1"
 )
