@@ -52,8 +52,8 @@ contract LSP7MintableInit is
         __LSP7Mintable_init_unchained(true);
     }
 
-    /// @dev Required override to resolve multiple inheritance. Calls every parent {supportsInterface} functions
-    /// via `super` to aggregate the interface IDs supported across all inherited modules.
+    /// @dev Required override to resolve multiple inheritance. Delegates via `super` to the parent implementation
+    /// that aggregates the interface IDs supported across all inherited modules.
     function supportsInterface(
         bytes4 interfaceId
     )
@@ -83,7 +83,7 @@ contract LSP7MintableInit is
 
     /// @dev Required override to resolve multiple inheritance. Calls every parent {_transferOwnership} function
     /// via `super` so that each inherited module updates its ownership-dependent state.
-    /// When contract ownership changes, this will clear the admin role for: `MINTER_ROLE`.
+    /// When contract ownership changes, this resets the admin role of `MINTER_ROLE` back to `DEFAULT_ADMIN_ROLE`.
     function _transferOwnership(
         address newOwner
     ) internal virtual override(LSP7MintableInitAbstract, OwnableUpgradeable) {
