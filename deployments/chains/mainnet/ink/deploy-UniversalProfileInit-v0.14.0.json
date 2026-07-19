@@ -1,0 +1,15 @@
+{
+  "chainId": 57073,
+  "chainSlug": "ink",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.14.0",
+  "address": "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784447933,
+  "rpcUrlUsed": "https://rpc-gel.inkonchain.com",
+  "txHash": "0x2890d4706b66cb46c935d3208d7285498fdf62debb85878b09f2108c83d4ce87",
+  "blockNumber": 50949531
+}
