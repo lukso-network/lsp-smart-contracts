@@ -1,0 +1,15 @@
+{
+  "chainId": 42220,
+  "chainSlug": "celo-mainnet",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.14.0",
+  "address": "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784449909,
+  "rpcUrlUsed": "https://forno.celo.org",
+  "txHash": "0xa90698a43027acd39b3cfb14d5ac4599d217a82aee4f64f30d81cfb371b0dc51",
+  "blockNumber": 72549162
+}
