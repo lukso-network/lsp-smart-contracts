@@ -1,0 +1,15 @@
+{
+  "chainId": 177,
+  "chainSlug": "hashkey-chain",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784492711,
+  "rpcUrlUsed": "https://mainnet.hsk.xyz",
+  "txHash": "0x68c3bc5f62f3d1c2f50bb7e69292bd35dbcf40d9ff1a2cac5528039dea33674a",
+  "blockNumber": 25072793
+}

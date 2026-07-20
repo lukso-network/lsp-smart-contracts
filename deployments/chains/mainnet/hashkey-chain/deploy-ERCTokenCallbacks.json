@@ -1,0 +1,15 @@
+{
+  "chainId": 177,
+  "chainSlug": "hashkey-chain",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784492711,
+  "rpcUrlUsed": "https://mainnet.hsk.xyz",
+  "txHash": "0xbff3cf67ec2cdba060d4ffa90284719c113007dcf9f08ec15e5d4b171e41928b",
+  "blockNumber": 25072793
+}
