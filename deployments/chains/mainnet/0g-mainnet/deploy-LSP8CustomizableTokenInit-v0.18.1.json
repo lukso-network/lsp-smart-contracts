@@ -1,0 +1,15 @@
+{
+  "chainId": 16661,
+  "chainSlug": "0g-mainnet",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784486982,
+  "rpcUrlUsed": "https://evmrpc.0g.ai",
+  "txHash": "0xcd8d3dd6d73f55f07a6652839befaa13bf5ebe969edd4821f2a83daa3d4f39d8",
+  "blockNumber": 39258010
+}
