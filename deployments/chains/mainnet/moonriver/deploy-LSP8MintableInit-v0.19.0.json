@@ -1,0 +1,15 @@
+{
+  "chainId": 1285,
+  "chainSlug": "moonriver",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784493306,
+  "rpcUrlUsed": "https://moonriver-rpc.publicnode.com",
+  "txHash": "0x4772f208cadaf64cf271a76e8bb0f7a74f5d503ae4d441b41663b1a27c12af40",
+  "blockNumber": 17121365
+}

@@ -1,0 +1,15 @@
+{
+  "chainId": 1285,
+  "chainSlug": "moonriver",
+  "network": "mainnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.14.0",
+  "address": "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784493192,
+  "rpcUrlUsed": "https://moonriver-rpc.publicnode.com",
+  "txHash": "0xdf237ff5b69b9f6973b7c7e329822e677f3be3a5fce1552fc133e7a0b49b9a8e",
+  "blockNumber": 17121360
+}
