@@ -1,0 +1,15 @@
+{
+  "chainId": 42793,
+  "chainSlug": "etherlink-mainnet",
+  "network": "mainnet",
+  "contract": "UniversalProfileInitPostDeploymentModule",
+  "version": null,
+  "address": "0x000000000066093407b6704B89793beFfD0D8F00",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784492834,
+  "rpcUrlUsed": "https://node.mainnet.etherlink.com",
+  "txHash": "0x60a9b23b8c6bae28773f4ffaaecda17acf5ce55e9b480093a783e82ec7f4f05a",
+  "blockNumber": 48732770
+}
