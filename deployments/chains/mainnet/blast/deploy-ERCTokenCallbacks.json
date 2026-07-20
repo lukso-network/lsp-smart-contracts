@@ -1,0 +1,15 @@
+{
+  "chainId": 81457,
+  "chainSlug": "blast",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784481251,
+  "rpcUrlUsed": "https://blast-rpc.publicnode.com",
+  "txHash": "0x10e5aeee868bc00e1fc16259cbd034b2e78b2c14e92a3e93b61734f855c2e5d4",
+  "blockNumber": 37835722
+}
