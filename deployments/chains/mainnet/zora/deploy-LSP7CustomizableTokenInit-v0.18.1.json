@@ -1,0 +1,15 @@
+{
+  "chainId": 7777777,
+  "chainSlug": "zora",
+  "network": "mainnet",
+  "contract": "LSP7CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784487257,
+  "rpcUrlUsed": "https://rpc.zora.energy/",
+  "txHash": "0x1788224c8f785ac1866095d7357cefbf57d09bd78e04cd1e47a6f9a00e9df389",
+  "blockNumber": 48896713
+}
