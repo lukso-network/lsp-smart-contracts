@@ -1,0 +1,15 @@
+{
+  "chainId": 7000,
+  "chainSlug": "zetachain-mainnet",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784494171,
+  "rpcUrlUsed": "https://zetachain-evm.blockpi.network/v1/rpc/public",
+  "txHash": "0xb236031a404418bb914cc3768d4872f8145f08d8827ca44a3a4d59cc65b8d25e",
+  "blockNumber": 17515125
+}
