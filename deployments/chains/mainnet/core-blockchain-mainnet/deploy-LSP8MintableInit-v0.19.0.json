@@ -1,0 +1,15 @@
+{
+  "chainId": 1116,
+  "chainSlug": "core-blockchain-mainnet",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784498020,
+  "rpcUrlUsed": "https://core.drpc.org",
+  "txHash": "0xe3fe659daae56a5fe63476e76e10e2c8b6e31470e560a77d2e2e86708e4de73b",
+  "blockNumber": 37063080
+}

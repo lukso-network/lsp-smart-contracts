@@ -1,0 +1,15 @@
+{
+  "chainId": 1116,
+  "chainSlug": "core-blockchain-mainnet",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784494246,
+  "rpcUrlUsed": "https://core.drpc.org",
+  "txHash": "0x4579acab9142ca249c6a7e02d43808295ea217cd677342b3be373dd745f0e7c0",
+  "blockNumber": null
+}
