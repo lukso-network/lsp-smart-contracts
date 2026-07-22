@@ -1,0 +1,15 @@
+{
+  "chainId": 666666666,
+  "chainSlug": "degen-chain",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784498436,
+  "rpcUrlUsed": "https://rpc.degen.tips",
+  "txHash": "0xd7f5a8ce27b5b10642f5d8d9b2b310c4edd621f192e1d11d38b0218fe98023c4",
+  "blockNumber": 26925150
+}
