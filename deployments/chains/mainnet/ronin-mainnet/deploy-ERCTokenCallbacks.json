@@ -1,0 +1,15 @@
+{
+  "chainId": 2020,
+  "chainSlug": "ronin-mainnet",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784487017,
+  "rpcUrlUsed": "https://api.roninchain.com/rpc",
+  "txHash": "0x29517093c9efe81be36485d4168ee2bea56f6476c631d1a8f84a653cbf97e633",
+  "blockNumber": 58509121
+}
