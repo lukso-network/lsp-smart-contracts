@@ -1,0 +1,15 @@
+{
+  "chainId": 88888,
+  "chainSlug": "chiliz-mainnet",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785759513,
+  "rpcUrlUsed": "https://rpc.ankr.com/chiliz",
+  "txHash": "0x999b89bad9d3acc82f73fb5a5d51266b996880b86a6b5bccfbbdb89014a6d90a",
+  "blockNumber": 36330537
+}
