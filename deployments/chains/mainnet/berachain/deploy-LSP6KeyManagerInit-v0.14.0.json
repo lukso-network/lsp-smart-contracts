@@ -1,0 +1,15 @@
+{
+  "chainId": 80094,
+  "chainSlug": "berachain",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.14.0",
+  "address": "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784479156,
+  "rpcUrlUsed": "https://berachain-rpc.publicnode.com",
+  "txHash": "0x7d31f2cf01bc69d156d09689d208ff1f2c2d24a46e6c7afb1caf1cabd2ddfc48",
+  "blockNumber": 23732225
+}

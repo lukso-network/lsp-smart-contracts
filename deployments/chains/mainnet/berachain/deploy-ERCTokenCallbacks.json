@@ -1,0 +1,15 @@
+{
+  "chainId": 80094,
+  "chainSlug": "berachain",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784479156,
+  "rpcUrlUsed": "https://berachain-rpc.publicnode.com",
+  "txHash": "0x8080307e1c88e90c7b632851e8ae6e7452e58f4edf76846f9b30e97695cc4dd5",
+  "blockNumber": 23732225
+}
