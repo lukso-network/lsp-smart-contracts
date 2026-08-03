@@ -858,7 +858,7 @@
   },
   {
     "chainId": 3338,
-    "name": "peaq",
+    "name": "Peaq",
     "rpcUrl": "https://quicknode1.peaq.xyz",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32233/large/peaq.jpg?1748597584",
     "currencySymbol": "PEAQ",
