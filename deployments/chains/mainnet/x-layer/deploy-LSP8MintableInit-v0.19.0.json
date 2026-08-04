@@ -1,0 +1,15 @@
+{
+  "chainId": 196,
+  "chainSlug": "x-layer",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784493489,
+  "rpcUrlUsed": "https://rpc.xlayer.tech",
+  "txHash": "0x8611b9f54c0b25fcd234ab224768a7942287c0034c7cdf87cf5f766879f34b02",
+  "blockNumber": 65724465
+}
