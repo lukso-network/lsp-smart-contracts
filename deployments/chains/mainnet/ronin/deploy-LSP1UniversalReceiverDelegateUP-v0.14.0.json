@@ -1,6 +1,6 @@
 {
   "chainId": 2020,
-  "chainSlug": "ronin-mainnet",
+  "chainSlug": "ronin",
   "network": "mainnet",
   "contract": "LSP1UniversalReceiverDelegateUP",
   "version": "0.14.0",

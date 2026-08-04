@@ -1,0 +1,15 @@
+{
+  "chainId": 2020,
+  "chainSlug": "ronin",
+  "network": "mainnet",
+  "contract": "LSP7MintableInit",
+  "version": "0.19.0",
+  "address": "0x94430626Ad0E3b4716f7c5c2dA92A0F3A3fD63e7",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785847097,
+  "rpcUrlUsed": "https://api.roninchain.com/rpc",
+  "txHash": "0xca1e0b5b381e2a814873480c0b298f33723bfe6205f9165c7dd02fa6b85b6bfe",
+  "blockNumber": 59189161
+}
