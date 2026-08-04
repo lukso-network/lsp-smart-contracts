@@ -1,0 +1,15 @@
+{
+  "chainId": 25,
+  "chainSlug": "cronos-mainnet",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785796391,
+  "rpcUrlUsed": "https://cronos-evm-rpc.publicnode.com",
+  "txHash": "0x389855e53baad06fefc280af4f83d2dd6ec2ccb792857cd00dcd83ccec5e1f68",
+  "blockNumber": 83643338
+}

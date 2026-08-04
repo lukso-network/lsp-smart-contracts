@@ -1,0 +1,15 @@
+{
+  "chainId": 25,
+  "chainSlug": "cronos-mainnet",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785796391,
+  "rpcUrlUsed": "https://cronos-evm-rpc.publicnode.com",
+  "txHash": "0x45d70c51f11edcd398d644e82d93bb1978c2b636bfc2fcbe1e08046b2516b2bd",
+  "blockNumber": 83643332
+}
