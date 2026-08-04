@@ -1,6 +1,6 @@
 {
   "chainId": 25,
-  "chainSlug": "cronos-mainnet",
+  "chainSlug": "cronos",
   "network": "mainnet",
   "contract": "ERCTokenCallbacks",
   "version": null,

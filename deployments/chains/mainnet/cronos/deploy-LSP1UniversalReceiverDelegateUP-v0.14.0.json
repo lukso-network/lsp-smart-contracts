@@ -1,15 +1,15 @@
 {
   "chainId": 25,
-  "chainSlug": "cronos-mainnet",
+  "chainSlug": "cronos",
   "network": "mainnet",
-  "contract": "LSP6KeyManagerInit",
+  "contract": "LSP1UniversalReceiverDelegateUP",
   "version": "0.14.0",
-  "address": "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4",
+  "address": "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D",
   "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
   "status": "deployed",
   "runtimeBytecodeMatch": true,
   "timestamp": 1785796391,
   "rpcUrlUsed": "https://cronos-evm-rpc.publicnode.com",
-  "txHash": "0xd6602ab474a93bd824ae916deec842432bbf1101c7215f773df1c18cb6541e1f",
-  "blockNumber": 86274954
+  "txHash": "0x90d8573c179674c281fee08bdb839272f908aecdf32f1ea1ec3067fe651a0d16",
+  "blockNumber": 86274956
 }
