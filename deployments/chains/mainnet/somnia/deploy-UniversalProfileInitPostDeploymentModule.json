@@ -1,0 +1,15 @@
+{
+  "chainId": 5031,
+  "chainSlug": "somnia",
+  "network": "mainnet",
+  "contract": "UniversalProfileInitPostDeploymentModule",
+  "version": null,
+  "address": "0x000000000066093407b6704B89793beFfD0D8F00",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785848964,
+  "rpcUrlUsed": "https://api.infra.mainnet.somnia.network",
+  "txHash": "0x096792d5a45ca9e1fac3751f3185937fe85e8e6a245bff6f8acae5930bbf537e",
+  "blockNumber": 376979551
+}
