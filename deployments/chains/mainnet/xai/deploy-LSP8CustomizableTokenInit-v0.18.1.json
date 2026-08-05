@@ -1,0 +1,15 @@
+{
+  "chainId": 660279,
+  "chainSlug": "xai",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784487421,
+  "rpcUrlUsed": "https://xai-chain.net/rpc",
+  "txHash": "0x92a7e7ea8fe7ae39be23030f8e9bd8cb44d82509cc4cacd720363c7a6594aa5b",
+  "blockNumber": 133519316
+}

@@ -1,0 +1,15 @@
+{
+  "chainId": 14,
+  "chainSlug": "flare",
+  "network": "mainnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.14.0",
+  "address": "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784493626,
+  "rpcUrlUsed": "https://flare-api.flare.network/ext/C/rpc",
+  "txHash": "0x66a350bb6c6a822ba06162c6a8c1c56d41e0ec0631e93a47b4af139d837b8851",
+  "blockNumber": 65448488
+}

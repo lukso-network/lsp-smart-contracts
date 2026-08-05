@@ -1,0 +1,15 @@
+{
+  "chainId": 988,
+  "chainSlug": "stable",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784487510,
+  "rpcUrlUsed": "https://rpc.stable.xyz",
+  "txHash": "0x380c5a3653e97f5655e70916eb633b2fc5969966b933f9b36a51936978b788b6",
+  "blockNumber": 32360193
+}

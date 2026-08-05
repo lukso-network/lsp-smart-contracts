@@ -1,0 +1,15 @@
+{
+  "chainId": 988,
+  "chainSlug": "stable",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.14.0",
+  "address": "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784487510,
+  "rpcUrlUsed": "https://rpc.stable.xyz",
+  "txHash": "0xac7ffd21b7bb35a5aab872f5873180323772d109672d233abeea1dc27821b35f",
+  "blockNumber": 32360193
+}
