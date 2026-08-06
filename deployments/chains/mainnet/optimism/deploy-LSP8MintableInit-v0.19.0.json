@@ -1,0 +1,15 @@
+{
+  "chainId": 10,
+  "chainSlug": "optimism",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786002879,
+  "rpcUrlUsed": "https://mainnet.optimism.io",
+  "txHash": "0xb04e235889e58ad2afca2b325dea29a2464969c129e1b511d2a356a7ad98fbfa",
+  "blockNumber": 155202054
+}
