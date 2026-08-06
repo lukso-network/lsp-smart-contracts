@@ -1,0 +1,15 @@
+{
+  "chainId": 8453,
+  "chainSlug": "base",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786003113,
+  "rpcUrlUsed": "https://mainnet.base.org",
+  "txHash": "0xbce617f3a104eaa4ef48d61a394a505e0f34ca53326157be5254cb7a563bed10",
+  "blockNumber": 49606887
+}
