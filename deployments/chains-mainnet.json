@@ -479,6 +479,24 @@
     "slug": "hashkey-chain"
   },
   {
+    "chainId": 13371,
+    "name": "Immutable zkEVM",
+    "rpcUrl": "https://rpc.immutable.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/159/large/immutable.jpeg?1706606759",
+    "currencySymbol": "IMX",
+    "explorers": [
+      {
+        "url": "https://explorer.immutable.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://toolkit.immutable.com/bridge",
+      "https://jumper.exchange/"
+    ],
+    "slug": "immutable-zkevm"
+  },
+  {
     "chainId": 57073,
     "name": "Ink",
     "rpcUrl": "https://rpc-gel.inkonchain.com",
@@ -534,6 +552,21 @@
     ],
     "bridges": ["https://app.kava.io/bridge"],
     "slug": "kava-evm"
+  },
+  {
+    "chainId": 232,
+    "name": "Lens",
+    "rpcUrl": "https://rpc.lens.xyz",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22228/large/light-removebg-preview.png?1746161920",
+    "currencySymbol": "GHO",
+    "explorers": [
+      {
+        "url": "https://explorer.lens.xyz",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://relay.link/bridge/lens", "https://jumper.exchange/"],
+    "slug": "lens"
   },
   {
     "chainId": 59144,
