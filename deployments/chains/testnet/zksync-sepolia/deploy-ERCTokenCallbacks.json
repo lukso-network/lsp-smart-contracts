@@ -1,0 +1,15 @@
+{
+  "chainId": 300,
+  "chainSlug": "zksync-sepolia",
+  "network": "testnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786017043,
+  "rpcUrlUsed": "https://rpc.ankr.com/zksync_era_sepolia",
+  "txHash": "0xd45d264d062ce544d88c9ce394582c4bda542e2c68ce8520d39b9f96a7ceed6a",
+  "blockNumber": 8050789
+}

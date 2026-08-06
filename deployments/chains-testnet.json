@@ -43,5 +43,20 @@
     ],
     "bridges": [],
     "slug": "ethereum-hoodi"
+  },
+  {
+    "chainId": 300,
+    "name": "zkSync Sepolia",
+    "rpcUrl": "https://rpc.ankr.com/zksync_era_sepolia",
+    "iconUri": "none",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://cfspart.impots.gouv.fr/enp/accueilensupres.do",
+        "category": "other"
+      }
+    ],
+    "bridges": [],
+    "slug": "zksync-sepolia"
   }
 ]
