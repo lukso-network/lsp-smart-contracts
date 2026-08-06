@@ -1149,5 +1149,24 @@
     ],
     "bridges": ["https://superbridge.app/zora", "https://relay.link/bridge"],
     "slug": "zora"
+  },
+  {
+    "chainId": 324,
+    "name": "zkSync",
+    "rpcUrl": "https://mainnet.era.zksync.io",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/121/large/zksync.jpeg?1706606814",
+    "currencySymbol": "zkSyncMainnetETH",
+    "explorers": [
+      {
+        "url": "https://explorer.zksync.io",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://portal.zksync.io/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "zksync"
   }
 ]
