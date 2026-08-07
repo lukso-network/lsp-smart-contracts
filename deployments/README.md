@@ -37,9 +37,10 @@ Below is the step-by-step procedure for deploying each contract on a new EVM cha
     - [Save records after broadcast](#save-records-after-broadcast)
   - [Manual deployment via `cast send`](#manual-deployment-via-cast-send)
     - [Bytecode Comparison](#bytecode-comparison)
+  - [Deploying the Nick Factory](#deploying-the-nick-factory)
+  - [Script deployment flow](#script-deployment-flow)
   - [Notes \& caveats](#notes--caveats)
   - [Further Reading](#further-reading)
-  - [Script deployment flow](#script-deployment-flow)
 
 ## Related documentation
 
@@ -563,6 +564,44 @@ EXPECTED=$(python3 -c "import json; d=json.load(open('./contracts.json')); print
 [ "$ON_CHAIN" = "$EXPECTED" ] && echo "Bytecode matches" || echo "Bytecode mismatch"
 ```
 
+## Deploying the Nick Factory
+
+The [Nick Factory](https://github.com/Arachnid/deterministic-deployment-proxy/tree/master) contract is used to deployed the Universal Profile and Token Implementation contracts. Therefore, the Nick Factory is required to be deployed at address `0x4e59b44847b379578588920ca78fbf26c0b4956c` on the target chain.
+
+On some target chains, the Nick Factory might not be deployed. The `deploy-nick-factory.sh` script is a convenience script that can be used to deploy it. It pre-funds the signer address and broadcast the deployment transaction.
+
+```bash
+# 1. enter the private key of the address that will broadcast the transaction
+# in the `.env` file
+DEPOYER_PK=0x...
+
+# 2. export the `.env` variables in your shell
+source deployments/.env
+
+# 3. run the script from the repository root
+bash deployments/deploy-nick-factory.sh
+```
+
+## Script deployment flow
+
+The diagram below illustrate the sequence when deploying new contracts to a new EVM chain via the Foundry scripts.
+
+1. Ensure the target chain is listed in `chains-mainnet.json` or `chains-testnet.json` with a `slug` field.
+2. Run the desired deploy script with `--broadcast` (optionally dry-run first without `--broadcast`).
+3. During broadcast, `DeploymentRecorder` writes one JSON record per contract under `deployments/chains/<network>/<slug>/`.
+4. Foundry stores transaction receipts in `broadcast/<Script>.s.sol/<chainId>/run-latest.json`.
+5. Run `write-deployment-records.sh` to fill `txHash`, `blockNumber`, and `rpcUrlUsed` from the broadcast file.
+6. Verify contracts on block explorers (see [step 5](#5---verify-the-contract-on-block-explorer-with-the-standard-json-input)).
+
+```mermaid
+flowchart LR
+    forgeScript["forge script --broadcast"] --> recorder["DeploymentRecorder (Solidity)"]
+    recorder -->|"writes base record (txHash: null)"| recordFile["deployments/chains/mainnet/arbitrum-one/deploy-X-v0.14.0.json"]
+    forgeScript -->|receipts| broadcastFile["broadcast/.../run-latest.json"]
+    enrich["write-deployment-records.sh"] --> broadcastFile
+    enrich -->|"fills txHash, blockNumber, rpcUrlUsed"| recordFile
+```
+
 ---
 
 ## Notes & caveats
@@ -592,23 +631,3 @@ EXPECTED=$(python3 -c "import json; d=json.load(open('./contracts.json')); print
 - [Nick Factory / Deterministic Deployment Proxy](https://github.com/Arachnid/deterministic-deployment-proxy)
 
 ---
-
-## Script deployment flow
-
-The diagram below illustrate the sequence when deploying new contracts to a new EVM chain via the Foundry scripts.
-
-1. Ensure the target chain is listed in `chains-mainnet.json` or `chains-testnet.json` with a `slug` field.
-2. Run the desired deploy script with `--broadcast` (optionally dry-run first without `--broadcast`).
-3. During broadcast, `DeploymentRecorder` writes one JSON record per contract under `deployments/chains/<network>/<slug>/`.
-4. Foundry stores transaction receipts in `broadcast/<Script>.s.sol/<chainId>/run-latest.json`.
-5. Run `write-deployment-records.sh` to fill `txHash`, `blockNumber`, and `rpcUrlUsed` from the broadcast file.
-6. Verify contracts on block explorers (see [step 5](#5---verify-the-contract-on-block-explorer-with-the-standard-json-input)).
-
-```mermaid
-flowchart LR
-    forgeScript["forge script --broadcast"] --> recorder["DeploymentRecorder (Solidity)"]
-    recorder -->|"writes base record (txHash: null)"| recordFile["deployments/chains/mainnet/arbitrum-one/deploy-X-v0.14.0.json"]
-    forgeScript -->|receipts| broadcastFile["broadcast/.../run-latest.json"]
-    enrich["write-deployment-records.sh"] --> broadcastFile
-    enrich -->|"fills txHash, blockNumber, rpcUrlUsed"| recordFile
-```
