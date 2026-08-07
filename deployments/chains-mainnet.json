@@ -373,33 +373,6 @@
     "slug": "ethereum-classic"
   },
   {
-    "chainId": 1,
-    "name": "Ethereum Mainnet",
-    "rpcUrl": "https://cloudflare-eth.com",
-    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/279/large/ethereum.png?1706606803",
-    "currencySymbol": "ETH",
-    "explorers": [
-      {
-        "url": "https://etherscan.io",
-        "category": "etherscan"
-      },
-      {
-        "url": "https://eth.blockscout.com",
-        "category": "blockscout"
-      },
-      {
-        "url": "https://ethereum.dex.guru",
-        "category": "other"
-      },
-      {
-        "url": "https://ethereum.routescan.io",
-        "category": "routescan"
-      }
-    ],
-    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"],
-    "slug": "ethereum-mainnet"
-  },
-  {
     "chainId": 42793,
     "name": "Etherlink",
     "rpcUrl": "https://node.mainnet.etherlink.com",
