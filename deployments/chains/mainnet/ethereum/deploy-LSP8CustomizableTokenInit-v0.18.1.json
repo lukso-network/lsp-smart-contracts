@@ -1,0 +1,15 @@
+{
+  "chainId": 1,
+  "chainSlug": "ethereum",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786028555,
+  "rpcUrlUsed": "https://eth.drpc.org",
+  "txHash": "0x4953f4df1a315eb82866c7b6693ec90d4aa57628bb4e1bde18f260892edd7fec",
+  "blockNumber": 25696681
+}

@@ -319,6 +319,29 @@
     "slug": "degen-chain"
   },
   {
+    "chainId": 1,
+    "name": "Ethereum",
+    "rpcUrl": "https://eth.drpc.org",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/279/large/ethereum.png?1706606803",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://etherscan.io",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://eth.blockscout.com",
+        "category": "blockscout"
+      },
+      {
+        "url": "https://ethscanner.io/",
+        "category": "routescan"
+      }
+    ],
+    "bridges": [],
+    "slug": "ethereum"
+  },
+  {
     "chainId": 61,
     "name": "Ethereum Classic",
     "rpcUrl": "https://0xrpc.io/etc",
