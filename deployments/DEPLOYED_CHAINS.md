@@ -33,15 +33,15 @@ Deployments use deterministic CREATE2, so each contract version resolves to the 
 | Contract                                     | Version | Address                                      |
 | -------------------------------------------- | ------- | -------------------------------------------- |
 | `LSP7CustomizableTokenInit`                  | v0.18.0 | `0xCC26FA84f720249ef40a3f685A354b062af363c0` |
+| `LSP7CustomizableTokenInit`                  | v0.18.1 | `0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F` |
 | `LSP8CustomizableTokenInit`                  | v0.18.0 | `0x263dFD9158f51b4B9C39C558561D328660fb67ce` |
+| `LSP8CustomizableTokenInit`                  | v0.18.1 | `0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8` |
 | `LSP7MintableInit`                           | v0.14.0 | `0x28B7CcdaD1E15cCbDf380c439Cc1F2EBe7f5B2d8` |
 | `LSP7MintableInit` (with `disableMinting()`) | v0.17.3 | `0xf006554F96bf91616dAda3FdB73Ca213874DcFF9` |
 | `LSP7MintableInit` (with `burn()`)           | v0.19.0 | `0x94430626Ad0E3b4716f7c5c2dA92A0F3A3fD63e7` |
-| `LSP7CustomizableTokenInit`                  | v0.18.1 | `0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F` |
 | `LSP8MintableInit`                           | v0.14.0 | `0xd787a2f6B14d4dcC2fb897f40b87f2Ff63a07997` |
 | `LSP8MintableInit` (with `disableMinting()`) | v0.17.3 | `0xE0835D37b9b2Ed3719409B52499Af6411CEF49eB` |
 | `LSP8MintableInit` (with `burn()`)           | v0.19.0 | `0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951` |
-| `LSP8CustomizableTokenInit`                  | v0.18.1 | `0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8` |
 
 ## Networks
 
