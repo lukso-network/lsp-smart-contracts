@@ -1133,7 +1133,7 @@
   {
     "chainId": 50,
     "name": "XDC Network",
-    "rpcUrl": "https://erpc.xinfin.network",
+    "rpcUrl": "https://erpc.xdcrpc.com",
     "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/27/large/xdc_%281%29.png?1706606530",
     "currencySymbol": "XDC",
     "explorers": [
