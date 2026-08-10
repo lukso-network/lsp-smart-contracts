@@ -1,0 +1,327 @@
+[
+  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+  { "inputs": [], "name": "BatchExecuteParamsLengthMismatch", "type": "error" },
+  {
+    "inputs": [],
+    "name": "BatchExecuteRelayCallParamsLengthMismatch",
+    "type": "error"
+  },
+  { "inputs": [], "name": "CallingKeyManagerNotAllowed", "type": "error" },
+  {
+    "inputs": [],
+    "name": "DelegateCallDisallowedViaKeyManager",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC725X_ExecuteParametersEmptyArray",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC725X_ExecuteParametersLengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC725Y_DataKeysValuesLengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "dataKey", "type": "bytes32" },
+      { "internalType": "bytes", "name": "dataValue", "type": "bytes" }
+    ],
+    "name": "InvalidDataValuesForDataKeys",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes4", "name": "invalidFunction", "type": "bytes4" }
+    ],
+    "name": "InvalidERC725Function",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes", "name": "allowedCallsValue", "type": "bytes" }
+    ],
+    "name": "InvalidEncodedAllowedCalls",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes", "name": "value", "type": "bytes" },
+      { "internalType": "string", "name": "context", "type": "string" }
+    ],
+    "name": "InvalidEncodedAllowedERC725YDataKeys",
+    "type": "error"
+  },
+  { "inputs": [], "name": "InvalidLSP6Target", "type": "error" },
+  {
+    "inputs": [{ "internalType": "bytes", "name": "payload", "type": "bytes" }],
+    "name": "InvalidPayload",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "signer", "type": "address" },
+      { "internalType": "uint256", "name": "invalidNonce", "type": "uint256" },
+      { "internalType": "bytes", "name": "signature", "type": "bytes" }
+    ],
+    "name": "InvalidRelayNonce",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "from", "type": "address" }
+    ],
+    "name": "InvalidWhitelistedCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "KeyManagerCannotBeSetAsExtensionForLSP20Functions",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "totalValues", "type": "uint256" },
+      { "internalType": "uint256", "name": "msgValue", "type": "uint256" }
+    ],
+    "name": "LSP6BatchExcessiveValueSent",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "totalValues", "type": "uint256" },
+      { "internalType": "uint256", "name": "msgValue", "type": "uint256" }
+    ],
+    "name": "LSP6BatchInsufficientValueSent",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "from", "type": "address" }
+    ],
+    "name": "NoCallsAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "from", "type": "address" }
+    ],
+    "name": "NoERC725YDataKeysAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "from", "type": "address" }
+    ],
+    "name": "NoPermissionsSet",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "from", "type": "address" },
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "bytes4", "name": "selector", "type": "bytes4" }
+    ],
+    "name": "NotAllowedCall",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "from", "type": "address" },
+      { "internalType": "bytes32", "name": "disallowedKey", "type": "bytes32" }
+    ],
+    "name": "NotAllowedERC725YDataKey",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "from", "type": "address" },
+      { "internalType": "string", "name": "permission", "type": "string" }
+    ],
+    "name": "NotAuthorised",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "dataKey", "type": "bytes32" }
+    ],
+    "name": "NotRecognisedPermissionKey",
+    "type": "error"
+  },
+  { "inputs": [], "name": "RelayCallBeforeStartTime", "type": "error" },
+  { "inputs": [], "name": "RelayCallExpired", "type": "error" },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "signer",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes4",
+        "name": "selector",
+        "type": "bytes4"
+      }
+    ],
+    "name": "PermissionsVerified",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "VERSION",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "bytes", "name": "payload", "type": "bytes" }],
+    "name": "execute",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256[]", "name": "values", "type": "uint256[]" },
+      { "internalType": "bytes[]", "name": "payloads", "type": "bytes[]" }
+    ],
+    "name": "executeBatch",
+    "outputs": [{ "internalType": "bytes[]", "name": "", "type": "bytes[]" }],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes", "name": "signature", "type": "bytes" },
+      { "internalType": "uint256", "name": "nonce", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "validityTimestamps",
+        "type": "uint256"
+      },
+      { "internalType": "bytes", "name": "payload", "type": "bytes" }
+    ],
+    "name": "executeRelayCall",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes[]", "name": "signatures", "type": "bytes[]" },
+      { "internalType": "uint256[]", "name": "nonces", "type": "uint256[]" },
+      {
+        "internalType": "uint256[]",
+        "name": "validityTimestamps",
+        "type": "uint256[]"
+      },
+      { "internalType": "uint256[]", "name": "values", "type": "uint256[]" },
+      { "internalType": "bytes[]", "name": "payloads", "type": "bytes[]" }
+    ],
+    "name": "executeRelayCallBatch",
+    "outputs": [{ "internalType": "bytes[]", "name": "", "type": "bytes[]" }],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "from", "type": "address" },
+      { "internalType": "uint128", "name": "channelId", "type": "uint128" }
+    ],
+    "name": "getNonce",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "target_", "type": "address" }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "dataHash", "type": "bytes32" },
+      { "internalType": "bytes", "name": "signature", "type": "bytes" }
+    ],
+    "name": "isValidSignature",
+    "outputs": [
+      { "internalType": "bytes4", "name": "returnedStatus", "type": "bytes4" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      {
+        "internalType": "address",
+        "name": "targetContract",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "caller", "type": "address" },
+      { "internalType": "uint256", "name": "msgValue", "type": "uint256" },
+      { "internalType": "bytes", "name": "callData", "type": "bytes" }
+    ],
+    "name": "lsp20VerifyCall",
+    "outputs": [{ "internalType": "bytes4", "name": "", "type": "bytes4" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "", "type": "bytes32" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
+    ],
+    "name": "lsp20VerifyCallResult",
+    "outputs": [{ "internalType": "bytes4", "name": "", "type": "bytes4" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }
+    ],
+    "name": "supportsInterface",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "target",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
