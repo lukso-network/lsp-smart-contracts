@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.18.1...lsp7-contracts-v0.19.0) (2026-08-11)
+
+
+### Features
+
+* add `Burnable` to LSP7/8 Mintable preset ([d7ffb24](https://github.com/lukso-network/lsp-smart-contracts/commit/d7ffb24d2659c561cad837a3af02fdcdff10cc2d))
+
 ## [0.18.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.18.0...lsp7-contracts-v0.18.1) (2026-06-02)
 
 
