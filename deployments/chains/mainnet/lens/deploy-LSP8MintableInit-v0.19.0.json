@@ -1,0 +1,15 @@
+{
+  "chainId": 232,
+  "chainSlug": "lens",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786024123,
+  "rpcUrlUsed": "https://rpc.lens.xyz",
+  "txHash": "0xf3aae48cc78fd3b79f1ab05f6aa9fa1b2e4fc4a9958358c49973daae55f5f201",
+  "blockNumber": 6146833
+}

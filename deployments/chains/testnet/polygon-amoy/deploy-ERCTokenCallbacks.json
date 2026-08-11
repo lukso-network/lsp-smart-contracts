@@ -1,0 +1,15 @@
+{
+  "chainId": 80002,
+  "chainSlug": "polygon-amoy",
+  "network": "testnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0xF0efeD8d49c0FA6CFC861Bf0311b6B3a4414e4b7",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784388642,
+  "rpcUrlUsed": "https://polygon-amoy.drpc.org",
+  "txHash": "0xfbf719036f0825faa416a6ddae7233e373a13769c0ccac7af75e4b488fcd81dd",
+  "blockNumber": 42570244
+}

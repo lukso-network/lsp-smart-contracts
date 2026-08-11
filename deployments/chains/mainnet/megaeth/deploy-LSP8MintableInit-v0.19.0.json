@@ -1,0 +1,15 @@
+{
+  "chainId": 4326,
+  "chainSlug": "megaeth",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786108322,
+  "rpcUrlUsed": "https://mainnet.megaeth.com/rpc",
+  "txHash": "0x4b5b56270cc99da8b7a81ebe55d2cce68689b3b5384181f6cd4d8b4373be8603",
+  "blockNumber": 23311317
+}

@@ -1,0 +1,15 @@
+{
+  "chainId": 167000,
+  "chainSlug": "taiko-alethia",
+  "network": "mainnet",
+  "contract": "LSP7CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784481205,
+  "rpcUrlUsed": "https://rpc.mainnet.taiko.xyz",
+  "txHash": "0x6acb2e5c595384fd5913c167e26150d36b5585737032f03b8b6dc0852017da79",
+  "blockNumber": 8950402
+}

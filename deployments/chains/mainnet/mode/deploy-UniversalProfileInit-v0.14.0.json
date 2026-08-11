@@ -1,0 +1,15 @@
+{
+  "chainId": 34443,
+  "chainSlug": "mode",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.14.0",
+  "address": "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784481345,
+  "rpcUrlUsed": "https://mainnet.mode.network/",
+  "txHash": "0xf08bdca5094231798d7c4d7d18ea7161e9e702b31007983f278ec64547a60ea5",
+  "blockNumber": 42156887
+}

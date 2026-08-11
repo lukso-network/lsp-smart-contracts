@@ -1,0 +1,15 @@
+{
+  "chainId": 7000,
+  "chainSlug": "zetachain",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784494073,
+  "rpcUrlUsed": "https://zetachain-evm.blockpi.network/v1/rpc/public",
+  "txHash": "0x255a820e6d4072a0182e9b802f05753cf2e7b724c663cc1a4051e47d10c2d4cc",
+  "blockNumber": 17515098
+}

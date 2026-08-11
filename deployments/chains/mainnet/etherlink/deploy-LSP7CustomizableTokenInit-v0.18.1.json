@@ -1,0 +1,15 @@
+{
+  "chainId": 42793,
+  "chainSlug": "etherlink",
+  "network": "mainnet",
+  "contract": "LSP7CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784492936,
+  "rpcUrlUsed": "https://node.mainnet.etherlink.com",
+  "txHash": "0x1f1f88261c20d55c0084f9cec07090e6a3b52bb013c15f52b1021f6241bb1782",
+  "blockNumber": 48732900
+}

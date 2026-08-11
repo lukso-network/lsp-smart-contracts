@@ -1,0 +1,15 @@
+{
+  "chainId": 1284,
+  "chainSlug": "moonbeam",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784493006,
+  "rpcUrlUsed": "https://moonbeam-rpc.publicnode.com",
+  "txHash": "0x394bff6b19fa49bb4d3a40f01432d68ac1c31ab2b2be35566f6258e0ee1a171d",
+  "blockNumber": 16511248
+}

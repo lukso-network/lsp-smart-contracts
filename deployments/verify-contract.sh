@@ -29,8 +29,8 @@ readonly UP_STACK_CONTRACTS=(
     "LSP1UniversalReceiverDelegateUP-v0.14.0"
 )
 readonly TOKEN_CONTRACTS=(
-    "LSP7MintableInit-v0.17.3"
-    "LSP8MintableInit-v0.17.3"
+    "LSP7MintableInit-v0.19.0"
+    "LSP8MintableInit-v0.19.0"
     "LSP7CustomizableTokenInit-v0.18.1"
     "LSP8CustomizableTokenInit-v0.18.1"
 )
@@ -204,11 +204,10 @@ verify_with_etherscan() {
 
     echo "Submitting to Etherscan (chain $CHAIN_ID)..." >&2
 
-    local response=$(curl -sS -X POST "https://api.etherscan.io/v2/api" \
+    local response=$(curl -sS -X POST "https://api.etherscan.io/v2/api?chainid=$CHAIN_ID" \
         --data-urlencode "apikey=$ETHERSCAN_API_KEY" \
         --data-urlencode "module=contract" \
         --data-urlencode "action=verifysourcecode" \
-        --data-urlencode "chainid=$CHAIN_ID" \
         --data-urlencode "codeformat=solidity-standard-json-input" \
         --data-urlencode "contractaddress=$address" \
         --data-urlencode "contractname=$contract_id" \

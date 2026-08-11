@@ -1,0 +1,15 @@
+{
+  "chainId": 25,
+  "chainSlug": "cronos",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785796495,
+  "rpcUrlUsed": "https://cronos-evm-rpc.publicnode.com",
+  "txHash": "0x430a3bd01b4543c925826613497016f3e61ee62b41337c4c6c3dea9e2f7d72ca",
+  "blockNumber": 83643378
+}

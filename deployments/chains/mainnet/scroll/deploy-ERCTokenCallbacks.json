@@ -1,0 +1,15 @@
+{
+  "chainId": 534352,
+  "chainSlug": "scroll",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783614764,
+  "rpcUrlUsed": "https://rpc.scroll.io",
+  "txHash": "0x8f48b1a83119c50172ae0e898404caa45c17d2918bb76442e873a225eb8d4c53",
+  "blockNumber": 34320276
+}

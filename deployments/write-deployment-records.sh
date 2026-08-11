@@ -206,8 +206,8 @@ while IFS= read -r record_file; do
         ' "$record_file" > "$tmp_file"
     mv "$tmp_file" "$record_file"
 
-    echo "Enriched: $record_file"
+    echo "Saved: $record_file"
     ((updated++)) || true
 done < <(find "$SCRIPT_DIR/chains" -type f -name 'deploy-*.json' 2>/dev/null | sort)
 
-echo "Done. Enriched $updated record(s), skipped $skipped record(s)."
+echo "Done. Saved $updated record(s), skipped $skipped record(s)."

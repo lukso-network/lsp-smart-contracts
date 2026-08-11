@@ -1,0 +1,15 @@
+{
+  "chainId": 50,
+  "chainSlug": "xdc-network",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784493818,
+  "rpcUrlUsed": "https://erpc.xinfin.network",
+  "txHash": "0xba98af42f758808c12ef7da9fddb09c65c5d170f1d61f0e936cf54c33ed8c1c9",
+  "blockNumber": 105116178
+}

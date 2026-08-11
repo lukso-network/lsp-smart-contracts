@@ -1,0 +1,15 @@
+{
+  "chainId": 369,
+  "chainSlug": "pulsechain",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786001435,
+  "rpcUrlUsed": "https://rpc.pulsechain.com",
+  "txHash": "0x9a53648639efa4ae1b43082eeb8c6d0052673c3f18a301e12a5e31fbdfa96092",
+  "blockNumber": 27217412
+}

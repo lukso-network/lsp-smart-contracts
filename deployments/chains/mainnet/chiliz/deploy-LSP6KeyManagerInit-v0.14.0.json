@@ -1,0 +1,15 @@
+{
+  "chainId": 88888,
+  "chainSlug": "chiliz",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.14.0",
+  "address": "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785759513,
+  "rpcUrlUsed": "https://rpc.ankr.com/chiliz",
+  "txHash": "0x223d85a0fa2928ea66b8992b2c48446ca0aa6976557f91deade59f39e691b633",
+  "blockNumber": 36330534
+}

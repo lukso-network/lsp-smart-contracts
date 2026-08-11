@@ -1,0 +1,15 @@
+{
+  "chainId": 130,
+  "chainSlug": "unichain",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783610712,
+  "rpcUrlUsed": "https://unichain-rpc.publicnode.com",
+  "txHash": "0xc3d6e480ac47b4ce926d71a6adb080005da4bdca39c0cd2308d1af523a989f52",
+  "blockNumber": 52862359
+}

@@ -1,0 +1,15 @@
+{
+  "chainId": 42161,
+  "chainSlug": "arbitrum-one",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786002511,
+  "rpcUrlUsed": "https://arb1.arbitrum.io/rpc",
+  "txHash": "0x02e92b6654fd7d8b9202d997edea65dbfd84519bf5cc1d29b05a68bca9b3b5bd",
+  "blockNumber": 491637153
+}

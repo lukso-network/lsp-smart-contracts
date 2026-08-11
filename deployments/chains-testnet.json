@@ -1,5 +1,65 @@
 [
   {
+    "chainId": 421614,
+    "name": "Arbitrum Sepolia",
+    "rpcUrl": "https://sepolia-rollup.arbitrum.io/rpc",
+    "iconUri": "none",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://sepolia.arbiscan.io/",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": [],
+    "slug": "arbitrum-sepolia"
+  },
+  {
+    "chainId": 84532,
+    "name": "Base Sepolia",
+    "rpcUrl": "https://sepolia.base.org",
+    "iconUri": "none",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://sepolia.basescan.org/",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": [],
+    "slug": "base-sepolia"
+  },
+  {
+    "chainId": 560048,
+    "name": "Ethereum Hoodi",
+    "rpcUrl": "https://ethereum-hoodi-rpc.publicnode.com",
+    "iconUri": "none",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://eth-hoodi.blockscout.com/",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [],
+    "slug": "ethereum-hoodi"
+  },
+  {
+    "chainId": 11155111,
+    "name": "Ethereum Sepolia",
+    "rpcUrl": "https://rpc.sepolia.org",
+    "iconUri": "none",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://sepolia.etherscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": [],
+    "slug": "ethereum-sepolia"
+  },
+  {
     "chainId": 4201,
     "name": "LUKSO Testnet",
     "rpcUrl": "https://rpc.testnet.lukso.network",
@@ -13,5 +73,35 @@
     ],
     "bridges": [],
     "slug": "lukso-testnet"
+  },
+  {
+    "chainId": 80002,
+    "name": "Polygon Amoy",
+    "rpcUrl": "https://polygon-amoy.drpc.org",
+    "iconUri": "none",
+    "currencySymbol": "POL",
+    "explorers": [
+      {
+        "url": "https://amoy.polygonscan.com/",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": [],
+    "slug": "polygon-amoy"
+  },
+  {
+    "chainId": 300,
+    "name": "zkSync Sepolia",
+    "rpcUrl": "https://rpc.ankr.com/zksync_era_sepolia",
+    "iconUri": "none",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://sepolia.explorer.zksync.io/",
+        "category": "other"
+      }
+    ],
+    "bridges": [],
+    "slug": "zksync-sepolia"
   }
 ]

@@ -1,0 +1,15 @@
+{
+  "chainId": 34443,
+  "chainSlug": "mode",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784481435,
+  "rpcUrlUsed": "https://mainnet.mode.network/",
+  "txHash": "0x9a306c3f73c80b28af989453d4381564db8ace59650d652c98871ea4a7e5bf61",
+  "blockNumber": 42156931
+}

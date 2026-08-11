@@ -1,0 +1,15 @@
+{
+  "chainId": 84532,
+  "chainSlug": "base-sepolia",
+  "network": "testnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0xA391Bb04ac8F7ee49Af3E996d43D80F1194d81b7",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786122004,
+  "rpcUrlUsed": "https://sepolia.base.org",
+  "txHash": "0x5dfeab35796c011109c37bbc56b257d349c3fd3a47fa1d60f9b2514446827a6a",
+  "blockNumber": 45176862
+}

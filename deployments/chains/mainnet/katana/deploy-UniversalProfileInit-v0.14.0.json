@@ -1,0 +1,15 @@
+{
+  "chainId": 747474,
+  "chainSlug": "katana",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.14.0",
+  "address": "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784479252,
+  "rpcUrlUsed": "https://rpc.katanarpc.com/",
+  "txHash": "0xffd37cb5591de0e85d73815524d565fc41bb4dad58f06e8a5d1558eaf2c2ba96",
+  "blockNumber": 37736450
+}

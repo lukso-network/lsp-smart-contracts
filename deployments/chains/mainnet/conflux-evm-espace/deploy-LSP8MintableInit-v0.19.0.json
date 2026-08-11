@@ -1,0 +1,15 @@
+{
+  "chainId": 1030,
+  "chainSlug": "conflux-evm-espace",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785854778,
+  "rpcUrlUsed": "https://evm.confluxrpc.com",
+  "txHash": "0x3254a6039fe6806ff47b463d686f5c06b28abfbc2d751da973b2027c46b6f316",
+  "blockNumber": 153615185
+}

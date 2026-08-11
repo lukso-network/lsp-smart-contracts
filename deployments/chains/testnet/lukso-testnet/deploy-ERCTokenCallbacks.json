@@ -1,0 +1,15 @@
+{
+  "chainId": 4201,
+  "chainSlug": "lukso-testnet",
+  "network": "testnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0xA391Bb04ac8F7ee49Af3E996d43D80F1194d81b7",
+  "status": "already-deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783170468,
+  "rpcUrlUsed": null,
+  "txHash": null,
+  "blockNumber": null
+}

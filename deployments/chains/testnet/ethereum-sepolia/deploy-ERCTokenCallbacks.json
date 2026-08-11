@@ -1,0 +1,15 @@
+{
+  "chainId": 11155111,
+  "chainSlug": "ethereum-sepolia",
+  "network": "testnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0xA391Bb04ac8F7ee49Af3E996d43D80F1194d81b7",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786122924,
+  "rpcUrlUsed": "https://ethereum-sepolia-rpc.publicnode.com",
+  "txHash": "0x20f6ad63029f5293dd5f8029e8465c1afc1001a09d6d40745cf3bf7654af2f81",
+  "blockNumber": 11439645
+}

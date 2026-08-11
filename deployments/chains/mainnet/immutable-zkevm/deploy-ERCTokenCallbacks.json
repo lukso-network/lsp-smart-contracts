@@ -1,0 +1,15 @@
+{
+  "chainId": 13371,
+  "chainSlug": "immutable-zkevm",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786023255,
+  "rpcUrlUsed": "https://rpc.immutable.com",
+  "txHash": "0x49b39e28fb883c89ed8cb1785e36fa6ea4351733dd37fb12664e4329444c0615",
+  "blockNumber": 41870241
+}
