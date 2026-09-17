@@ -873,6 +873,19 @@
     "slug": "scroll"
   },
   {
+    "chainId": 1329,
+    "name": "Sei",
+    "rpcUrl": "https://evm-rpc.sei-apis.com",
+    "currencySymbol": "SEI",
+    "explorers": [
+      {
+        "url": "https://seiscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "slug": "sei"
+  },
+  {
     "chainId": 5031,
     "name": "Somnia",
     "rpcUrl": "https://api.infra.mainnet.somnia.network",
