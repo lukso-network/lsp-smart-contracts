@@ -475,6 +475,19 @@
     "slug": "hashkey-chain"
   },
   {
+    "chainId": 999,
+    "name": "HyperEVM",
+    "rpcUrl": "https://rpc.hyperliquid.xyz/evm",
+    "currencySymbol": "HYPE",
+    "explorers": [
+      {
+        "url": "https://hyperevmscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "slug": "hyperevm"
+  },
+  {
     "chainId": 13371,
     "name": "Immutable zkEVM",
     "rpcUrl": "https://rpc.immutable.com",
