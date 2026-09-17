@@ -36,6 +36,19 @@
     "slug": "apechain"
   },
   {
+    "chainId": 5042,
+    "name": "Arc",
+    "rpcUrl": "https://rpc.mainnet.arc.io",
+    "currencySymbol": "USDC",
+    "explorers": [
+      {
+        "url": "https://explorer.arc.io",
+        "category": "blockscout"
+      }
+    ],
+    "slug": "arc"
+  },
+  {
     "chainId": 42161,
     "name": "Arbitrum One",
     "rpcUrl": "https://arb1.arbitrum.io/rpc",
