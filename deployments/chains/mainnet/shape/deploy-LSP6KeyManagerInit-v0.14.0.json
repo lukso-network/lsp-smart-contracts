@@ -1,0 +1,15 @@
+{
+  "chainId": 360,
+  "chainSlug": "shape",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.14.0",
+  "address": "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789714257,
+  "rpcUrlUsed": "https://mainnet.shape.network",
+  "txHash": "0xa337a8973396fe4fbf9aca9bc1044e54faf28d08483625a14e3459ea342c0114",
+  "blockNumber": 33984897
+}
