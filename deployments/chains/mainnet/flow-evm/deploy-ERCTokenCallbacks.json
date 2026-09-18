@@ -1,0 +1,15 @@
+{
+  "chainId": 747,
+  "chainSlug": "flow-evm",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789748148,
+  "rpcUrlUsed": "https://mainnet.evm.nodes.onflow.org",
+  "txHash": "0x6bd29c172e4d3e56333ed31c2c4c95a2d964a5fe315ed58adde412ce64b7d9ea",
+  "blockNumber": 78951377
+}
