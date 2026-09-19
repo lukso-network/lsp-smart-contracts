@@ -1,0 +1,15 @@
+{
+  "chainId": 204,
+  "chainSlug": "opbnb",
+  "network": "mainnet",
+  "contract": "LSP23LinkedContractsFactory",
+  "version": null,
+  "address": "0x2300000A84D25dF63081feAa37ba6b62C4c89a30",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789800220,
+  "rpcUrlUsed": "https://opbnb-mainnet-rpc.bnbchain.org",
+  "txHash": "0x12226184e2e053f2cf9c6fafa83cdb0f8ff196e0428e220cce3e92543983ea2d",
+  "blockNumber": 186733208
+}

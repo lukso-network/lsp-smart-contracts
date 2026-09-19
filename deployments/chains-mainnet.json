@@ -716,6 +716,19 @@
     "slug": "moonriver"
   },
   {
+    "chainId": 204,
+    "name": "opBNB",
+    "rpcUrl": "https://opbnb-mainnet-rpc.bnbchain.org",
+    "currencySymbol": "BNB",
+    "explorers": [
+      {
+        "url": "https://opbnb.bscscan.com",
+        "category": "etherscan"
+      }
+    ],
+    "slug": "opbnb"
+  },
+  {
     "chainId": 10,
     "name": "Optimism",
     "rpcUrl": "https://mainnet.optimism.io",
