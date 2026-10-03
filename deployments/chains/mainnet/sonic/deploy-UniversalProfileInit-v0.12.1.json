@@ -1,0 +1,15 @@
+{
+  "chainId": 146,
+  "chainSlug": "sonic",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.12.1",
+  "address": "0x52c90985AF970D4E0DC26Cb5D052505278aF32A9",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791042413,
+  "rpcUrlUsed": "https://sonic-rpc.publicnode.com",
+  "txHash": "0x92871b6ee92170ba71742393a533b0ebd14c2d356045a2399c2d930246752f17",
+  "blockNumber": 80293209
+}

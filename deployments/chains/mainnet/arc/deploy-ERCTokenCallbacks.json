@@ -1,0 +1,15 @@
+{
+  "chainId": 5042,
+  "chainSlug": "arc",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789641974,
+  "rpcUrlUsed": "https://rpc.mainnet.arc.io",
+  "txHash": "0x67518d7500d9b9c761b862645738e0c94c52522da9bafd49a0f26d7344fff82d",
+  "blockNumber": 21315668
+}

@@ -1,0 +1,15 @@
+{
+  "chainId": 1329,
+  "chainSlug": "sei",
+  "network": "mainnet",
+  "contract": "LSP7CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789669580,
+  "rpcUrlUsed": "https://evm-rpc.sei-apis.com",
+  "txHash": "0xbd4b6a05e21f1f35af9a68097378cd2751989804b0e362a202ee3410b04b5a73",
+  "blockNumber": 232592870
+}
