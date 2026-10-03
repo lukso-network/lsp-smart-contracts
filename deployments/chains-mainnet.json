@@ -36,6 +36,19 @@
     "slug": "apechain"
   },
   {
+    "chainId": 5042,
+    "name": "Arc",
+    "rpcUrl": "https://rpc.mainnet.arc.io",
+    "currencySymbol": "USDC",
+    "explorers": [
+      {
+        "url": "https://explorer.arc.io",
+        "category": "blockscout"
+      }
+    ],
+    "slug": "arc"
+  },
+  {
     "chainId": 42161,
     "name": "Arbitrum One",
     "rpcUrl": "https://arb1.arbitrum.io/rpc",
@@ -410,6 +423,19 @@
     "slug": "flare"
   },
   {
+    "chainId": 747,
+    "name": "Flow EVM",
+    "rpcUrl": "https://mainnet.evm.nodes.onflow.org",
+    "currencySymbol": "FLOW",
+    "explorers": [
+      {
+        "url": "https://evm.flowscan.io",
+        "category": "blockscout"
+      }
+    ],
+    "slug": "flow-evm"
+  },
+  {
     "chainId": 100,
     "name": "Gnosis",
     "rpcUrl": "https://gnosis-rpc.publicnode.com",
@@ -475,6 +501,19 @@
     "slug": "hashkey-chain"
   },
   {
+    "chainId": 999,
+    "name": "HyperEVM",
+    "rpcUrl": "https://rpc.hyperliquid.xyz/evm",
+    "currencySymbol": "HYPE",
+    "explorers": [
+      {
+        "url": "https://hyperevmscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "slug": "hyperevm"
+  },
+  {
     "chainId": 13371,
     "name": "Immutable zkEVM",
     "rpcUrl": "https://rpc.immutable.com",
@@ -510,6 +549,19 @@
       "https://relay.link/bridge"
     ],
     "slug": "ink"
+  },
+  {
+    "chainId": 8217,
+    "name": "Kaia",
+    "rpcUrl": "https://public-en.node.kaia.io",
+    "currencySymbol": "KAIA",
+    "explorers": [
+      {
+        "url": "https://kaiascan.io",
+        "category": "other"
+      }
+    ],
+    "slug": "kaia"
   },
   {
     "chainId": 747474,
@@ -716,6 +768,19 @@
     "slug": "moonriver"
   },
   {
+    "chainId": 204,
+    "name": "opBNB",
+    "rpcUrl": "https://opbnb-mainnet-rpc.bnbchain.org",
+    "currencySymbol": "BNB",
+    "explorers": [
+      {
+        "url": "https://opbnb.bscscan.com",
+        "category": "etherscan"
+      }
+    ],
+    "slug": "opbnb"
+  },
+  {
     "chainId": 10,
     "name": "Optimism",
     "rpcUrl": "https://mainnet.optimism.io",
@@ -835,6 +900,19 @@
     "slug": "pulsechain"
   },
   {
+    "chainId": 4663,
+    "name": "Robinhood Chain",
+    "rpcUrl": "https://rpc.mainnet.chain.robinhood.com",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://robinhoodchain.blockscout.com",
+        "category": "blockscout"
+      }
+    ],
+    "slug": "robinhood-chain"
+  },
+  {
     "chainId": 2020,
     "name": "Ronin",
     "rpcUrl": "https://api.roninchain.com/rpc",
@@ -871,6 +949,19 @@
       "https://relay.link/bridge"
     ],
     "slug": "scroll"
+  },
+  {
+    "chainId": 1329,
+    "name": "Sei",
+    "rpcUrl": "https://evm-rpc.sei-apis.com",
+    "currencySymbol": "SEI",
+    "explorers": [
+      {
+        "url": "https://seiscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "slug": "sei"
   },
   {
     "chainId": 360,

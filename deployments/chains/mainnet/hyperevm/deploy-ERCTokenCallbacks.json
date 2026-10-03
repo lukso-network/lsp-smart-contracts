@@ -1,0 +1,15 @@
+{
+  "chainId": 999,
+  "chainSlug": "hyperevm",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789633980,
+  "rpcUrlUsed": "https://rpc.hyperliquid.xyz/evm",
+  "txHash": "0xca25b999c7a9164b9bbe836711a6df2a8008f32fdf1f3560757fee4d9bfee1c3",
+  "blockNumber": 46133969
+}

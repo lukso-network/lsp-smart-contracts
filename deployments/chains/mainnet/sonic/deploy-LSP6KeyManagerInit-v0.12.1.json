@@ -1,0 +1,15 @@
+{
+  "chainId": 146,
+  "chainSlug": "sonic",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.12.1",
+  "address": "0xa75684d7D048704a2DB851D05Ba0c3cbe226264C",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791042413,
+  "rpcUrlUsed": "https://sonic-rpc.publicnode.com",
+  "txHash": "0x30e519951254e6d161bd5a1a5746ea2a4731df2343e8c07b0d0ea042ac4ce08e",
+  "blockNumber": 80293209
+}

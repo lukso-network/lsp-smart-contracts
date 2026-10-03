@@ -1,0 +1,15 @@
+{
+  "chainId": 105105,
+  "chainSlug": "stratis-xertra",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.12.1",
+  "address": "0xa75684d7D048704a2DB851D05Ba0c3cbe226264C",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791042475,
+  "rpcUrlUsed": "https://rpc.xertra.com",
+  "txHash": "0xd2356742857a999c86ae1a7b883511481851be5cdfedabe63ee71a07661c370d",
+  "blockNumber": 5293096
+}

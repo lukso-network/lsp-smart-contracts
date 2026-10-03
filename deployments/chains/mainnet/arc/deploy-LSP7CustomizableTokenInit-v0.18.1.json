@@ -1,0 +1,15 @@
+{
+  "chainId": 5042,
+  "chainSlug": "arc",
+  "network": "mainnet",
+  "contract": "LSP7CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789641983,
+  "rpcUrlUsed": "https://rpc.mainnet.arc.io",
+  "txHash": "0x0b217d991c1a788396c6a0d63f167396ffe6db0cfff440794b0e43fc4c33382e",
+  "blockNumber": 21315686
+}
