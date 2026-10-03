@@ -1,0 +1,15 @@
+{
+  "chainId": 8217,
+  "chainSlug": "kaia",
+  "network": "mainnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.14.0",
+  "address": "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789762976,
+  "rpcUrlUsed": "https://archive-en.node.kaia.io",
+  "txHash": "0xd81662746c56e581ddbcf299682b8dda2f2c5f51cd7915f797cbe0be83b20f3e",
+  "blockNumber": 227561728
+}

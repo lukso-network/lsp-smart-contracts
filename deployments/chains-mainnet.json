@@ -538,6 +538,19 @@
     "slug": "ink"
   },
   {
+    "chainId": 8217,
+    "name": "Kaia",
+    "rpcUrl": "https://public-en.node.kaia.io",
+    "currencySymbol": "KAIA",
+    "explorers": [
+      {
+        "url": "https://kaiascan.io",
+        "category": "other"
+      }
+    ],
+    "slug": "kaia"
+  },
+  {
     "chainId": 747474,
     "name": "Katana",
     "rpcUrl": "https://rpc.katanarpc.com/",
