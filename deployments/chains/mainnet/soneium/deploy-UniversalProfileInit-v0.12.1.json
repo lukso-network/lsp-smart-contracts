@@ -1,0 +1,15 @@
+{
+  "chainId": 1868,
+  "chainSlug": "soneium",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.12.1",
+  "address": "0x52c90985AF970D4E0DC26Cb5D052505278aF32A9",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791042389,
+  "rpcUrlUsed": "https://rpc.soneium.org",
+  "txHash": "0x6680cef9fba649ed5b6cfc47d6cac77f1aa508e04270b6ffafe97ea428b8a55c",
+  "blockNumber": 28953822
+}

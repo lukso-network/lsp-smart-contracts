@@ -25,6 +25,7 @@ Below is the step-by-step procedure for deploying each contract on a new EVM cha
   - [Deploying the whole smart contracts infrastructure](#deploying-the-whole-smart-contracts-infrastructure)
     - [Deploy the whole Universal Profile stack (LSP23 Factory + Universal Profile implementation contracts)](#deploy-the-whole-universal-profile-stack-lsp23-factory--universal-profile-implementation-contracts)
     - [Deploy all Token Implementation contracts](#deploy-all-token-implementation-contracts)
+    - [Deploy v0.12.1 of Universal Profile implementation contracts](#deploy-v0121-of-universal-profile-implementation-contracts)
   - [Deploy individual artifacts](#deploy-individual-artifacts)
     - [1 — 🗃️ Get the deployment artifact (creation bytecode + salt + address)](#1--️-get-the-deployment-artifact-creation-bytecode--salt--address)
     - [2 — 🔍 Sanity check (the input reproduces the bytecode)](#2---sanity-check-the-input-reproduces-the-bytecode)
@@ -267,6 +268,26 @@ Once deployed, all 4 contracts can be verified in one run with the `--all-token-
 ```bash
 bash deployments/verify-contract.sh --all-token-contracts --chain "<chain name>"
 ```
+
+### Deploy v0.12.1 of Universal Profile implementation contracts
+
+To deploy the **legacy Universal Profile v0.12.1** in one run, use the convenience script:
+
+```bash
+FOUNDRY_PROFILE=deployments forge script deployments/scripts/DeployUniversalProfileV012Stack.s.sol \
+  --rpc-url "$RPC_URL" --broadcast --private-key "$DEPLOYER_PK"
+
+# Save deployment records with txHash / blockNumber from the broadcast file
+bash deployments/write-deployment-records.sh --chain-id <chainId> --rpc-url "$RPC_URL"
+```
+
+This script will deploy the following contracts:
+
+- `UniversalProfileInit` (v0.12.1)
+- `LSP6KeyManagerInit` (v0.12.1)
+- `LSP1UniversalReceiverDelegateUP` (v0.12.1)
+
+**⚠️ DO NOT verify the Solidity source code of these smart contracts on block explorers.** As their ABI will conflict with the v0.14.0 contracts and create display errors in the `Executed` logs from ERC725X.
 
 ## Deploy individual artifacts
 
@@ -629,5 +650,3 @@ flowchart LR
 - [PostDeploymentModule (Init) deployment guide](../packages/lsp23-contracts/contracts/modules/deployment-UP-init-module.md)
 - [PostDeploymentModule deployment guide](../packages/lsp23-contracts/contracts/modules/deployment-UP-module.md)
 - [Nick Factory / Deterministic Deployment Proxy](https://github.com/Arachnid/deterministic-deployment-proxy)
-
----

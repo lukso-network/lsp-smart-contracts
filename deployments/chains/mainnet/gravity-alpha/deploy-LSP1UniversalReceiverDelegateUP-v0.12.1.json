@@ -1,0 +1,15 @@
+{
+  "chainId": 1625,
+  "chainSlug": "gravity-alpha",
+  "network": "mainnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.12.1",
+  "address": "0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791041401,
+  "rpcUrlUsed": "https://rpc.gravity.xyz/",
+  "txHash": "0xa0ce60110348803af8ba424165e5bc7610f88f580e3fdb48c573b21a98f6da3d",
+  "blockNumber": 130760007
+}

@@ -1,0 +1,15 @@
+{
+  "chainId": 16661,
+  "chainSlug": "0g",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.12.1",
+  "address": "0xa75684d7D048704a2DB851D05Ba0c3cbe226264C",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791039583,
+  "rpcUrlUsed": "https://evmrpc.0g.ai",
+  "txHash": "0xccf7c360fd36eff7cf61f76c78442c8212055469f675c9cbd63abbce83998d38",
+  "blockNumber": 46055209
+}
