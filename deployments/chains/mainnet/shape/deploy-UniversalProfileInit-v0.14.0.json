@@ -1,0 +1,15 @@
+{
+  "chainId": 360,
+  "chainSlug": "shape",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.14.0",
+  "address": "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789714257,
+  "rpcUrlUsed": "https://mainnet.shape.network",
+  "txHash": "0x94b183617e81098ef393e5af3bf320470af95dff00243b09c379652dde49a38f",
+  "blockNumber": 33984897
+}

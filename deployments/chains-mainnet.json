@@ -964,6 +964,19 @@
     "slug": "sei"
   },
   {
+    "chainId": 360,
+    "name": "Shape",
+    "rpcUrl": "https://mainnet.shape.network",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://shapescan.xyz",
+        "category": "blockscout"
+      }
+    ],
+    "slug": "shape"
+  },
+  {
     "chainId": 5031,
     "name": "Somnia",
     "rpcUrl": "https://api.infra.mainnet.somnia.network",

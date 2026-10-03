@@ -1,0 +1,15 @@
+{
+  "chainId": 360,
+  "chainSlug": "shape",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789714265,
+  "rpcUrlUsed": "https://mainnet.shape.network",
+  "txHash": "0x0e95bf11e9fd085ea171b0a35e72e3d49d517c7efdc3849fa21ccd606e48bd51",
+  "blockNumber": 33984901
+}
