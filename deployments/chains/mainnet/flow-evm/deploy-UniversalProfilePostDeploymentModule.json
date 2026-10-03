@@ -1,0 +1,15 @@
+{
+  "chainId": 747,
+  "chainSlug": "flow-evm",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789748148,
+  "rpcUrlUsed": "https://mainnet.evm.nodes.onflow.org",
+  "txHash": "0x0564d8338402da6bf69c5cb5068c66fb09458df6c6150042a532e74f40079ddd",
+  "blockNumber": 78951377
+}

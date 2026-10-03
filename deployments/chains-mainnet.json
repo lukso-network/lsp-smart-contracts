@@ -410,6 +410,19 @@
     "slug": "flare"
   },
   {
+    "chainId": 747,
+    "name": "Flow EVM",
+    "rpcUrl": "https://mainnet.evm.nodes.onflow.org",
+    "currencySymbol": "FLOW",
+    "explorers": [
+      {
+        "url": "https://evm.flowscan.io",
+        "category": "blockscout"
+      }
+    ],
+    "slug": "flow-evm"
+  },
+  {
     "chainId": 100,
     "name": "Gnosis",
     "rpcUrl": "https://gnosis-rpc.publicnode.com",
