@@ -1,0 +1,15 @@
+{
+  "chainId": 204,
+  "chainSlug": "opbnb",
+  "network": "mainnet",
+  "contract": "LSP7CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0x2803BA6e11Bb5fD9fDd3aFba653428f341df5A0F",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789800650,
+  "rpcUrlUsed": "https://opbnb-mainnet-rpc.bnbchain.org",
+  "txHash": "0x1c871c613517c8b73d79c6f13a6ea9f142c5a841287f3c0b3529e52a3fafc485",
+  "blockNumber": 186734926
+}

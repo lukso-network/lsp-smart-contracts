@@ -1,0 +1,15 @@
+{
+  "chainId": 4663,
+  "chainSlug": "robinhood-chain",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789570429,
+  "rpcUrlUsed": "https://rpc.mainnet.chain.robinhood.com",
+  "txHash": "0xb72ea356ff1aef06fed4ca8abebb581a4219b282b175f0d8ec01f4c974e32d2c",
+  "blockNumber": 64595425
+}

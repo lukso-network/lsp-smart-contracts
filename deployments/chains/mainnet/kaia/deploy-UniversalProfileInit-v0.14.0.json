@@ -1,0 +1,15 @@
+{
+  "chainId": 8217,
+  "chainSlug": "kaia",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.14.0",
+  "address": "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789762976,
+  "rpcUrlUsed": "https://archive-en.node.kaia.io",
+  "txHash": "0x7ec47a57aab18de5f7cdafeb1900ce91ccdbf4bf4dcba44d4301dba00851e1f3",
+  "blockNumber": 227561728
+}

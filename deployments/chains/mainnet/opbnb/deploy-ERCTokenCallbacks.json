@@ -1,0 +1,15 @@
+{
+  "chainId": 204,
+  "chainSlug": "opbnb",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789800220,
+  "rpcUrlUsed": "https://opbnb-mainnet-rpc.bnbchain.org",
+  "txHash": "0x81d8e6d353b8c3be9d0fcef0526c53a552c3a19e319687e738a7df0a49040aca",
+  "blockNumber": 186733208
+}
