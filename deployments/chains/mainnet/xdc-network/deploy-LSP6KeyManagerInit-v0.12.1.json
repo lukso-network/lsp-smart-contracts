@@ -1,0 +1,15 @@
+{
+  "chainId": 50,
+  "chainSlug": "xdc-network",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.12.1",
+  "address": "0xa75684d7D048704a2DB851D05Ba0c3cbe226264C",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791044444,
+  "rpcUrlUsed": "https://erpc.xdcrpc.com",
+  "txHash": "0xc5ff5e00b32b0e030c0a83265a765c43fa8022bdc496b6f4dfcdfc4d855a0629",
+  "blockNumber": 107960804
+}
