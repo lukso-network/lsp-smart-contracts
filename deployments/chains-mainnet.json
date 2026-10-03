@@ -835,6 +835,19 @@
     "slug": "pulsechain"
   },
   {
+    "chainId": 4663,
+    "name": "Robinhood Chain",
+    "rpcUrl": "https://rpc.mainnet.chain.robinhood.com",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://robinhoodchain.blockscout.com",
+        "category": "blockscout"
+      }
+    ],
+    "slug": "robinhood-chain"
+  },
+  {
     "chainId": 2020,
     "name": "Ronin",
     "rpcUrl": "https://api.roninchain.com/rpc",
