@@ -27,6 +27,7 @@ readonly NICK_FACTORY_ADDRESS="0x4e59b44847b379578588920ca78fbf26c0b4956c"
 
 readonly DEPLOYMENT_SCRIPTS=(
     "DeployFromArtifact.s.sol"
+    "DeployUniversalProfileV012Stack.s.sol"
     "DeployUniversalProfileStack.s.sol"
     "DeployTokenImplementationContracts.s.sol"
 )
