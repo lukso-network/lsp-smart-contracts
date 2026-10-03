@@ -1,0 +1,15 @@
+{
+  "chainId": 999,
+  "chainSlug": "hyperevm",
+  "network": "mainnet",
+  "contract": "LSP23LinkedContractsFactory",
+  "version": null,
+  "address": "0x2300000A84D25dF63081feAa37ba6b62C4c89a30",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "already-deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789633980,
+  "rpcUrlUsed": null,
+  "txHash": null,
+  "blockNumber": null
+}
