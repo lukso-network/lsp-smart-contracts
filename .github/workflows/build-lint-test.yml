@@ -36,11 +36,19 @@ jobs:
         id: solhint
         run: |
           # Run lint and save output to a file
-          npm run lint:solidity > solhint-output.txt || echo "Lint failed" >> solhint-output.txt
+          # Keep the exit code, so that lint failures still fail the job (see last step)
+          exit_code=0
+          npm run lint:solidity > solhint-output.txt || exit_code=$?
           cat solhint-output.txt
+          echo "exit-code=$exit_code" >> "$GITHUB_OUTPUT"
 
+      # The report is always added to the job summary.
+      # The PR comment is only created / updated for PRs opened from a branch of this repository,
+      # as PRs opened from forks only get a read-only `GITHUB_TOKEN`.
       - name: 💬 Update PR Comment with Solhint Output
         uses: actions/github-script@v7
+        env:
+          SOLHINT_EXIT_CODE: ${{ steps.solhint.outputs.exit-code }}
         with:
           script: |
             // Build the TS script
@@ -48,7 +56,7 @@ jobs:
             await build("./.github/scripts", false, {entries: ["./parseSolhintOutput.ts"], outDir: "./"});
             // Run the script
             const { githubScript: parseSolhintOutput } = require("./.github/scripts/parseSolhintOutput.mjs");
-            await parseSolhintOutput({github, context});
+            await parseSolhintOutput({github, context, core});
 
       # This will also generate the types and the files with the constants used by the Chai tests
       # The turbo configs in `turbo.json` is setup to run `npm run build` command first before `npm run build:js`.
@@ -73,3 +81,12 @@ jobs:
 
       - name: 🧪 Run tests for each package
         run: npm run test
+
+      - name: 🚦 Check Solidity Linter result
+        env:
+          SOLHINT_EXIT_CODE: ${{ steps.solhint.outputs.exit-code }}
+        run: |
+          if [ "$SOLHINT_EXIT_CODE" != "0" ]; then
+            echo "::error::Solidity Linter failed with exit code ${SOLHINT_EXIT_CODE:-unknown}. See the '🔍 Run Solidity Linter' step for details."
+            exit "${SOLHINT_EXIT_CODE:-1}"
+          fi

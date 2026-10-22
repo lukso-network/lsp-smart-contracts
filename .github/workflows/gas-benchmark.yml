@@ -79,7 +79,15 @@ jobs:
         working-directory: ./packages/lsp-smart-contracts
         run: npx hardhat gas-benchmark --compare gas_benchmark_after.json --against gas_benchmark_before.json
 
+      - name: 📝 Add benchmark report to job summary
+        working-directory: ./packages/lsp-smart-contracts
+        run: cat gas_benchmark.md >> "$GITHUB_STEP_SUMMARY"
+
+      # Comments can only be created / updated for PRs opened from a branch of this repository.
+      # PRs opened from forks only get a read-only `GITHUB_TOKEN`, and manual runs have no PR.
+      # For these, the report is only available in the job summary.
       - name: 🔎 Find comment with gas benchmark report
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: peter-evans/find-comment@v3
         id: find_comment
         with:
@@ -88,6 +96,7 @@ jobs:
           body-includes: ⛽📊 Gas Benchmark Report
 
       - name: 💬 Create or update comment
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: peter-evans/create-or-update-comment@v5
         with:
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
