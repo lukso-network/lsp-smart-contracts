@@ -35,7 +35,8 @@ import {
 // errors
 import {
     AccessControlUnauthorizedAccount,
-    AccessControlBadConfirmation
+    AccessControlBadConfirmation,
+    AccessControlCannotSetAdminForDefaultAdminRole
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 
 // Mock contract for testing
@@ -63,7 +64,7 @@ contract MockTokenWithAccessControlExtended is
             lsp4TokenType_,
             isNonDivisible_
         )
-        AccessControlExtendedAbstract(newOwner_)
+        AccessControlExtendedAbstract()
     {}
 
     function mint(
@@ -73,11 +74,6 @@ contract MockTokenWithAccessControlExtended is
         bytes memory data
     ) public {
         _mint(to, amount, force, data);
-    }
-
-    // Expose _setRoleAdmin for testing role admin hierarchy
-    function setRoleAdmin(bytes32 role, bytes32 adminRole) public {
-        _setRoleAdmin(role, adminRole);
     }
 
     // Expose a restrictedFunction for onlyRole modifier testing
@@ -124,6 +120,8 @@ contract MockTokenWithAccessControlExtended is
         super._revokeRole(role, account);
     }
 
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 public constant TEST_ROLE = bytes32(bytes("TestRole"));
 }
 
@@ -140,8 +138,18 @@ contract AccessControlExtendedTest is Test {
     address account3 = vm.addr(103);
 
     bytes32 constant DEFAULT_ADMIN_ROLE = 0x00;
+
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 constant TEST_ROLE = bytes32(bytes("TestRole"));
+
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 constant ANOTHER_ROLE = bytes32(bytes("AnotherRole"));
+
+    // Other roles for testing
+    bytes32 constant MINTER_ROLE = keccak256("MINTER");
+    bytes32 constant BURNER_ROLE = keccak256("BURNER");
 
     MockTokenWithAccessControlExtended token;
 
@@ -156,13 +164,43 @@ contract AccessControlExtendedTest is Test {
     }
 
     // ============================================================
-    // Section 1: Constructor initialization (TEST-01)
+    // Section 1: Constructor initialization
     // ============================================================
 
     function test_ConstructorGrantsDefaultAdminRoleToOwner() public {
         assertTrue(
             token.hasRole(DEFAULT_ADMIN_ROLE, owner),
             "Owner should have DEFAULT_ADMIN_ROLE"
+        );
+    }
+
+    function test_ConstructorGrantsDefaultAdminRoleToInitialOwnerNotDeployer()
+        public
+    {
+        address initialOwner = vm.addr(200);
+        MockTokenWithAccessControlExtended tokenWithExternalOwner = new MockTokenWithAccessControlExtended(
+                name,
+                symbol,
+                initialOwner,
+                tokenType,
+                isNonDivisible
+            );
+
+        assertTrue(
+            tokenWithExternalOwner.hasRole(DEFAULT_ADMIN_ROLE, initialOwner)
+        );
+        assertEq(
+            tokenWithExternalOwner.getRoleMember(DEFAULT_ADMIN_ROLE, 0),
+            initialOwner
+        );
+        assertEq(
+            tokenWithExternalOwner.getRoleMemberCount(DEFAULT_ADMIN_ROLE),
+            1
+        );
+
+        // CHECK the deployer is getting the DEFAULT_ADMIN_ROLE
+        assertFalse(
+            tokenWithExternalOwner.hasRole(DEFAULT_ADMIN_ROLE, address(this))
         );
     }
 
@@ -200,7 +238,7 @@ contract AccessControlExtendedTest is Test {
     }
 
     // ============================================================
-    // Section 2: grantRole / revokeRole (TEST-01)
+    // Section 2: grantRole / revokeRole
     // ============================================================
 
     function test_OwnerCanGrantRole() public {
@@ -217,6 +255,12 @@ contract AccessControlExtendedTest is Test {
             token.hasRole(TEST_ROLE, account1),
             "Account1 should have TEST_ROLE"
         );
+    }
+
+    function testFuzz_GrantRole(bytes32 newRole) public {
+        vm.assume(newRole != DEFAULT_ADMIN_ROLE);
+        token.grantRole(newRole, account1);
+        assertTrue(token.hasRole(newRole, account1));
     }
 
     function test_NonOwnerCannotGrantRole() public {
@@ -279,6 +323,9 @@ contract AccessControlExtendedTest is Test {
 
     function test_OwnerCannotGrantRoleWithoutCustomAdminRole() public {
         // Set ADMIN_TEST_ROLE as admin for TEST_ROLE
+
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 adminTestRole = bytes32(bytes("AdminTestRole"));
         token.setRoleAdmin(TEST_ROLE, adminTestRole);
 
@@ -476,7 +523,7 @@ contract AccessControlExtendedTest is Test {
     }
 
     // ============================================================
-    // Section 3: renounceRole (TEST-01)
+    // Section 3: renounceRole
     // ============================================================
 
     function test_AccountCanRenounceOwnRole() public {
@@ -534,28 +581,30 @@ contract AccessControlExtendedTest is Test {
         );
     }
 
-    function test_RenounceRoleClearsData() public {
-        bytes memory data = abi.encodePacked(uint256(42));
-        token.grantRoleWithData(TEST_ROLE, account1, data);
+    function test_RenounceRoleRemovesRole() public {
+        token.grantRole(TEST_ROLE, account1);
+        assertTrue(token.hasRole(TEST_ROLE, account1));
 
-        assertEq(
-            token.getRoleData(TEST_ROLE, account1),
-            data,
-            "Data should be stored"
-        );
+        bytes32[] memory expectedRoles = token.rolesOf(account1);
+
+        assertEq(expectedRoles.length, 1, "Account1 should have 1 role");
+        assertEq(expectedRoles[0], TEST_ROLE);
 
         vm.prank(account1);
         token.renounceRole(TEST_ROLE, account1);
 
+        assertFalse(token.hasRole(TEST_ROLE, account1));
+
+        bytes32[] memory rolesAfterRenounce = token.rolesOf(account1);
         assertEq(
-            token.getRoleData(TEST_ROLE, account1).length,
+            rolesAfterRenounce.length,
             0,
-            "Data should be cleared after renounce"
+            "Account1 should have 0 roles after renounce"
         );
     }
 
     // ============================================================
-    // Section 4: hasRole (TEST-01)
+    // Section 4: hasRole
     // ============================================================
 
     function test_HasRoleReturnsTrueForGrantedRole() public {
@@ -595,7 +644,7 @@ contract AccessControlExtendedTest is Test {
     }
 
     // ============================================================
-    // Section 5: Enumeration - forward lookup (TEST-01)
+    // Section 5: Enumeration - forward lookup
     // ============================================================
 
     function test_GetRoleMemberReturnsCorrectAddress() public {
@@ -623,6 +672,8 @@ contract AccessControlExtendedTest is Test {
     function test_GetRoleMemberNonExistentRoleErrorWithArrayOutOfBounds()
         public
     {
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 nonExistentRole = bytes32(bytes("NonExistentRole"));
 
         //  bytes4(keccak256("Panic(uint256)"));
@@ -694,7 +745,7 @@ contract AccessControlExtendedTest is Test {
     }
 
     // ============================================================
-    // Section 6: Reverse lookup (TEST-01)
+    // Section 6: Reverse lookup
     // ============================================================
 
     function test_RolesOfReturnsAllRoles() public {
@@ -751,208 +802,41 @@ contract AccessControlExtendedTest is Test {
     }
 
     // ============================================================
-    // Section 7: Auxiliary data - setRoleData / getRoleData / grantRoleWithData (TEST-01)
+    // Section 7: Data cleanup on revoke
     // ============================================================
 
-    function test_SetRoleDataStoresData() public {
+    function test_RevokeRole() public {
         token.grantRole(TEST_ROLE, account1);
         assertTrue(token.hasRole(TEST_ROLE, account1));
-        assertEq(token.getRoleData(TEST_ROLE, account1).length, 0);
 
-        bytes memory data = bytes("some role data");
-        token.setRoleData(TEST_ROLE, account1, data);
+        bytes32[] memory roles = token.rolesOf(account1);
+        assertEq(roles.length, 1, "Account1 should have 1 role");
+        assertEq(roles[0], TEST_ROLE);
 
-        assertTrue(token.hasRole(TEST_ROLE, account1));
-        assertEq(
-            token.getRoleData(TEST_ROLE, account1),
-            data,
-            "Stored data should match"
-        );
-    }
-
-    function test_SetRoleDataEmitsEvent() public {
-        bytes memory data = abi.encodePacked(uint256(200));
-
-        vm.expectEmit(true, true, false, true, address(token));
-        emit IAccessControlExtended.RoleDataChanged(TEST_ROLE, account1, data);
-        token.setRoleData(TEST_ROLE, account1, data);
-    }
-
-    function test_SetRoleDataAllowedWithoutRole() public {
-        // setRoleData does NOT revert if account lacks role
-        assertFalse(token.hasRole(TEST_ROLE, account1));
-        assertEq(token.getRoleData(TEST_ROLE, account1).length, 0);
-
-        bytes memory data = bytes("some role data");
-        token.setRoleData(TEST_ROLE, account1, data);
+        token.revokeRole(TEST_ROLE, account1);
 
         assertFalse(token.hasRole(TEST_ROLE, account1));
+
+        bytes32[] memory rolesAfter = token.rolesOf(account1);
         assertEq(
-            token.getRoleData(TEST_ROLE, account1),
-            data,
-            "Data should be stored even without role"
+            rolesAfter.length,
+            0,
+            "Account1 should have 0 roles after revoke"
         );
     }
 
-    function test_SetRoleDataOnlyCallableByOwnerOrRoleAdmin() public {
-        bytes memory data = bytes("some role data");
+    function test_RevokeRoleEmitsRoleRevokedEvent() public {
+        token.grantRole(TEST_ROLE, account1);
 
-        vm.prank(nonOwner);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                AccessControlUnauthorizedAccount.selector,
-                nonOwner,
-                DEFAULT_ADMIN_ROLE
-            )
-        );
-        token.setRoleData(TEST_ROLE, account1, data);
-
-        // test with owner
-        vm.prank(owner);
-        token.setRoleData(TEST_ROLE, account1, data);
-
-        assertEq(
-            token.getRoleData(TEST_ROLE, account1),
-            data,
-            "Data should be stored"
-        );
-
-        // test with role admin
-        bytes32 roleAdmin = keccak256("Test role admin");
-        token.setRoleAdmin(TEST_ROLE, roleAdmin);
-        token.grantRole(roleAdmin, account1);
-        assertTrue(token.hasRole(roleAdmin, account1));
-
-        vm.prank(account1);
-        token.setRoleData(TEST_ROLE, account2, data);
-
-        assertEq(
-            token.getRoleData(TEST_ROLE, account2),
-            data,
-            "Data should be stored"
-        );
-    }
-
-    function test_GetRoleDataReturnsEmptyForNoData() public {
-        bytes memory data = token.getRoleData(TEST_ROLE, account1);
-        assertEq(data.length, 0, "Should return empty bytes for no data");
-    }
-
-    function test_GrantRoleWithDataStoresRoleAndData() public {
-        bytes memory data = bytes("some role data");
-        token.grantRoleWithData(TEST_ROLE, account1, data);
-
-        assertTrue(
-            token.hasRole(TEST_ROLE, account1),
-            "Account1 should have TEST_ROLE"
-        );
-        assertEq(
-            token.getRoleData(TEST_ROLE, account1),
-            data,
-            "Data should be stored"
-        );
-    }
-
-    function test_GrantRoleWithDataEmitsBothEvents() public {
-        bytes memory data = bytes("some role data");
+        vm.recordLogs();
 
         vm.expectEmit(true, true, true, true, address(token));
-        emit IAccessControl.RoleGranted(TEST_ROLE, account1, owner);
-        vm.expectEmit(true, true, false, true, address(token));
-        emit IAccessControlExtended.RoleDataChanged(TEST_ROLE, account1, data);
-
-        token.grantRoleWithData(TEST_ROLE, account1, data);
-    }
-
-    function test_GrantRoleWithDataUpdateDataOnlyIfRoleAlreadyHeld() public {
-        // First grant without data
-        token.grantRole(TEST_ROLE, account1);
-
-        bytes memory data = abi.encodePacked(uint256(700));
-
-        // grantRoleWithData when role already held: no RoleGranted, but RoleDataChanged
-        vm.recordLogs();
-        token.grantRoleWithData(TEST_ROLE, account1, data);
-        Vm.Log[] memory entries = vm.getRecordedLogs();
-
-        // Should have exactly 1 event: RoleDataChanged (no RoleGranted since role already held)
-        assertEq(entries.length, 1, "Should emit only RoleDataChanged");
-        assertEq(
-            entries[0].topics[0],
-            IAccessControlExtended.RoleDataChanged.selector
-        );
-
-        assertEq(
-            token.getRoleData(TEST_ROLE, account1),
-            data,
-            "Data should be updated"
-        );
-    }
-
-    function test_GrantRoleWithDataEmptyDataNoDataEvent() public {
-        // grantRoleWithData with empty data -> only RoleGranted, no RoleDataChanged
-        vm.recordLogs();
-        token.grantRoleWithData(TEST_ROLE, account1, "");
-        Vm.Log[] memory entries = vm.getRecordedLogs();
-
-        // Should have exactly 1 event: RoleGranted (no RoleDataChanged since data is empty)
-        assertEq(entries.length, 1, "Should emit only RoleGranted");
-        assertEq(entries[0].topics[0], IAccessControl.RoleGranted.selector);
-
-        assertTrue(
-            token.hasRole(TEST_ROLE, account1),
-            "Account1 should have TEST_ROLE"
-        );
-    }
-
-    // ============================================================
-    // Section 8: Data cleanup on revoke (TEST-01)
-    // ============================================================
-
-    function test_RevokeRoleClearsAssociatedData() public {
-        bytes memory data = bytes("some data");
-        token.grantRoleWithData(TEST_ROLE, account1, data);
-        assertTrue(token.hasRole(TEST_ROLE, account1));
-        assertEq(
-            token.getRoleData(TEST_ROLE, account1),
-            data,
-            "Data should be stored"
-        );
-
-        token.revokeRole(TEST_ROLE, account1);
-
-        assertFalse(token.hasRole(TEST_ROLE, account1));
-        assertEq(
-            token.getRoleData(TEST_ROLE, account1).length,
-            0,
-            "Data should be cleared after revocation"
-        );
-    }
-
-    function test_RevokeRoleEmitsRoleDataChangedWhenDataExists() public {
-        bytes memory data = bytes("some data");
-        token.grantRoleWithData(TEST_ROLE, account1, data);
-
-        vm.expectEmit(true, true, false, true, address(token));
-        emit IAccessControlExtended.RoleDataChanged(TEST_ROLE, account1, "");
+        emit IAccessControl.RoleRevoked(TEST_ROLE, account1, address(this));
         token.revokeRole(TEST_ROLE, account1);
     }
 
-    function test_RevokeRoleNoDataEventWhenNoDataExists() public {
-        // Grant role without data
-        token.grantRole(TEST_ROLE, account1);
-
-        vm.recordLogs();
-        token.revokeRole(TEST_ROLE, account1);
-        Vm.Log[] memory entries = vm.getRecordedLogs();
-
-        // Should have exactly 1 event: RoleRevoked (no RoleDataChanged since no data existed)
-        assertEq(entries.length, 1, "Should emit only RoleRevoked");
-        assertEq(entries[0].topics[0], IAccessControl.RoleRevoked.selector);
-    }
-
     // ============================================================
-    // Section 9: Role admin hierarchy (TEST-01)
+    // Section 8: Role admin hierarchy
     // ============================================================
 
     function test_DefaultAdminRoleIsDefaultAdmin() public {
@@ -979,6 +863,18 @@ contract AccessControlExtendedTest is Test {
             roleAdmin,
             "Admin for TEST_ROLE should be roleAdmin"
         );
+    }
+
+    function test_NonDefaultAdminCannotSetRoleAdmin() public {
+        vm.prank(account1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                account1,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(TEST_ROLE, ANOTHER_ROLE);
     }
 
     function test_CustomAdminCanGrantThisRole() public {
@@ -1049,7 +945,7 @@ contract AccessControlExtendedTest is Test {
     }
 
     // ============================================================
-    // Section 10: supportsInterface (TEST-02)
+    // Section 9: supportsInterface
     // ============================================================
 
     function test_InterfaceIdConstantsMatchComputedSelectors() public {
@@ -1110,7 +1006,7 @@ contract AccessControlExtendedTest is Test {
     // }
 
     // ============================================================
-    // Section 11: Ownership transfer sync (TEST-01)
+    // Section 10: Ownership transfer sync
     // ============================================================
 
     function test_TransferOwnershipSyncsDefaultAdminRole() public {
@@ -1143,19 +1039,86 @@ contract AccessControlExtendedTest is Test {
         assertEq(oldOwnerRoles.length, 0, "Old owner should have 0 roles");
     }
 
-    function test_TransferOwnershipEmitsRoleEvents() public {
+    function test_TransferOwnershipEmitsRoleEventsForDefaultAdminRoleOnly()
+        public
+    {
         address newOwner = account1;
 
-        // Expect RoleRevoked for old owner then RoleGranted for new owner
-        vm.expectEmit(true, true, true, true, address(token));
-        emit IAccessControl.RoleRevoked(DEFAULT_ADMIN_ROLE, owner, owner);
-        vm.expectEmit(true, true, true, true, address(token));
-        emit IAccessControl.RoleGranted(DEFAULT_ADMIN_ROLE, newOwner, owner);
+        // Record all events emitted during transferOwnership (owner holds DEFAULT_ADMIN_ROLE only)
+        vm.recordLogs();
         token.transferOwnership(newOwner);
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+
+        // Expect exactly 3 events in order:
+        //   1. OwnershipTransferred (emitted by Ownable._transferOwnership, called first via super)
+        //   2. RoleRevoked(DEFAULT_ADMIN_ROLE, oldOwner, oldOwner)
+        //   3. RoleGranted(DEFAULT_ADMIN_ROLE, newOwner, oldOwner)
+        assertEq(entries.length, 3, "Should emit exactly 3 events");
+
+        // Event 0: OwnershipTransferred(owner, newOwner)
+        assertEq(
+            entries[0].topics[0],
+            Ownable.OwnershipTransferred.selector,
+            "First event should be OwnershipTransferred"
+        );
+        assertEq(
+            entries[0].topics[1],
+            bytes32(uint256(uint160(owner))),
+            "OwnershipTransferred: previousOwner should be old owner"
+        );
+        assertEq(
+            entries[0].topics[2],
+            bytes32(uint256(uint160(newOwner))),
+            "OwnershipTransferred: newOwner should be new owner"
+        );
+
+        // Event 1: RoleRevoked(DEFAULT_ADMIN_ROLE, owner, owner)
+        assertEq(
+            entries[1].topics[0],
+            IAccessControl.RoleRevoked.selector,
+            "Second event should be RoleRevoked"
+        );
+        assertEq(
+            entries[1].topics[1],
+            DEFAULT_ADMIN_ROLE,
+            "RoleRevoked: role should be DEFAULT_ADMIN_ROLE"
+        );
+        assertEq(
+            entries[1].topics[2],
+            bytes32(uint256(uint160(owner))),
+            "RoleRevoked: account should be old owner"
+        );
+        assertEq(
+            entries[1].topics[3],
+            bytes32(uint256(uint160(owner))),
+            "RoleRevoked: sender should be old owner"
+        );
+
+        // Event 2: RoleGranted(DEFAULT_ADMIN_ROLE, newOwner, owner)
+        assertEq(
+            entries[2].topics[0],
+            IAccessControl.RoleGranted.selector,
+            "Third event should be RoleGranted"
+        );
+        assertEq(
+            entries[2].topics[1],
+            DEFAULT_ADMIN_ROLE,
+            "RoleGranted: role should be DEFAULT_ADMIN_ROLE"
+        );
+        assertEq(
+            entries[2].topics[2],
+            bytes32(uint256(uint160(newOwner))),
+            "RoleGranted: account should be new owner"
+        );
+        assertEq(
+            entries[2].topics[3],
+            bytes32(uint256(uint160(owner))),
+            "RoleGranted: sender should be old owner"
+        );
     }
 
     // ============================================================
-    // Section 12: onlyRole modifier (TEST-01)
+    // Section 11: onlyRole modifier
     // ============================================================
 
     function test_OnlyRoleAllowsRoleHolder() public {
@@ -1193,7 +1156,7 @@ contract AccessControlExtendedTest is Test {
     }
 
     // ============================================================
-    // Section 13: Fuzz tests (TEST-01)
+    // Section 12: Fuzz tests
     // ============================================================
 
     function testFuzz_GrantAndRevokeRoleConsistency(
@@ -1242,30 +1205,522 @@ contract AccessControlExtendedTest is Test {
         assertFalse(foundAfter, "rolesOf should not contain the revoked role");
     }
 
-    function testFuzz_RoleDataLifecycle(
-        address addr,
-        bytes calldata data
-    ) public {
+    function testFuzz_RoleLifecycle(address addr) public {
         vm.assume(addr != address(0));
         vm.assume(addr != owner);
         vm.assume(uint160(addr) > 9);
-        vm.assume(data.length > 0);
 
         // Grant with data
-        token.grantRoleWithData(TEST_ROLE, addr, data);
+        token.grantRole(TEST_ROLE, addr);
         assertTrue(token.hasRole(TEST_ROLE, addr), "Should have role");
-        assertEq(token.getRoleData(TEST_ROLE, addr), data, "Data should match");
 
-        // Revoke (should clear data)
+        bytes32[] memory roles = token.rolesOf(addr);
+        assertEq(roles.length, 1, "Should have 1 role");
+        assertEq(roles[0], TEST_ROLE);
+
         token.revokeRole(TEST_ROLE, addr);
         assertFalse(
             token.hasRole(TEST_ROLE, addr),
             "Should not have role after revoke"
         );
+
+        bytes32[] memory rolesAfter = token.rolesOf(addr);
+        assertEq(rolesAfter.length, 0, "Should have 0 roles after revoke");
+    }
+
+    function testFuzz_ContractOwnerCanSetRoleAdmin(
+        bytes32 role,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(role != DEFAULT_ADMIN_ROLE);
+        token.setRoleAdmin(role, newAdminRole);
+        assertEq(token.getRoleAdmin(role), newAdminRole);
+    }
+
+    function testFuzz_DefaultAdminCanSetRoleAdmin(
+        bytes32 role,
+        address addressWithDefaultAdminRole,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(addressWithDefaultAdminRole != owner);
+        vm.assume(role != DEFAULT_ADMIN_ROLE);
+
+        token.grantRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole);
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole)
+        );
+
+        vm.prank(addressWithDefaultAdminRole);
+        token.setRoleAdmin(role, newAdminRole);
+        assertEq(token.getRoleAdmin(role), newAdminRole);
+    }
+
+    function testFuzz_NonDefaultAdminCannotSetRoleAdmin(
+        address randomCaller,
+        bytes32 role,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(randomCaller != owner);
+
+        vm.prank(randomCaller);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                randomCaller,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(role, newAdminRole);
+    }
+
+    function testFuzz_OwnerCannotChangeAdminRoleForDefaultAdminRole(
+        bytes32 newAdminRole
+    ) public {
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlCannotSetAdminForDefaultAdminRole.selector
+            )
+        );
+        token.setRoleAdmin(DEFAULT_ADMIN_ROLE, newAdminRole);
+
+        // Ensure this has not changed
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+    }
+
+    function testFuzz_DefaultAdminCannotChangeAdminRoleForDefaultAdminRole(
+        address addressWithDefaultAdminRole,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(addressWithDefaultAdminRole != owner);
+        token.grantRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole);
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole)
+        );
+
+        vm.prank(addressWithDefaultAdminRole);
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlCannotSetAdminForDefaultAdminRole.selector
+            )
+        );
+        vm.prank(addressWithDefaultAdminRole);
+        token.setRoleAdmin(DEFAULT_ADMIN_ROLE, newAdminRole);
+
+        // Ensure this has not changed
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+    }
+
+    // ============================================================
+    // Section 13: _transferOwnership transfers ALL roles
+    // ============================================================
+
+    function test_TransferOwnershipTransfersAllRoles() public {
+        // Grant multiple roles to owner
+        token.grantRole(MINTER_ROLE, owner);
+        token.grantRole(BURNER_ROLE, owner);
+
+        // Owner now holds: DEFAULT_ADMIN_ROLE, MINTER_ROLE, BURNER_ROLE
+        bytes32[] memory ownerRolesBefore = token.rolesOf(owner);
         assertEq(
-            token.getRoleData(TEST_ROLE, addr).length,
+            ownerRolesBefore.length,
+            3,
+            "Owner should have 3 roles before transfer"
+        );
+
+        address newOwner = account1;
+        token.transferOwnership(newOwner);
+
+        // New owner should have ALL 3 roles
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, newOwner),
+            "New owner should have DEFAULT_ADMIN_ROLE"
+        );
+        assertTrue(
+            token.hasRole(MINTER_ROLE, newOwner),
+            "New owner should have MINTER_ROLE"
+        );
+        assertTrue(
+            token.hasRole(BURNER_ROLE, newOwner),
+            "New owner should have BURNER_ROLE"
+        );
+
+        bytes32[] memory newOwnerRoles = token.rolesOf(newOwner);
+        assertEq(
+            newOwnerRoles.length,
+            3,
+            "New owner should have 3 roles after transfer"
+        );
+
+        // Old owner should have NO roles
+        assertFalse(
+            token.hasRole(DEFAULT_ADMIN_ROLE, owner),
+            "Old owner should not have DEFAULT_ADMIN_ROLE"
+        );
+        assertFalse(
+            token.hasRole(MINTER_ROLE, owner),
+            "Old owner should not have MINTER_ROLE"
+        );
+        assertFalse(
+            token.hasRole(BURNER_ROLE, owner),
+            "Old owner should not have BURNER_ROLE"
+        );
+
+        bytes32[] memory oldOwnerRoles = token.rolesOf(owner);
+        assertEq(
+            oldOwnerRoles.length,
             0,
-            "Data should be cleared after revoke"
+            "Old owner should have 0 roles after transfer"
+        );
+    }
+
+    function test_TransferOwnershipDoesNotAffectOtherRoleHolders() public {
+        // Grant MINTER_ROLE to owner and account2
+        token.grantRole(MINTER_ROLE, owner);
+        token.grantRole(MINTER_ROLE, account2);
+
+        address newOwner = account1;
+        token.transferOwnership(newOwner);
+
+        // account2 should still have MINTER_ROLE
+        assertTrue(
+            token.hasRole(MINTER_ROLE, account2),
+            "account2 should still have MINTER_ROLE"
+        );
+
+        // newOwner should have MINTER_ROLE (transferred from old owner)
+        assertTrue(
+            token.hasRole(MINTER_ROLE, newOwner),
+            "New owner should have MINTER_ROLE"
+        );
+
+        // Old owner should NOT have MINTER_ROLE
+        assertFalse(
+            token.hasRole(MINTER_ROLE, owner),
+            "Old owner should not have MINTER_ROLE"
+        );
+    }
+
+    function test_TransferOwnershipTransfersOldOwnerRoles() public {
+        token.grantRole(MINTER_ROLE, owner);
+
+        assertTrue(
+            token.hasRole(MINTER_ROLE, owner),
+            "Owner should have MINTER_ROLE"
+        );
+
+        bytes32[] memory ownerRoles = token.rolesOf(owner);
+
+        assertEq(ownerRoles.length, 2, "Owner should have 2 roles");
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+        assertEq(ownerRoles[1], MINTER_ROLE);
+
+        address newOwner = account1;
+        token.transferOwnership(newOwner);
+
+        // Old owner's roles should be cleared
+        bytes32[] memory rolesAfter = token.rolesOf(owner);
+        assertEq(
+            rolesAfter.length,
+            0,
+            "Old owner should have 0 roles after transfer"
+        );
+
+        // New owner should inherit the old owner's roles
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, newOwner),
+            "New owner should have DEFAULT_ADMIN_ROLE"
+        );
+        assertTrue(
+            token.hasRole(MINTER_ROLE, newOwner),
+            "New owner should have MINTER_ROLE"
+        );
+
+        bytes32[] memory newOwnerRoles = token.rolesOf(newOwner);
+        assertEq(newOwnerRoles.length, 2, "New owner should have 2 roles");
+        assertEq(newOwnerRoles[0], DEFAULT_ADMIN_ROLE);
+        assertEq(newOwnerRoles[1], MINTER_ROLE);
+
+        assertEq(newOwnerRoles.length, ownerRoles.length);
+        assertEq(newOwnerRoles[0], ownerRoles[0]);
+        assertEq(newOwnerRoles[1], ownerRoles[1]);
+    }
+
+    function test_TransferOwnershipEmitsAllRoleEvents() public {
+        // Grant MINTER_ROLE to owner so it holds 2 roles: DEFAULT_ADMIN_ROLE + MINTER_ROLE
+        token.grantRole(MINTER_ROLE, owner);
+
+        address newOwner = account1;
+
+        // Capture all events emitted during transferOwnership
+        vm.recordLogs();
+        token.transferOwnership(newOwner);
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+
+        // Expect exactly 5 events:
+        //   2x RoleRevoked (one per role held by old owner)
+        //   1x OwnershipTransferred
+        //   2x RoleGranted (one per role transferred to new owner)
+        assertEq(
+            entries.length,
+            5,
+            "Should emit 2 RoleRevoked + 1 OwnershipTransferred + 2 RoleGranted"
+        );
+
+        // Collect selectors for validation
+        bytes32 revokedSel = IAccessControl.RoleRevoked.selector;
+        bytes32 grantedSel = IAccessControl.RoleGranted.selector;
+        bytes32 transferredSel = Ownable.OwnershipTransferred.selector;
+
+        // Count event types
+        uint256 revokedCount;
+        uint256 grantedCount;
+        bool ownershipTransferredFound;
+
+        for (uint256 i = 0; i < entries.length; i++) {
+            if (entries[i].topics[0] == revokedSel) {
+                // Every RoleRevoked must be for the old owner
+                assertEq(
+                    entries[i].topics[2],
+                    bytes32(uint256(uint160(owner))),
+                    "RoleRevoked: account must be old owner"
+                );
+                revokedCount++;
+            } else if (entries[i].topics[0] == grantedSel) {
+                // Every RoleGranted must be for the new owner
+                assertEq(
+                    entries[i].topics[2],
+                    bytes32(uint256(uint160(newOwner))),
+                    "RoleGranted: account must be new owner"
+                );
+                grantedCount++;
+            } else if (entries[i].topics[0] == transferredSel) {
+                assertEq(
+                    entries[i].topics[1],
+                    bytes32(uint256(uint160(owner))),
+                    "OwnershipTransferred: previousOwner must be old owner"
+                );
+                assertEq(
+                    entries[i].topics[2],
+                    bytes32(uint256(uint160(newOwner))),
+                    "OwnershipTransferred: newOwner must be new owner"
+                );
+                ownershipTransferredFound = true;
+            }
+        }
+
+        assertEq(
+            revokedCount,
+            2,
+            "Should emit 2 RoleRevoked events (one per role)"
+        );
+        assertEq(
+            grantedCount,
+            2,
+            "Should emit 2 RoleGranted events (one per role)"
+        );
+        assertTrue(
+            ownershipTransferredFound,
+            "Should emit OwnershipTransferred event"
+        );
+
+        // Verify final state: new owner holds both roles, old owner holds none
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, newOwner),
+            "New owner should have DEFAULT_ADMIN_ROLE"
+        );
+        assertTrue(
+            token.hasRole(MINTER_ROLE, newOwner),
+            "New owner should have MINTER_ROLE"
+        );
+        assertFalse(
+            token.hasRole(DEFAULT_ADMIN_ROLE, owner),
+            "Old owner should not have DEFAULT_ADMIN_ROLE"
+        );
+        assertFalse(
+            token.hasRole(MINTER_ROLE, owner),
+            "Old owner should not have MINTER_ROLE"
+        );
+    }
+
+    function test_RenounceOwnershipRevokesAllRoles() public {
+        // Grant MINTER_ROLE to owner
+        token.grantRole(MINTER_ROLE, owner);
+
+        assertEq(token.rolesOf(owner).length, 2, "Owner should have 2 roles");
+
+        token.renounceOwnership();
+
+        // Owner should have NO roles
+        assertFalse(
+            token.hasRole(DEFAULT_ADMIN_ROLE, owner),
+            "Should not have DEFAULT_ADMIN_ROLE"
+        );
+        assertFalse(
+            token.hasRole(MINTER_ROLE, owner),
+            "Should not have MINTER_ROLE"
+        );
+        assertEq(
+            token.rolesOf(owner).length,
+            0,
+            "Owner should have 0 roles after renounce"
+        );
+    }
+
+    function test_TransferOwnershipNewOwnerAlreadyHasSomeRoles() public {
+        // Grant MINTER to owner, BURNER to both
+        token.grantRole(MINTER_ROLE, owner);
+        token.grantRole(BURNER_ROLE, owner);
+        token.grantRole(BURNER_ROLE, account1);
+
+        address newOwner = account1;
+        token.transferOwnership(newOwner);
+
+        // New owner should have: DEFAULT_ADMIN_ROLE, MINTER_ROLE, BURNER_ROLE
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, newOwner),
+            "New owner should have DEFAULT_ADMIN_ROLE"
+        );
+        assertTrue(
+            token.hasRole(MINTER_ROLE, newOwner),
+            "New owner should have MINTER_ROLE"
+        );
+        assertTrue(
+            token.hasRole(BURNER_ROLE, newOwner),
+            "New owner should have BURNER_ROLE"
+        );
+
+        // BURNER_ROLE member count should still be 1 (no duplication)
+        assertEq(
+            token.getRoleMemberCount(BURNER_ROLE),
+            1,
+            "BURNER_ROLE should have 1 member (no duplicate)"
+        );
+    }
+
+    // ============================================================
+    // Section 15: getRoleMembers (Enhancement 2)
+    // ============================================================
+
+    function test_GetRoleMembersReturnsEmptyForNoMembers() public {
+        bytes32 unknownRole = keccak256("UNKNOWN");
+        address[] memory members = token.getRoleMembers(unknownRole);
+        assertEq(
+            members.length,
+            0,
+            "Should return empty array for role with no members"
+        );
+    }
+
+    function test_GetRoleMembersReturnsSingleMember() public {
+        address[] memory members = token.getRoleMembers(DEFAULT_ADMIN_ROLE);
+        assertEq(members.length, 1, "DEFAULT_ADMIN_ROLE should have 1 member");
+        assertEq(members[0], owner, "Only member should be owner");
+    }
+
+    function test_GetRoleMembersReturnsMultipleMembers() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+        token.grantRole(TEST_ROLE, account3);
+
+        address[] memory members = token.getRoleMembers(TEST_ROLE);
+        assertEq(members.length, 3, "TEST_ROLE should have 3 members");
+
+        // Verify all members are present (order may vary with EnumerableSet)
+        bool found1;
+        bool found2;
+        bool found3;
+        for (uint256 i = 0; i < members.length; i++) {
+            if (members[i] == account1) found1 = true;
+            if (members[i] == account2) found2 = true;
+            if (members[i] == account3) found3 = true;
+        }
+        assertTrue(found1, "account1 should be in members");
+        assertTrue(found2, "account2 should be in members");
+        assertTrue(found3, "account3 should be in members");
+    }
+
+    function test_GetRoleMembersUpdatesAfterRevocation() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+
+        assertEq(
+            token.getRoleMembers(TEST_ROLE).length,
+            2,
+            "Should have 2 members"
+        );
+
+        token.revokeRole(TEST_ROLE, account1);
+
+        address[] memory members = token.getRoleMembers(TEST_ROLE);
+        assertEq(members.length, 1, "Should have 1 member after revocation");
+        assertEq(members[0], account2, "Remaining member should be account2");
+    }
+
+    function test_GetRoleMembersConsistentWithGetRoleMemberCount() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+
+        address[] memory members = token.getRoleMembers(TEST_ROLE);
+        uint256 count = token.getRoleMemberCount(TEST_ROLE);
+
+        assertEq(
+            members.length,
+            count,
+            "getRoleMembers length should match getRoleMemberCount"
+        );
+    }
+
+    function test_GetRoleMembersConsistentWithGetRoleMember() public {
+        token.grantRole(TEST_ROLE, account1);
+        token.grantRole(TEST_ROLE, account2);
+        token.grantRole(TEST_ROLE, account3);
+
+        address[] memory allMembers = token.getRoleMembers(TEST_ROLE);
+
+        for (uint256 i = 0; i < allMembers.length; i++) {
+            assertEq(
+                allMembers[i],
+                token.getRoleMember(TEST_ROLE, i),
+                "getRoleMembers[i] should match getRoleMember(role, i)"
+            );
+        }
+    }
+
+    function testFuzz_GetRoleMembersAfterGrantAndRevoke(
+        address addr1,
+        address addr2
+    ) public {
+        vm.assume(addr1 != address(0) && addr2 != address(0));
+        vm.assume(addr1 != addr2);
+        vm.assume(addr1 != owner && addr2 != owner);
+        vm.assume(uint160(addr1) > 9 && uint160(addr2) > 9);
+
+        token.grantRole(TEST_ROLE, addr1);
+        token.grantRole(TEST_ROLE, addr2);
+
+        address[] memory membersAfterGrant = token.getRoleMembers(TEST_ROLE);
+        assertEq(
+            membersAfterGrant.length,
+            2,
+            "Should have 2 members after grants"
+        );
+
+        token.revokeRole(TEST_ROLE, addr1);
+
+        address[] memory membersAfterRevoke = token.getRoleMembers(TEST_ROLE);
+        assertEq(
+            membersAfterRevoke.length,
+            1,
+            "Should have 1 member after revoke"
+        );
+        assertEq(
+            membersAfterRevoke[0],
+            addr2,
+            "Remaining member should be addr2"
         );
     }
 }

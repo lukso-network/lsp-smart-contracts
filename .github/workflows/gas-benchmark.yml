@@ -29,22 +29,31 @@ jobs:
         with:
           node-version: "24.10.0"
 
-      - name: 📦 Install dependencies
+      # The base-branch baseline is best-effort: if the base ref is broken
+      # (e.g. lockfile drift, build error), fall back to the empty template
+      # so the PR's "after" run can still produce a report instead of failing
+      # the whole workflow before the diff is computed.
+      - name: 📦 Install dependencies (base)
+        id: base_install
+        continue-on-error: true
         run: npm ci
 
-      - name: 🏗️ Build contract artifacts
+      - name: 🏗️ Build contract artifacts (base)
+        id: base_build
+        if: steps.base_install.outcome == 'success'
+        continue-on-error: true
         run: |
           npm run build
           npm run build:types
           npm run build:js
 
-      - name: 🧪⛽️ Run gas benchmark tests
+      - name: 🧪⛽️ Run gas benchmark tests (base)
         # Rename the file to `gas_benchmark_before.json` be able to compare later
         run: |
-          if npm run test:benchmark; then
-            echo "Benchmark tests ran successfully"
+          if [[ "${{ steps.base_build.outcome }}" == "success" ]] && npm run test:benchmark; then
+            echo "Baseline benchmark ran successfully"
           else
-            echo "Benchmark tests failed, creating empty gas_benchmark_result.json file"
+            echo "Baseline unavailable (install/build/test failed on base ref), using empty template"
             cp packages/lsp-smart-contracts/scripts/ci/gas_benchmark_template.json packages/lsp-smart-contracts/gas_benchmark_result.json
           fi
           mv packages/lsp-smart-contracts/gas_benchmark_result.json packages/lsp-smart-contracts/gas_benchmark_before.json

@@ -26,7 +26,10 @@ CONTRACT_VERIFICATION_TESTNET_PK=0x...
 The following arguments must be specified:
 
 - `-n`: network to deploy on. **MUST be configured in the `hardhat.config.ts`**
-- `-c`: contract to be deployed + verified. See [`DEPLOYMENT.md`](../../DEPLOYMENT.md) for more details of the available options.
+- `-c`: contract to be deployed + verified.
+
+<!-- TODO: deprecated link, find where the old contract names were located and write them down for old deployment flows -->
+<!-- See [`DEPLOYMENT.md`](../../DEPLOYMENT.md) for more details of the available options. -->
 
 ## `fix_flattener.js`
 

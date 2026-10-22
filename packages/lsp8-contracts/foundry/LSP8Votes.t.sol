@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 // foundry
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
 // modules
 import {LSP8Votes} from "../contracts/extensions/LSP8Votes/LSP8Votes.sol";

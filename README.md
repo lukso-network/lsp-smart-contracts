@@ -7,6 +7,12 @@ For more information see [Documentation](https://docs.lukso.tech/contracts/intro
 | :warning: | _This package is currently in early stages of development,<br/> use for testing or experimentation purposes only._ |
 | :-------: | :----------------------------------------------------------------------------------------------------------------- |
 
+## Deployments & Chains
+
+For the list of chains where the Universal Profile base contracts and factories are deployed on, see [`./deployments/DEPLOYED_CHAINS.md`](./deployments/DEPLOYED_CHAINS.md) and [`./deployments/chains-mainnet.json`](./deployments/chains-mainnet.json).
+
+For the instructions on how to deploy to a new chain, see [`./deployments/README.md`](./deployments/README.md).
+
 ## Packages
 
 This repo contains packages for the Solidity implementation of the LSP smart contracts.
@@ -70,9 +76,10 @@ See the `README.md` file of each individual package to learn more.
 
 For detailed instructions on how to run tests, please refer to our [Testing Guide](./packages/lsp-smart-contracts/tests/README.md).
 
-### Deployment via hardhat
+<!-- Deprecated Hardhat deployment -->
+<!-- ### Deployment via hardhat
 
-You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./packages/lsp-smart-contracts/DEPLOYMENT.md) page.
+You can find more infos on how to deploy the contracts via hardhat in the [DEPLOYMENT](./packages/lsp-smart-contracts/DEPLOYMENT.md) page. -->
 
 ---
 
@@ -92,6 +99,12 @@ The following audits and formal verification were conducted. All high-level issu
 - Code4Rena Audit Contest, 2023-06-30 to 2023-07-14, Final Result: [See Code4Rena audit report on Code4rena.com website](https://code4rena.com/reports/2023-06-lukso)
 - MiloTruck, 2023-11-31, Final Result: [MiloTruck_audit_2023_11_31.pdf](./audits/MiloTruck_audit_2023_11_31.pdf)
 - MiloTruck, 2024-01-24, Final Result: [MiloTruck_audit_2024_01_24.pdf](./audits/MiloTruck_audit_2024_01_24.pdf)
+
+### AI Audit Agent scan (Nethermind)
+
+> **Disclaimer:** The report below was produced by [Nethermind's AI Audit Agent](https://auditagent.nethermind.io/) tool. It is AI-generated output and was **not** manually reviewed by Nethermind's security team. It is **not** a full security audit and must not be presented or interpreted as one.
+
+- Nethermind AI Audit Agent scan, 2026-05-19: [Nethermind_AI_Audit_Agent_2026_05_19.pdf](./audits/Nethermind_AI_Audit_Agent_2026_05_19.pdf) — see [audits/README.md](./audits/README.md#nethermind-ai-audit-agent-scan) for a findings summary.
 
 ## Contribute
 

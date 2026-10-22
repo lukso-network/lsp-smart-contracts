@@ -1,9 +1,14 @@
 {
   "name": "@lukso/lsp10-contracts",
-  "version": "0.15.4",
+  "version": "0.16.3",
   "description": "Package for the LSP10 Received Vaults standard",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp10-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",
@@ -51,7 +56,7 @@
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
-    "@lukso/lsp2-contracts": "~0.15.4"
+    "@lukso/lsp2-contracts": "~0.16.0"
   },
   "resolutions": {
     "solidity-bytes-utils": "0.8.4"

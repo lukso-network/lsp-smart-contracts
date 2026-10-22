@@ -1,0 +1,15 @@
+{
+  "chainId": 1329,
+  "chainSlug": "sei",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789669568,
+  "rpcUrlUsed": "https://evm-rpc.sei-apis.com",
+  "txHash": "0xafd9c03ae9618c73f9e351273a5c02a59934b331f4ad18657030d39fd33b5c30",
+  "blockNumber": 232592848
+}

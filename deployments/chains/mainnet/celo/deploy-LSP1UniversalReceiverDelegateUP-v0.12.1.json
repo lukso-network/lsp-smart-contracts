@@ -1,0 +1,15 @@
+{
+  "chainId": 42220,
+  "chainSlug": "celo",
+  "network": "mainnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.12.1",
+  "address": "0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791040314,
+  "rpcUrlUsed": "https://forno.celo.org",
+  "txHash": "0x1c44fe1ba5f871008b4094bb390e8a139f9056a76fd08fbf473531e1121ad768",
+  "blockNumber": 79139563
+}

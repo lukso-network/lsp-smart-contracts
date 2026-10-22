@@ -1,0 +1,15 @@
+{
+  "chainId": 5000,
+  "chainSlug": "mantle",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.12.1",
+  "address": "0x52c90985AF970D4E0DC26Cb5D052505278aF32A9",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791041628,
+  "rpcUrlUsed": "https://rpc.mantle.xyz",
+  "txHash": "0xc1db4acf3a246df4d22fa998c0eb3e084ccea8e84167b07f15c465b6a4e79767",
+  "blockNumber": 101455667
+}

@@ -1,0 +1,1292 @@
+[
+  {
+    "chainId": 16661,
+    "name": "0G",
+    "rpcUrl": "https://evmrpc.0g.ai",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32265/large/0g.png?1759289710",
+    "currencySymbol": "0G",
+    "explorers": [
+      {
+        "url": "https://chainscan.0g.ai",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://xswap.link/bridge?fromChain=1&toChain=16661&fromToken=USDC&toToken=USDC"
+    ],
+    "slug": "0g"
+  },
+  {
+    "chainId": 33139,
+    "name": "ApeChain",
+    "rpcUrl": "https://rpc.apechain.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22184/large/apechain.jpg?1729564324",
+    "currencySymbol": "APE",
+    "explorers": [
+      {
+        "url": "https://apescan.io",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": [
+      "https://apechain.portal.caldera.xyz/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "apechain"
+  },
+  {
+    "chainId": 5042,
+    "name": "Arc",
+    "rpcUrl": "https://rpc.mainnet.arc.io",
+    "currencySymbol": "USDC",
+    "explorers": [
+      {
+        "url": "https://explorer.arc.io",
+        "category": "blockscout"
+      }
+    ],
+    "slug": "arc"
+  },
+  {
+    "chainId": 42161,
+    "name": "Arbitrum One",
+    "rpcUrl": "https://arb1.arbitrum.io/rpc",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/33/large/AO_logomark.png?1706606717",
+    "currencySymbol": "ArbitrumOneETH",
+    "explorers": [
+      {
+        "url": "https://arbiscan.io",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://arbitrum.dex.guru",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://bridge.arbitrum.io",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "arbitrum-one"
+  },
+  {
+    "chainId": 592,
+    "name": "Astar EVM",
+    "rpcUrl": "https://evm.astar.network",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/71/large/Astar.jpeg?1706606537",
+    "currencySymbol": "ASTR",
+    "explorers": [
+      {
+        "url": "https://astar.subscan.io",
+        "category": "subscan"
+      },
+      {
+        "url": "https://blockscout.com/astar",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://portal.astar.network/astar/bridge"],
+    "slug": "astar-evm"
+  },
+  {
+    "chainId": 43114,
+    "name": "Avalanche C-Chain",
+    "rpcUrl": "https://avalanche-c-chain-rpc.publicnode.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/12/large/avalanche.png?1706606775",
+    "currencySymbol": "AVAX",
+    "explorers": [
+      {
+        "url": "https://snowscan.xyz",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://snowtrace.io",
+        "category": "routescan"
+      },
+      {
+        "url": "https://avascan.info",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://core.app/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "avalanche-c-chain"
+  },
+  {
+    "chainId": 8453,
+    "name": "Base",
+    "rpcUrl": "https://mainnet.base.org",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/131/large/base.png?1759905869",
+    "currencySymbol": "BaseETH",
+    "explorers": [
+      {
+        "url": "https://basescan.org",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://base.blockscout.com",
+        "category": "blockscout"
+      },
+      {
+        "url": "https://base.dex.guru",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://bridge.base.org",
+      "https://superbridge.app/base",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "base"
+  },
+  {
+    "chainId": 80094,
+    "name": "Berachain",
+    "rpcUrl": "https://berachain-rpc.publicnode.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/176/large/berachain.jpeg?1706606828",
+    "currencySymbol": "BERA",
+    "explorers": [
+      {
+        "url": "https://berascan.com",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://beratrail.io",
+        "category": "routescan"
+      }
+    ],
+    "bridges": [
+      "https://hub.berachain.com/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "berachain"
+  },
+  {
+    "chainId": 81457,
+    "name": "Blast",
+    "rpcUrl": "https://blast-rpc.publicnode.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/192/large/blast.jpeg?1709085131",
+    "currencySymbol": "BlastETH",
+    "explorers": [
+      {
+        "url": "https://blastscan.io",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://blastexplorer.io",
+        "category": "routescan"
+      }
+    ],
+    "bridges": [
+      "https://blast.io/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "blast"
+  },
+  {
+    "chainId": 56,
+    "name": "BNB Smart Chain",
+    "rpcUrl": "https://bsc-rpc.publicnode.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/1/large/bnb_smart_chain.png?1706606721",
+    "currencySymbol": "BNB",
+    "explorers": [
+      {
+        "url": "https://bscscan.com",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://bnb.dex.guru",
+        "category": "other"
+      }
+    ],
+    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"],
+    "slug": "bnb-smart-chain"
+  },
+  {
+    "chainId": 42220,
+    "name": "Celo",
+    "rpcUrl": "https://forno.celo.org",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/21/large/celo.jpeg?1711358666",
+    "currencySymbol": "CELO",
+    "explorers": [
+      {
+        "url": "https://celoscan.io",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://celo.blockscout.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://app.superbridge.com/celo",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "celo"
+  },
+  {
+    "chainId": 88888,
+    "name": "Chiliz",
+    "rpcUrl": "https://rpc.ankr.com/chiliz",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/8834/large/chiliz.png?1710723850",
+    "currencySymbol": "CHZ",
+    "explorers": [
+      {
+        "url": "https://chiliscan.com",
+        "category": "routescan"
+      },
+      {
+        "url": "https://scan.chiliz.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://bridge.chiliz.com"],
+    "slug": "chiliz"
+  },
+  {
+    "chainId": 1030,
+    "name": "Conflux EVM eSpace",
+    "rpcUrl": "https://evm.confluxrpc.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/52/large/conflux.png?1724842516",
+    "currencySymbol": "CFX",
+    "explorers": [
+      {
+        "url": "https://evm.confluxscan.net",
+        "category": "other"
+      }
+    ],
+    "bridges": ["https://confluxhub.io/espace-bridge/cross-space"],
+    "slug": "conflux-evm-espace"
+  },
+  {
+    "chainId": 1116,
+    "name": "Core Blockchain",
+    "rpcUrl": "https://core.drpc.org",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/119/large/core.jpeg?1706606603",
+    "currencySymbol": "CORE",
+    "explorers": [
+      {
+        "url": "https://scan.coredao.org",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": ["https://bridge.coredao.org"],
+    "slug": "core-blockchain"
+  },
+  {
+    "chainId": 2632500,
+    "name": "COTI",
+    "rpcUrl": "https://new-york.fullnode.mainnet.coti.io/rpc",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32274/large/coti.jpg?1765937321",
+    "currencySymbol": "COTI",
+    "explorers": [
+      {
+        "url": "https://mainnet.cotiscan.io",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://bridge.coti.io"],
+    "slug": "coti"
+  },
+  {
+    "chainId": 25,
+    "name": "Cronos",
+    "rpcUrl": "https://cronos-evm-rpc.publicnode.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/46/large/cronos.jpeg?1706606792",
+    "currencySymbol": "CRO",
+    "explorers": [
+      {
+        "url": "https://explorer.cronos.org",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://cronos.org/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "cronos"
+  },
+  {
+    "chainId": 666666666,
+    "name": "Degen Chain",
+    "rpcUrl": "https://rpc.degen.tips",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/209/large/degen.jpeg?1711946732",
+    "currencySymbol": "DEGEN",
+    "explorers": [
+      {
+        "url": "https://explorer.degen.tips",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://relay.link/bridge"],
+    "slug": "degen-chain"
+  },
+  {
+    "chainId": 1,
+    "name": "Ethereum",
+    "rpcUrl": "https://eth.drpc.org",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/279/large/ethereum.png?1706606803",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://etherscan.io",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://eth.blockscout.com",
+        "category": "blockscout"
+      },
+      {
+        "url": "https://ethscanner.io/",
+        "category": "routescan"
+      }
+    ],
+    "bridges": [],
+    "slug": "ethereum"
+  },
+  {
+    "chainId": 61,
+    "name": "Ethereum Classic",
+    "rpcUrl": "https://0xrpc.io/etc",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/453/large/ethereum_classic.jpg?1724842608",
+    "currencySymbol": "ETC",
+    "explorers": [
+      {
+        "url": "https://etc.blockscout.com",
+        "category": "blockscout"
+      },
+      {
+        "url": "https://explorer-expedition.etc-network.info",
+        "category": "other"
+      },
+      {
+        "url": "https://etcerscan.com",
+        "category": "other"
+      },
+      {
+        "url": "https://www.oklink.com/etc",
+        "category": "other"
+      },
+      {
+        "url": "https://etc.tokenview.io",
+        "category": "other"
+      }
+    ],
+    "bridges": [],
+    "slug": "ethereum-classic"
+  },
+  {
+    "chainId": 42793,
+    "name": "Etherlink",
+    "rpcUrl": "https://node.mainnet.etherlink.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/278/large/etherlink.jpg?1719800793",
+    "currencySymbol": "XTZ",
+    "explorers": [
+      {
+        "url": "https://explorer.etherlink.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://bridge.etherlink.com", "https://jumper.exchange/"],
+    "slug": "etherlink"
+  },
+  {
+    "chainId": 14,
+    "name": "Flare",
+    "rpcUrl": "https://flare-api.flare.network/ext/C/rpc",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/114/large/Flare.jpeg?1706606598",
+    "currencySymbol": "FLR",
+    "explorers": [
+      {
+        "url": "https://flare-explorer.flare.network",
+        "category": "blockscout"
+      },
+      {
+        "url": "https://mainnet.flarescan.com",
+        "category": "routescan"
+      }
+    ],
+    "bridges": [
+      "https://portal.flare.network/bridge",
+      "https://jumper.exchange/"
+    ],
+    "slug": "flare"
+  },
+  {
+    "chainId": 747,
+    "name": "Flow EVM",
+    "rpcUrl": "https://mainnet.evm.nodes.onflow.org",
+    "currencySymbol": "FLOW",
+    "explorers": [
+      {
+        "url": "https://evm.flowscan.io",
+        "category": "blockscout"
+      }
+    ],
+    "slug": "flow-evm"
+  },
+  {
+    "chainId": 100,
+    "name": "Gnosis",
+    "rpcUrl": "https://gnosis-rpc.publicnode.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/11062/large/Aatar_green_white.png?1706606458",
+    "currencySymbol": "xDAI",
+    "explorers": [
+      {
+        "url": "https://gnosisscan.io",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://gnosis.blockscout.com",
+        "category": "blockscout"
+      },
+      {
+        "url": "https://gnosis.dex.guru",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://bridge.gnosischain.com",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "gnosis"
+  },
+  {
+    "chainId": 1625,
+    "name": "Gravity Alpha",
+    "rpcUrl": "https://rpc.gravity.xyz/",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/290/large/Gravity_Logo_Icon_Black.png?1724722766",
+    "currencySymbol": "G",
+    "explorers": [
+      {
+        "url": "https://explorer.gravity.xyz",
+        "category": "blockscout"
+      },
+      {
+        "url": "https://gscan.xyz",
+        "category": "other"
+      },
+      {
+        "url": "https://www.oklink.com/gravity-alpha",
+        "category": "other"
+      }
+    ],
+    "bridges": ["https://gravity.xyz", "https://jumper.exchange/"],
+    "slug": "gravity-alpha"
+  },
+  {
+    "chainId": 177,
+    "name": "HashKey Chain",
+    "rpcUrl": "https://mainnet.hsk.xyz",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32250/large/hashkey.jpg?1754898883",
+    "currencySymbol": "HSK",
+    "explorers": [
+      {
+        "url": "https://hashkey.blockscout.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://global.hashkey.com/en-US/bridge"],
+    "slug": "hashkey-chain"
+  },
+  {
+    "chainId": 999,
+    "name": "HyperEVM",
+    "rpcUrl": "https://rpc.hyperliquid.xyz/evm",
+    "currencySymbol": "HYPE",
+    "explorers": [
+      {
+        "url": "https://hyperevmscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "slug": "hyperevm"
+  },
+  {
+    "chainId": 13371,
+    "name": "Immutable zkEVM",
+    "rpcUrl": "https://rpc.immutable.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/159/large/immutable.jpeg?1706606759",
+    "currencySymbol": "IMX",
+    "explorers": [
+      {
+        "url": "https://explorer.immutable.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://toolkit.immutable.com/bridge",
+      "https://jumper.exchange/"
+    ],
+    "slug": "immutable-zkevm"
+  },
+  {
+    "chainId": 57073,
+    "name": "Ink",
+    "rpcUrl": "https://rpc-gel.inkonchain.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22194/large/ink.jpg?1737600222",
+    "currencySymbol": "InkETH",
+    "explorers": [
+      {
+        "url": "https://explorer.inkonchain.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://inkonchain.com/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "ink"
+  },
+  {
+    "chainId": 8217,
+    "name": "Kaia",
+    "rpcUrl": "https://public-en.node.kaia.io",
+    "currencySymbol": "KAIA",
+    "explorers": [
+      {
+        "url": "https://kaiascan.io",
+        "category": "other"
+      }
+    ],
+    "slug": "kaia"
+  },
+  {
+    "chainId": 747474,
+    "name": "Katana",
+    "rpcUrl": "https://rpc.katanarpc.com/",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32239/large/katana.jpg?1751496126",
+    "currencySymbol": "KatanaETH",
+    "explorers": [
+      {
+        "url": "https://katanascan.com",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://explorer.katanarpc.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://app.katana.network/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "katana"
+  },
+  {
+    "chainId": 2222,
+    "name": "Kava EVM",
+    "rpcUrl": "https://evm.kava-rpc.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/2/large/kava.jpeg?1707096364",
+    "currencySymbol": "KAVA",
+    "explorers": [
+      {
+        "url": "https://kavascan.com/",
+        "category": "other"
+      }
+    ],
+    "bridges": ["https://app.kava.io/bridge"],
+    "slug": "kava-evm"
+  },
+  {
+    "chainId": 232,
+    "name": "Lens",
+    "rpcUrl": "https://rpc.lens.xyz",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22228/large/light-removebg-preview.png?1746161920",
+    "currencySymbol": "GHO",
+    "explorers": [
+      {
+        "url": "https://explorer.lens.xyz",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://relay.link/bridge/lens", "https://jumper.exchange/"],
+    "slug": "lens"
+  },
+  {
+    "chainId": 59144,
+    "name": "Linea",
+    "rpcUrl": "https://rpc.linea.build",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/135/large/linea.jpeg?1706606705",
+    "currencySymbol": "LineaETH",
+    "explorers": [
+      {
+        "url": "https://lineascan.build",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://api-explorer.linea.build",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://bridge.linea.build",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "linea"
+  },
+  {
+    "chainId": 42,
+    "name": "LUKSO",
+    "rpcUrl": "https://rpc.mainnet.lukso.network",
+    "iconUri": "https://assets.coingecko.com/coins/images/31010/standard/LYX.png?1696529847",
+    "currencySymbol": "LYX",
+    "explorers": [
+      {
+        "url": "https://explorer.execution.mainnet.lukso.network",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [],
+    "slug": "lukso"
+  },
+  {
+    "chainId": 5000,
+    "name": "Mantle",
+    "rpcUrl": "https://rpc.mantle.xyz",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/140/large/mantle.jpeg?1706606701",
+    "currencySymbol": "MNT",
+    "explorers": [
+      {
+        "url": "https://mantlescan.xyz",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": [
+      "https://bridge.mantle.xyz",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "mantle"
+  },
+  {
+    "chainId": 4326,
+    "name": "MegaETH",
+    "rpcUrl": "https://mainnet.megaeth.com/rpc",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32266/large/megaeth.jpg?1762329010",
+    "currencySymbol": "MegaETH",
+    "explorers": [
+      {
+        "url": "https://megaeth.blockscout.com",
+        "category": "blockscout"
+      },
+      {
+        "url": "https://mega.etherscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": [
+      "https://bridge.megaeth.com",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "megaeth"
+  },
+  {
+    "chainId": 34443,
+    "name": "Mode",
+    "rpcUrl": "https://mainnet.mode.network/",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/191/large/mode.jpeg?1708666179",
+    "currencySymbol": "ModeETH",
+    "explorers": [
+      {
+        "url": "https://explorer.mode.network",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://app.mode.network/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "mode"
+  },
+  {
+    "chainId": 143,
+    "name": "Monad",
+    "rpcUrl": "https://rpc.monad.xyz",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22182/large/monad.png?1729046263",
+    "currencySymbol": "MON",
+    "explorers": [
+      {
+        "url": "https://monadvision.com",
+        "category": "other"
+      },
+      {
+        "url": "https://monadscan.com",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"],
+    "slug": "monad"
+  },
+  {
+    "chainId": 1284,
+    "name": "Moonbeam",
+    "rpcUrl": "https://moonbeam-rpc.publicnode.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/56/large/cropped-Moonbeam-Favicon-550px.png?1706606533",
+    "currencySymbol": "GLMR",
+    "explorers": [
+      {
+        "url": "https://moonbeam.moonscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": [
+      "https://apps.moonbeam.network/moonbeam/bridge",
+      "https://jumper.exchange/"
+    ],
+    "slug": "moonbeam"
+  },
+  {
+    "chainId": 1285,
+    "name": "Moonriver",
+    "rpcUrl": "https://moonriver-rpc.publicnode.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/38/large/moonriver.jpg?1725875159",
+    "currencySymbol": "MOVR",
+    "explorers": [
+      {
+        "url": "https://moonriver.moonscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": ["https://apps.moonbeam.network/moonriver/bridge"],
+    "slug": "moonriver"
+  },
+  {
+    "chainId": 204,
+    "name": "opBNB",
+    "rpcUrl": "https://opbnb-mainnet-rpc.bnbchain.org",
+    "currencySymbol": "BNB",
+    "explorers": [
+      {
+        "url": "https://opbnb.bscscan.com",
+        "category": "etherscan"
+      }
+    ],
+    "slug": "opbnb"
+  },
+  {
+    "chainId": 10,
+    "name": "Optimism",
+    "rpcUrl": "https://mainnet.optimism.io",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/41/large/optimism.png?1706606778",
+    "currencySymbol": "OPMainnetETH",
+    "explorers": [
+      {
+        "url": "https://optimistic.etherscan.io",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://explorer.optimism.io",
+        "category": "blockscout"
+      },
+      {
+        "url": "https://optimism.dex.guru",
+        "category": "other"
+      },
+      {
+        "url": "https://mainnet.superscan.network",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://app.optimism.io/bridge",
+      "https://superbridge.app/optimism",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "optimism"
+  },
+  {
+    "chainId": 9745,
+    "name": "Plasma",
+    "rpcUrl": "https://rpc.plasma.to",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32256/large/plasma.jpg?1758000963",
+    "currencySymbol": "XPL",
+    "explorers": [
+      {
+        "url": "https://plasmascan.to",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": ["https://jumper.exchange/", "https://relay.link/bridge"],
+    "slug": "plasma"
+  },
+  {
+    "chainId": 98866,
+    "name": "Plume",
+    "rpcUrl": "https://rpc.plume.org",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22226/large/Logomark-BG-Red.png?1746672975",
+    "currencySymbol": "PLUME",
+    "explorers": [
+      {
+        "url": "https://explorer.plume.org",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://bridge.plume.org",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "plume"
+  },
+  {
+    "chainId": 137,
+    "name": "Polygon",
+    "rpcUrl": "https://polygon-bor-rpc.publicnode.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/15/large/polygon_pos.png?1706606645",
+    "currencySymbol": "POL",
+    "explorers": [
+      {
+        "url": "https://polygonscan.com",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://www.oklink.com/polygon",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://portal.polygon.technology/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "polygon"
+  },
+  {
+    "chainId": 369,
+    "name": "PulseChain",
+    "rpcUrl": "https://rpc.pulsechain.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/130/large/pulse.jpeg?1706606525",
+    "currencySymbol": "PLS",
+    "explorers": [
+      {
+        "url": "https://api.scan.pulsechain.com",
+        "category": "blockscout"
+      },
+      {
+        "url": "https://otherscan.pulsechain.box",
+        "category": "other"
+      },
+      {
+        "url": "https://scan.pulsechain.com",
+        "category": "other"
+      },
+      {
+        "url": "https://otter.pulsechain.com",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://bridge.pulsechain.com/",
+      "https://ipfs.bridge.pulsechain.com/"
+    ],
+    "slug": "pulsechain"
+  },
+  {
+    "chainId": 4663,
+    "name": "Robinhood Chain",
+    "rpcUrl": "https://rpc.mainnet.chain.robinhood.com",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://robinhoodchain.blockscout.com",
+        "category": "blockscout"
+      }
+    ],
+    "slug": "robinhood-chain"
+  },
+  {
+    "chainId": 2020,
+    "name": "Ronin",
+    "rpcUrl": "https://api.roninchain.com/rpc",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/45/large/ronin.png?1706606769",
+    "currencySymbol": "RON",
+    "explorers": [
+      {
+        "url": "https://app.roninchain.com",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://app.roninchain.com/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "ronin"
+  },
+  {
+    "chainId": 534352,
+    "name": "Scroll",
+    "rpcUrl": "https://rpc.scroll.io",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/153/large/scroll.jpeg?1706606782",
+    "currencySymbol": "ScrollETH",
+    "explorers": [
+      {
+        "url": "https://scrollscan.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://scroll.io/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "scroll"
+  },
+  {
+    "chainId": 1329,
+    "name": "Sei",
+    "rpcUrl": "https://evm-rpc.sei-apis.com",
+    "currencySymbol": "SEI",
+    "explorers": [
+      {
+        "url": "https://seiscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "slug": "sei"
+  },
+  {
+    "chainId": 5031,
+    "name": "Somnia",
+    "rpcUrl": "https://api.infra.mainnet.somnia.network",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32254/large/somi.png?1757319137",
+    "currencySymbol": "SOMI",
+    "explorers": [
+      {
+        "url": "https://mainnet.somnia.w3us.site",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://somnia.network/ecosystem",
+      "https://relay.link/bridge"
+    ],
+    "slug": "somnia"
+  },
+  {
+    "chainId": 1868,
+    "name": "Soneium",
+    "rpcUrl": "https://rpc.soneium.org",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22200/large/soneium-removebg-preview.png?1737099934",
+    "currencySymbol": "SoneiumETH",
+    "explorers": [
+      {
+        "url": "https://soneium.blockscout.com",
+        "category": "blockscout"
+      },
+      {
+        "url": "https://www.okx.com/web3/explorer/soneium",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://soneium.org/en/bridges/",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "soneium"
+  },
+  {
+    "chainId": 146,
+    "name": "Sonic",
+    "rpcUrl": "https://sonic-rpc.publicnode.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22192/large/128xS_token_Black-BG_2x.png?1735963719",
+    "currencySymbol": "S",
+    "explorers": [
+      {
+        "url": "https://sonicscan.org",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://explorer.soniclabs.com",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://gateway.soniclabs.com",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "sonic"
+  },
+  {
+    "chainId": 988,
+    "name": "Stable",
+    "rpcUrl": "https://rpc.stable.xyz",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/32271/large/stable.png?1765196531",
+    "currencySymbol": "USDT0",
+    "explorers": [
+      {
+        "url": "https://stablescan.xyz",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": [
+      "https://stable.xyz",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "stable"
+  },
+  {
+    "chainId": 1514,
+    "name": "Story",
+    "rpcUrl": "https://mainnet.storyrpc.io",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22207/large/story.jpg?1739437182",
+    "currencySymbol": "IP",
+    "explorers": [
+      {
+        "url": "https://mainnet.storyscan.xyz",
+        "category": "other"
+      }
+    ],
+    "bridges": ["https://relay.link/bridge"],
+    "slug": "story"
+  },
+  {
+    "chainId": 105105,
+    "name": "Stratis Xertra",
+    "rpcUrl": "https://rpc.xertra.com",
+    "iconUri": "https://ipfs.io/ipfs/QmV1qG5jcEFhekamTzrMqzMTDRvCGdGQAiJcsHZ9viVwgT",
+    "currencySymbol": "STRAX",
+    "explorers": [
+      {
+        "url": "https://explorer.xertra.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://www.stratisplatform.com"],
+    "slug": "stratis-xertra"
+  },
+  {
+    "chainId": 167000,
+    "name": "Taiko Alethia",
+    "rpcUrl": "https://rpc.mainnet.taiko.xyz",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/266/large/taiko.jpeg?1716985374",
+    "currencySymbol": "TaikoAlethiaETH",
+    "explorers": [
+      {
+        "url": "https://taikoscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": [
+      "https://bridge.taiko.xyz",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "taiko-alethia"
+  },
+  {
+    "chainId": 40,
+    "name": "Telos EVM",
+    "rpcUrl": "https://telos.drpc.org",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/7588/large/TLOS_200.png?1706606551",
+    "currencySymbol": "TLOS",
+    "explorers": [
+      {
+        "url": "https://teloscan.io",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://jumper.exchange/"],
+    "slug": "telos-evm"
+  },
+  {
+    "chainId": 4217,
+    "name": "Tempo",
+    "rpcUrl": "https://rpc.tempo.xyz",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/102132289/large/tempo.png?1773825047",
+    "currencySymbol": "PathUSD (Base)",
+    "explorers": [
+      {
+        "url": "https://explore.tempo.xyz",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://docs.tempo.xyz/ecosystem/bridges",
+      "https://wallet.tempo.xyz",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "tempo"
+  },
+  {
+    "chainId": 130,
+    "name": "Unichain",
+    "rpcUrl": "https://unichain-rpc.publicnode.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22206/large/unichain.png?1739323630",
+    "currencySymbol": "UnichainETH",
+    "explorers": [
+      {
+        "url": "https://uniscan.xyz",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://unichain.blockscout.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://app.uniswap.org/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "unichain"
+  },
+  {
+    "chainId": 1111,
+    "name": "WEMIX3.0",
+    "rpcUrl": "https://api.wemix.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/113/large/wemix.png?1706606488",
+    "currencySymbol": "WEMIX",
+    "explorers": [
+      {
+        "url": "https://explorer.wemix.com",
+        "category": "other"
+      }
+    ],
+    "bridges": ["https://wemix.fi/bridge"],
+    "slug": "wemix3-0"
+  },
+  {
+    "chainId": 480,
+    "name": "World Chain",
+    "rpcUrl": "https://worldchain-mainnet.g.alchemy.com/public",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/22180/large/Worldcoin-logomark-light.png?1728377966",
+    "currencySymbol": "WorldChainETH",
+    "explorers": [
+      {
+        "url": "https://worldscan.org",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://worldchain-mainnet.explorer.alchemy.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": [
+      "https://superbridge.app/worldchain",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "world-chain"
+  },
+  {
+    "chainId": 196,
+    "name": "X Layer",
+    "rpcUrl": "https://rpc.xlayer.tech",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/238/large/x_logo.jpeg?1713243242",
+    "currencySymbol": "OKB",
+    "explorers": [
+      {
+        "url": "https://www.oklink.com/xlayer",
+        "category": "other"
+      }
+    ],
+    "bridges": ["https://web3.okx.com/xlayer/bridge"],
+    "slug": "x-layer"
+  },
+  {
+    "chainId": 660279,
+    "name": "Xai",
+    "rpcUrl": "https://xai-chain.net/rpc",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/189/large/xai.png?1708573604",
+    "currencySymbol": "XAI",
+    "explorers": [
+      {
+        "url": "https://explorer.xai-chain.net",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://bridge.xai.games"],
+    "slug": "xai"
+  },
+  {
+    "chainId": 50,
+    "name": "XDC Network",
+    "rpcUrl": "https://erpc.xdcrpc.com",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/27/large/xdc_%281%29.png?1706606530",
+    "currencySymbol": "XDC",
+    "explorers": [
+      {
+        "url": "https://xdcscan.com",
+        "category": "etherscan"
+      },
+      {
+        "url": "https://xdcscan.io",
+        "category": "etherscan"
+      }
+    ],
+    "bridges": ["https://bridge.xdc.org", "https://jumper.exchange/"],
+    "slug": "xdc-network"
+  },
+  {
+    "chainId": 7000,
+    "name": "ZetaChain",
+    "rpcUrl": "https://zetachain-evm.blockpi.network/v1/rpc/public",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/178/large/zeta.jpeg?1706844749",
+    "currencySymbol": "ZETA",
+    "explorers": [
+      {
+        "url": "https://zetascan.com",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://hub.zetachain.com"],
+    "slug": "zetachain"
+  },
+  {
+    "chainId": 7777777,
+    "name": "Zora",
+    "rpcUrl": "https://rpc.zora.energy/",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/196/large/zora.jpeg?1709871117",
+    "currencySymbol": "ZoraETH",
+    "explorers": [
+      {
+        "url": "https://explorer.zora.energy",
+        "category": "blockscout"
+      }
+    ],
+    "bridges": ["https://superbridge.app/zora", "https://relay.link/bridge"],
+    "slug": "zora"
+  },
+  {
+    "chainId": 324,
+    "name": "zkSync",
+    "rpcUrl": "https://mainnet.era.zksync.io",
+    "iconUri": "https://coin-images.coingecko.com/asset_platforms/images/121/large/zksync.jpeg?1706606814",
+    "currencySymbol": "zkSyncMainnetETH",
+    "explorers": [
+      {
+        "url": "https://explorer.zksync.io",
+        "category": "other"
+      }
+    ],
+    "bridges": [
+      "https://portal.zksync.io/bridge",
+      "https://jumper.exchange/",
+      "https://relay.link/bridge"
+    ],
+    "slug": "zksync"
+  }
+]

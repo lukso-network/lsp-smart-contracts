@@ -1,6 +1,6 @@
-# &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp12-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp12-contracts)
+# LSP12 Issued Assets &middot; [![npm version](https://img.shields.io/npm/v/@lukso/lsp12-contracts.svg?style=flat)](https://www.npmjs.com/package/@lukso/lsp12-contracts)
 
-Package for the LSP12 Issued Assets standard.
+npm package for the LSP12 Issued Assets standard (ERC725Y data keys).
 
 ## Installation
 
@@ -12,7 +12,7 @@ npm install @lukso/lsp12-contracts
 
 The `@lukso/lsp12-contracts` npm package contains useful constants such as ERC725Y Data Keys related to the LSP12 Standard. You can import and access them as follows.
 
-In Javascript.
+In JavaScript.
 
 ```javascript
 import { LSP12DataKeys } from "@lukso/lsp12-contracts";

@@ -1,0 +1,15 @@
+{
+  "chainId": 1,
+  "chainSlug": "ethereum",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786028483,
+  "rpcUrlUsed": "https://eth.drpc.org",
+  "txHash": "0x4557bc429424946a63bc90a290810b1b7fb6642c50dcb2342a981a8c6e55abd2",
+  "blockNumber": 25696676
+}

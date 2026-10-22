@@ -1,0 +1,15 @@
+{
+  "chainId": 421614,
+  "chainSlug": "arbitrum-sepolia",
+  "network": "testnet",
+  "contract": "UniversalProfileInitPostDeploymentModule",
+  "version": null,
+  "address": "0x000000000066093407b6704B89793beFfD0D8F00",
+  "deployer": "0xA391Bb04ac8F7ee49Af3E996d43D80F1194d81b7",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786120912,
+  "rpcUrlUsed": "https://sepolia-rollup.arbitrum.io/rpc",
+  "txHash": "0x22d339c344bd9bcc4977fafc72ed2846c91b60ed93b70c603fa061a680de1982",
+  "blockNumber": 295739789
+}

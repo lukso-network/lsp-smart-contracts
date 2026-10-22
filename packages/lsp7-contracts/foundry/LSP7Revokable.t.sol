@@ -2,7 +2,15 @@
 pragma solidity ^0.8.27;
 
 // foundry
-import "forge-std/Test.sol";
+import {Test, Vm} from "forge-std/Test.sol";
+
+// interfaces
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {
+    ILSP7Revokable
+} from "../contracts/extensions/LSP7Revokable/ILSP7Revokable.sol";
 
 // modules
 import {
@@ -18,6 +26,9 @@ import {
     AccessControlUnauthorizedAccount
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 import {LSP7AmountExceedsBalance} from "../contracts/LSP7Errors.sol";
+import {
+    LSP7RevokableFeatureDisabled
+} from "../contracts/extensions/LSP7Revokable/LSP7RevokableErrors.sol";
 
 // constants
 import {
@@ -31,7 +42,8 @@ contract MockLSP7Revokable is LSP7RevokableAbstract {
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
-        bool isNonDivisible_
+        bool isNonDivisible_,
+        bool isRevokable_
     )
         LSP7DigitalAsset(
             name_,
@@ -40,8 +52,8 @@ contract MockLSP7Revokable is LSP7RevokableAbstract {
             lsp4TokenType_,
             isNonDivisible_
         )
-        AccessControlExtendedAbstract(newOwner_)
-        LSP7RevokableAbstract(newOwner_)
+        AccessControlExtendedAbstract()
+        LSP7RevokableAbstract(isRevokable_)
     {}
 
     /// @dev Helper function to mint tokens for testing
@@ -62,6 +74,7 @@ contract LSP7RevokableTest is Test {
     string symbol = "RT";
     uint256 tokenType = _LSP4_TOKEN_TYPE_TOKEN;
     bool isNonDivisible = false;
+    bool isRevokable = true;
 
     address owner = address(this);
     address nonOwner = vm.addr(100);
@@ -78,7 +91,8 @@ contract LSP7RevokableTest is Test {
             symbol,
             owner,
             tokenType,
-            isNonDivisible
+            isNonDivisible,
+            isRevokable
         );
 
         // Label addresses for better trace output
@@ -115,6 +129,164 @@ contract LSP7RevokableTest is Test {
             lsp7Revokable.hasRole(revokerRole, nonOwner),
             "Non-owner should not start with REVOKER_ROLE"
         );
+    }
+
+    function test_ConstructorInitializesRevokableStatus() public {
+        assertTrue(
+            lsp7Revokable.isRevokable(),
+            "Revokable feature should be enabled"
+        );
+    }
+
+    function test_OwnerCanDisableRevokablePermanently() public {
+        _mintTo(user1, 1000);
+
+        vm.expectEmit(true, false, false, true);
+        emit ILSP7Revokable.RevokableStatusChanged(false);
+
+        lsp7Revokable.disableRevokable();
+
+        assertFalse(lsp7Revokable.isRevokable());
+
+        vm.expectRevert(LSP7RevokableFeatureDisabled.selector);
+        lsp7Revokable.revoke(user1, owner, 500, "");
+
+        vm.expectRevert(LSP7RevokableFeatureDisabled.selector);
+        lsp7Revokable.disableRevokable();
+    }
+
+    function test_DeployWithoutRevokableFeatureDoesNotGrantRevokerRoleToOwner()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
+        MockLSP7Revokable tokenContract = new MockLSP7Revokable(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            isNonDivisible,
+            false // isRevokable
+        );
+
+        assertFalse(tokenContract.hasRole(revokerRole, contractOwner));
+        assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 1);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+    }
+
+    function test_DeployWithRevokableFeatureGrantsRevokerRoleToOwnerAndEmitsRoleGranted()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
+        vm.expectEmit(true, true, true, true);
+        emit IAccessControl.RoleGranted(
+            revokerRole,
+            contractOwner,
+            address(this)
+        );
+        MockLSP7Revokable tokenContract = new MockLSP7Revokable(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            isNonDivisible,
+            true // isRevokable
+        );
+
+        assertTrue(tokenContract.hasRole(revokerRole, contractOwner));
+        assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 2);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+        assertEq(ownerRoles[1], revokerRole);
+    }
+
+    function test_ConstructorGrantsRevokerRoleToOwnerWhenRevokable() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
+        vm.recordLogs();
+        new MockLSP7Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            true
+        );
+
+        Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
+
+        uint256 lastLog = recordedLogs.length - 1;
+
+        // First `RoleGranted` event MUST be for `DEFAULT_ADMIN_ROLE`
+        assertEq(
+            recordedLogs[lastLog - 1].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
+        assertEq(recordedLogs[lastLog - 1].topics[1], DEFAULT_ADMIN_ROLE);
+        assertEq(
+            recordedLogs[lastLog - 1].topics[2],
+            bytes32(uint256(uint160(owner)))
+        );
+        assertEq(
+            recordedLogs[lastLog - 1].topics[3],
+            bytes32(uint256(uint160(owner)))
+        );
+
+        // Another `RoleGranted` event MUST be for `REVOKER_ROLE`
+        assertEq(
+            recordedLogs[lastLog].topics[0],
+            IAccessControl.RoleGranted.selector
+        );
+        assertEq(recordedLogs[lastLog].topics[1], revokerRole);
+        assertEq(
+            recordedLogs[lastLog].topics[2],
+            bytes32(uint256(uint160(owner)))
+        );
+        assertEq(
+            recordedLogs[lastLog].topics[3],
+            bytes32(uint256(uint160(owner)))
+        );
+    }
+
+    function test_ConstructorDoesNotGrantRevokerRoleToOwnerWhenNotRevokable()
+        public
+    {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+
+        vm.recordLogs();
+        MockLSP7Revokable nonRevokableToken = new MockLSP7Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            false
+        );
+
+        assertFalse(nonRevokableToken.isRevokable());
+        assertFalse(nonRevokableToken.hasRole(revokerRole, owner));
+        assertEq(nonRevokableToken.getRoleMemberCount(revokerRole), 0);
+
+        Vm.Log[] memory recordedLogs = vm.getRecordedLogs();
+
+        for (uint256 i = 0; i < recordedLogs.length; i++) {
+            if (
+                recordedLogs[i].topics[0] == IAccessControl.RoleGranted.selector
+            ) {
+                assertTrue(
+                    bytes32(recordedLogs[i].topics[1]) != revokerRole,
+                    "REVOKER_ROLE should not be granted on deployment"
+                );
+            }
+        }
     }
 
     // =========================================================================
@@ -194,6 +366,26 @@ contract LSP7RevokableTest is Test {
     // =========================================================================
     // Revoke Tests
     // =========================================================================
+
+    function test_RevokeEmitsTokenRevoked() public {
+        bytes memory data = "revoke-data";
+        _mintTo(user1, 1000);
+
+        vm.expectEmit(true, true, true, true);
+        emit ILSP7Revokable.TokenRevoked(owner, user1, owner, 500, data);
+        lsp7Revokable.revoke(user1, owner, 500, data);
+    }
+
+    function test_RevokeEmitsTokenRevokedWithDelegatedRevoker() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+        lsp7Revokable.grantRole(revokerRole, revoker1);
+        _mintTo(user1, 1000);
+
+        vm.prank(revoker1);
+        vm.expectEmit(true, true, true, true);
+        emit ILSP7Revokable.TokenRevoked(revoker1, user1, owner, 300, "");
+        lsp7Revokable.revoke(user1, owner, 300, "");
+    }
 
     function test_RevokeAsOwner() public {
         _mintTo(user1, 1000);
@@ -292,6 +484,34 @@ contract LSP7RevokableTest is Test {
         lsp7Revokable.revoke(user1, owner, 500, "");
     }
 
+    function test_RevokeFailsWhenRevocationIsDisabled() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+        MockLSP7Revokable nonRevokableToken = new MockLSP7Revokable(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            false
+        );
+
+        nonRevokableToken.mint(user1, 1000, true, "");
+
+        assertFalse(
+            nonRevokableToken.isRevokable(),
+            "Revokable feature should be disabled"
+        );
+        assertFalse(
+            nonRevokableToken.hasRole(revokerRole, owner),
+            "Owner should not start with REVOKER_ROLE"
+        );
+
+        nonRevokableToken.grantRole(revokerRole, owner);
+
+        vm.expectRevert(LSP7RevokableFeatureDisabled.selector);
+        nonRevokableToken.revoke(user1, owner, 500, "");
+    }
+
     function test_RevokeFailsWhenDestinationHasNoRevokerRole() public {
         bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
 
@@ -366,9 +586,24 @@ contract LSP7RevokableTest is Test {
         lsp7Revokable.grantRole(revokerRole, revoker2);
         _mintTo(user1, 1000);
 
+        assertEq(
+            lsp7Revokable.getRoleMemberCount(revokerRole),
+            3,
+            "Owner and delegated revokers should be registered before transfer"
+        );
+
         lsp7Revokable.transferOwnership(newOwner);
 
         // CHECK old owner + revokers have been removed their roles
+        assertEq(
+            lsp7Revokable.getRoleMemberCount(revokerRole),
+            1,
+            "All revokers should be cleared on ownership transfer (except the new owner should have REVOKER_ROLE)"
+        );
+        assertTrue(
+            lsp7Revokable.hasRole(revokerRole, newOwner),
+            "New owner should have REVOKER_ROLE after ownership transfer"
+        );
         assertFalse(
             lsp7Revokable.hasRole(revokerRole, owner),
             "Old owner should lose REVOKER_ROLE after ownership transfer"
@@ -376,6 +611,10 @@ contract LSP7RevokableTest is Test {
         assertFalse(
             lsp7Revokable.hasRole(revokerRole, revoker1),
             "Existing delegated revokers should be cleared"
+        );
+        assertFalse(
+            lsp7Revokable.hasRole(revokerRole, revoker2),
+            "All delegated revokers should be cleared"
         );
 
         // CHECK previous revokers cannot revoke tokens anymore
@@ -412,6 +651,40 @@ contract LSP7RevokableTest is Test {
             0,
             "Old owner should have 0 tokens"
         );
+    }
+
+    function test_TransferOwnershipClearsSpecificRoleAdmins() public {
+        bytes32 revokerRole = lsp7Revokable.REVOKER_ROLE();
+        bytes32 revokerAdminRole = keccak256("REVOKER_ADMIN_ROLE");
+        address revokerAdmin = makeAddr("A Revoker Admin");
+
+        lsp7Revokable.setRoleAdmin(revokerRole, revokerAdminRole);
+        assertEq(lsp7Revokable.getRoleAdmin(revokerRole), revokerAdminRole);
+
+        lsp7Revokable.grantRole(revokerAdminRole, revokerAdmin);
+        assertTrue(lsp7Revokable.hasRole(revokerAdminRole, revokerAdmin));
+
+        vm.prank(revokerAdmin);
+        lsp7Revokable.grantRole(revokerRole, address(11111));
+        assertTrue(lsp7Revokable.hasRole(revokerRole, address(11111)));
+
+        lsp7Revokable.transferOwnership(vm.addr(200));
+
+        assertEq(lsp7Revokable.getRoleAdmin(revokerRole), DEFAULT_ADMIN_ROLE);
+
+        // Test previous admin cannot use its role
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                revokerAdmin,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        vm.prank(revokerAdmin);
+        lsp7Revokable.grantRole(revokerRole, address(22222));
+
+        // sanity check revoker was removed after transferring ownership
+        assertFalse(lsp7Revokable.hasRole(revokerRole, address(11111)));
     }
 
     // =========================================================================

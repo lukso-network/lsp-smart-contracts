@@ -1,9 +1,14 @@
 {
   "name": "@lukso/universalprofile-contracts",
-  "version": "0.15.5",
+  "version": "0.16.3",
   "description": "Package for Universal Profile, an implementation of LSP0 ERC725 Account & LSP3 Profile Metadata standards combined together.",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/universalprofile-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",
@@ -61,8 +66,8 @@
   },
   "dependencies": {
     "@erc725/smart-contracts": "^7.0.0",
-    "@lukso/lsp0-contracts": "~0.15.5",
-    "@lukso/lsp3-contracts": "~0.16.6",
+    "@lukso/lsp0-contracts": "~0.16.0",
+    "@lukso/lsp3-contracts": "~0.17.0",
     "@openzeppelin/contracts": "^4.9.3"
   },
   "resolutions": {

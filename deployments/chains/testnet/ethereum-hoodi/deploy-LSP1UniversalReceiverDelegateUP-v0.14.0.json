@@ -1,0 +1,15 @@
+{
+  "chainId": 560048,
+  "chainSlug": "ethereum-hoodie",
+  "network": "testnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.14.0",
+  "address": "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D",
+  "deployer": "0xF0efeD8d49c0FA6CFC861Bf0311b6B3a4414e4b7",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783517520,
+  "rpcUrlUsed": "https://ethereum-hoodi-rpc.publicnode.com",
+  "txHash": "0x4d109e72a9ae0e50eae9e207d9f4d3861b5636ce889564c18e44e42057c8038e",
+  "blockNumber": 3172735
+}

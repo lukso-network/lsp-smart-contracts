@@ -1,0 +1,15 @@
+{
+  "chainId": 13371,
+  "chainSlug": "immutable-zkevm",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786023295,
+  "rpcUrlUsed": "https://rpc.immutable.com",
+  "txHash": "0x88e8ccfb512cf8ec4bcd4319ca8e9688f1da27e6721b893382af960880cf6d7d",
+  "blockNumber": 41870260
+}

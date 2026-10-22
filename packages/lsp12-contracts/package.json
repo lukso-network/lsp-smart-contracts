@@ -1,9 +1,14 @@
 {
   "name": "@lukso/lsp12-contracts",
-  "version": "0.15.4",
+  "version": "0.16.3",
   "description": "Package for the LSP12 Issued Assets standard",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp12-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",
@@ -50,7 +55,7 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
   "dependencies": {
-    "@lukso/lsp2-contracts": "~0.15.4"
+    "@lukso/lsp2-contracts": "~0.16.0"
   },
   "resolutions": {
     "solidity-bytes-utils": "0.8.4"

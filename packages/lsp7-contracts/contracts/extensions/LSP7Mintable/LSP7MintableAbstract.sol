@@ -15,18 +15,19 @@ import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 
 /// @title LSP7MintableAbstract
-/// @dev Abstract contract implementing a isMintable LSP7 token extension, allowing any address granted the `MINTER_ROLE` to mint new tokens until minting is disabled.
+/// @dev Abstract contract implementing a mintable LSP7 token extension, allowing any address granted the `MINTER_ROLE` to mint new tokens until minting is disabled.
 /// Inherits from LSP7DigitalAsset to provide core token functionality.
 abstract contract LSP7MintableAbstract is
     ILSP7Mintable,
-    AccessControlExtendedAbstract,
-    LSP7DigitalAsset
+    LSP7DigitalAsset,
+    AccessControlExtendedAbstract
 {
     /// @notice Indicates whether minting is currently enabled or not.
     bool public isMintable;
 
-    /// @dev `"MINTER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    bytes32 public constant MINTER_ROLE = 0x4d494e5445525f524f4c45000000000000000000000000000000000000000000;
+    /// @dev keccak256("MINTER_ROLE")
+    bytes32 public constant MINTER_ROLE =
+        0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6;
 
     /// @notice Initializes the contract with the minting status.
     /// @dev Sets the initial minting status. Inherits LSP7DigitalAsset constructor logic.
@@ -34,16 +35,20 @@ abstract contract LSP7MintableAbstract is
     /// @custom:info If `mintable_` is set to `true` then it can be disabled using `disableMinting()` function later on.
     constructor(bool mintable_) {
         isMintable = mintable_;
-        emit MintingStatusChanged(mintable_);
-        _grantRole(MINTER_ROLE, owner());
+        emit MintingStatusChanged({enabled: mintable_});
+
+        if (mintable_) {
+            _grantRole(MINTER_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP7Mintable
     /// @custom:warning Once this function is called, any address holding the `MINTER_ROLE` will be inoperable.
+    /// @custom:info The list of addresses holding the `MINTER_ROLE` remains populated after the minting feature is switched off.
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP7MintDisabled());
         isMintable = false;
-        emit MintingStatusChanged(false);
+        emit MintingStatusChanged({enabled: false});
     }
 
     /// @inheritdoc ILSP7Mintable
@@ -92,6 +97,9 @@ abstract contract LSP7MintableAbstract is
     function _transferOwnership(
         address newOwner
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant MINTER_ROLE to new accounts post-transfer
+        _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
 }

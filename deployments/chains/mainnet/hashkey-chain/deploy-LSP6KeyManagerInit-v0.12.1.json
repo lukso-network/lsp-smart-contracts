@@ -1,0 +1,15 @@
+{
+  "chainId": 177,
+  "chainSlug": "hashkey-chain",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.12.1",
+  "address": "0xa75684d7D048704a2DB851D05Ba0c3cbe226264C",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791041449,
+  "rpcUrlUsed": "https://mainnet.hsk.xyz",
+  "txHash": "0x2aec0cb2b457bfd72f041359df9c07acae6291b3505fb076985ed46f23f01b1f",
+  "blockNumber": 28347161
+}

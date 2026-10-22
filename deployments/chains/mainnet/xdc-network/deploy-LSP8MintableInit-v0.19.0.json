@@ -1,0 +1,15 @@
+{
+  "chainId": 50,
+  "chainSlug": "xdc-network",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784493900,
+  "rpcUrlUsed": "https://erpc.xinfin.network",
+  "txHash": "0xad57dc14b121db14a0192e463ed20658144a4b2b6b8d4267a8c5280b70ac990e",
+  "blockNumber": 105116217
+}

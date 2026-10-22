@@ -1,0 +1,15 @@
+{
+  "chainId": 80002,
+  "chainSlug": "polygon-amoy",
+  "network": "testnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.14.0",
+  "address": "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D",
+  "deployer": "0xF0efeD8d49c0FA6CFC861Bf0311b6B3a4414e4b7",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786124429,
+  "rpcUrlUsed": "https://polygon-amoy.drpc.org",
+  "txHash": "0x8f189ebb4f22c5a6697856ab43860992871dc6aaa52aab915f9301c03c1ed6ef",
+  "blockNumber": 44305996
+}

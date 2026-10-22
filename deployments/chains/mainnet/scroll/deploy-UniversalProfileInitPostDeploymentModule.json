@@ -1,0 +1,15 @@
+{
+  "chainId": 534352,
+  "chainSlug": "scroll",
+  "network": "mainnet",
+  "contract": "UniversalProfileInitPostDeploymentModule",
+  "version": null,
+  "address": "0x000000000066093407b6704B89793beFfD0D8F00",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783614764,
+  "rpcUrlUsed": "https://rpc.scroll.io",
+  "txHash": "0xeb45691fed97f6fa3cc1b30b0d051fe3884a551054e56fa2ce87b6a4ab22987e",
+  "blockNumber": 34320276
+}

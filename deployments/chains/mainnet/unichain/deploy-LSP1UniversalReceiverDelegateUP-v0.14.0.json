@@ -1,0 +1,15 @@
+{
+  "chainId": 130,
+  "chainSlug": "unichain",
+  "network": "mainnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.14.0",
+  "address": "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783610712,
+  "rpcUrlUsed": "https://unichain-rpc.publicnode.com",
+  "txHash": "0xb6ad3a5e7b6086d7409285874c740354a108078ed7c84ce55f7cead10c259ed7",
+  "blockNumber": 52862359
+}

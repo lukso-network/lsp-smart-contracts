@@ -2,7 +2,7 @@
 pragma solidity ^0.8.22;
 
 // foundry
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
 // modules
 import {
@@ -42,7 +42,8 @@ import {
 
 // errors
 import {
-    AccessControlUnauthorizedAccount
+    AccessControlUnauthorizedAccount,
+    AccessControlCannotSetAdminForDefaultAdminRole
 } from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 
 // Mock contract for testing the InitAbstract variant
@@ -50,6 +51,8 @@ contract MockAccessControlExtendedInit is
     LSP7DigitalAssetInitAbstract,
     AccessControlExtendedInitAbstract
 {
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 public constant TEST_ROLE = bytes32(bytes("TestRole"));
 
     function initialize(
@@ -66,7 +69,7 @@ contract MockAccessControlExtendedInit is
             lsp4TokenType_,
             isNonDivisible_
         );
-        __AccessControlExtended_init(newOwner_);
+        __AccessControlExtended_init();
     }
 
     function mint(
@@ -127,6 +130,9 @@ contract AccessControlExtendedInitTest is Test {
     address account3 = vm.addr(103);
 
     bytes32 constant DEFAULT_ADMIN_ROLE = 0x00;
+
+    // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+    // forge-lint: disable-next-line(unsafe-typecast)
     bytes32 constant TEST_ROLE = bytes32(bytes("TestRole"));
 
     MockAccessControlExtendedInit implementation;
@@ -208,43 +214,30 @@ contract AccessControlExtendedInitTest is Test {
         assertEq(roles[0], TEST_ROLE, "Role should be TEST_ROLE");
     }
 
-    function test_InitGrantRoleWithDataWorks() public {
-        bytes memory data = abi.encodePacked(uint256(42));
-        token.grantRoleWithData(TEST_ROLE, account1, data);
+    function test_InitGrantRole() public {
+        token.grantRole(TEST_ROLE, account1);
 
         assertTrue(
             token.hasRole(TEST_ROLE, account1),
             "Account1 should have TEST_ROLE"
         );
-        assertEq(
-            token.getRoleData(TEST_ROLE, account1),
-            data,
-            "Data should be stored"
-        );
+        bytes32[] memory roles = token.rolesOf(account1);
+        assertEq(roles.length, 1, "Account1 should have 1 role");
+        assertEq(roles[0], TEST_ROLE, "Role should be TEST_ROLE");
     }
 
-    function test_InitSetRoleDataWorks() public {
-        bytes memory data = abi.encodePacked(uint256(100));
-        token.setRoleData(TEST_ROLE, account1, data);
+    function test_InitRevokeRole() public {
+        token.grantRole(TEST_ROLE, account1);
 
-        assertEq(
-            token.getRoleData(TEST_ROLE, account1),
-            data,
-            "Data should be stored via setRoleData"
-        );
-    }
-
-    function test_InitRevokeRoleClearsData() public {
-        bytes memory data = abi.encodePacked(uint256(200));
-        token.grantRoleWithData(TEST_ROLE, account1, data);
+        bytes32[] memory roles = token.rolesOf(account1);
+        assertEq(roles.length, 1, "Account1 should have 1 role");
+        assertEq(roles[0], TEST_ROLE, "Role should be TEST_ROLE");
 
         token.revokeRole(TEST_ROLE, account1);
 
-        assertEq(
-            token.getRoleData(TEST_ROLE, account1).length,
-            0,
-            "Data should be cleared after revocation"
-        );
+        roles = token.rolesOf(account1);
+
+        assertEq(roles.length, 0, "Account1 should have 0 roles after revoke");
     }
 
     function test_InitRenounceRoleWorks() public {
@@ -281,21 +274,42 @@ contract AccessControlExtendedInitTest is Test {
         token.restrictedFunction();
     }
 
+    function test_InitOwnerCanSetRoleAdmin() public {
+        bytes32 roleAdmin = keccak256("ROLE_ADMIN");
+        token.setRoleAdmin(TEST_ROLE, roleAdmin);
+        assertEq(token.getRoleAdmin(TEST_ROLE), roleAdmin);
+    }
+
+    function test_InitNonAdminCannotSetRoleAdmin() public {
+        bytes32 roleAdmin = keccak256("ROLE_ADMIN");
+        vm.prank(account1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                account1,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(TEST_ROLE, roleAdmin);
+    }
+
     // ============================================================
     // Section 3: Storage layout safety (TEST-03)
     // ============================================================
 
     function test_StorageLayoutCompatibleWithProxy() public {
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 roleA = bytes32(bytes("RoleA"));
-        bytes32 roleB = bytes32(bytes("RoleB"));
-        bytes memory dataA1 = abi.encodePacked(uint256(1000));
-        bytes memory dataA2 = abi.encodePacked(uint256(2000));
-        bytes memory dataB1 = abi.encodePacked(uint256(3000));
 
-        // Grant multiple roles with data to multiple accounts through proxy
-        token.grantRoleWithData(roleA, account1, dataA1);
-        token.grantRoleWithData(roleA, account2, dataA2);
-        token.grantRoleWithData(roleB, account1, dataB1);
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
+        bytes32 roleB = bytes32(bytes("RoleB"));
+
+        // Grant multiple roles to multiple accounts through proxy
+        token.grantRole(roleA, account1);
+        token.grantRole(roleA, account2);
+        token.grantRole(roleB, account1);
         token.grantRole(roleB, account3);
 
         // Read all state back through proxy and verify consistency
@@ -348,23 +362,6 @@ contract AccessControlExtendedInitTest is Test {
         // rolesOf (reverse lookup)
         bytes32[] memory account1Roles = token.rolesOf(account1);
         assertEq(account1Roles.length, 2, "account1 should have 2 roles");
-
-        // getRoleData
-        assertEq(
-            token.getRoleData(roleA, account1),
-            dataA1,
-            "account1 roleA data should match"
-        );
-        assertEq(
-            token.getRoleData(roleA, account2),
-            dataA2,
-            "account2 roleA data should match"
-        );
-        assertEq(
-            token.getRoleData(roleB, account1),
-            dataB1,
-            "account1 roleB data should match"
-        );
     }
 
     function test_InitStorageConsistentAcrossProxyCalls() public {
@@ -395,7 +392,12 @@ contract AccessControlExtendedInitTest is Test {
     }
 
     function test_InitEnumerationWorksAfterMultipleGrants() public {
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 roleX = bytes32(bytes("RoleX"));
+
+        // casting to 'bytes32' is safe because role name is less than 32 bytes / characters
+        // forge-lint: disable-next-line(unsafe-typecast)
         bytes32 roleY = bytes32(bytes("RoleY"));
 
         // Forward enumeration: grant to multiple accounts
@@ -429,6 +431,92 @@ contract AccessControlExtendedInitTest is Test {
                 "hasRole should be true for each enumerated role"
             );
         }
+    }
+
+    function testFuzz_ContractOwnerCanSetRoleAdmin(
+        bytes32 role,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(role != DEFAULT_ADMIN_ROLE);
+        token.setRoleAdmin(role, newAdminRole);
+        assertEq(token.getRoleAdmin(role), newAdminRole);
+    }
+
+    function testFuzz_DefaultAdminCanSetRoleAdmin(
+        bytes32 role,
+        address addressWithDefaultAdminRole,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(addressWithDefaultAdminRole != token.owner());
+        vm.assume(role != DEFAULT_ADMIN_ROLE);
+
+        token.grantRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole);
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole)
+        );
+
+        vm.prank(addressWithDefaultAdminRole);
+        token.setRoleAdmin(role, newAdminRole);
+        assertEq(token.getRoleAdmin(role), newAdminRole);
+    }
+
+    function testFuzz_NonDefaultAdminCannotSetRoleAdmin(
+        address randomCaller,
+        bytes32 role,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(randomCaller != token.owner());
+
+        vm.prank(randomCaller);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                randomCaller,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setRoleAdmin(role, newAdminRole);
+    }
+
+    function testFuzz_OwnerCannotChangeAdminRoleForDefaultAdminRole(
+        bytes32 newAdminRole
+    ) public {
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlCannotSetAdminForDefaultAdminRole.selector
+            )
+        );
+        token.setRoleAdmin(DEFAULT_ADMIN_ROLE, newAdminRole);
+
+        // Ensure this has not changed
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+    }
+
+    function testFuzz_DefaultAdminCannotChangeAdminRoleForDefaultAdminRole(
+        address addressWithDefaultAdminRole,
+        bytes32 newAdminRole
+    ) public {
+        vm.assume(addressWithDefaultAdminRole != token.owner());
+        token.grantRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole);
+        assertTrue(
+            token.hasRole(DEFAULT_ADMIN_ROLE, addressWithDefaultAdminRole)
+        );
+
+        vm.prank(addressWithDefaultAdminRole);
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlCannotSetAdminForDefaultAdminRole.selector
+            )
+        );
+        vm.prank(addressWithDefaultAdminRole);
+        token.setRoleAdmin(DEFAULT_ADMIN_ROLE, newAdminRole);
+
+        // Ensure this has not changed
+        assertEq(token.getRoleAdmin(DEFAULT_ADMIN_ROLE), DEFAULT_ADMIN_ROLE);
     }
 
     // ============================================================

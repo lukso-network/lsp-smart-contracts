@@ -655,7 +655,6 @@ export const shouldBehaveLikePermissionTransferValue = (
         context.accounts[0].address,
         LSP4_TOKEN_TYPES.TOKEN,
         false,
-        true,
       );
 
       targetContract = await new TargetPayableContract__factory(context.accounts[0]).deploy();
@@ -811,7 +810,6 @@ export const shouldBehaveLikePermissionTransferValue = (
           context.accounts[0].address,
           LSP4_TOKEN_TYPES.TOKEN,
           false,
-          true,
         );
 
         const lsp7TransferPayload = newLSP7Token.interface.encodeFunctionData('transfer', [
@@ -1063,7 +1061,6 @@ export const shouldBehaveLikePermissionTransferValue = (
               context.accounts[0].address,
               LSP4_TOKEN_TYPES.TOKEN,
               false,
-              true,
             );
 
             // give some tokens to the UP
@@ -1243,7 +1240,6 @@ export const shouldBehaveLikePermissionTransferValue = (
               context.accounts[0].address,
               LSP4_TOKEN_TYPES.TOKEN,
               false,
-              true,
             );
 
             // give some tokens to the UP

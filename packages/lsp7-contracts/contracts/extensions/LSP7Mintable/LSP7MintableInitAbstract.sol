@@ -20,18 +20,19 @@ import {ILSP7Mintable} from "./ILSP7Mintable.sol";
 import {LSP7MintDisabled} from "./LSP7MintableErrors.sol";
 
 /// @title LSP7MintableInitAbstract
-/// @dev Abstract contract implementing a isMintable LSP7 token extension, allowing any address granted the `MINTER_ROLE` to mint new tokens until minting is disabled.
+/// @dev Abstract contract implementing a mintable LSP7 token extension, allowing any address granted the `MINTER_ROLE` to mint new tokens until minting is disabled.
 /// Inherits from LSP7DigitalAsset to provide core token functionality.
 abstract contract LSP7MintableInitAbstract is
     ILSP7Mintable,
-    AccessControlExtendedInitAbstract,
-    LSP7DigitalAssetInitAbstract
+    LSP7DigitalAssetInitAbstract,
+    AccessControlExtendedInitAbstract
 {
     /// @notice Indicates whether minting is currently enabled or not.
     bool public isMintable;
 
-    /// @dev `"MINTER_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    bytes32 public constant MINTER_ROLE = 0x4d494e5445525f524f4c45000000000000000000000000000000000000000000;
+    /// @dev keccak256("MINTER_ROLE")
+    bytes32 public constant MINTER_ROLE =
+        0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6;
 
     /// @notice Initializes the LSP7Mintable contract with base token params and minting status.
     /// @dev Initializes the LSP7DigitalAsset base and sets the minting status.
@@ -57,7 +58,7 @@ abstract contract LSP7MintableInitAbstract is
             lsp4TokenType_,
             isNonDivisible_
         );
-        __AccessControlExtended_init(newOwner_);
+        __AccessControlExtended_init();
         __LSP7Mintable_init_unchained(mintable_);
     }
 
@@ -68,16 +69,20 @@ abstract contract LSP7MintableInitAbstract is
         bool mintable_
     ) internal virtual onlyInitializing {
         isMintable = mintable_;
-        emit MintingStatusChanged(mintable_);
-        _grantRole(MINTER_ROLE, owner());
+        emit MintingStatusChanged({enabled: mintable_});
+
+        if (mintable_) {
+            _grantRole(MINTER_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP7Mintable
     /// @custom:warning Once this function is called, any address holding the `MINTER_ROLE` will be inoperable.
+    /// @custom:info The list of addresses holding the `MINTER_ROLE` remains populated after the minting feature is switched off.
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP7MintDisabled());
         isMintable = false;
-        emit MintingStatusChanged(false);
+        emit MintingStatusChanged({enabled: false});
     }
 
     /// @inheritdoc ILSP7Mintable
@@ -133,6 +138,19 @@ abstract contract LSP7MintableInitAbstract is
         virtual
         override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
     {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant MINTER_ROLE to new accounts post-transfer
+        _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     *
+     * @custom:info The size of the `__gap` array is calculated so that the amount of storage used by the contract
+     * always adds up to the same number (in this case 50 storage slots).
+     */
+    uint256[49] private __gap;
 }

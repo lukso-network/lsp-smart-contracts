@@ -1,0 +1,15 @@
+{
+  "chainId": 196,
+  "chainSlug": "x-layer",
+  "network": "mainnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.14.0",
+  "address": "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785852081,
+  "rpcUrlUsed": "https://rpc.xlayer.tech",
+  "txHash": "0x3febd9faf468cd0747ffb904049bbc47dddc83f22e4f29714e40714daeba6111",
+  "blockNumber": 67083060
+}

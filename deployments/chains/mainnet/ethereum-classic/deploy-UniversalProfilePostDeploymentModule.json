@@ -1,0 +1,15 @@
+{
+  "chainId": 61,
+  "chainSlug": "ethereum-classic",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "already-deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785767310,
+  "rpcUrlUsed": "https://0xrpc.io/etc",
+  "txHash": "0x4537d9b4bfdd6ff0fb56b4ffd1f00865836d578f9d6b6e577977811b7618d26b",
+  "blockNumber": 25075707
+}

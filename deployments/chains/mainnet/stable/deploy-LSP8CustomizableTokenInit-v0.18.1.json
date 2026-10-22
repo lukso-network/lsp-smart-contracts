@@ -1,0 +1,15 @@
+{
+  "chainId": 988,
+  "chainSlug": "stable",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784487573,
+  "rpcUrlUsed": "https://rpc.stable.xyz",
+  "txHash": "0xb64d9a628a5424f13f82cd9b6b21a8b6a911d694ea5dece42d3964560426de3f",
+  "blockNumber": 32360284
+}

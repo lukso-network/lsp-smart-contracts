@@ -1,0 +1,15 @@
+{
+  "chainId": 50,
+  "chainSlug": "xdc-network",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.12.1",
+  "address": "0x52c90985AF970D4E0DC26Cb5D052505278aF32A9",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791044444,
+  "rpcUrlUsed": "https://erpc.xdcrpc.com",
+  "txHash": "0x29d849bafdecd28f3ac1dee89d693e6b6396cb00f01277a8c1abc1a97217cd9d",
+  "blockNumber": 107960804
+}

@@ -2,20 +2,25 @@
 pragma solidity ^0.8.27;
 
 // foundry
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
 // modules
-import {LSP8CappedSupplyAbstract} from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol";
-import {LSP8IdentifiableDigitalAsset} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
-
-// interfaces
-import {ILSP8CappedSupply} from "../contracts/extensions/LSP8CappedSupply/ILSP8CappedSupply.sol";
+import {
+    LSP8CappedSupplyAbstract
+} from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../contracts/LSP8IdentifiableDigitalAsset.sol";
 
 // errors
-import {LSP8CappedSupplyCannotMintOverCap} from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
+import {
+    LSP8CappedSupplyCannotMintOverCap
+} from "../contracts/extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
 
 // constants
-import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {
+    _LSP4_TOKEN_TYPE_NFT
+} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "../contracts/LSP8Constants.sol";
 
 // Mock contract to test LSP8CappedSupplyAbstract functionality
@@ -260,6 +265,42 @@ contract LSP8CappedSupplyTest is Test {
     }
 
     // ------ Fuzzing ------
+
+    function testFuzz_MintAmountRespectsSupplyCap(
+        uint256 cap,
+        uint256 amountToMint
+    ) public {
+        cap = bound(uint256(cap), 1, 100);
+        amountToMint = bound(uint256(amountToMint), 1, 150);
+
+        MockLSP8CappedSupply token = new MockLSP8CappedSupply(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            tokenIdFormat,
+            cap
+        );
+
+        if (amountToMint > cap) {
+            for (uint256 i = 1; i <= cap; i++) {
+                token.mint(user1, bytes32(i), true, "");
+            }
+
+            vm.expectRevert(LSP8CappedSupplyCannotMintOverCap.selector);
+            token.mint(user1, bytes32(cap + 1), true, "");
+
+            assertEq(token.totalSupply(), cap);
+            return;
+        }
+
+        for (uint256 i = 1; i <= amountToMint; i++) {
+            token.mint(user1, bytes32(i), true, "");
+        }
+
+        assertEq(token.totalSupply(), amountToMint);
+        assertEq(token.balanceOf(user1), amountToMint);
+    }
 
     function testFuzz_SupplyCapEnforcement(uint8 cap, uint8 mintCount) public {
         vm.assume(cap > 0 && cap <= 100);

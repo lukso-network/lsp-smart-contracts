@@ -1,0 +1,15 @@
+{
+  "chainId": 1625,
+  "chainSlug": "gravity-alpha",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785829082,
+  "rpcUrlUsed": "https://rpc.gravity.xyz/",
+  "txHash": "0xee329a763d3f5c3824bd2e79f199f9e1b4b1d6f016fd3a537ed31de64f5b3f57",
+  "blockNumber": 129681284
+}

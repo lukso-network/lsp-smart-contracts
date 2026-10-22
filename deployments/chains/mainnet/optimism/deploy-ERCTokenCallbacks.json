@@ -1,0 +1,15 @@
+{
+  "chainId": 10,
+  "chainSlug": "optimism",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786002855,
+  "rpcUrlUsed": "https://mainnet.optimism.io",
+  "txHash": "0x82efad7ddc52c1bcfcd0c9722beacf027de49cb7a9f43756f24f9bff4ace1d24",
+  "blockNumber": 155202042
+}

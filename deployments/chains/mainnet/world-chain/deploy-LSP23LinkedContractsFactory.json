@@ -1,0 +1,15 @@
+{
+  "chainId": 480,
+  "chainSlug": "world-chain",
+  "network": "mainnet",
+  "contract": "LSP23LinkedContractsFactory",
+  "version": null,
+  "address": "0x2300000A84D25dF63081feAa37ba6b62C4c89a30",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784447469,
+  "rpcUrlUsed": "https://worldchain-mainnet.g.alchemy.com/public",
+  "txHash": "0x7c4cf1e2d6a9b393de5812582addbf538f5ba70d1caf87b57e58d831b6c6a5d4",
+  "blockNumber": 32555918
+}

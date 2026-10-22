@@ -1,0 +1,15 @@
+{
+  "chainId": 300,
+  "chainSlug": "zksync-sepolia",
+  "network": "testnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.14.0",
+  "address": "0x7870C5B8BC9572A8001C3f96f7ff59961B23500D",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786017043,
+  "rpcUrlUsed": "https://rpc.ankr.com/zksync_era_sepolia",
+  "txHash": "0xd62e2ad5d97b83bf55cd6c67d5c760b0a219cd345a1294b3dd2e1d5099898252",
+  "blockNumber": 8050793
+}

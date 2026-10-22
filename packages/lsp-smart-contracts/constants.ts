@@ -42,7 +42,7 @@ import { INTERFACE_ID_LSP0 } from '@lukso/lsp0-contracts';
 import { INTERFACE_ID_LSP1 } from '@lukso/lsp1-contracts';
 import { INTERFACE_ID_LSP1DELEGATE } from '@lukso/lsp1delegate-contracts';
 import { INTERFACE_ID_LSP6 } from '@lukso/lsp6-contracts';
-import { INTERFACE_ID_LSP7 } from '@lukso/lsp7-contracts';
+import { INTERFACE_ID_LSP7, INTERFACE_ID_ACCESS_CONTROL_EXTENDED } from '@lukso/lsp7-contracts';
 import { INTERFACE_ID_LSP8 } from '@lukso/lsp8-contracts';
 import { INTERFACE_ID_LSP9 } from '@lukso/lsp9-contracts';
 import { INTERFACE_ID_LSP11 } from '@lukso/lsp11-contracts';
@@ -123,6 +123,7 @@ export const INTERFACE_IDS = {
   LSP20CallVerifier: INTERFACE_ID_LSP20CallVerifier,
   LSP25ExecuteRelayCall: INTERFACE_ID_LSP25,
   LSP26FollowerSystem: INTERFACE_ID_LSP26,
+  AccessControlExtended: INTERFACE_ID_ACCESS_CONTROL_EXTENDED,
 } as const;
 
 // ERC725Y

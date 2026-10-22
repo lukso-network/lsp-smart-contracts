@@ -1,0 +1,15 @@
+{
+  "chainId": 81457,
+  "chainSlug": "blast",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.14.0",
+  "address": "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784481251,
+  "rpcUrlUsed": "https://blast-rpc.publicnode.com",
+  "txHash": "0xcba011b0ae4b382e3aafb7c2b745510b5d4df1fd03539b842ed9659ba2c0ffc2",
+  "blockNumber": 37835722
+}

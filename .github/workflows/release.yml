@@ -8,15 +8,18 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   release-please:
     outputs:
-      release_outputs: ${{ steps.release.outputs }}
+      # GitHub Actions job-level outputs only accept scalars, so expose
+      # `releases_created` directly and stringify the full step-outputs
+      # mapping as JSON for downstream jobs that iterate over per-package keys.
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      release_outputs_json: ${{ toJSON(steps.release.outputs) }}
     runs-on: ubuntu-latest
     environment: publish
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
 
     steps:
       - uses: google-github-actions/release-please-action@v3
@@ -44,6 +47,12 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: "@lukso"
           cache: "npm"
+
+      # Trusted publishing (OIDC) requires npm >= 11.5.1.
+      # Node 24 ships with npm 11, but pin to latest to guarantee the version.
+      - name: Upgrade npm
+        if: ${{ steps.release.outputs.releases_created }}
+        run: npm install -g npm@latest
 
       - name: Install Dependencies
         if: ${{ steps.release.outputs.releases_created }}
@@ -79,7 +88,7 @@ jobs:
 
   deploy-verify:
     needs: release-please
-    if: ${{ needs.release-please.outputs.release_outputs.releases_created }}
+    if: ${{ needs.release-please.outputs.releases_created }}
     strategy:
       matrix:
         network: ["luksoTestnet", "luksoMainnet"]
@@ -106,8 +115,8 @@ jobs:
 
       - name: Deploy & verify contracts on ${{ matrix.network }}
         run: |
-          (cat <<END > outputs.json
-          ${{toJSON(needs.release-please.outputs.release_outputs)}}
+          (cat <<'END' > outputs.json
+          ${{ needs.release-please.outputs.release_outputs_json }}
           END
           )
           node ./deploy-verify.mjs outputs.json ${{ matrix.network }}

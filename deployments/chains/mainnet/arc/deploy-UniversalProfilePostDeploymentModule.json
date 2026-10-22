@@ -1,0 +1,15 @@
+{
+  "chainId": 5042,
+  "chainSlug": "arc",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789641974,
+  "rpcUrlUsed": "https://rpc.mainnet.arc.io",
+  "txHash": "0x6bed2d14654782b06f77b2eaf3f08d685a324550d9ac54741a9ea1cb1a2eb8ba",
+  "blockNumber": 21315668
+}

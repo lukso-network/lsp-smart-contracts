@@ -1,0 +1,15 @@
+{
+  "chainId": 9745,
+  "chainSlug": "plasma",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784479046,
+  "rpcUrlUsed": "https://rpc.plasma.to",
+  "txHash": "0x5b2d4e53e566b457c6a3a8cb63ac68a9f4a5a72498f96f117e1ddc2902c4f09b",
+  "blockNumber": 27538699
+}

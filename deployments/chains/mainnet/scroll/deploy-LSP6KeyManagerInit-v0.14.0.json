@@ -1,0 +1,15 @@
+{
+  "chainId": 534352,
+  "chainSlug": "scroll",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.14.0",
+  "address": "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783614764,
+  "rpcUrlUsed": "https://rpc.scroll.io",
+  "txHash": "0x4926167ee2e2c60b2cf3e4ff0ebb51c8b99ef243dbea860f5d20acce9a696ee8",
+  "blockNumber": 34320277
+}

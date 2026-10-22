@@ -1,0 +1,15 @@
+{
+  "chainId": 324,
+  "chainSlug": "zksync",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.14.0",
+  "address": "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786112074,
+  "rpcUrlUsed": "https://mainnet.era.zksync.io",
+  "txHash": "0x62a4360bcf25dc00601c52921c6d32832ec71fc35b478f44f1fb84c4f894603c",
+  "blockNumber": 71483614
+}

@@ -2,89 +2,85 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 import {
     LSP8IdentifiableDigitalAsset
 } from "../LSP8IdentifiableDigitalAsset.sol";
-import {
-    LSP8CappedSupplyAbstract
-} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol";
+
+// extensions
 import {LSP8Burnable} from "../extensions/LSP8Burnable/LSP8Burnable.sol";
-import {
-    LSP8CappedBalanceAbstract
-} from "../extensions/LSP8CappedBalance/LSP8CappedBalanceAbstract.sol";
 import {
     LSP8MintableAbstract
 } from "../extensions/LSP8Mintable/LSP8MintableAbstract.sol";
 import {
+    LSP8CappedSupplyAbstract
+} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyAbstract.sol";
+import {
+    LSP8CappedBalanceAbstract
+} from "../extensions/LSP8CappedBalance/LSP8CappedBalanceAbstract.sol";
+import {
     LSP8NonTransferableAbstract
 } from "../extensions/LSP8NonTransferable/LSP8NonTransferableAbstract.sol";
 import {
-    LSP8AllowlistAbstract
-} from "../extensions/LSP8Allowlist/LSP8AllowlistAbstract.sol";
+    LSP8RevokableAbstract
+} from "../extensions/LSP8Revokable/LSP8RevokableAbstract.sol";
+
+// constants
+import {
+    LSP8MintableParams,
+    LSP8NonTransferableParams,
+    LSP8CappedParams,
+    LSP8RevokableParams
+} from "./LSP8CustomizableTokenConstants.sol";
 
 // errors
 import {
     LSP8MintDisabled
 } from "../extensions/LSP8Mintable/LSP8MintableErrors.sol";
-
-/// @dev Deployment configuration for minting feature.
-/// @param mintable True to enable minting after deployment, false to disable it forever.
-/// @param initialMintTokenIds Array of tokenIds to mint to `newOwner_` on deployment.
-struct MintableParams {
-    bool mintable;
-    bytes32[] initialMintTokenIds;
-}
-
-/// @dev Deployment configuration for non-transferable feature.
-/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParams {
-    uint256 transferLockStart;
-    uint256 transferLockEnd;
-}
-
-/// @dev Deployment configuration for capped balance and capped supply features.
-/// @param tokenBalanceCap The maximum number of NFTs per address, 0 to disable.
-/// @param tokenSupplyCap The maximum total supply of NFTs, 0 to disable.
-struct CappedParams {
-    uint256 tokenBalanceCap;
-    uint256 tokenSupplyCap;
-}
+import {
+    LSP8CappedSupplyCannotMintOverCap
+} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
 
 /// @title LSP8CustomizableToken
-/// @dev A customizable LSP8 token implementing minting, balance caps, transfer restrictions, total supply cap, burning and allowlist exemptions.
+/// @dev A customizable LSP8 token that implements multiple features and uses role-based exemptions.
+/// Implements {LSP8Burnable} to allow burning.
 /// Implements {LSP8Mintable} to allow minting.
-/// Implements {LSP8Burnable} to allow burning
+/// Implements {LSP8CappedSupply} to set total supply cap.
 /// Implements {LSP8CappedBalance} to set balance caps.
 /// Implements {LSP8NonTransferable} to restrict transfers.
-/// Implements {LSP8CappedSupply} to set total supply cap.
-/// Implements {LSP8Allowlist} to create allowlist exemptions
+/// Implements {LSP8Revokable} to allow revoking tokens.
 contract LSP8CustomizableToken is
+    LSP8Burnable,
     LSP8MintableAbstract,
-    LSP8NonTransferableAbstract,
-    LSP8CappedBalanceAbstract,
     LSP8CappedSupplyAbstract,
-    LSP8Burnable
+    LSP8CappedBalanceAbstract,
+    LSP8NonTransferableAbstract,
+    LSP8RevokableAbstract
 {
     /// @notice Initializes the token with name, symbol, owner, and customizable features.
-    /// @dev Sets up minting, balance cap, transfer restrictions, allowlist, and supply cap. Mints initial tokens if specified. Reverts if initialMintTokenIds length exceeds tokenSupplyCap. Inherits constructor logic from parent contracts.
+    /// @dev Sets up minting, balance cap, transfer restrictions and supply cap. Mints initial tokens if specified. Reverts if initialMintTokenIds length exceeds tokenSupplyCap. Inherits constructor logic from parent contracts.
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
-    /// @param newOwner_ The initial owner of the token, added to the allowlist.
+    /// @param newOwner_ The initial owner of the token.
     /// @param lsp4TokenType_ The LSP4 token type (e.g., 1 for NFT, 2 for Collection).
     /// @param lsp8TokenIdFormat_ The format of tokenIds (= NFTs) that this contract will create.
     /// @param mintableParams Deployment configuration for minting feature (see above).
-    /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
+    /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
+    /// @param revokableParams Deployment configuration for revokable feature (see above).
     constructor(
         string memory name_,
         string memory symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         uint256 lsp8TokenIdFormat_,
-        MintableParams memory mintableParams,
-        NonTransferableParams memory nonTransferableParams,
-        CappedParams memory cappedParams
+        LSP8MintableParams memory mintableParams,
+        LSP8CappedParams memory cappedParams,
+        LSP8NonTransferableParams memory nonTransferableParams,
+        LSP8RevokableParams memory revokableParams
     )
         LSP8IdentifiableDigitalAsset(
             name_,
@@ -93,32 +89,78 @@ contract LSP8CustomizableToken is
             lsp4TokenType_,
             lsp8TokenIdFormat_
         )
-        LSP8AllowlistAbstract(newOwner_)
-        LSP8MintableAbstract(mintableParams.mintable)
+        AccessControlExtendedAbstract()
+        LSP8MintableAbstract(mintableParams.isMintable)
+        LSP8CappedSupplyAbstract(cappedParams.tokenSupplyCap)
+        LSP8CappedBalanceAbstract(cappedParams.tokenBalanceCap)
         LSP8NonTransferableAbstract(
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         )
-        LSP8CappedBalanceAbstract(cappedParams.tokenBalanceCap)
-        LSP8CappedSupplyAbstract(cappedParams.tokenSupplyCap)
+        LSP8RevokableAbstract(revokableParams.isRevokable)
     {
-        // Mint initial tokens
-        for (
-            uint256 i = 0;
-            i < mintableParams.initialMintTokenIds.length;
-            i++
-        ) {
-            _mint(newOwner_, mintableParams.initialMintTokenIds[i], true, "");
-        }
+        _initialMint({
+            to: newOwner_,
+            initialMintTokenIds: mintableParams.initialMintTokenIds
+        });
     }
 
     /// @inheritdoc LSP8CappedSupplyAbstract
+    /// @notice Returns the token supply cap.
+    /// @dev If minting is enabled, returns the configured supply cap defining the maximum number of NFTs that can be minted.
+    /// If minting is disabled, returns the current total supply as the effective cap (no more NFTs can be created).
     function tokenSupplyCap() public view virtual override returns (uint256) {
         return isMintable ? super.tokenSupplyCap() : totalSupply();
     }
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {supportsInterface} functions
+    /// via `super` to aggregate the interface IDs supported across all inherited modules.
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            LSP8IdentifiableDigitalAsset,
+            LSP8CappedBalanceAbstract,
+            LSP8MintableAbstract,
+            LSP8NonTransferableAbstract,
+            LSP8RevokableAbstract
+        )
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    /// @dev Override to bypass the non transferable check when revokers revoke users' tokens.
+    function _nonTransferableCheck(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
+        if (_isRevocationBypass(to)) return;
+        super._nonTransferableCheck(from, to, tokenId, force, data);
+    }
+
+    /// @dev Override to bypass the token balance cap check when revokers revoke users' tokens.
+    function _tokenBalanceCapCheck(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
+        if (_isRevocationBypass(to)) return;
+        super._tokenBalanceCapCheck(from, to, tokenId, force, data);
+    }
+
     /// @inheritdoc LSP8MintableAbstract
-    /// @dev Relies on {LSP8CappedSupply} for supply cap enforcement.
+    /// @dev Overridden function to allow minting only if:
+    /// - the minting feature is enabled, from {LSP8MintableAbstract}
+    /// - the total number of NFTs does not exceed the capped supply after minting, from {LSP8CappedSupplyAbstract}
     function _mint(
         address to,
         bytes32 tokenId,
@@ -134,14 +176,14 @@ contract LSP8CustomizableToken is
         )
     {
         require(isMintable, LSP8MintDisabled());
-
-        _tokenSupplyCapCheck(to, tokenId, force, data);
-
-        LSP8IdentifiableDigitalAsset._mint(to, tokenId, force, data);
+        LSP8CappedSupplyAbstract._mint(to, tokenId, force, data);
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
-    /// @dev Combines checks from {LSP8CappedBalance} and {LSP8NonTransferable}. Bypasses all checks for allowlisted senders (from {LSP8NonTransferable}) or recipients (from {LSP8CappedBalance}). Allows burning to address(0) regardless of restrictions.
+    /// @dev Combines checks from {LSP8CappedBalance} and {LSP8NonTransferable}.
+    /// - Bypasses {LSP8NonTransferable} checks for senders (`from`) holding the `NON_TRANSFERABLE_BYPASS_ROLE` role.
+    /// - Bypasses {LSP8CappedBalance} checks for recipients (`to`) holding the `UNCAPPED_BALANCE_ROLE` role.
+    /// - Allows minting (from address(0)) and burning to address(0) regardless of restrictions.
     /// @param from The address sending the token.
     /// @param to The address receiving the token.
     /// @param tokenId The unique identifier of the token being transferred.
@@ -162,19 +204,74 @@ contract LSP8CustomizableToken is
             LSP8NonTransferableAbstract
         )
     {
-        LSP8NonTransferableAbstract._beforeTokenTransfer(
-            from,
-            to,
-            tokenId,
-            force,
-            data
-        );
-        LSP8CappedBalanceAbstract._beforeTokenTransfer(
-            from,
-            to,
-            tokenId,
-            force,
-            data
-        );
+        super._beforeTokenTransfer(from, to, tokenId, force, data);
+    }
+
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_transferOwnership} function
+    /// via `super` so that each inherited module updates its ownership-dependent state.
+    ///
+    /// When contract ownership changes, this will:
+    /// - clear the admin role for: `MINTER_ROLE`, `REVOKER_ROLE`, `NON_TRANSFERABLE_BYPASS_ROLE`, `UNCAPPED_BALANCE_ROLE`
+    /// - clear the list of addresses holding the `REVOKER_ROLE`
+    function _transferOwnership(
+        address newOwner
+    )
+        internal
+        virtual
+        override(
+            Ownable,
+            LSP8CappedBalanceAbstract,
+            LSP8MintableAbstract,
+            LSP8NonTransferableAbstract,
+            LSP8RevokableAbstract
+        )
+    {
+        super._transferOwnership(newOwner);
+    }
+
+    /// @dev Mint initial NFTs without enforcing check if the token contract is mintable or not.
+    /// Enforces the configured capped-supply value directly (not {tokenSupplyCap} when minting is disabled).
+    function _initialMint(
+        address to,
+        bytes32[] memory initialMintTokenIds
+    ) private {
+        uint256 configuredTokenSupplyCap = LSP8CappedSupplyAbstract
+            .tokenSupplyCap();
+        bool isCappedSupplyConfigured = configuredTokenSupplyCap > 0;
+
+        if (isCappedSupplyConfigured) {
+            bool mintingExceedsSupplyCap = initialMintTokenIds.length >
+                configuredTokenSupplyCap;
+
+            require(
+                !mintingExceedsSupplyCap,
+                LSP8CappedSupplyCannotMintOverCap()
+            );
+        }
+
+        for (uint256 ii = 0; ii < initialMintTokenIds.length; ++ii) {
+            LSP8IdentifiableDigitalAsset._mint(
+                to,
+                initialMintTokenIds[ii],
+                true,
+                ""
+            );
+        }
+    }
+
+    /// @dev Returns whether the current call is a legitimate revocation that should bypass the
+    /// {LSP8NonTransferable} and {LSP8CappedBalance} restrictions when revoking tokens from a token holder.
+    ///
+    /// Returns `true` only when all of the following conditions are met:
+    /// - the function being called is {revoke}.
+    /// - the revoking feature is enabled.
+    /// - the caller (`msg.sender`) holds the `REVOKER_ROLE`.
+    /// - the recipient (`to`) is either the contract `owner()` or a revoker (an address holding the `REVOKER_ROLE`).
+    function _isRevocationBypass(address to) private view returns (bool) {
+        return
+            msg.sig == this.revoke.selector &&
+            isRevokable() &&
+            hasRole(REVOKER_ROLE, msg.sender) &&
+            (to == owner() || hasRole(REVOKER_ROLE, to));
     }
 }

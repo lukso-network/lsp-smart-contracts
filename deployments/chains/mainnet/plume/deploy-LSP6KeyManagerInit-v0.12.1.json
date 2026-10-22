@@ -1,0 +1,15 @@
+{
+  "chainId": 98866,
+  "chainSlug": "plume",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.12.1",
+  "address": "0xa75684d7D048704a2DB851D05Ba0c3cbe226264C",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791041972,
+  "rpcUrlUsed": "https://rpc.plume.org",
+  "txHash": "0x8a18dd25d6a3c4e0be454a8039e9298210ca7da26d1d37a61059a7cd389075c8",
+  "blockNumber": 97113978
+}

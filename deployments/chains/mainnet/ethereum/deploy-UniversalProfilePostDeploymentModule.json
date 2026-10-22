@@ -1,0 +1,15 @@
+{
+  "chainId": 1,
+  "chainSlug": "ethereum",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786028483,
+  "rpcUrlUsed": "https://eth.drpc.org",
+  "txHash": "0x44f88b05306073cca75ff9763932308f338b92029cd6e0ed4f4a6a57ed876597",
+  "blockNumber": 25696676
+}

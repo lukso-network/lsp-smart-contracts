@@ -1,0 +1,15 @@
+{
+  "chainId": 1285,
+  "chainSlug": "moonriver",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784493192,
+  "rpcUrlUsed": "https://moonriver-rpc.publicnode.com",
+  "txHash": "0x02aa143fa9c480c125b184ee1bb3327d8ab715893bdd90e10ae327af00cd7c97",
+  "blockNumber": 17121357
+}

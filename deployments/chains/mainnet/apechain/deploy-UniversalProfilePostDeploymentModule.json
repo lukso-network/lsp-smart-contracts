@@ -1,0 +1,15 @@
+{
+  "chainId": 33139,
+  "chainSlug": "apechain",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784487058,
+  "rpcUrlUsed": "https://rpc.apechain.com",
+  "txHash": "0x3cb0af87d1808b5c20fb857525b90fc1e3b0986f0f89cd4eaa1824b069a8a26a",
+  "blockNumber": 43816658
+}

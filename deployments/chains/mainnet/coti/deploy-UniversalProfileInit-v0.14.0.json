@@ -1,0 +1,15 @@
+{
+  "chainId": 2632500,
+  "chainSlug": "coti",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.14.0",
+  "address": "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "already-deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785795263,
+  "rpcUrlUsed": "https://new-york.fullnode.mainnet.coti.io/rpc",
+  "txHash": "0xf31bfaee9ab2eab816cd2bf64bb8f1197d5a2627c9b45ed3a9b17b13bf3a8664",
+  "blockNumber": 8361748
+}

@@ -1,0 +1,15 @@
+{
+  "chainId": 143,
+  "chainSlug": "monad",
+  "network": "mainnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.12.1",
+  "address": "0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791041905,
+  "rpcUrlUsed": "https://rpc.monad.xyz",
+  "txHash": "0xc60f742f2447c893c751654c06ed369bc58a933b820ed66755221b1e5049036a",
+  "blockNumber": 110218024
+}

@@ -15,11 +15,6 @@ import {
 // interfaces
 import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";
 
-// libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
 // errors
 import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 
@@ -27,23 +22,22 @@ import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 /// @dev Abstract contract implementing a per-address balance cap for LSP7 tokens, with exemptions for allowlisted addresses. Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
 abstract contract LSP7CappedBalanceInitAbstract is
     ILSP7CappedBalance,
-    AccessControlExtendedInitAbstract,
-    LSP7DigitalAssetInitAbstract
+    LSP7DigitalAssetInitAbstract,
+    AccessControlExtendedInitAbstract
 {
-    using EnumerableSet for EnumerableSet.AddressSet;
-
     /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
     address internal constant _DEAD_ADDRESS =
         0x000000000000000000000000000000000000dEaD;
 
-    /// @dev `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    bytes32 public constant UNCAPPED_ROLE = 0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
+    /// @dev keccak256("UNCAPPED_BALANCE_ROLE")
+    bytes32 public constant UNCAPPED_BALANCE_ROLE =
+        0x975773d1e0a917a74b57f36a377f439ffff6271648aebdbff75a52ab58eb7bad;
 
     /// @notice The immutable maximum token balance allowed per address.
     uint256 private _tokenBalanceCap;
 
     /// @notice Initializes the LSP7CappedBalance contract with base token params, balance cap per address,
-    /// and `UNCAPPED_ROLE` exemptions for token contract `owner()`, `address(0)` and `0x...dead` addresses (for burning).
+    /// and `UNCAPPED_BALANCE_ROLE` exemptions for token contract `owner()`, `address(0)` and `0x...dead` addresses (for burning).
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param newOwner_ The owner of the contract, added to the allowlist.
@@ -65,22 +59,21 @@ abstract contract LSP7CappedBalanceInitAbstract is
             lsp4TokenType_,
             isNonDivisible_
         );
-        __AccessControlExtended_init(newOwner_);
+        __AccessControlExtended_init();
         __LSP7CappedBalance_init_unchained(tokenBalanceCap_);
     }
 
     /// @notice Unchained initializer for the token balance cap.
-    /// @dev Sets the balance cap value.
-    /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
+    /// @dev Sets the balance cap. If set, grants the initial uncapped balance role exemption to the contract owner.
+    /// @param tokenBalanceCap_ The maximum balance allowed per token holder (in wei). Set to 0 to disable.
     function __LSP7CappedBalance_init_unchained(
         uint256 tokenBalanceCap_
     ) internal virtual onlyInitializing {
         _tokenBalanceCap = tokenBalanceCap_;
 
-        // Address(0) and 0x0000...dead addresses are used for burning tokens
-        _grantRole(UNCAPPED_ROLE, address(0));
-        _grantRole(UNCAPPED_ROLE, _DEAD_ADDRESS);
-        _grantRole(UNCAPPED_ROLE, owner());
+        if (tokenBalanceCap_ != 0) {
+            _grantRole(UNCAPPED_BALANCE_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP7CappedBalance
@@ -107,27 +100,33 @@ abstract contract LSP7CappedBalanceInitAbstract is
 
     /// @notice Checks if a token transfer complies with the balance cap.
     /// @dev The address(0) is not subject to balance cap checks as this address is used for burning tokens. Reverts with {LSP7CappedBalanceExceeded} if the recipient's balance after receiving tokens would exceed the maximum allowed balance.
+    /// @param from The address sending the tokens.
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.
     function _tokenBalanceCapCheck(
-        address,
-        /* from */
+        address from,
         address to,
         uint256 amount,
         bool,
         /* force */
         bytes memory /* data */
     ) internal virtual {
-        // Do not check for balance cap if a specific address has the uncapped balance role
-        // (including address(0) and 0x0000...dead addresses)
-        if (hasRole(UNCAPPED_ROLE, to)) return;
+        // self-transfers do not increase the balance of the recipient, so we skip the check
+        if (from == to) return;
+
+        // Address(0) and 0x0000...dead addresses are used for burning tokens
+        if (to == address(0) || to == _DEAD_ADDRESS) return;
+
+        // Do not check for addresses exempted from balance cap
+        if (hasRole(UNCAPPED_BALANCE_ROLE, to)) return;
 
         uint256 maxBalanceAllowed = tokenBalanceCap();
         bool isBalanceCapEnabled = maxBalanceAllowed != 0;
 
+        if (!isBalanceCapEnabled) return;
+
         require(
-            !isBalanceCapEnabled ||
-                (balanceOf(to) + amount) <= maxBalanceAllowed,
+            (balanceOf(to) + amount) <= maxBalanceAllowed,
             LSP7CappedBalanceExceeded(
                 to,
                 amount,
@@ -162,6 +161,19 @@ abstract contract LSP7CappedBalanceInitAbstract is
         virtual
         override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
     {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant UNCAPPED_BALANCE_ROLE to new accounts post-transfer
+        _setRoleAdmin(UNCAPPED_BALANCE_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     *
+     * @custom:info The size of the `__gap` array is calculated so that the amount of storage used by the contract
+     * always adds up to the same number (in this case 50 storage slots).
+     */
+    uint256[49] private __gap;
 }

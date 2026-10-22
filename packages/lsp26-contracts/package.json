@@ -1,9 +1,14 @@
 {
   "name": "@lukso/lsp26-contracts",
-  "version": "0.1.7",
+  "version": "0.2.3",
   "description": "Package for the LSP26 Follower System standard",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp26-contracts"
+  },
   "type": "module",
   "files": [
     "contracts/**/*.sol",
@@ -61,7 +66,7 @@
     "deploy": "npx hardhat ignition deploy --verify"
   },
   "dependencies": {
-    "@lukso/lsp1-contracts": "~0.15.5",
+    "@lukso/lsp1-contracts": "~0.16.0",
     "@openzeppelin/contracts": "^4.9.6"
   },
   "resolutions": {
@@ -70,7 +75,7 @@
   "devDependencies": {
     "@lukso/hardhat-packager-v3": "*",
     "@lukso/hardhat-verify-balance": "*",
-    "@lukso/lsp0-contracts": "~0.15.5",
+    "@lukso/lsp0-contracts": "~0.16.0",
     "@nomicfoundation/hardhat-ignition-ethers": "^3.0.0",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "eslint-config-custom": "*",

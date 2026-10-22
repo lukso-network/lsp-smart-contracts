@@ -24,7 +24,6 @@ describe('LSP7Mintable with constructor', () => {
       newOwner: accounts.owner.address,
       isNFT: false,
       lsp4TokenType: LSP4_TOKEN_TYPES.TOKEN,
-      mintable: true,
     };
 
     const lsp7Mintable: LSP7Mintable = await new LSP7Mintable__factory(accounts.owner).deploy(
@@ -33,7 +32,6 @@ describe('LSP7Mintable with constructor', () => {
       deployParams.newOwner,
       deployParams.lsp4TokenType,
       deployParams.isNFT,
-      deployParams.mintable,
     );
 
     return { ethers, accounts, lsp7Mintable, deployParams };

@@ -1,0 +1,15 @@
+{
+  "chainId": 232,
+  "chainSlug": "lens",
+  "network": "mainnet",
+  "contract": "LSP23LinkedContractsFactory",
+  "version": null,
+  "address": "0x2300000A84D25dF63081feAa37ba6b62C4c89a30",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786023823,
+  "rpcUrlUsed": "https://rpc.lens.xyz",
+  "txHash": "0x6cb99f5d1fdbef398f81100a13280c829afe5c50f421d7af52eb1180e454a60c",
+  "blockNumber": 6146814
+}

@@ -1,0 +1,15 @@
+{
+  "chainId": 33139,
+  "chainSlug": "apechain",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784487111,
+  "rpcUrlUsed": "https://rpc.apechain.com",
+  "txHash": "0xdddd6eae3d59692fc78ae9342f0903cedb93228dd58bd4edc8b85923988cbd2a",
+  "blockNumber": 43816777
+}

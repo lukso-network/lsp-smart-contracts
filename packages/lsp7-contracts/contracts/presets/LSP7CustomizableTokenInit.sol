@@ -8,77 +8,74 @@ import {
 import {
     LSP7DigitalAssetInitAbstract
 } from "../LSP7DigitalAssetInitAbstract.sol";
-import {
-    LSP7MintableInitAbstract
-} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
-import {
-    LSP7NonTransferableInitAbstract
-} from "../extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
-import {
-    LSP7CappedBalanceInitAbstract
-} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
-import {
-    LSP7CappedSupplyInitAbstract
-} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
+
+// extensions
 import {
     LSP7BurnableInitAbstract
 } from "../extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol";
 import {
-    AccessControlExtendedInitAbstract
-} from "../extensions/AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+    LSP7MintableInitAbstract
+} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
+import {
+    LSP7CappedSupplyInitAbstract
+} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
+import {
+    LSP7CappedBalanceInitAbstract
+} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
+import {
+    LSP7NonTransferableInitAbstract
+} from "../extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
+import {
+    LSP7RevokableInitAbstract
+} from "../extensions/LSP7Revokable/LSP7RevokableInitAbstract.sol";
+
+// constants
+import {
+    LSP7MintableParams,
+    LSP7NonTransferableParams,
+    LSP7CappedParams,
+    LSP7RevokableParams
+} from "./LSP7CustomizableTokenConstants.sol";
 
 // errors
 import {
     LSP7MintDisabled
 } from "../extensions/LSP7Mintable/LSP7MintableErrors.sol";
-
-/// @dev Deployment configuration for minting feature.
-/// @param isMintable True to enable minting after deployment, false to disable it forever.
-/// @param initialMintAmount The amount of tokens to mint to `newOwner_` on deployment in wei.
-struct MintableParams {
-    bool isMintable;
-    uint256 initialMintAmount;
-}
-
-/// @dev Deployment configuration for non-transferable feature.
-/// @param transferLockStart The start timestamp of the transfer lock period, 0 to disable.
-/// @param transferLockEnd The end timestamp of the transfer lock period, 0 to disable.
-struct NonTransferableParams {
-    uint256 transferLockStart;
-    uint256 transferLockEnd;
-}
-
-/// @dev Deployment configuration for capped balance and capped supply features.
-/// @param tokenBalanceCap The maximum balance per address in wei, 0 to disable.
-/// @param tokenSupplyCap The maximum total supply in wei, 0 to disable.
-struct CappedParams {
-    uint256 tokenBalanceCap;
-    uint256 tokenSupplyCap;
-}
+import {
+    LSP7CappedSupplyCannotMintOverCap
+} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
 
 /// @title LSP7CustomizableTokenInit
-/// @dev A customizable LSP7 token implementing minting, balance caps, transfer restrictions, total supply cap and burning with role-based access control exemptions.
+/// @dev A customizable LSP7 token that implements multiple features and uses role-based exemptions. This version of the contract is the implementation to use behind proxies.
+/// Implements {LSP7BurnableInitAbstract} to allow burning.
 /// Implements {LSP7MintableInitAbstract} to allow minting.
-/// Implements {LSP7BurnableInitAbstract} to allow burning
-/// Implements {LSP7CappedBalanceInitAbstract} to restrict transfers.
 /// Implements {LSP7CappedSupplyInitAbstract} to set balance caps.
-/// Implements {LSP7BurnableInitAbstract} to set total supply cap.
+/// Implements {LSP7CappedBalanceInitAbstract} to set balance caps.
+/// Implements {LSP7NonTransferableInitAbstract} to restrict transfers.
+/// Implement {LSP7RevokableInitAbstract} to allow revoking tokens.
 contract LSP7CustomizableTokenInit is
+    LSP7BurnableInitAbstract,
     LSP7MintableInitAbstract,
-    LSP7NonTransferableInitAbstract,
-    LSP7CappedBalanceInitAbstract,
     LSP7CappedSupplyInitAbstract,
-    LSP7BurnableInitAbstract
+    LSP7CappedBalanceInitAbstract,
+    LSP7NonTransferableInitAbstract,
+    LSP7RevokableInitAbstract
 {
+    /// @dev Locks the base implementation contract from being initialized.
+    constructor() {
+        _disableInitializers();
+    }
+
     function initialize(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        MintableParams memory mintableParams,
-        NonTransferableParams memory nonTransferableParams,
-        CappedParams memory cappedParams
+        LSP7MintableParams calldata mintableParams,
+        LSP7CappedParams calldata cappedParams,
+        LSP7NonTransferableParams calldata nonTransferableParams,
+        LSP7RevokableParams calldata revokableParams
     ) external virtual initializer {
         __LSP7CustomizableToken_init(
             name_,
@@ -87,8 +84,9 @@ contract LSP7CustomizableTokenInit is
             lsp4TokenType_,
             isNonDivisible_,
             mintableParams,
+            cappedParams,
             nonTransferableParams,
-            cappedParams
+            revokableParams
         );
     }
 
@@ -100,17 +98,19 @@ contract LSP7CustomizableTokenInit is
     /// @param lsp4TokenType_ The LSP4 token type (e.g., 0 for token).
     /// @param isNonDivisible_ True if the token is non-divisible (e.g., for NDTs).
     /// @param mintableParams Deployment configuration for minting feature (see above).
-    /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
     /// @param cappedParams Deployment configuration for capped balance and capped supply features (see above).
+    /// @param nonTransferableParams Deployment configuration for non-transferable feature (see above).
+    /// @param revokableParams Deployment configuration for revokable feature (see above).
     function __LSP7CustomizableToken_init(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         address newOwner_,
         uint256 lsp4TokenType_,
         bool isNonDivisible_,
-        MintableParams memory mintableParams,
-        NonTransferableParams memory nonTransferableParams,
-        CappedParams memory cappedParams
+        LSP7MintableParams calldata mintableParams,
+        LSP7CappedParams calldata cappedParams,
+        LSP7NonTransferableParams calldata nonTransferableParams,
+        LSP7RevokableParams calldata revokableParams
     ) internal virtual onlyInitializing {
         LSP7DigitalAssetInitAbstract._initialize(
             name_,
@@ -119,29 +119,80 @@ contract LSP7CustomizableTokenInit is
             lsp4TokenType_,
             isNonDivisible_
         );
-        __AccessControlExtended_init_unchained(newOwner_);
+        __AccessControlExtended_init_unchained();
         __LSP7Mintable_init_unchained(mintableParams.isMintable);
+        __LSP7CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
+        __LSP7CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
         __LSP7NonTransferable_init_unchained(
             nonTransferableParams.transferLockStart,
             nonTransferableParams.transferLockEnd
         );
-        __LSP7CappedBalance_init_unchained(cappedParams.tokenBalanceCap);
-        __LSP7CappedSupply_init_unchained(cappedParams.tokenSupplyCap);
+        __LSP7Revokable_init_unchained(revokableParams.isRevokable);
+
         if (mintableParams.initialMintAmount > 0) {
-            _mint(newOwner_, mintableParams.initialMintAmount, true, "");
+            _initialMint({
+                to: newOwner_,
+                amount: mintableParams.initialMintAmount
+            });
         }
     }
 
     /// @inheritdoc LSP7CappedSupplyInitAbstract
     /// @notice Returns the token supply cap.
-    /// @dev If minting is enabled, returns the configured supply cap defining the maximum tokens that can be minted.
+    /// @dev If minting is enabled, returns the configured supply cap defining the maximum amount of tokens that can be minted.
     /// If minting is disabled, returns the current total supply as the effective cap (no more tokens can be created).
     function tokenSupplyCap() public view virtual override returns (uint256) {
         return isMintable ? super.tokenSupplyCap() : totalSupply();
     }
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {supportsInterface} functions
+    /// via `super` to aggregate the interface IDs supported across all inherited modules.
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            LSP7DigitalAssetInitAbstract,
+            LSP7MintableInitAbstract,
+            LSP7CappedBalanceInitAbstract,
+            LSP7NonTransferableInitAbstract,
+            LSP7RevokableInitAbstract
+        )
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    /// @dev Override to bypass the non transferable check when revokers revoke users' tokens.
+    function _nonTransferableCheck(
+        address from,
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
+        if (_isRevocationBypass(to)) return;
+        super._nonTransferableCheck(from, to, amount, force, data);
+    }
+
+    /// @dev Override to bypass the token balance cap check when revokers revoke users' tokens.
+    function _tokenBalanceCapCheck(
+        address from,
+        address to,
+        uint256 amount,
+        bool force,
+        bytes memory data
+    ) internal virtual override {
+        if (_isRevocationBypass(to)) return;
+        super._tokenBalanceCapCheck(from, to, amount, force, data);
+    }
+
     /// @inheritdoc LSP7MintableInitAbstract
-    /// @dev Relies on {LSP7CappedSupplyInitAbstract} for supply cap enforcement.
+    /// @dev Overridden function to allow minting only if:
+    /// - the minting feature is enabled, from {LSP7MintableInitAbstract}
+    /// - the total amount of tokens does not exceed the capped supply after minting, from {LSP7CappedSupplyInitAbstract}
     function _mint(
         address to,
         uint256 amount,
@@ -157,13 +208,14 @@ contract LSP7CustomizableTokenInit is
         )
     {
         require(isMintable, LSP7MintDisabled());
-
-        _tokenSupplyCapCheck(to, amount, force, data);
-        super._mint(to, amount, force, data);
+        LSP7CappedSupplyInitAbstract._mint(to, amount, force, data);
     }
 
     /// @notice Hook called before a token transfer to enforce restrictions.
-    /// @dev Combines checks from {LSP7CappedBalanceInitAbstract} and {LSP7NonTransferableInitAbstract}. Bypasses all checks for allowlisted senders (from {LSP7NonTransferableInitAbstract}) or recipients (from {LSP7CappedBalanceInitAbstract}). Allows burning to address(0) regardless of restrictions.
+    /// @dev Combines checks from {LSP7CappedBalanceInitAbstract} and {LSP7NonTransferableInitAbstract}.
+    /// - Bypasses {LSP7NonTransferableInitAbstract} checks for senders (`from`) holding the `NON_TRANSFERABLE_BYPASS_ROLE` role.
+    /// - Bypasses {LSP7CappedBalanceInitAbstract} checks for recipients (`to`) holding the `UNCAPPED_BALANCE_ROLE` role.
+    /// - Allows minting (from address(0)) and burning to address(0) regardless of restrictions.
     /// @param from The address sending the tokens.
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.
@@ -187,6 +239,12 @@ contract LSP7CustomizableTokenInit is
         super._beforeTokenTransfer(from, to, amount, force, data);
     }
 
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_transferOwnership} function
+    /// via `super` so that each inherited module updates its ownership-dependent state.
+    ///
+    /// When contract ownership changes, this will:
+    /// - clear the admin role for: `MINTER_ROLE`, `REVOKER_ROLE`, `NON_TRANSFERABLE_BYPASS_ROLE`, `UNCAPPED_BALANCE_ROLE`
+    /// - clear the list of addresses holding the `REVOKER_ROLE`
     function _transferOwnership(
         address newOwner
     )
@@ -194,28 +252,43 @@ contract LSP7CustomizableTokenInit is
         virtual
         override(
             OwnableUpgradeable,
-            LSP7CappedBalanceInitAbstract,
             LSP7MintableInitAbstract,
-            LSP7NonTransferableInitAbstract
+            LSP7CappedBalanceInitAbstract,
+            LSP7NonTransferableInitAbstract,
+            LSP7RevokableInitAbstract
         )
     {
         super._transferOwnership(newOwner);
     }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    )
-        public
-        view
-        virtual
-        override(
-            LSP7DigitalAssetInitAbstract,
-            LSP7CappedBalanceInitAbstract,
-            LSP7MintableInitAbstract,
-            LSP7NonTransferableInitAbstract
-        )
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
+    /// @dev Mint initial tokens without enforcing check if the token contract is mintable or not.
+    /// Enforces the configured capped-supply value directly before bypassing the mintable check.
+    function _initialMint(address to, uint256 amount) private {
+        uint256 configuredTokenSupplyCap = LSP7CappedSupplyInitAbstract
+            .tokenSupplyCap();
+
+        bool exceedsSupplyCap = amount > configuredTokenSupplyCap;
+
+        require(
+            configuredTokenSupplyCap == 0 || !exceedsSupplyCap,
+            LSP7CappedSupplyCannotMintOverCap()
+        );
+        LSP7DigitalAssetInitAbstract._mint(to, amount, true, "");
+    }
+
+    /// @dev Returns whether the current call is a legitimate revocation that should bypass the
+    /// {LSP7NonTransferableInitAbstract} and {LSP7CappedBalanceInitAbstract} restrictions when revoking tokens from a token holder.
+    ///
+    /// Returns `true` only when all of the following conditions are met:
+    /// - the function being called is {revoke}.
+    /// - the revoking feature is enabled.
+    /// - the caller (`msg.sender`) holds the `REVOKER_ROLE`.
+    /// - the recipient (`to`) is either the contract `owner()` or a revoker (an address holding the `REVOKER_ROLE`).
+    function _isRevocationBypass(address to) private view returns (bool) {
+        return
+            msg.sig == this.revoke.selector &&
+            isRevokable() &&
+            hasRole(REVOKER_ROLE, msg.sender) &&
+            (to == owner() || hasRole(REVOKER_ROLE, to));
     }
 }

@@ -1,0 +1,15 @@
+{
+  "chainId": 196,
+  "chainSlug": "x-layer",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.14.0",
+  "address": "0x3024D38EA2434BA6635003Dc1BDC0daB5882ED4F",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785852081,
+  "rpcUrlUsed": "https://rpc.xlayer.tech",
+  "txHash": "0x29ded177f4e7d7f9ca9d03244b1ea9b57336e957860dbe8bc6be6c7e585ff914",
+  "blockNumber": 67083059
+}

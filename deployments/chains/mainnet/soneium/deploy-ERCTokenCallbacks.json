@@ -1,0 +1,15 @@
+{
+  "chainId": 1868,
+  "chainSlug": "soneium",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783618955,
+  "rpcUrlUsed": "https://rpc.soneium.org",
+  "txHash": "0xad9abe985fa4ee48d3d2be4e540a5596eaca7202b09faf0e9e6472d974d494c7",
+  "blockNumber": 25242105
+}

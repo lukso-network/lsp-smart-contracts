@@ -69,7 +69,6 @@ describe('Gas Comparison: LSP7MintableInit vs CustomizableTokenInit', () => {
         owner.address,
         LSP4_TOKEN_TYPES.TOKEN,
         false, // isNonDivisible
-        true, // mintable
       );
       const lsp7InitReceipt = await lsp7InitTx.wait();
       const lsp7InitGasUsed = lsp7InitReceipt?.gasUsed || 0n;
@@ -89,14 +88,17 @@ describe('Gas Comparison: LSP7MintableInit vs CustomizableTokenInit', () => {
           initialMintAmount: INITIAL_MINT_AMOUNT,
         }, // MintableParams
         {
+          tokenBalanceCap: 0n,
+          tokenSupplyCap: 0n,
+        }, // CappedParams
+        {
           isTransferable: true,
           transferLockStart: 0n,
           transferLockEnd: 0n,
         }, // NonTransferableParams
         {
-          tokenBalanceCap: 0n,
-          tokenSupplyCap: 0n,
-        }, // CappedParams
+          isRevokable: true,
+        }, // RevokableParams
       );
       const customizableInitReceipt = await customizableInitTx.wait();
       const customizableInitGasUsed = customizableInitReceipt?.gasUsed || 0n;
@@ -113,6 +115,7 @@ describe('Gas Comparison: LSP7MintableInit vs CustomizableTokenInit', () => {
       expect(await lsp7MintableInit.isMintable()).to.be.true;
       expect(await customizableTokenInit.isMintable()).to.be.true;
       expect(await customizableTokenInit.isTransferable()).to.be.true;
+      expect(await customizableTokenInit.isRevokable()).to.be.true;
 
       // Verify initial mint for CustomizableTokenInit
       expect(await customizableTokenInit.balanceOf(owner.address)).to.equal(INITIAL_MINT_AMOUNT);

@@ -1,0 +1,15 @@
+{
+  "chainId": 100,
+  "chainSlug": "gnosis",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.12.1",
+  "address": "0xa75684d7D048704a2DB851D05Ba0c3cbe226264C",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791041375,
+  "rpcUrlUsed": "https://gnosis-rpc.publicnode.com",
+  "txHash": "0xe86c7748e0d87eb1aa0ab182af630940f307f6d116f04b1808b79384a6b76f1c",
+  "blockNumber": 48569214
+}

@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.2.3](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp26-contracts-v0.2.2...lsp26-contracts-v0.2.3) (2026-05-25)
+
+
+### Bug Fixes
+
+* add repository field to all child package.json files ([6d1265e](https://github.com/lukso-network/lsp-smart-contracts/commit/6d1265e772eae52aa321fa06e9e0a6863e6ea91d))
+
+## [0.2.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp26-contracts-v0.2.1...lsp26-contracts-v0.2.2) (2026-05-25)
+
+
+### Bug Fixes
+
+* repair broken imports in release scripts ([4b4c931](https://github.com/lukso-network/lsp-smart-contracts/commit/4b4c931dda5eb0d1b2b8d286c916484abdeade2e))
+
+## [0.2.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp26-contracts-v0.2.0...lsp26-contracts-v0.2.1) (2026-05-25)
+
+
+### Bug Fixes
+
+* bump intra-workspace @lukso/* deps to current versions ([89e8341](https://github.com/lukso-network/lsp-smart-contracts/commit/89e83416a077d24cc76b55ade11ecc0d98bd76b4))
+
+## [0.2.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp26-contracts-v0.1.7...lsp26-contracts-v0.2.0) (2026-05-21)
+
+
+### Features
+
+* create hardhat-packager plugin ([21ba47c](https://github.com/lukso-network/lsp-smart-contracts/commit/21ba47c0490b36cf3dadc29f174138e247b477f5))
+* upgrade dependencies and Hardhat version to v3 ([32cbc59](https://github.com/lukso-network/lsp-smart-contracts/commit/32cbc5929774bcf58b48414c697325a6ee7c6b39))
+
+
+### Bug Fixes
+
+* resolve `solidity-bytes-utils` dependency to `0.8.4` to remove trufflehd-wallet and other vulnerabilities in dependencies ([cbe21e9](https://github.com/lukso-network/lsp-smart-contracts/commit/cbe21e99ec3b6a74136c17cc364f3d00f6ddd37b))
+
 ## [0.1.7](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp26-contracts-v0.1.6...lsp26-contracts-v0.1.7) (2025-06-19)
 
 ### Bug Fixes

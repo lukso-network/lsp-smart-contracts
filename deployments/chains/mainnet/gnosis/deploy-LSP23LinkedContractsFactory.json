@@ -1,0 +1,15 @@
+{
+  "chainId": 100,
+  "chainSlug": "gnosis",
+  "network": "mainnet",
+  "contract": "LSP23LinkedContractsFactory",
+  "version": null,
+  "address": "0x2300000A84D25dF63081feAa37ba6b62C4c89a30",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "already-deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783617895,
+  "rpcUrlUsed": null,
+  "txHash": "0x9a484a2cd033da692d77993a7bc40680b79d65b4f34cb81a31d5802ae9aa7d63",
+  "blockNumber": 47117192
+}

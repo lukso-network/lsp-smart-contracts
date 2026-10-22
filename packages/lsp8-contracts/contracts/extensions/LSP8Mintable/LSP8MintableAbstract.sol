@@ -2,9 +2,13 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {
     LSP8IdentifiableDigitalAsset
 } from "../../LSP8IdentifiableDigitalAsset.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {ILSP8Mintable} from "./ILSP8Mintable.sol";
@@ -13,13 +17,19 @@ import {ILSP8Mintable} from "./ILSP8Mintable.sol";
 import {LSP8MintDisabled} from "./LSP8MintableErrors.sol";
 
 /// @title LSP8MintableAbstract
-/// @dev Abstract contract implementing a mintable LSP8 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP8IdentifiableDigitalAsset to provide core token functionality.
+/// @dev Abstract contract implementing a mintable LSP8 token extension, allowing the owner to mint any address granted the `MINTER_ROLE` to mint new tokens until minting is disabled.
+/// Inherits from LSP8IdentifiableDigitalAsset to provide core token functionality.
 abstract contract LSP8MintableAbstract is
     ILSP8Mintable,
-    LSP8IdentifiableDigitalAsset
+    LSP8IdentifiableDigitalAsset,
+    AccessControlExtendedAbstract
 {
     /// @notice Indicates whether minting is currently enabled.
     bool public isMintable;
+
+    /// @dev keccak256("MINTER_ROLE")
+    bytes32 public constant MINTER_ROLE =
+        0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6;
 
     /// @notice Initializes the contract with the minting status.
     /// @dev Sets the initial minting status. Inherits LSP8IdentifiableDigitalAsset constructor logic.
@@ -27,14 +37,20 @@ abstract contract LSP8MintableAbstract is
     /// @custom:info If `mintable_` is set to `true` then it can be disabled using `disableMinting()` function later on.
     constructor(bool mintable_) {
         isMintable = mintable_;
-        emit MintingStatusChanged(mintable_);
+        emit MintingStatusChanged({enabled: mintable_});
+
+        if (mintable_) {
+            _grantRole(MINTER_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP8Mintable
+    /// @custom:warning Once this function is called, any address holding the `MINTER_ROLE` will be inoperable.
+    /// @custom:info The list of addresses holding the `MINTER_ROLE` remains populated after the minting feature is switched off.
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP8MintDisabled());
         isMintable = false;
-        emit MintingStatusChanged(false);
+        emit MintingStatusChanged({enabled: false});
     }
 
     /// @inheritdoc ILSP8Mintable
@@ -43,8 +59,22 @@ abstract contract LSP8MintableAbstract is
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual override onlyOwner {
+    ) public virtual override onlyRole(MINTER_ROLE) {
         _mint(to, tokenId, force, data);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(AccessControlExtendedAbstract, LSP8IdentifiableDigitalAsset)
+        returns (bool)
+    {
+        return
+            AccessControlExtendedAbstract.supportsInterface(interfaceId) ||
+            LSP8IdentifiableDigitalAsset.supportsInterface(interfaceId);
     }
 
     /// @notice Internal function to mint tokens, overridden to enforce minting status.
@@ -62,5 +92,14 @@ abstract contract LSP8MintableAbstract is
         require(isMintable, LSP8MintDisabled());
 
         super._mint(to, tokenId, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant MINTER_ROLE to new accounts post-transfer
+        _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
+        super._transferOwnership(newOwner);
     }
 }

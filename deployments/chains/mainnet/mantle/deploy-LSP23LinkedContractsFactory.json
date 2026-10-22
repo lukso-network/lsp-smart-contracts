@@ -1,0 +1,15 @@
+{
+  "chainId": 5000,
+  "chainSlug": "mantle",
+  "network": "mainnet",
+  "contract": "LSP23LinkedContractsFactory",
+  "version": null,
+  "address": "0x2300000A84D25dF63081feAa37ba6b62C4c89a30",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784449518,
+  "rpcUrlUsed": "https://rpc.mantle.xyz",
+  "txHash": "0x02c9869a7ced8124eca9dfb9dfabbdd4da2217e583ba2b5983eaffe6fd1d303d",
+  "blockNumber": 98159615
+}

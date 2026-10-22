@@ -1,0 +1,15 @@
+{
+  "chainId": 40,
+  "chainSlug": "telos-evm-mainnet",
+  "network": "mainnet",
+  "contract": "LSP23LinkedContractsFactory",
+  "version": null,
+  "address": "0x2300000A84D25dF63081feAa37ba6b62C4c89a30",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784493970,
+  "rpcUrlUsed": "https://telos.drpc.org",
+  "txHash": "0xdeaf0b1f723c632030be7e09f2785c4cbf8813f0731561d4e81d2c898008719e",
+  "blockNumber": null
+}

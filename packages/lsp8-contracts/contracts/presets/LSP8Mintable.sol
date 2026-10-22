@@ -1,20 +1,28 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.27;
 
-// interfaces
-import {ILSP8Mintable} from "./ILSP8Mintable.sol";
-
 // modules
-import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {
+    LSP8IdentifiableDigitalAsset
+} from "../LSP8IdentifiableDigitalAsset.sol";
+import {LSP8Burnable} from "../extensions/LSP8Burnable/LSP8Burnable.sol";
+import {
+    LSP8MintableAbstract
+} from "../extensions/LSP8Mintable/LSP8MintableAbstract.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 /**
- * @title LSP8IdentifiableDigitalAsset deployable preset contract with a public {mint} function callable only by the contract {owner}.
+ * @title LSP8IdentifiableDigitalAsset deployable preset contract with:
+ * - a public {mint} function callable by addresses holding `MINTER_ROLE`.
+ * - a public {burn} function callable by any token holder or operator.
  */
-contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
+contract LSP8Mintable is LSP8MintableAbstract, LSP8Burnable {
     /**
-     * @notice Deploying a `LSP8Mintable` token contract with: token name = `name_`, token symbol = `symbol_`, and
-     * address `newOwner_` as the token contract owner.
-     *
+     * @notice Deploying a `LSP8Mintable` token contract.
+     * @dev Set the token to be mintable to allow minting more tokens after deployment.
      * @param name_ The name of the token.
      * @param symbol_ The symbol of the token.
      * @param newOwner_ The owner of the token contract.
@@ -35,24 +43,45 @@ contract LSP8Mintable is LSP8IdentifiableDigitalAsset, ILSP8Mintable {
             lsp4TokenType_,
             lsp8TokenIdFormat_
         )
+        AccessControlExtendedAbstract()
+        LSP8MintableAbstract(true)
     {}
 
-    /**
-     * @notice Minting tokenId `tokenId` for address `to` with the additional data `data` (Note: allow non-LSP1 recipient is set to `force`).
-     *
-     * @dev Public {_mint} function only callable by the {owner}.
-     *
-     * @param to The address that will receive the minted `tokenId`.
-     * @param tokenId The tokenId to mint.
-     * @param force Set to `false` to ensure that you are minting for a recipient that implements LSP1, `false` otherwise for forcing the minting.
-     * @param data Any addition data to be sent alongside the minting.
-     */
-    function mint(
+    /// @dev Required override to resolve multiple inheritance. Delegates via `super` to the parent implementation
+    /// that aggregates the interface IDs supported across all inherited modules.
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(LSP8MintableAbstract, LSP8IdentifiableDigitalAsset)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    /// @inheritdoc LSP8MintableAbstract
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_mint} function via `super`.
+    function _mint(
         address to,
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual override onlyOwner {
-        _mint(to, tokenId, force, data);
+    )
+        internal
+        virtual
+        override(LSP8MintableAbstract, LSP8IdentifiableDigitalAsset)
+    {
+        super._mint(to, tokenId, force, data);
+    }
+
+    /// @dev Required override to resolve multiple inheritance. Calls every parent {_transferOwnership} function
+    /// via `super` so that each inherited module updates its ownership-dependent state.
+    /// When contract ownership changes, this resets the admin role of `MINTER_ROLE` back to `DEFAULT_ADMIN_ROLE`.
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(LSP8MintableAbstract, Ownable) {
+        super._transferOwnership(newOwner);
     }
 }

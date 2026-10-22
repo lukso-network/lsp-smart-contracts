@@ -2,7 +2,12 @@
 pragma solidity ^0.8.22;
 
 // test
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
+
+// interfaces
+import {
+    IAccessControl
+} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // modules
 import {
@@ -14,6 +19,9 @@ import {
 import {LSP7DigitalAsset} from "../contracts/LSP7DigitalAsset.sol";
 
 // errors
+import {
+    AccessControlUnauthorizedAccount
+} from "../contracts/extensions/AccessControlExtended/AccessControlExtendedErrors.sol";
 import {
     LSP7CappedBalanceExceeded
 } from "../contracts/extensions/LSP7CappedBalance/LSP7CappedBalanceErrors.sol";
@@ -40,8 +48,8 @@ contract MockLSP7CappedBalance is LSP7CappedBalanceAbstract {
             lsp4TokenType_,
             isNonDivisible_
         )
+        AccessControlExtendedAbstract()
         LSP7CappedBalanceAbstract(tokenBalanceCap_)
-        AccessControlExtendedAbstract(newOwner_)
     {}
 
     // Helper function to mint tokens for testing
@@ -90,8 +98,7 @@ contract LSP7CappedBalanceTest is Test {
             isNonDivisible,
             tokenBalanceCap
         );
-
-        uncappedBalanceRole = lsp7CappedBalance.UNCAPPED_ROLE();
+        uncappedBalanceRole = lsp7CappedBalance.UNCAPPED_BALANCE_ROLE();
 
         lsp7CappedBalance.grantRole(uncappedBalanceRole, allowlistedUser);
         lsp7CappedBalance.grantRole(uncappedBalanceRole, allowlistedUserExtra);
@@ -110,18 +117,6 @@ contract LSP7CappedBalanceTest is Test {
             lsp7CappedBalance.hasRole(uncappedBalanceRole, owner),
             "Owner should have uncapped balance role"
         );
-        assertTrue(
-            lsp7CappedBalance.hasRole(uncappedBalanceRole, zeroAddress),
-            "Zero address should have uncapped balance role"
-        );
-        // check for dead address (alternative address used to burn tokens)
-        assertTrue(
-            lsp7CappedBalance.hasRole(
-                uncappedBalanceRole,
-                0x000000000000000000000000000000000000dEaD
-            ),
-            "Dead address should have uncapped balance role"
-        );
 
         // Extra addresses allowed to bypass balance cap after deployment
         assertTrue(
@@ -139,6 +134,67 @@ contract LSP7CappedBalanceTest is Test {
             lsp7CappedBalance.hasRole(uncappedBalanceRole, nonAllowlistedUser),
             "Non allowlisted user should not have uncapped balance role"
         );
+    }
+
+    function test_DeployWithoutCappedBalanceFeatureDoesNotGrantUncappedRoleToOwner()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        MockLSP7CappedBalance tokenContract = new MockLSP7CappedBalance(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            isNonDivisible,
+            0 // tokenBalanceCap disabled
+        );
+
+        assertFalse(tokenContract.hasRole(uncappedBalanceRole, contractOwner));
+        assertTrue(
+            tokenContract.hasRole(
+                tokenContract.DEFAULT_ADMIN_ROLE(),
+                contractOwner
+            )
+        );
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 1);
+        assertEq(ownerRoles[0], tokenContract.DEFAULT_ADMIN_ROLE());
+    }
+
+    function test_DeployWithCappedBalanceFeatureGrantsUncappedRoleToOwnerAndEmitsRoleGranted()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        vm.expectEmit(true, true, true, true);
+        emit IAccessControl.RoleGranted(
+            uncappedBalanceRole,
+            contractOwner,
+            address(this)
+        );
+        MockLSP7CappedBalance tokenContract = new MockLSP7CappedBalance(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            isNonDivisible,
+            tokenBalanceCap
+        );
+
+        assertTrue(tokenContract.hasRole(uncappedBalanceRole, contractOwner));
+        assertTrue(
+            tokenContract.hasRole(
+                tokenContract.DEFAULT_ADMIN_ROLE(),
+                contractOwner
+            )
+        );
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 2);
+        assertEq(ownerRoles[0], tokenContract.DEFAULT_ADMIN_ROLE());
+        assertEq(ownerRoles[1], uncappedBalanceRole);
     }
 
     // Test tokenBalanceCap function
@@ -223,6 +279,61 @@ contract LSP7CappedBalanceTest is Test {
         );
     }
 
+    // Test transfer ownership
+    function test_TransferOwnershipClearsUncappedBalanceRoleAdmin() public {
+        bytes32 uncappedBalanceAdminRole = keccak256("UNCAPPED_ADMIN_ROLE");
+        address uncappedBalanceAdmin = makeAddr("A Uncapped Balance Admin");
+
+        lsp7CappedBalance.setRoleAdmin(
+            uncappedBalanceRole,
+            uncappedBalanceAdminRole
+        );
+        assertEq(
+            lsp7CappedBalance.getRoleAdmin(uncappedBalanceRole),
+            uncappedBalanceAdminRole
+        );
+
+        lsp7CappedBalance.grantRole(
+            uncappedBalanceAdminRole,
+            uncappedBalanceAdmin
+        );
+        assertTrue(
+            lsp7CappedBalance.hasRole(
+                uncappedBalanceAdminRole,
+                uncappedBalanceAdmin
+            )
+        );
+
+        vm.prank(uncappedBalanceAdmin);
+        lsp7CappedBalance.grantRole(uncappedBalanceRole, address(11111));
+        assertTrue(
+            lsp7CappedBalance.hasRole(uncappedBalanceRole, address(11111))
+        );
+
+        lsp7CappedBalance.transferOwnership(vm.addr(200));
+
+        assertEq(
+            lsp7CappedBalance.getRoleAdmin(uncappedBalanceRole),
+            lsp7CappedBalance.DEFAULT_ADMIN_ROLE()
+        );
+
+        // Test previous admin cannot use its role
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                uncappedBalanceAdmin,
+                lsp7CappedBalance.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(uncappedBalanceAdmin);
+        lsp7CappedBalance.grantRole(uncappedBalanceRole, address(22222));
+
+        // Addresses with previously granted role still persist
+        assertTrue(
+            lsp7CappedBalance.hasRole(uncappedBalanceRole, address(11111))
+        );
+    }
+
     // Test edge cases
     function test_ZeroAmountTransferSucceedsForNonAllowlisted() public {
         lsp7CappedBalance.mint(nonAllowlistedUser, 500, true, "");
@@ -252,20 +363,13 @@ contract LSP7CappedBalanceTest is Test {
         );
     }
 
-    function test_TransferToSelfExceedingCapFailsForNonAllowlisted() public {
-        lsp7CappedBalance.mint(nonAllowlistedUser, 900, true, "");
+    function test_TransferToSelfAtCapSucceedsAndDoesNotCheckForCappedBalance()
+        public
+    {
+        lsp7CappedBalance.mint(nonAllowlistedUser, tokenBalanceCap, true, "");
 
         uint256 amount = 200;
 
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                LSP7CappedBalanceExceeded.selector,
-                nonAllowlistedUser,
-                amount,
-                lsp7CappedBalance.balanceOf(nonAllowlistedUser),
-                tokenBalanceCap
-            )
-        );
         vm.prank(nonAllowlistedUser);
         lsp7CappedBalance.transfer(
             nonAllowlistedUser,
@@ -276,8 +380,8 @@ contract LSP7CappedBalanceTest is Test {
         );
         assertEq(
             lsp7CappedBalance.balanceOf(nonAllowlistedUser),
-            900,
-            "nonAllowlistedUser balance should remain 900"
+            tokenBalanceCap,
+            "nonAllowlistedUser balance should remain capped"
         );
     }
 
@@ -300,6 +404,105 @@ contract LSP7CappedBalanceTest is Test {
     }
 
     // ------ Fuzzing ------
+
+    function testFuzz_MintAmountRespectsBalanceCap(
+        uint256 cap,
+        uint256 currentBalance,
+        uint256 mintAmount
+    ) public {
+        cap = bound(cap, 1, type(uint128).max);
+        currentBalance = bound(currentBalance, 1, cap);
+        mintAmount = bound(mintAmount, 1, type(uint128).max);
+
+        MockLSP7CappedBalance token = new MockLSP7CappedBalance(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            cap
+        );
+
+        token.mint(recipient, currentBalance, true, "");
+
+        uint256 newExpectedBalance = currentBalance + mintAmount;
+
+        if (newExpectedBalance > cap) {
+            // If the new balance is expected to be greater than the cap, test that it reverts
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP7CappedBalanceExceeded.selector,
+                    recipient,
+                    mintAmount,
+                    currentBalance,
+                    cap
+                )
+            );
+            token.mint(recipient, mintAmount, true, "");
+
+            assertEq(token.balanceOf(recipient), currentBalance);
+        } else {
+            // Otherwise test that mint succeeds and the balance increased
+            token.mint(recipient, mintAmount, true, "");
+            assertEq(token.balanceOf(recipient), currentBalance + mintAmount);
+        }
+    }
+
+    function testFuzz_TransferAmountRespectsBalanceCap(
+        uint256 cap,
+        uint256 currentBalance,
+        uint256 transferAmount
+    ) public {
+        uint256 boundedCap = bound(cap, 1, type(uint128).max);
+        uint256 boundedCurrentBalance = bound(currentBalance, 0, boundedCap);
+        uint256 boundedTransferAmount = bound(
+            transferAmount,
+            1,
+            type(uint128).max
+        );
+
+        MockLSP7CappedBalance token = new MockLSP7CappedBalance(
+            name,
+            symbol,
+            owner,
+            tokenType,
+            isNonDivisible,
+            boundedCap
+        );
+
+        token.mint(
+            owner,
+            boundedCurrentBalance + boundedTransferAmount,
+            true,
+            ""
+        );
+
+        if (boundedCurrentBalance > 0) {
+            token.transfer(owner, recipient, boundedCurrentBalance, true, "");
+        }
+
+        if (boundedCurrentBalance + boundedTransferAmount > boundedCap) {
+            vm.expectRevert(
+                abi.encodeWithSelector(
+                    LSP7CappedBalanceExceeded.selector,
+                    recipient,
+                    boundedTransferAmount,
+                    boundedCurrentBalance,
+                    boundedCap
+                )
+            );
+            token.transfer(owner, recipient, boundedTransferAmount, true, "");
+
+            assertEq(token.balanceOf(recipient), boundedCurrentBalance);
+            return;
+        }
+
+        token.transfer(owner, recipient, boundedTransferAmount, true, "");
+        assertEq(
+            token.balanceOf(recipient),
+            boundedCurrentBalance + boundedTransferAmount
+        );
+    }
 
     function testFuzz_CannotHoldMoreThanMaxBalance(uint256 amount) public {
         lsp7CappedBalance.mint(recipient, 900, true, "");

@@ -1,0 +1,15 @@
+{
+  "chainId": 560048,
+  "chainSlug": "ethereum-hoodie",
+  "network": "testnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0xF0efeD8d49c0FA6CFC861Bf0311b6B3a4414e4b7",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1783517520,
+  "rpcUrlUsed": "https://ethereum-hoodi-rpc.publicnode.com",
+  "txHash": "0xff8c0a7c8cfc05a921c8adf0077182c2d72d25ae749326506d575c6c7ed60e78",
+  "blockNumber": 3172735
+}

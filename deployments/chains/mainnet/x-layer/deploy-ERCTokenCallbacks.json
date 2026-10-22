@@ -1,0 +1,15 @@
+{
+  "chainId": 196,
+  "chainSlug": "x-layer",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785852081,
+  "rpcUrlUsed": "https://rpc.xlayer.tech",
+  "txHash": "0xa4429e1ff5f0d421d11d6f74577f7f717e55fde5f27afa043d5d32def775cfed",
+  "blockNumber": 67083059
+}

@@ -1,0 +1,15 @@
+{
+  "chainId": 1514,
+  "chainSlug": "story",
+  "network": "mainnet",
+  "contract": "LSP23LinkedContractsFactory",
+  "version": null,
+  "address": "0x2300000A84D25dF63081feAa37ba6b62C4c89a30",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784487606,
+  "rpcUrlUsed": "https://mainnet.storyrpc.io",
+  "txHash": "0xb0af52e91ebbee86b870d8a0ba7b54b19389ae322f6cf6c616a5e66eb3d062c3",
+  "blockNumber": 20007768
+}

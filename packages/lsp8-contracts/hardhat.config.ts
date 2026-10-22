@@ -14,19 +14,42 @@ const config: HardhatUserConfig = {
   ],
   packager: {
     contracts: [
-      'ILSP8IdentifiableDigitalAsset',
+      // Base
       'LSP8IdentifiableDigitalAsset',
-      'LSP8Burnable',
-      'LSP8CappedSupply',
-      'LSP8Enumerable',
-      'LSP8Votes',
-      'LSP8Mintable',
       'LSP8IdentifiableDigitalAssetInitAbstract',
+
+      // Extensions
+      'LSP8MintableAbstract',
+      'LSP8MintableInitAbstract',
+      'LSP8Burnable',
       'LSP8BurnableInitAbstract',
+      'LSP8CappedBalanceAbstract',
+      'LSP8CappedBalanceInitAbstract',
+      'LSP8CappedSupplyAbstract',
       'LSP8CappedSupplyInitAbstract',
+      'LSP8NonTransferableAbstract',
+      'LSP8NonTransferableInitAbstract',
+      'LSP8Enumerable',
       'LSP8EnumerableInitAbstract',
+      'LSP8RevokableAbstract',
+      'LSP8RevokableInitAbstract',
+      'LSP8Votes',
       'LSP8VotesInitAbstract',
+
+      // Interfaces
+      'IAccessControlExtended',
+      'ILSP8IdentifiableDigitalAsset',
+      'ILSP8Mintable',
+      'ILSP8CappedBalance',
+      'ILSP8CappedSupply',
+      'ILSP8NonTransferable',
+      'ILSP8Revokable',
+
+      // Presets
+      'LSP8Mintable',
       'LSP8MintableInit',
+      'LSP8CustomizableToken',
+      'LSP8CustomizableTokenInit',
     ],
   },
   networks: {
@@ -92,8 +115,9 @@ const config: HardhatUserConfig = {
     },
   },
   solidity: {
-    version: '0.8.27',
+    version: '0.8.28',
     settings: {
+      evmVersion: 'prague',
       optimizer: {
         enabled: true,
         /**
@@ -102,7 +126,7 @@ const config: HardhatUserConfig = {
          * values will optimize more for high-frequency usage.
          * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
          */
-        runs: 1000,
+        runs: 20000,
       },
       outputSelection: {
         '*': {

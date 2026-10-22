@@ -1,0 +1,15 @@
+{
+  "chainId": 105105,
+  "chainSlug": "stratis-xertra",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785929185,
+  "rpcUrlUsed": "https://rpc.xertra.com",
+  "txHash": "0xa260c3dbbc2610d64a12979fb6f073070cd87c33448dac2e89590e0dc61d7f4d",
+  "blockNumber": 4962917
+}

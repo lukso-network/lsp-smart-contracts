@@ -19,36 +19,35 @@ const config: HardhatUserConfig = {
       'LSP7DigitalAssetInitAbstract',
 
       // Extensions
-      'LSP7AllowlistAbstract',
-      'LSP7AllowlistInitAbstract',
-      'LSP7Mintable',
       'LSP7MintableAbstract',
-      'LSP7MintableInit',
       'LSP7MintableInitAbstract',
-      'LSP7CappedBalance',
-      'LSP7CappedBalanceAbstract',
-      'LSP7CappedBalanceInit',
-      'LSP7CappedBalanceInitAbstract',
-      'LSP7CappedSupply',
-      'LSP7CappedSupplyAbstract',
-      'LSP7CappedSupplyInit',
-      'LSP7CappedSupplyInitAbstract',
-      'LSP7NonTransferable',
-      'LSP7NonTransferableAbstract',
-      'LSP7NonTransferableInit',
-      'LSP7NonTransferableInitAbstract',
       'LSP7Burnable',
       'LSP7BurnableInitAbstract',
+      'LSP7CappedBalanceAbstract',
+      'LSP7CappedBalanceInitAbstract',
+      'LSP7CappedSupplyAbstract',
+      'LSP7CappedSupplyInitAbstract',
+      'LSP7NonTransferableAbstract',
+      'LSP7NonTransferableInitAbstract',
+      'LSP7RevokableAbstract',
+      'LSP7RevokableInitAbstract',
       'LSP7Votes',
       'LSP7VotesInitAbstract',
 
       // Interfaces
+      'IAccessControlExtended',
       'ILSP7DigitalAsset',
       'ILSP7Mintable',
-      'ILSP7Allowlist',
       'ILSP7CappedBalance',
       'ILSP7CappedSupply',
       'ILSP7NonTransferable',
+      'ILSP7Revokable',
+
+      // Presets
+      'LSP7Mintable',
+      'LSP7MintableInit',
+      'LSP7CustomizableToken',
+      'LSP7CustomizableTokenInit',
     ],
   },
   networks: {
@@ -117,7 +116,6 @@ const config: HardhatUserConfig = {
     version: '0.8.28',
     settings: {
       evmVersion: 'prague',
-      viaIR: true,
       optimizer: {
         enabled: true,
         /**
@@ -126,7 +124,7 @@ const config: HardhatUserConfig = {
          * values will optimize more for high-frequency usage.
          * @see https://docs.soliditylang.org/en/v0.8.6/internals/optimizer.html#opcode-based-optimizer-module
          */
-        runs: 25000,
+        runs: 20000,
       },
       outputSelection: {
         '*': {

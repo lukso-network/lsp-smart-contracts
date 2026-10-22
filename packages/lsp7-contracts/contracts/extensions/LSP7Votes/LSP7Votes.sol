@@ -372,7 +372,7 @@ abstract contract LSP7Votes is LSP7DigitalAsset, EIP712, IERC5805 {
 
         unchecked {
             Checkpoint memory oldCkpt = pos == 0
-                ? Checkpoint(0, 0)
+                ? Checkpoint({fromBlock: 0, votes: 0})
                 : _unsafeAccess(ckpts, pos - 1);
 
             oldWeight = oldCkpt.votes;

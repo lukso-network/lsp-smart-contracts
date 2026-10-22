@@ -1,0 +1,15 @@
+{
+  "chainId": 50,
+  "chainSlug": "xdc-network",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784493818,
+  "rpcUrlUsed": "https://erpc.xinfin.network",
+  "txHash": "0x3e7342d4a734ddf2de1a46051384cbba2adedc568705d8153ae29d76ca8b7e63",
+  "blockNumber": 105116178
+}

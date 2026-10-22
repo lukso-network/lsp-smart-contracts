@@ -1,0 +1,15 @@
+{
+  "chainId": 4663,
+  "chainSlug": "robinhood-chain",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789495384,
+  "rpcUrlUsed": "https://rpc.mainnet.chain.robinhood.com",
+  "txHash": "0x212d5ef303e9480f8dbfb2b8c211cd19f7c1da5f37de5e38b004d63d5fd896df",
+  "blockNumber": 63853179
+}

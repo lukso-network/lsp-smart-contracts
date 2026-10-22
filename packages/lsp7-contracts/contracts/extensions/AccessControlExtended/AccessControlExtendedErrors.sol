@@ -10,7 +10,14 @@ pragma solidity ^0.8.27;
 error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
 
 /**
- * @dev Reverts error when the caller of the `renounceRole` function is not the expected one.
+ * @dev Reverts when the caller of the `renounceRole` function is not the expected one.
  * NOTE: Do not confuse with {AccessControlUnauthorizedAccount}.
  */
 error AccessControlBadConfirmation();
+
+/**
+ * @dev Reverts when trying to change the admin of the `DEFAULT_ADMIN_ROLE`.
+ * The `DEFAULT_ADMIN_ROLE` is its own admin, meaning only accounts with the `DEFAULT_ADMIN_ROLE` can grant or revoke it.
+ * This hierarchy cannot be changed.
+ */
+error AccessControlCannotSetAdminForDefaultAdminRole();

@@ -1,0 +1,15 @@
+{
+  "chainId": 61,
+  "chainSlug": "ethereum-classic",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785767310,
+  "rpcUrlUsed": "https://0xrpc.io/etc",
+  "txHash": "0xf7241ce1d1984b1aba361d8f3a6e73f89da8c436f146c7217cef4b4c12f1a113",
+  "blockNumber": 25075707
+}

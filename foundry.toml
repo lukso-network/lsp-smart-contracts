@@ -3,10 +3,10 @@ src = 'contracts'
 out = 'out'
 libs = ['node_modules', 'lib']
 gas_reports = [
-    "LSP6ExecuteRestrictedController",
-    "LSP6ExecuteUnrestrictedController",
-    "LSP6SetDataRestrictedController",
-    "LSP6SetDataUnrestrictedController",
+  "LSP6ExecuteRestrictedController",
+  "LSP6ExecuteUnrestrictedController",
+  "LSP6SetDataRestrictedController",
+  "LSP6SetDataUnrestrictedController",
 ]
 cache_path = 'forge-cache'
 test = 'tests/foundry'
@@ -36,18 +36,18 @@ src = 'packages/lsp7-contracts/contracts'
 test = 'packages/lsp7-contracts/foundry'
 out = 'packages/lsp7-contracts/contracts/foundry_artifacts'
 optimizer = true
-optimizer_runs = 1000
-via_ir = true
-solc = "0.8.27"
+optimizer_runs = 20000
+solc = "0.8.28"
+evm_version = "prague"
 
 [profile.lsp8]
 src = 'packages/lsp8-contracts/contracts'
 test = 'packages/lsp8-contracts/foundry'
 out = 'packages/lsp8-contracts/contracts/foundry_artifacts'
 optimizer = true
-optimizer_runs = 1000
-via_ir = true
-solc = "0.8.27"
+optimizer_runs = 20000
+solc = "0.8.28"
+evm_version = "prague"
 
 [profile.lsp11]
 src = 'packages/lsp11-contracts/contracts'
@@ -59,9 +59,35 @@ src = 'packages/lsp16-contracts/contracts'
 test = 'packages/lsp16-contracts/foundry'
 out = 'packages/lsp16-contracts/contracts/foundry_artifacts'
 
+[profile.lsp17]
+src = 'packages/lsp17-contracts/contracts'
+test = 'packages/lsp17-contracts/foundry'
+out = 'packages/lsp17-contracts/contracts/foundry_artifacts'
+optimizer = true
+optimizer_runs = 20000
+solc = "0.8.28"
+evm_version = "prague"
+
 [profile.lsp_smart_contracts]
 src = 'packages/lsp-smart-contracts/contracts'
 test = 'packages/lsp-smart-contracts/tests/foundry'
 out = 'packages/lsp-smart-contracts/contracts/foundry_artifacts'
 solc = "0.8.27"
 via_ir = true
+
+# Profile for the multi-chain deterministic deployment scripts in deployments/scripts/.
+# solc + optimizer settings mirror the v0.14.0 production builds (solc 0.8.17, 1000 runs).
+[profile.deployments]
+src = 'deployments/scripts'
+script = 'deployments/scripts'
+test = 'deployments/scripts'
+out = 'deployments/scripts/out'
+cache_path = 'deployments/scripts/forge-cache'
+solc = "0.8.17"
+evm_version = "prague"
+optimizer = true
+optimizer_runs = 1000
+fs_permissions = [
+  { access = "read", path = "./deployments" },
+  { access = "read-write", path = "./deployments/chains" },
+]

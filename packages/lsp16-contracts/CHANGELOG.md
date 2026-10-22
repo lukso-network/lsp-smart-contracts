@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.16.2](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp16-contracts-v0.16.1...lsp16-contracts-v0.16.2) (2026-05-25)
+
+
+### Bug Fixes
+
+* add repository field to all child package.json files ([6d1265e](https://github.com/lukso-network/lsp-smart-contracts/commit/6d1265e772eae52aa321fa06e9e0a6863e6ea91d))
+
+## [0.16.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp16-contracts-v0.16.0...lsp16-contracts-v0.16.1) (2026-05-25)
+
+
+### Bug Fixes
+
+* repair broken imports in release scripts ([4b4c931](https://github.com/lukso-network/lsp-smart-contracts/commit/4b4c931dda5eb0d1b2b8d286c916484abdeade2e))
+
+## [0.16.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp16-contracts-v0.15.5...lsp16-contracts-v0.16.0) (2026-05-21)
+
+
+### Features
+
+* create hardhat-packager plugin ([21ba47c](https://github.com/lukso-network/lsp-smart-contracts/commit/21ba47c0490b36cf3dadc29f174138e247b477f5))
+
+
+### Bug Fixes
+
+* resolve `solidity-bytes-utils` dependency to `0.8.4` to remove trufflehd-wallet and other vulnerabilities in dependencies ([cbe21e9](https://github.com/lukso-network/lsp-smart-contracts/commit/cbe21e99ec3b6a74136c17cc364f3d00f6ddd37b))
+
 ## [0.15.5](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp16-contracts-v0.15.4...lsp16-contracts-v0.15.5) (2025-06-19)
 
 ### Bug Fixes

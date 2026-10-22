@@ -2,13 +2,13 @@
 pragma solidity ^0.8.27;
 
 // interfaces
-import {IAccessControlExtended} from "./IAccessControlExtended.sol";
 import {
     IAccessControl
 } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {
     IAccessControlEnumerable
 } from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
+import {IAccessControlExtended} from "./IAccessControlExtended.sol";
 
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
@@ -28,7 +28,8 @@ import {
 // errors
 import {
     AccessControlUnauthorizedAccount,
-    AccessControlBadConfirmation
+    AccessControlBadConfirmation,
+    AccessControlCannotSetAdminForDefaultAdminRole
 } from "./AccessControlExtendedErrors.sol";
 
 /**
@@ -39,10 +40,10 @@ import {
  * Provides:
  * - Standard OZ {IAccessControl} functions: hasRole, grantRole, revokeRole, renounceRole, getRoleAdmin
  * - Standard OZ {IAccessControlEnumerable} functions: getRoleMember, getRoleMemberCount
- * - Extended functions: rolesOf, grantRoleWithData, setRoleData, getRoleData
+ * - Extended functions: rolesOf, getRoleMembers
  * - Explicit role checks for every role-gated function
  * - DEFAULT_ADMIN_ROLE as root admin for granting and revoking roles
- * - Automatic DEFAULT_ADMIN_ROLE sync on ownership transfer
+ * - Automatic transfer of all roles (and their auxiliary data, if any) between old and new on ownership transfer
  */
 abstract contract AccessControlExtendedAbstract is
     IAccessControlExtended,
@@ -69,10 +70,6 @@ abstract contract AccessControlExtendedAbstract is
     mapping(address account => EnumerableSet.Bytes32Set rolesAssigned)
         private _addressRoles;
 
-    /// @dev Auxiliary data: role -> address -> bytes.
-    mapping(bytes32 role => mapping(address account => bytes roleData))
-        private _roleData;
-
     // --- Modifier
 
     /**
@@ -87,13 +84,11 @@ abstract contract AccessControlExtendedAbstract is
     // --- Constructor
 
     /**
-     * @dev Grants `DEFAULT_ADMIN_ROLE` to the initial owner so they appear in
-     * enumeration (getRoleMember, rolesOf) and can administer roles from deployment.
-     *
-     * @param initialOwner_ The initial owner who receives DEFAULT_ADMIN_ROLE.
+     * @dev Grants `DEFAULT_ADMIN_ROLE` to the contract owner so to allow it to administer roles to other addresses after deployment.
+     * This will also make it appear inside the enumerations (getRoleMember, rolesOf, getRoleMembers).
      */
-    constructor(address initialOwner_) {
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
+    constructor() {
+        _grantRole(DEFAULT_ADMIN_ROLE, owner());
     }
 
     // --- ERC-165
@@ -123,6 +118,28 @@ abstract contract AccessControlExtendedAbstract is
     /// @inheritdoc IAccessControl
     function getRoleAdmin(bytes32 role) public view virtual returns (bytes32) {
         return _roleAdmins[role];
+    }
+
+    /**
+     * @inheritdoc IAccessControlExtended
+     *
+     * @dev Sets `adminRole` as the admin of `role`. Available for extensions to configure custom admin hierarchies.
+     *
+     * @custom:warning
+     * - DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
+     * - Be aware that calling `setRoleAdmin(X, X)` creates a self-admin where nobody can grant role `X` unless someone already holds role `X`.
+     *
+     * @custom:requirements
+     * - `role` cannot be the `DEFAULT_ADMIN_ROLE`.
+     * - The caller must hold the `DEFAULT_ADMIN_ROLE`.
+     *
+     * @custom:events {RoleAdminChanged} with the previous and new admin roles.
+     */
+    function setRoleAdmin(
+        bytes32 role,
+        bytes32 adminRole
+    ) public virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setRoleAdmin(role, adminRole);
     }
 
     /**
@@ -159,16 +176,12 @@ abstract contract AccessControlExtendedAbstract is
      * @inheritdoc IAccessControl
      * @dev Allows `msg.sender` to renounce their own `role`. The `callerConfirmation`
      * parameter must equal `msg.sender` to prevent accidental renouncement (OZ pattern).
-     * Renouncing triggers data cleanup per BASE-09.
-     *
-     * @custom:info Roles are often managed via {grantRole} and {revokeRole}.
-     * This function's purpose is to provide a mechanism for accounts to lose their privileges
-     * if they are compromised (such as when a trusted device is misplaced).
-     *
-     * If the calling account had been revoked `role`, emits a {RoleRevoked} event.
+     * Renouncing triggers data cleanup.
      *
      * @custom:warning The current owner cannot renounce `DEFAULT_ADMIN_ROLE`
      * to prevent locking the contract out of role administration.
+     *
+     * @custom:events Emits {RoleRevoked} if `msg.sender` currently holds `role` and successfully revokes it for itself.
      */
     function renounceRole(
         bytes32 role,
@@ -212,44 +225,22 @@ abstract contract AccessControlExtendedAbstract is
     }
 
     /**
-     * @inheritdoc IAccessControlExtended
-     * @dev Atomically grants `role` to `account` and stores `data`.
-     * If `account` already holds the role (_grantRole is a no-op), the data
-     * is still updated if provided and {RoleDataChanged} is emitted.
+     * @notice Returns all members that hold `role`.
+     *
+     * @dev Convenience function that returns the full membership array in a single call.
+     * Equivalent to calling {getRoleMember} for each index from `0` to `getRoleMemberCount(role) - 1`.
+     *
+     * @param role The role identifier to query members for.
+     * @return An array of addresses that currently hold the specified role.
+     *
+     * @custom:warning This function copies the entire role membership set into memory.
+     * For roles with a large number of members, this may consume a significant amount of gas. If calling this function on-chain, consider calling `{getRoleMember}` repeatedly, using `getRoleMemberCount` to know as max index.
+     * This function is primarily intended for off-chain usage.
      */
-    function grantRoleWithData(
-        bytes32 role,
-        address account,
-        bytes calldata data
-    ) public virtual onlyRole(getRoleAdmin(role)) {
-        _grantRole(role, account);
-        if (data.length > 0) {
-            _roleData[role][account] = data;
-            emit RoleDataChanged(role, account, data);
-        }
-    }
-
-    /**
-     * @inheritdoc IAccessControlExtended
-     * @dev Sets auxiliary data for a role-address pair. Does NOT revert if `account`
-     * does not hold the role (allows pre-configuration before granting).
-     * Requires the caller to have the admin role for `role`.
-     */
-    function setRoleData(
-        bytes32 role,
-        address account,
-        bytes calldata data
-    ) public virtual onlyRole(getRoleAdmin(role)) {
-        _roleData[role][account] = data;
-        emit RoleDataChanged(role, account, data);
-    }
-
-    /// @inheritdoc IAccessControlExtended
-    function getRoleData(
-        bytes32 role,
-        address account
-    ) public view virtual returns (bytes memory) {
-        return _roleData[role][account];
+    function getRoleMembers(
+        bytes32 role
+    ) public view virtual returns (address[] memory) {
+        return _roleMembers[role].values();
     }
 
     // --- Internal functions
@@ -265,30 +256,29 @@ abstract contract AccessControlExtendedAbstract is
 
         if (added) {
             _addressRoles[account].add(role);
-            emit RoleGranted(role, account, msg.sender);
+            emit RoleGranted({
+                role: role,
+                account: account,
+                sender: msg.sender
+            });
         }
     }
 
     /**
      * @dev Revokes `role` from `account`. No-op if the account does not hold the role.
-     * Auto-clears auxiliary data if any exists (BASE-09).
      *
-     * @custom:events
-     * - {RoleRevoked} if the role was revoked.
-     * - {RoleDataChanged} if auxiliary data was cleared.
+     * @custom:events Emits {RoleRevoked} if the role was revoked.
      */
     function _revokeRole(bytes32 role, address account) internal virtual {
         bool removed = _roleMembers[role].remove(account);
 
         if (removed) {
             _addressRoles[account].remove(role);
-            emit RoleRevoked(role, account, msg.sender);
-
-            // Auto-clear auxiliary data (BASE-09)
-            if (_roleData[role][account].length > 0) {
-                delete _roleData[role][account];
-                emit RoleDataChanged(role, account, "");
-            }
+            emit RoleRevoked({
+                role: role,
+                account: account,
+                sender: msg.sender
+            });
         }
     }
 
@@ -322,40 +312,57 @@ abstract contract AccessControlExtendedAbstract is
         return _roleMembers[role].contains(account);
     }
 
-    /**
-     * @dev Sets `adminRole` as the admin of `role`. Available for extensions
-     * to configure custom admin hierarchies.
-     *
-     * @custom:warning DO NOT expose this function without `onlyOwner` or `onlyRole(DEFAULT_ADMIN_ROLE)` access control.
-     *
-     * @custom:events {RoleAdminChanged} with the previous and new admin roles.
-     */
     function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
+        require(
+            role != DEFAULT_ADMIN_ROLE,
+            AccessControlCannotSetAdminForDefaultAdminRole()
+        );
+
         bytes32 previousAdminRole = getRoleAdmin(role);
         _roleAdmins[role] = adminRole;
-        emit RoleAdminChanged(role, previousAdminRole, adminRole);
+
+        emit RoleAdminChanged({
+            role: role,
+            previousAdminRole: previousAdminRole,
+            newAdminRole: adminRole
+        });
     }
 
     // --- Ownership sync
 
     /**
-     * @dev Overrides `_transferOwnership` to automatically sync `DEFAULT_ADMIN_ROLE`
-     * with the contract owner. Revokes from the old owner and grants to the new owner.
+     * @dev Overrides `_transferOwnership` to automatically transfer ALL roles held by
+     * the old owner to the new owner. This includes `DEFAULT_ADMIN_ROLE` and any other
+     * custom roles the old owner was assigned.
      *
-     * @custom:warning Be aware that despite transferring ownership to self is a no-op operation, it will still clear the `owner()`'s auxiliary role data.
+     * For each role held by the old owner:
+     * 1. The role is revoked from the old owner.
+     * 2. The role is granted to the new owner (if not already held).
+     *
+     * @custom:info When renouncing ownership, roles are only removed from the old owner. Roles are not passed to `address(0)` (being the `newOwner` in the case of renounce ownership).
+     *
+     * @custom:warning
+     * - Gas cost scales linearly with the number of roles the old owner holds.
+     * - If the old owner holds a large number of roles, the transaction may approach or exceed
+     *   the block gas limit and fail. Avoid assigning too many roles to the owner to ensure
+     *   ownership transfers remain callable.
      */
     function _transferOwnership(address newOwner) internal virtual override {
         address oldOwner = owner();
-        super._transferOwnership(newOwner);
+        Ownable._transferOwnership(newOwner);
 
-        // case when transferring ownership (excluding initial deployment / initialization)
-        if (oldOwner != address(0)) {
-            _revokeRole(DEFAULT_ADMIN_ROLE, oldOwner);
-        }
+        // Snapshot the old owner's roles before mutating storage (values() returns a memory copy)
+        bytes32[] memory oldOwnerRoles = _addressRoles[oldOwner].values();
 
-        // exclude case when renouncing ownership
-        if (newOwner != address(0)) {
-            _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
+        for (uint256 ii = 0; ii < oldOwnerRoles.length; ++ii) {
+            bytes32 role = oldOwnerRoles[ii];
+
+            _revokeRole(role, oldOwner);
+
+            // exclude case when renouncing ownership
+            if (newOwner != address(0)) {
+                _grantRole(role, newOwner);
+            }
         }
     }
 }

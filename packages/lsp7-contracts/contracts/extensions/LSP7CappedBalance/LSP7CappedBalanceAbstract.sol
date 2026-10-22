@@ -11,11 +11,6 @@ import {
 // interfaces
 import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";
 
-// libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
 // errors
 import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 
@@ -24,11 +19,9 @@ import {LSP7CappedBalanceExceeded} from "./LSP7CappedBalanceErrors.sol";
 /// Inherits from LSP7AllowlistAbstract to integrate allowlist functionality.
 abstract contract LSP7CappedBalanceAbstract is
     ILSP7CappedBalance,
-    AccessControlExtendedAbstract,
-    LSP7DigitalAsset
+    LSP7DigitalAsset,
+    AccessControlExtendedAbstract
 {
-    using EnumerableSet for EnumerableSet.AddressSet;
-
     /// @notice The dead address is also commonly used for burning tokens as an alternative to address(0).
     address internal constant _DEAD_ADDRESS =
         0x000000000000000000000000000000000000dEaD;
@@ -36,19 +29,19 @@ abstract contract LSP7CappedBalanceAbstract is
     /// @notice The immutable maximum token balance allowed per address.
     uint256 internal immutable _TOKEN_BALANCE_CAP;
 
-    /// @dev `"UNCAPPED_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
-    bytes32 public constant UNCAPPED_ROLE = 0x554e4341505045445f524f4c4500000000000000000000000000000000000000;
+    /// @dev keccak256("UNCAPPED_BALANCE_ROLE")
+    bytes32 public constant UNCAPPED_BALANCE_ROLE =
+        0x975773d1e0a917a74b57f36a377f439ffff6271648aebdbff75a52ab58eb7bad;
 
     /// @notice Initializes the contract with a token balance cap.
-    /// @dev Sets the immutable balance cap and reverts if the cap is zero. Inherits LSP7AllowlistAbstract constructor logic.
-    /// @param tokenBalanceCap_ The maximum balance per address in wei, 0 to disable.
+    /// @dev Sets the immutable balance cap. If set, grants the initial uncapped balance role exemption to the contract owner.
+    /// @param tokenBalanceCap_ The maximum balance allowed per token holder (in wei). Set to 0 to disable.
     constructor(uint256 tokenBalanceCap_) {
         _TOKEN_BALANCE_CAP = tokenBalanceCap_;
 
-        // Address(0) and 0x0000...dead addresses are used for burning tokens
-        _grantRole(UNCAPPED_ROLE, address(0));
-        _grantRole(UNCAPPED_ROLE, _DEAD_ADDRESS);
-        _grantRole(UNCAPPED_ROLE, owner());
+        if (tokenBalanceCap_ != 0) {
+            _grantRole(UNCAPPED_BALANCE_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP7CappedBalance
@@ -72,25 +65,32 @@ abstract contract LSP7CappedBalanceAbstract is
 
     /// @notice Checks if a token transfer complies with the balance cap.
     /// @dev The address(0) is not subject to balance cap checks as this address is used for burning tokens. Reverts with {LSP7CappedBalanceExceeded} if the recipient's balance after receiving tokens would exceed the maximum allowed balance.
+    /// @param from The address sending the tokens.
     /// @param to The address receiving the tokens.
     /// @param amount The amount of tokens being transferred.
     function _tokenBalanceCapCheck(
-        address /* from */,
+        address from,
         address to,
         uint256 amount,
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        // Do not check for balance cap if a specific address has the uncapped balance role
-        // (including address(0) and 0x0000...dead addresses)
-        if (hasRole(UNCAPPED_ROLE, to)) return;
+        // self-transfers do not increase the balance of the recipient, so we skip the check
+        if (from == to) return;
+
+        // Address(0) and 0x0000...dead addresses are used for burning tokens
+        if (to == address(0) || to == _DEAD_ADDRESS) return;
+
+        // Do not check for addresses exempted from balance cap
+        if (hasRole(UNCAPPED_BALANCE_ROLE, to)) return;
 
         uint256 maxBalanceAllowed = tokenBalanceCap();
         bool isBalanceCapEnabled = maxBalanceAllowed != 0;
 
+        if (!isBalanceCapEnabled) return;
+
         require(
-            !isBalanceCapEnabled ||
-                (balanceOf(to) + amount) <= maxBalanceAllowed,
+            (balanceOf(to) + amount) <= maxBalanceAllowed,
             LSP7CappedBalanceExceeded(
                 to,
                 amount,
@@ -121,6 +121,9 @@ abstract contract LSP7CappedBalanceAbstract is
     function _transferOwnership(
         address newOwner
     ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant UNCAPPED_BALANCE_ROLE to new accounts post-transfer
+        _setRoleAdmin(UNCAPPED_BALANCE_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
 }

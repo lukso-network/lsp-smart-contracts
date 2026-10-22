@@ -2,17 +2,16 @@
 pragma solidity ^0.8.27;
 
 // modules
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {
-    LSP8AllowlistAbstract
-} from "../LSP8Allowlist/LSP8AllowlistAbstract.sol";
+    LSP8IdentifiableDigitalAsset
+} from "../../LSP8IdentifiableDigitalAsset.sol";
+import {
+    AccessControlExtendedAbstract
+} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {ILSP8NonTransferable} from "./ILSP8NonTransferable.sol";
-
-// libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // errors
 import {
@@ -23,19 +22,24 @@ import {
 } from "./LSP8NonTransferableErrors.sol";
 
 /// @title LSP8NonTransferableAbstract
-/// @dev Abstract contract implementing non-transferable LSP8 token functionality with transfer lock periods and allowlist support.
+/// @dev Abstract contract implementing non-transferable LSP8 token functionality with transfer lock periods and role-based bypass support.
 abstract contract LSP8NonTransferableAbstract is
     ILSP8NonTransferable,
-    LSP8AllowlistAbstract
+    LSP8IdentifiableDigitalAsset,
+    AccessControlExtendedAbstract
 {
-    // solhint-disable not-rely-on-time
-    using EnumerableSet for EnumerableSet.AddressSet;
+    /// @dev keccak256("NON_TRANSFERABLE_BYPASS_ROLE")
+    bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE =
+        0xb4b3a36d7c2b72add3151898671aaed843238e580f7d6d4bc5077ce2023b0659;
 
     /// @inheritdoc ILSP8NonTransferable
     uint256 public transferLockStart;
 
     /// @inheritdoc ILSP8NonTransferable
     uint256 public transferLockEnd;
+
+    /// @inheritdoc ILSP8NonTransferable
+    bool public nonTransferabilityEnabled;
 
     /// @notice Initializes the contract with lock period.
     /// @param transferLockStart_ The start timestamp of the transfer lock period, 0 to disable.
@@ -47,43 +51,75 @@ abstract contract LSP8NonTransferableAbstract is
         );
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
+        nonTransferabilityEnabled = true;
 
-        emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
+        emit TransferLockPeriodChanged({
+            nonTransferabilityEnabled: true,
+            start: transferLockStart_,
+            end: transferLockEnd_
+        });
+        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, owner());
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(AccessControlExtendedAbstract, LSP8IdentifiableDigitalAsset)
+        returns (bool)
+    {
+        return
+            AccessControlExtendedAbstract.supportsInterface(interfaceId) ||
+            LSP8IdentifiableDigitalAsset.supportsInterface(interfaceId);
     }
 
     /// @inheritdoc ILSP8NonTransferable
+    // solhint-disable not-rely-on-time
+    // Transfer-lock windows are inherently time-based; `block.timestamp` is the intended source.
     function isTransferable() public view virtual override returns (bool) {
-        bool isTransferLockStartDisabled = transferLockStart == 0;
-        bool isTransferLockEndDisabled = transferLockEnd == 0;
+        if (!nonTransferabilityEnabled) return true;
 
-        if (isTransferLockStartDisabled && isTransferLockEndDisabled) {
+        bool isTransferLockStartEnabled = transferLockStart != 0;
+        bool isTransferLockEndEnabled = transferLockEnd != 0;
+
+        // If both lock periods are disabled, the token is transferable
+        if (!isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return true;
         }
 
-        if (isTransferLockStartDisabled && !isTransferLockEndDisabled) {
+        // If the token is non-transferable up to a certain point in time, check if we have passed this period
+        if (!isTransferLockStartEnabled && isTransferLockEndEnabled) {
             return transferLockEnd < block.timestamp;
         }
 
-        if (!isTransferLockStartDisabled && isTransferLockEndDisabled) {
+        // If the token becomes non-transferable starting at a specific point in time, check if we have reached this lock starting period
+        if (isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return transferLockStart > block.timestamp;
         }
 
+        // This last case checks if we are within the transfer lock period
         return
             transferLockStart > block.timestamp ||
             transferLockEnd < block.timestamp;
     }
+    // solhint-enable not-rely-on-time
 
     /// @inheritdoc ILSP8NonTransferable
+    /// @custom:info The list of addresses holding the `NON_TRANSFERABLE_BYPASS_ROLE` remains populated after the non-transferable feature is switched off.
     function makeTransferable() public virtual override onlyOwner {
-        require(
-            transferLockStart != 0 || transferLockEnd != 0,
-            LSP8TokenAlreadyTransferable()
-        );
+        require(nonTransferabilityEnabled, LSP8TokenAlreadyTransferable());
 
+        nonTransferabilityEnabled = false;
         transferLockStart = 0;
         transferLockEnd = 0;
 
-        emit TransferLockPeriodChanged(0, 0);
+        emit TransferLockPeriodChanged({
+            nonTransferabilityEnabled: false,
+            start: 0,
+            end: 0
+        });
     }
 
     /// @inheritdoc ILSP8NonTransferable
@@ -91,39 +127,32 @@ abstract contract LSP8NonTransferableAbstract is
         uint256 newTransferLockStart,
         uint256 newTransferLockEnd
     ) public virtual override onlyOwner {
+        require(nonTransferabilityEnabled, LSP8CannotUpdateTransferLockPeriod());
+
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
+        // Allow to make the token always non-transferable, or ensure the end period for locking transfers is always later than the starting period
         require(
             newTransferLockEnd == 0 ||
                 newTransferLockEnd >= newTransferLockStart,
             LSP8InvalidTransferLockPeriod()
         );
 
-        require(
-            newTransferLockStart == 0 || block.timestamp < transferLockStart,
-            LSP8CannotUpdateTransferLockPeriod()
-        );
-
-        require(
-            newTransferLockEnd == 0 || block.timestamp < transferLockEnd,
-            LSP8CannotUpdateTransferLockPeriod()
-        );
-
         transferLockStart = newTransferLockStart;
         transferLockEnd = newTransferLockEnd;
 
-        emit TransferLockPeriodChanged(
-            newTransferLockStart,
-            newTransferLockEnd
-        );
+        emit TransferLockPeriodChanged({
+            nonTransferabilityEnabled: true,
+            start: newTransferLockStart,
+            end: newTransferLockEnd
+        });
     }
 
     /// @notice Checks if a token transfer is allowed based on transferability status.
     /// @dev Allows burning to address(0) even when transfers are disabled, bypassing transferability restrictions. Reverts with {LSP8TransferDisabled} if the token is non-transferable and the destination is not address(0).
     /// @param to The address receiving the token.
     function _nonTransferableCheck(
-        address,
-        /* from */
+        address from,
         address to,
         bytes32,
         /* tokenId */
@@ -131,11 +160,18 @@ abstract contract LSP8NonTransferableAbstract is
         /* force */
         bytes memory /* data */
     ) internal virtual {
-        require(to == address(0) || isTransferable(), LSP8TransferDisabled());
+        // Allow minting and burning
+        if (from == address(0) || to == address(0)) return;
+
+        // Do not check for addresses exempted from non transferable check
+        if (hasRole(NON_TRANSFERABLE_BYPASS_ROLE, from)) return;
+
+        // transferring tokens only if the transferability status is enabled
+        require(isTransferable(), LSP8TransferDisabled());
     }
 
     /// @notice Hook called before a token transfer to enforce transfer restrictions.
-    /// @dev Bypasses transfer restrictions for addresses in the allowlist, allowing them to transfer tokens even when {isTransferable} returns false. For non-allowlisted addresses, applies non-transferable checks.
+    /// @dev Bypasses transfer restrictions for addresses holding `NON_TRANSFERABLE_BYPASS_ROLE`, allowing them to transfer tokens even when {isTransferable} returns false. For all other addresses, applies non-transferable checks.
     /// @param from The address sending the token.
     /// @param to The address receiving the token.
     /// @param tokenId The unique identifier of the token being transferred.
@@ -148,7 +184,16 @@ abstract contract LSP8NonTransferableAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (isAllowlisted(from)) return;
         _nonTransferableCheck(from, to, tokenId, force, data);
+        super._beforeTokenTransfer(from, to, tokenId, force, data);
+    }
+
+    function _transferOwnership(
+        address newOwner
+    ) internal virtual override(AccessControlExtendedAbstract, Ownable) {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant NON_TRANSFERABLE_BYPASS_ROLE to new accounts post-transfer
+        _setRoleAdmin(NON_TRANSFERABLE_BYPASS_ROLE, DEFAULT_ADMIN_ROLE);
+        super._transferOwnership(newOwner);
     }
 }

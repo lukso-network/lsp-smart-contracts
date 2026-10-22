@@ -1,0 +1,15 @@
+{
+  "chainId": 1514,
+  "chainSlug": "story",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784487606,
+  "rpcUrlUsed": "https://mainnet.storyrpc.io",
+  "txHash": "0xaaf2a6148632b66aebf68d387bf6a2eac5a6ca9f1e87105b3c3e8a1a70dfd162",
+  "blockNumber": 20007776
+}

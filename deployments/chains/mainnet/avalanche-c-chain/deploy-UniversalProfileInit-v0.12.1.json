@@ -1,0 +1,15 @@
+{
+  "chainId": 43114,
+  "chainSlug": "avalanche-c-chain",
+  "network": "mainnet",
+  "contract": "UniversalProfileInit",
+  "version": "0.12.1",
+  "address": "0x52c90985AF970D4E0DC26Cb5D052505278aF32A9",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791040178,
+  "rpcUrlUsed": "https://avalanche-c-chain-rpc.publicnode.com",
+  "txHash": "0xe5f4c4e3191b54879599a3f18c029c9285ca1e66645bbb4b4595d6dbf7d287f4",
+  "blockNumber": 96678060
+}

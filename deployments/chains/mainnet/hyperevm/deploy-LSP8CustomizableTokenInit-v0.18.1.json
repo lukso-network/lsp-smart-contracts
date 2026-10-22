@@ -1,0 +1,15 @@
+{
+  "chainId": 999,
+  "chainSlug": "hyperevm",
+  "network": "mainnet",
+  "contract": "LSP8CustomizableTokenInit",
+  "version": "0.18.1",
+  "address": "0xc95b5e293d6f1BfcedB803c763A5B83A6484B5b8",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789634043,
+  "rpcUrlUsed": "https://rpc.hyperliquid.xyz/evm",
+  "txHash": "0xc3b70001a19a765069f41c9cc34546d4c940a9b2c5f12ebfa5cc0fd02cb22222",
+  "blockNumber": 46134030
+}

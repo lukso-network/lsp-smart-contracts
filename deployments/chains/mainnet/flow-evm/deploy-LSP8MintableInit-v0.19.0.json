@@ -1,0 +1,15 @@
+{
+  "chainId": 747,
+  "chainSlug": "flow-evm",
+  "network": "mainnet",
+  "contract": "LSP8MintableInit",
+  "version": "0.19.0",
+  "address": "0xcc7e0A6900F7947Cce6B7b45AB281F6Ba2014951",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "already-deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789748165,
+  "rpcUrlUsed": null,
+  "txHash": null,
+  "blockNumber": null
+}

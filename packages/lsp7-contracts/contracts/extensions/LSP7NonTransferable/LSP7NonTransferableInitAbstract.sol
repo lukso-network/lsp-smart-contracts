@@ -15,11 +15,6 @@ import {
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
 
-// libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
 // errors
 import {
     LSP7TransferDisabled,
@@ -29,18 +24,16 @@ import {
 } from "./LSP7NonTransferableErrors.sol";
 
 /// @title LSP7NonTransferableInitAbstract
-/// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods and allowlist support.
+/// @dev Abstract contract implementing non-transferable LSP7 token functionality with transfer lock periods
+/// and support to bypass non-transferable checks through a role.
 abstract contract LSP7NonTransferableInitAbstract is
     ILSP7NonTransferable,
-    AccessControlExtendedInitAbstract,
-    LSP7DigitalAssetInitAbstract
+    LSP7DigitalAssetInitAbstract,
+    AccessControlExtendedInitAbstract
 {
-    // solhint-disable not-rely-on-time
-    using EnumerableSet for EnumerableSet.AddressSet;
-
-    /// @dev `"NON_TRANSFERABLE_BYPASS_ROLE"` as utf8 hex (zero padded on the right to 32 bytes)
+    /// @dev keccak256("NON_TRANSFERABLE_BYPASS_ROLE")
     bytes32 public constant NON_TRANSFERABLE_BYPASS_ROLE =
-        0x4e4f4e5f5452414e5346455241424c455f4259504153535f524f4c4500000000;
+        0xb4b3a36d7c2b72add3151898671aaed843238e580f7d6d4bc5077ce2023b0659;
 
     /// @inheritdoc ILSP7NonTransferable
     uint256 public transferLockStart;
@@ -49,7 +42,7 @@ abstract contract LSP7NonTransferableInitAbstract is
     uint256 public transferLockEnd;
 
     /// @inheritdoc ILSP7NonTransferable
-    bool public transferLockEnabled;
+    bool public nonTransferabilityEnabled;
 
     /// @notice Initializes the LSP7NonTransferable contract with base token params, allowlist, and transfer settings.
     /// @dev Initializes the LSP7Allowlist (which initializes LSP7DigitalAsset) and sets the lock period.
@@ -76,7 +69,7 @@ abstract contract LSP7NonTransferableInitAbstract is
             lsp4TokenType_,
             isNonDivisible_
         );
-        __AccessControlExtended_init(newOwner_);
+        __AccessControlExtended_init();
         __LSP7NonTransferable_init_unchained(
             transferLockStart_,
             transferLockEnd_
@@ -96,14 +89,14 @@ abstract contract LSP7NonTransferableInitAbstract is
         );
         transferLockStart = transferLockStart_;
         transferLockEnd = transferLockEnd_;
-        transferLockEnabled = true;
+        nonTransferabilityEnabled = true;
 
-        emit TransferLockPeriodChanged(transferLockStart_, transferLockEnd_);
-        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
+        emit TransferLockPeriodChanged({
+            nonTransferabilityEnabled: true,
+            start: transferLockStart_,
+            end: transferLockEnd_
+        });
         _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, owner());
-
-        // grant role to allow minting tokens (`from == address(0)`)
-        _grantRole(NON_TRANSFERABLE_BYPASS_ROLE, address(0));
     }
 
     function supportsInterface(
@@ -125,9 +118,7 @@ abstract contract LSP7NonTransferableInitAbstract is
 
     /// @inheritdoc ILSP7NonTransferable
     function isTransferable() public view virtual override returns (bool) {
-        if (!transferLockEnabled) {
-            return true;
-        }
+        if (!nonTransferabilityEnabled) return true;
 
         bool isTransferLockStartEnabled = transferLockStart != 0;
         bool isTransferLockEndEnabled = transferLockEnd != 0;
@@ -142,26 +133,31 @@ abstract contract LSP7NonTransferableInitAbstract is
             return transferLockEnd < block.timestamp;
         }
 
-        // If the token becomes non-transferable starting at a specific point in time, check if we have reach this lock starting period
+        // If the token becomes non-transferable starting at a specific point in time, check if we have reached this lock starting period
         if (isTransferLockStartEnabled && !isTransferLockEndEnabled) {
             return transferLockStart > block.timestamp;
         }
 
-        // The last case is when the non-transferable feature is enabled is enabled within a certain time period
+        // This last case checks if we are within the transfer lock period
         return
             transferLockStart > block.timestamp ||
             transferLockEnd < block.timestamp;
     }
 
     /// @inheritdoc ILSP7NonTransferable
+    /// @custom:info The list of addresses holding the `NON_TRANSFERABLE_BYPASS_ROLE` remains populated after the non-transferable feature is switched off.
     function makeTransferable() public virtual override onlyOwner {
-        require(transferLockEnabled, LSP7TokenAlreadyTransferable());
+        require(nonTransferabilityEnabled, LSP7TokenAlreadyTransferable());
 
-        transferLockEnabled = false;
+        nonTransferabilityEnabled = false;
         transferLockStart = 0;
         transferLockEnd = 0;
 
-        emit TransferLockPeriodChanged(0, 0);
+        emit TransferLockPeriodChanged({
+            nonTransferabilityEnabled: false,
+            start: 0,
+            end: 0
+        });
     }
 
     /// @inheritdoc ILSP7NonTransferable
@@ -169,10 +165,11 @@ abstract contract LSP7NonTransferableInitAbstract is
         uint256 newTransferLockStart,
         uint256 newTransferLockEnd
     ) public virtual override onlyOwner {
-        require(transferLockEnabled, LSP7CannotUpdateTransferLockPeriod());
+        require(nonTransferabilityEnabled, LSP7CannotUpdateTransferLockPeriod());
 
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)
+        // Allow to make the token always non-transferable, or ensure the end period for locking transfers is always later than the starting period
         require(
             newTransferLockEnd == 0 ||
                 newTransferLockEnd >= newTransferLockStart,
@@ -182,24 +179,31 @@ abstract contract LSP7NonTransferableInitAbstract is
         transferLockStart = newTransferLockStart;
         transferLockEnd = newTransferLockEnd;
 
-        emit TransferLockPeriodChanged(
-            newTransferLockStart,
-            newTransferLockEnd
-        );
+        emit TransferLockPeriodChanged({
+            nonTransferabilityEnabled: true,
+            start: newTransferLockStart,
+            end: newTransferLockEnd
+        });
     }
 
     /// @notice Checks if a token transfer is allowed based on transferability status.
     /// @dev Allows burning to address(0) even when transfers are disabled, bypassing transferability restrictions. Reverts with {LSP7TransferDisabled} if the token is non-transferable and the destination is not address(0).
     /// @param to The address receiving the tokens.
     function _nonTransferableCheck(
-        address /* from */,
+        address from,
         address to,
         uint256 /* amount */,
         bool /* force */,
         bytes memory /* data */
     ) internal virtual {
-        // Allow burning or transferring tokens only if the transferability status is enabled
-        require(to == address(0) || isTransferable(), LSP7TransferDisabled());
+        // Allow minting and burning
+        if (from == address(0) || to == address(0)) return;
+
+        // Do not check for addresses exempted from non transferable check
+        if (hasRole(NON_TRANSFERABLE_BYPASS_ROLE, from)) return;
+
+        // transferring tokens only if the transferability status is enabled
+        require(isTransferable(), LSP7TransferDisabled());
     }
 
     /// @notice Hook called before a token transfer to enforce transfer restrictions.
@@ -216,9 +220,7 @@ abstract contract LSP7NonTransferableInitAbstract is
         bool force,
         bytes memory data
     ) internal virtual override {
-        if (!hasRole(NON_TRANSFERABLE_BYPASS_ROLE, from)) {
-            _nonTransferableCheck(from, to, amount, force, data);
-        }
+        _nonTransferableCheck(from, to, amount, force, data);
         super._beforeTokenTransfer(from, to, amount, force, data);
     }
 
@@ -229,6 +231,19 @@ abstract contract LSP7NonTransferableInitAbstract is
         virtual
         override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
     {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant NON_TRANSFERABLE_BYPASS_ROLE to new accounts post-transfer
+        _setRoleAdmin(NON_TRANSFERABLE_BYPASS_ROLE, DEFAULT_ADMIN_ROLE);
         super._transferOwnership(newOwner);
     }
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     *
+     * @custom:info The size of the `__gap` array is calculated so that the amount of storage used by the contract
+     * always adds up to the same number (in this case 50 storage slots).
+     */
+    uint256[47] private __gap;
 }

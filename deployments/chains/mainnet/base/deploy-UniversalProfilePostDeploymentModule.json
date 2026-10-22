@@ -1,0 +1,15 @@
+{
+  "chainId": 8453,
+  "chainSlug": "base",
+  "network": "mainnet",
+  "contract": "UniversalProfilePostDeploymentModule",
+  "version": null,
+  "address": "0x0000005aD606bcFEF9Ea6D0BbE5b79847054BcD7",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786003099,
+  "rpcUrlUsed": "https://mainnet.base.org",
+  "txHash": "0x427663c0b5047ba4624976697efcbabe15a7e80ad878aa7927af0976678bb185",
+  "blockNumber": 49606880
+}

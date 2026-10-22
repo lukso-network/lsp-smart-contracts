@@ -81,13 +81,7 @@ describe('LSP8MintableInit with proxy', () => {
       const randomCaller = accounts[1];
 
       await expect(
-        lsp8Mintable['initialize(string,string,address,uint256,uint256)'](
-          'XXXXXXXXXXX',
-          'XXX',
-          randomCaller.address,
-          0,
-          12345,
-        ),
+        lsp8Mintable.initialize('XXXXXXXXXXX', 'XXX', randomCaller.address, 0, 12345),
       ).to.be.revertedWith('Initializable: contract is already initialized');
     });
   });

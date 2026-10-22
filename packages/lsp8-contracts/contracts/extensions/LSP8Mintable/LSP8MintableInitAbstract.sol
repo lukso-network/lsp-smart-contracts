@@ -3,8 +3,14 @@ pragma solidity ^0.8.27;
 
 // modules
 import {
+    OwnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {
     LSP8IdentifiableDigitalAssetInitAbstract
 } from "../../LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {
+    AccessControlExtendedInitAbstract
+} from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
 // interfaces
 import {ILSP8Mintable} from "./ILSP8Mintable.sol";
@@ -13,13 +19,19 @@ import {ILSP8Mintable} from "./ILSP8Mintable.sol";
 import {LSP8MintDisabled} from "./LSP8MintableErrors.sol";
 
 /// @title LSP8MintableInitAbstract
-/// @dev Abstract contract implementing a mintable LSP8 token extension, allowing the owner to mint new tokens until minting is disabled. Inherits from LSP8IdentifiableDigitalAssetInitAbstract to provide core token functionality.
+/// @dev Abstract contract implementing a mintable LSP8 token extension, allowing the owner to mint any address granted the `MINTER_ROLE` to mint new tokens until minting is disabled.
+/// Inherits from LSP8IdentifiableDigitalAssetInitAbstract to provide core token functionality.
 abstract contract LSP8MintableInitAbstract is
     ILSP8Mintable,
-    LSP8IdentifiableDigitalAssetInitAbstract
+    LSP8IdentifiableDigitalAssetInitAbstract,
+    AccessControlExtendedInitAbstract
 {
     /// @notice Indicates whether minting is currently enabled.
     bool public isMintable;
+
+    /// @dev keccak256("MINTER_ROLE")
+    bytes32 public constant MINTER_ROLE =
+        0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6;
 
     /// @notice Initializes the LSP8Mintable contract with base token params and minting status.
     /// @dev Initializes the LSP8IdentifiableDigitalAsset base and sets the initial minting status.
@@ -45,6 +57,7 @@ abstract contract LSP8MintableInitAbstract is
             lsp4TokenType_,
             lsp8TokenIdFormat_
         );
+        __AccessControlExtended_init();
         __LSP8Mintable_init_unchained(mintable_);
     }
 
@@ -55,14 +68,20 @@ abstract contract LSP8MintableInitAbstract is
         bool mintable_
     ) internal virtual onlyInitializing {
         isMintable = mintable_;
-        emit MintingStatusChanged(mintable_);
+        emit MintingStatusChanged({enabled: mintable_});
+
+        if (mintable_) {
+            _grantRole(MINTER_ROLE, owner());
+        }
     }
 
     /// @inheritdoc ILSP8Mintable
+    /// @custom:warning Once this function is called, any address holding the `MINTER_ROLE` will be inoperable.
+    /// @custom:info The list of addresses holding the `MINTER_ROLE` remains populated after the minting feature is switched off.
     function disableMinting() public virtual override onlyOwner {
         require(isMintable, LSP8MintDisabled());
         isMintable = false;
-        emit MintingStatusChanged(false);
+        emit MintingStatusChanged({enabled: false});
     }
 
     /// @inheritdoc ILSP8Mintable
@@ -71,8 +90,27 @@ abstract contract LSP8MintableInitAbstract is
         bytes32 tokenId,
         bool force,
         bytes memory data
-    ) public virtual override onlyOwner {
+    ) public virtual override onlyRole(MINTER_ROLE) {
         _mint(to, tokenId, force, data);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(
+            AccessControlExtendedInitAbstract,
+            LSP8IdentifiableDigitalAssetInitAbstract
+        )
+        returns (bool)
+    {
+        return
+            AccessControlExtendedInitAbstract.supportsInterface(interfaceId) ||
+            LSP8IdentifiableDigitalAssetInitAbstract.supportsInterface(
+                interfaceId
+            );
     }
 
     /// @notice Internal function to mint tokens, overridden to enforce minting status.
@@ -91,4 +129,27 @@ abstract contract LSP8MintableInitAbstract is
 
         super._mint(to, tokenId, force, data);
     }
+
+    function _transferOwnership(
+        address newOwner
+    )
+        internal
+        virtual
+        override(AccessControlExtendedInitAbstract, OwnableUpgradeable)
+    {
+        // restore default admin hierarchy so a previously-installed custom admin
+        // cannot grant MINTER_ROLE to new accounts post-transfer
+        _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
+        super._transferOwnership(newOwner);
+    }
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     *
+     * @custom:info The size of the `__gap` array is calculated so that the amount of storage used by the contract
+     * always adds up to the same number (in this case 50 storage slots).
+     */
+    uint256[49] private __gap;
 }

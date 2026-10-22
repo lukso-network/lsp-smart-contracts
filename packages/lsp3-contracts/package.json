@@ -1,9 +1,14 @@
 {
   "name": "@lukso/lsp3-contracts",
-  "version": "0.16.6",
+  "version": "0.17.3",
   "description": "Package for the LSP3 Profile Metadata standard",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp3-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",
@@ -50,7 +55,7 @@
     "lint:solidity": "solhint 'contracts/**/*.sol' && prettier --check 'contracts/**/*.sol'"
   },
   "dependencies": {
-    "@lukso/lsp2-contracts": "~0.15.4"
+    "@lukso/lsp2-contracts": "~0.16.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.22;
 
 // test
-import "forge-std/Test.sol";
+import {Test, Vm} from "forge-std/Test.sol";
 
 // interfaces
 import {
@@ -50,8 +50,8 @@ contract MockLSP7Mintable is LSP7MintableAbstract {
             lsp4TokenType_,
             isNonDivisible_
         )
+        AccessControlExtendedAbstract()
         LSP7MintableAbstract(mintable_)
-        AccessControlExtendedAbstract(newOwner_)
     {}
 }
 
@@ -70,6 +70,8 @@ contract LSP7MintableTest is Test {
     MockLSP7Mintable lsp7MintableRandomOwner;
     MockLSP7Mintable lsp7NonMintable;
 
+    bytes32 minterRole;
+
     function setUp() public {
         recipient = vm.addr(100);
         randomOwner = vm.addr(101);
@@ -82,6 +84,8 @@ contract LSP7MintableTest is Test {
             isNonDivisible,
             true
         );
+
+        minterRole = lsp7Mintable.MINTER_ROLE();
 
         vm.recordLogs();
         lsp7MintableRandomOwner = new MockLSP7Mintable(
@@ -129,7 +133,7 @@ contract LSP7MintableTest is Test {
     // │   ├─ emit DataChanged(dataKey: 0x2f0a68ab07768e01943a599e73362a0e17a63a72e94dd2e384d2c1d4db932756, dataValue: 0x5454)
     // │   ├─ emit DataChanged(dataKey: 0xe0261fa95db2eb3b5439bd033cda66d56b96f92f243a8228fd87550ed7bdfdb3, dataValue: 0x0000000000000000000000000000000000000000000000000000000000000000)
     // │   ├─ emit MintingStatusChanged(enabled: false)
-    // │   ├─ emit RoleGranted(role: 0x4d494e5445525f524f4c45000000000000000000000000000000000000000000, account: LSP7MintableTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], sender: LSP7MintableTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496])
+    // │   ├─ emit RoleGranted(role: 0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6, account: LSP7MintableTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], sender: LSP7MintableTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496])
     function test_EventsEmissionOnDeployment() public {
         address contractOwner = makeAddr("contractOwner");
 
@@ -175,10 +179,19 @@ contract LSP7MintableTest is Test {
         assertEq(lsp7NonMintable.owner(), owner);
     }
 
-    function test_OwnerStartsWithMinterRole() public {
+    function test_OwnerStartsWithDefaultAdminRoleAndMinterRole() public {
+        assertTrue(
+            lsp7Mintable.hasRole(DEFAULT_ADMIN_ROLE, owner),
+            "Owner should start with DEFAULT_ADMIN_ROLE"
+        );
         assertTrue(
             lsp7Mintable.hasRole(lsp7Mintable.MINTER_ROLE(), owner),
             "Owner should start with MINTER_ROLE"
+        );
+
+        assertTrue(
+            lsp7MintableRandomOwner.hasRole(DEFAULT_ADMIN_ROLE, randomOwner),
+            "Random owner should start with DEFAULT_ADMIN_ROLE"
         );
         assertTrue(
             lsp7MintableRandomOwner.hasRole(
@@ -187,6 +200,57 @@ contract LSP7MintableTest is Test {
             ),
             "Random owner should start with MINTER_ROLE"
         );
+    }
+
+    function test_DeployWithoutMintableFeatureDoesNotGrantMinterRoleToOwner()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        MockLSP7Mintable tokenContract = new MockLSP7Mintable(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            isNonDivisible,
+            false // isMintable
+        );
+
+        assertFalse(tokenContract.hasRole(minterRole, contractOwner));
+        assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 1);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+    }
+
+    function test_DeployWithMintableFeatureGrantsMinterRoleToOwnerAndEmitsRoleGranted()
+        public
+    {
+        address contractOwner = makeAddr("contractOwner");
+
+        vm.expectEmit(true, true, true, true);
+        emit IAccessControl.RoleGranted(
+            minterRole,
+            contractOwner,
+            address(this)
+        );
+        MockLSP7Mintable tokenContract = new MockLSP7Mintable(
+            name,
+            symbol,
+            contractOwner,
+            tokenType,
+            isNonDivisible,
+            true // mintable
+        );
+
+        assertTrue(tokenContract.hasRole(minterRole, contractOwner));
+        assertTrue(tokenContract.hasRole(DEFAULT_ADMIN_ROLE, contractOwner));
+
+        bytes32[] memory ownerRoles = tokenContract.rolesOf(contractOwner);
+        assertEq(ownerRoles.length, 2);
+        assertEq(ownerRoles[0], DEFAULT_ADMIN_ROLE);
+        assertEq(ownerRoles[1], minterRole);
     }
 
     function test_MintableOwnerCanMint() public {
@@ -218,7 +282,6 @@ contract LSP7MintableTest is Test {
     }
 
     function test_DefaultAdminCannotMintWithoutMinterRole() public {
-        bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
         address defaultAdmin = vm.addr(102);
 
         vm.prank(randomOwner);
@@ -241,8 +304,12 @@ contract LSP7MintableTest is Test {
     }
 
     function test_DefaultAdminCanGrantItselfMinterRoleAndMint() public {
-        bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
         address defaultAdmin = vm.addr(103);
+
+        assertEq(lsp7MintableRandomOwner.owner(), randomOwner);
+        assertTrue(
+            lsp7MintableRandomOwner.hasRole(DEFAULT_ADMIN_ROLE, randomOwner)
+        );
 
         vm.prank(randomOwner);
         lsp7MintableRandomOwner.grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
@@ -257,8 +324,6 @@ contract LSP7MintableTest is Test {
     }
 
     function test_OwnerCanReGrantItselfMinterRoleAfterRevocation() public {
-        bytes32 minterRole = lsp7Mintable.MINTER_ROLE();
-
         lsp7Mintable.revokeRole(minterRole, owner);
         assertFalse(lsp7Mintable.hasRole(minterRole, owner));
 
@@ -288,8 +353,6 @@ contract LSP7MintableTest is Test {
         /// vm.assume(nonOwner != address(this));
 
         assertEq(lsp7MintableRandomOwner.balanceOf(recipient), 0);
-
-        bytes32 minterRole = lsp7MintableRandomOwner.MINTER_ROLE();
 
         vm.prank(nonOwner);
         vm.expectRevert(
@@ -321,8 +384,53 @@ contract LSP7MintableTest is Test {
 
     function test_NonMintableOwnerCannotMint() public {
         assertEq(lsp7NonMintable.balanceOf(recipient), 0);
-        vm.expectRevert(LSP7MintDisabled.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                address(this),
+                minterRole
+            )
+        );
         lsp7NonMintable.mint(recipient, 100, true, "");
         assertEq(lsp7NonMintable.balanceOf(recipient), 0);
+    }
+
+    // Test transfer ownership
+    function test_TransferOwnershipClearsMinterRoleAdmin() public {
+        bytes32 minterRoleAdmin = keccak256("MINTER_ADMIN_ROLE");
+        address minterRoleAdminAccount = makeAddr("A Minter Role Admin");
+
+        lsp7Mintable.setRoleAdmin(minterRole, minterRoleAdmin);
+        assertEq(lsp7Mintable.getRoleAdmin(minterRole), minterRoleAdmin);
+
+        lsp7Mintable.grantRole(minterRoleAdmin, minterRoleAdminAccount);
+        assertTrue(
+            lsp7Mintable.hasRole(minterRoleAdmin, minterRoleAdminAccount)
+        );
+
+        vm.prank(minterRoleAdminAccount);
+        lsp7Mintable.grantRole(minterRole, address(11111));
+        assertTrue(lsp7Mintable.hasRole(minterRole, address(11111)));
+
+        lsp7Mintable.transferOwnership(vm.addr(200));
+
+        assertEq(
+            lsp7Mintable.getRoleAdmin(minterRole),
+            lsp7Mintable.DEFAULT_ADMIN_ROLE()
+        );
+
+        // Test previous admin cannot use its role
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                minterRoleAdminAccount,
+                lsp7Mintable.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(minterRoleAdminAccount);
+        lsp7Mintable.grantRole(minterRole, address(22222));
+
+        // Addresses with previously granted role still persist
+        assertTrue(lsp7Mintable.hasRole(minterRole, address(11111)));
     }
 }

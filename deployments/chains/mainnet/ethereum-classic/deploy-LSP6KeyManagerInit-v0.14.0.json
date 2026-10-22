@@ -1,0 +1,15 @@
+{
+  "chainId": 61,
+  "chainSlug": "ethereum-classic",
+  "network": "mainnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.14.0",
+  "address": "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1785767310,
+  "rpcUrlUsed": "https://0xrpc.io/etc",
+  "txHash": "0x695194e63a3c882dbb5ee0e8e3b4fbb05ffc636c7be78d503d23239c098b8487",
+  "blockNumber": 25075718
+}

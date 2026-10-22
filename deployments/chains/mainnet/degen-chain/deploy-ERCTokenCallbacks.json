@@ -1,0 +1,15 @@
+{
+  "chainId": 666666666,
+  "chainSlug": "degen-chain",
+  "network": "mainnet",
+  "contract": "ERCTokenCallbacks",
+  "version": null,
+  "address": "0x082d49D8487d2ed2527440c7879C66d850daaBc5",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1784498436,
+  "rpcUrlUsed": "https://rpc.degen.tips",
+  "txHash": "0x0b14643ba17e9f12e9d5eab70a10f7d7ace80d1eda85289ef9099baaf9089eec",
+  "blockNumber": 26925150
+}

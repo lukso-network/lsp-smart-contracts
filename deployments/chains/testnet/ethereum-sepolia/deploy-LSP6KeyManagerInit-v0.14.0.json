@@ -1,0 +1,15 @@
+{
+  "chainId": 11155111,
+  "chainSlug": "ethereum-sepolia",
+  "network": "testnet",
+  "contract": "LSP6KeyManagerInit",
+  "version": "0.14.0",
+  "address": "0x2Fe3AeD98684E7351aD2D408A43cE09a738BF8a4",
+  "deployer": "0xA391Bb04ac8F7ee49Af3E996d43D80F1194d81b7",
+  "status": "already-deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1786122924,
+  "rpcUrlUsed": null,
+  "txHash": null,
+  "blockNumber": null
+}

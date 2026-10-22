@@ -1,9 +1,14 @@
 {
   "name": "@lukso/lsp8-contracts",
-  "version": "0.16.7",
+  "version": "0.18.1",
   "description": "Package for the LSP8 Identifiable Digital Asset standard",
   "license": "Apache-2.0",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukso-network/lsp-smart-contracts.git",
+    "directory": "packages/lsp8-contracts"
+  },
   "type": "module",
   "keywords": [
     "LUKSO",
@@ -63,10 +68,10 @@
     "test:foundry": "FOUNDRY_PROFILE=lsp8 forge test -vvvv"
   },
   "dependencies": {
-    "@lukso/lsp1-contracts": "~0.15.5",
-    "@lukso/lsp17contractextension-contracts": "~0.16.7",
-    "@lukso/lsp2-contracts": "~0.15.4",
-    "@lukso/lsp4-contracts": "~0.16.7",
+    "@lukso/lsp1-contracts": "~0.16.0",
+    "@lukso/lsp17contractextension-contracts": "~0.17.0",
+    "@lukso/lsp2-contracts": "~0.16.0",
+    "@lukso/lsp4-contracts": "~0.17.0",
     "@openzeppelin/contracts": "^4.9.6"
   },
   "resolutions": {

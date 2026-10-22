@@ -1,0 +1,15 @@
+{
+  "chainId": 988,
+  "chainSlug": "stable",
+  "network": "mainnet",
+  "contract": "LSP1UniversalReceiverDelegateUP",
+  "version": "0.12.1",
+  "address": "0xA5467dfe7019bF2C7C5F7A707711B9d4cAD118c8",
+  "deployer": "0x82A1DB37E48d9F0378d49abCAe04143099C01dB8",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1791042436,
+  "rpcUrlUsed": "https://rpc.stable.xyz",
+  "txHash": "0x9118374b932eb78c37f69f9de3608aa951514416f63a8e2cc4c9b6e10acc8b92",
+  "blockNumber": 41690103
+}
