@@ -33,5 +33,10 @@ interface ILSP7Revokable {
     /// @param to The address receiving the revoked tokens.
     /// @param amount The amount of tokens to revoke.
     /// @param data Additional data to include in the transfer notification.
-    function revoke(address from, address to, uint256 amount, bytes memory data) external;
+    function revoke(
+        address from,
+        address to,
+        uint256 amount,
+        bytes memory data
+    ) external;
 }

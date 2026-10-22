@@ -4,9 +4,7 @@ pragma solidity ^0.8.27;
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
-import {
-    AccessControlExtendedAbstract
-} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {AccessControlExtendedAbstract} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {ILSP7CappedBalance} from "./ILSP7CappedBalance.sol";

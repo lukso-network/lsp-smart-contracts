@@ -2,16 +2,10 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    OwnableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {
-    AccessControlExtendedInitAbstract
-} from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {AccessControlExtendedInitAbstract} from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
-import {
-    LSP7DigitalAssetInitAbstract
-} from "../../LSP7DigitalAssetInitAbstract.sol";
+import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAssetInitAbstract.sol";
 
 // interfaces
 import {ILSP7Mintable} from "./ILSP7Mintable.sol";

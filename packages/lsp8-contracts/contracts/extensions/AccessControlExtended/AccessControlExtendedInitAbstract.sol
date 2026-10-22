@@ -2,23 +2,15 @@
 pragma solidity ^0.8.27;
 
 // interfaces
-import {
-    IAccessControl
-} from "@openzeppelin/contracts/access/IAccessControl.sol";
-import {
-    IAccessControlEnumerable
-} from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {IAccessControlEnumerable} from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
 import {IAccessControlExtended} from "./IAccessControlExtended.sol";
 
 // modules
-import {
-    OwnableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 // libraries
-import {
-    EnumerableSet
-} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // constants
 import {

@@ -3,16 +3,10 @@ pragma solidity ^0.8.27;
 
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {
-    LSP8IdentifiableDigitalAsset
-} from "../LSP8IdentifiableDigitalAsset.sol";
+import {LSP8IdentifiableDigitalAsset} from "../LSP8IdentifiableDigitalAsset.sol";
 import {LSP8Burnable} from "../extensions/LSP8Burnable/LSP8Burnable.sol";
-import {
-    LSP8MintableAbstract
-} from "../extensions/LSP8Mintable/LSP8MintableAbstract.sol";
-import {
-    AccessControlExtendedAbstract
-} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {LSP8MintableAbstract} from "../extensions/LSP8Mintable/LSP8MintableAbstract.sol";
+import {AccessControlExtendedAbstract} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 /**
  * @title LSP8IdentifiableDigitalAsset deployable preset contract with:

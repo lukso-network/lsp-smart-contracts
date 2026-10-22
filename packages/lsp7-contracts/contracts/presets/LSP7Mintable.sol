@@ -5,12 +5,8 @@ pragma solidity ^0.8.27;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 import {LSP7Burnable} from "../extensions/LSP7Burnable/LSP7Burnable.sol";
-import {
-    LSP7MintableAbstract
-} from "../extensions/LSP7Mintable/LSP7MintableAbstract.sol";
-import {
-    AccessControlExtendedAbstract
-} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {LSP7MintableAbstract} from "../extensions/LSP7Mintable/LSP7MintableAbstract.sol";
+import {AccessControlExtendedAbstract} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 /// @title LSP7DigitalAsset deployable preset contract with:
 /// - a public {mint} function callable by addresses holding `MINTER_ROLE`.

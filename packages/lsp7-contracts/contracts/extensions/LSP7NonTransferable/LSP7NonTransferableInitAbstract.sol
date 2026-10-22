@@ -2,15 +2,9 @@
 pragma solidity ^0.8.4;
 
 // modules
-import {
-    OwnableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {
-    LSP7DigitalAssetInitAbstract
-} from "../../LSP7DigitalAssetInitAbstract.sol";
-import {
-    AccessControlExtendedInitAbstract
-} from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAssetInitAbstract.sol";
+import {AccessControlExtendedInitAbstract} from "../AccessControlExtended/AccessControlExtendedInitAbstract.sol";
 
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
@@ -165,7 +159,10 @@ abstract contract LSP7NonTransferableInitAbstract is
         uint256 newTransferLockStart,
         uint256 newTransferLockEnd
     ) public virtual override onlyOwner {
-        require(nonTransferabilityEnabled, LSP7CannotUpdateTransferLockPeriod());
+        require(
+            nonTransferabilityEnabled,
+            LSP7CannotUpdateTransferLockPeriod()
+        );
 
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)

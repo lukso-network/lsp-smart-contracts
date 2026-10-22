@@ -3,28 +3,16 @@ pragma solidity ^0.8.27;
 
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {
-    AccessControlExtendedAbstract
-} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {AccessControlExtendedAbstract} from "../extensions/AccessControlExtended/AccessControlExtendedAbstract.sol";
 import {LSP7DigitalAsset} from "../LSP7DigitalAsset.sol";
 
 // extensions
 import {LSP7Burnable} from "../extensions/LSP7Burnable/LSP7Burnable.sol";
-import {
-    LSP7MintableAbstract
-} from "../extensions/LSP7Mintable/LSP7MintableAbstract.sol";
-import {
-    LSP7CappedSupplyAbstract
-} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
-import {
-    LSP7CappedBalanceAbstract
-} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
-import {
-    LSP7NonTransferableAbstract
-} from "../extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
-import {
-    LSP7RevokableAbstract
-} from "../extensions/LSP7Revokable/LSP7RevokableAbstract.sol";
+import {LSP7MintableAbstract} from "../extensions/LSP7Mintable/LSP7MintableAbstract.sol";
+import {LSP7CappedSupplyAbstract} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyAbstract.sol";
+import {LSP7CappedBalanceAbstract} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceAbstract.sol";
+import {LSP7NonTransferableAbstract} from "../extensions/LSP7NonTransferable/LSP7NonTransferableAbstract.sol";
+import {LSP7RevokableAbstract} from "../extensions/LSP7Revokable/LSP7RevokableAbstract.sol";
 
 // constants
 import {
@@ -35,12 +23,8 @@ import {
 } from "./LSP7CustomizableTokenConstants.sol";
 
 // errors
-import {
-    LSP7MintDisabled
-} from "../extensions/LSP7Mintable/LSP7MintableErrors.sol";
-import {
-    LSP7CappedSupplyCannotMintOverCap
-} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
+import {LSP7MintDisabled} from "../extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {LSP7CappedSupplyCannotMintOverCap} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
 
 /// @title LSP7CustomizableToken
 /// @dev A customizable LSP7 token that implements multiple features and uses role-based exemptions.

@@ -2,18 +2,10 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    OwnableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {
-    LSP8BurnableInitAbstract
-} from "../extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol";
-import {
-    LSP8IdentifiableDigitalAssetInitAbstract
-} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
-import {
-    LSP8MintableInitAbstract
-} from "../extensions/LSP8Mintable/LSP8MintableInitAbstract.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {LSP8BurnableInitAbstract} from "../extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol";
+import {LSP8IdentifiableDigitalAssetInitAbstract} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {LSP8MintableInitAbstract} from "../extensions/LSP8Mintable/LSP8MintableInitAbstract.sol";
 
 /**
  * @dev LSP8IdentifiableDigitalAsset deployable preset contract (proxy version) with:

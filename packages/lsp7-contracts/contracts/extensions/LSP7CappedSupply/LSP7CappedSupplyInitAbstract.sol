@@ -2,9 +2,7 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    LSP7DigitalAssetInitAbstract
-} from "../../LSP7DigitalAssetInitAbstract.sol";
+import {LSP7DigitalAssetInitAbstract} from "../../LSP7DigitalAssetInitAbstract.sol";
 
 // errors
 import {LSP7CappedSupplyCannotMintOverCap} from "./LSP7CappedSupplyErrors.sol";

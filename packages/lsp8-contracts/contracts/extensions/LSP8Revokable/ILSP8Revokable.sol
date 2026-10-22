@@ -33,5 +33,10 @@ interface ILSP8Revokable {
     /// @param to The address receiving the revoked token.
     /// @param tokenId The tokenId to revoke.
     /// @param data Additional data to include in the transfer notification.
-    function revoke(address from, address to, bytes32 tokenId, bytes memory data) external;
+    function revoke(
+        address from,
+        address to,
+        bytes32 tokenId,
+        bytes memory data
+    ) external;
 }

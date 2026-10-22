@@ -2,13 +2,9 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    LSP8IdentifiableDigitalAsset
-} from "../../LSP8IdentifiableDigitalAsset.sol";
+import {LSP8IdentifiableDigitalAsset} from "../../LSP8IdentifiableDigitalAsset.sol";
 
-import {
-    ERC725Y
-} from "@erc725/smart-contracts-v8/contracts/ERC725Y.sol";
+import {ERC725Y} from "@erc725/smart-contracts-v8/contracts/ERC725Y.sol";
 
 // constants
 import {

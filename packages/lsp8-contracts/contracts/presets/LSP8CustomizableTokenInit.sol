@@ -2,32 +2,16 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    OwnableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {
-    LSP8IdentifiableDigitalAssetInitAbstract
-} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {LSP8IdentifiableDigitalAssetInitAbstract} from "../LSP8IdentifiableDigitalAssetInitAbstract.sol";
 
 // extensions
-import {
-    LSP8BurnableInitAbstract
-} from "../extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol";
-import {
-    LSP8MintableInitAbstract
-} from "../extensions/LSP8Mintable/LSP8MintableInitAbstract.sol";
-import {
-    LSP8CappedSupplyInitAbstract
-} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyInitAbstract.sol";
-import {
-    LSP8CappedBalanceInitAbstract
-} from "../extensions/LSP8CappedBalance/LSP8CappedBalanceInitAbstract.sol";
-import {
-    LSP8NonTransferableInitAbstract
-} from "../extensions/LSP8NonTransferable/LSP8NonTransferableInitAbstract.sol";
-import {
-    LSP8RevokableInitAbstract
-} from "../extensions/LSP8Revokable/LSP8RevokableInitAbstract.sol";
+import {LSP8BurnableInitAbstract} from "../extensions/LSP8Burnable/LSP8BurnableInitAbstract.sol";
+import {LSP8MintableInitAbstract} from "../extensions/LSP8Mintable/LSP8MintableInitAbstract.sol";
+import {LSP8CappedSupplyInitAbstract} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyInitAbstract.sol";
+import {LSP8CappedBalanceInitAbstract} from "../extensions/LSP8CappedBalance/LSP8CappedBalanceInitAbstract.sol";
+import {LSP8NonTransferableInitAbstract} from "../extensions/LSP8NonTransferable/LSP8NonTransferableInitAbstract.sol";
+import {LSP8RevokableInitAbstract} from "../extensions/LSP8Revokable/LSP8RevokableInitAbstract.sol";
 
 // constants
 import {
@@ -38,12 +22,8 @@ import {
 } from "./LSP8CustomizableTokenConstants.sol";
 
 // errors
-import {
-    LSP8MintDisabled
-} from "../extensions/LSP8Mintable/LSP8MintableErrors.sol";
-import {
-    LSP8CappedSupplyCannotMintOverCap
-} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
+import {LSP8MintDisabled} from "../extensions/LSP8Mintable/LSP8MintableErrors.sol";
+import {LSP8CappedSupplyCannotMintOverCap} from "../extensions/LSP8CappedSupply/LSP8CappedSupplyErrors.sol";
 
 /// @title LSP8CustomizableTokenInit
 /// @dev A customizable LSP8 token that implements multiple features and uses role-based exemptions. This version of the contract is the implementation to use behind proxies.

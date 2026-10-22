@@ -2,9 +2,7 @@
 pragma solidity ^0.8.27;
 
 // interfaces
-import {
-    IAccessControlEnumerable
-} from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
+import {IAccessControlEnumerable} from "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
 
 /**
  * @title IAccessControlExtended

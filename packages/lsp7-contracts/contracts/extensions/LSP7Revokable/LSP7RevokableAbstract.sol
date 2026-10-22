@@ -4,17 +4,13 @@ pragma solidity ^0.8.27;
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
-import {
-    AccessControlExtendedAbstract
-} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {AccessControlExtendedAbstract} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {ILSP7Revokable} from "./ILSP7Revokable.sol";
 
 // errors
-import {
-    AccessControlUnauthorizedAccount
-} from "../AccessControlExtended/AccessControlExtendedErrors.sol";
+import {AccessControlUnauthorizedAccount} from "../AccessControlExtended/AccessControlExtendedErrors.sol";
 import {LSP7RevokableFeatureDisabled} from "./LSP7RevokableErrors.sol";
 
 /// @title LSP7RevokableAbstract

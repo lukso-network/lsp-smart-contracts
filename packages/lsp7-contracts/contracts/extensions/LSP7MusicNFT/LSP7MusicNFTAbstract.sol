@@ -4,14 +4,10 @@ pragma solidity ^0.8.27;
 // modules
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
 
-import {
-    ERC725Y
-} from "@erc725/smart-contracts-v8/contracts/ERC725Y.sol";
+import {ERC725Y} from "@erc725/smart-contracts-v8/contracts/ERC725Y.sol";
 
 // interfaces
-import {
-    ILSP8IdentifiableDigitalAsset
-} from "@lukso/lsp8-contracts/contracts/ILSP8IdentifiableDigitalAsset.sol";
+import {ILSP8IdentifiableDigitalAsset} from "@lukso/lsp8-contracts/contracts/ILSP8IdentifiableDigitalAsset.sol";
 
 // constants
 import {
@@ -20,9 +16,7 @@ import {
     _LSP34_OWNERSHIP_SOURCE_KEY
 } from "./LSP7MusicNFTConstants.sol";
 
-import {
-    _LSP4_TOKEN_TYPE_NFT
-} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
+import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 // errors
 import {LSP34NotAuthorizedToMint} from "./LSP7MusicNFTErrors.sol";
