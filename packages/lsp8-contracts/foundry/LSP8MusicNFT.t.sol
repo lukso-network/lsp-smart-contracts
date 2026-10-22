@@ -74,6 +74,65 @@ contract LSP8MusicNFTTest is Test {
         );
     }
 
+    // --- LSP2 derivation of the data keys (independent of the constants file) ---
+
+    /// @dev LSP2 Mapping key for `SupportedStandards:LSP33MusicNFT`, derived
+    /// here so that a wrong literal in the constants file cannot pass.
+    /// `bytes20(bytes32)` keeps the first (left-most) 20 bytes.
+    function _derivedLSP33MarkerKey() internal pure returns (bytes32) {
+        return
+            bytes32(
+                abi.encodePacked(
+                    bytes10(keccak256("SupportedStandards")),
+                    bytes2(0),
+                    bytes20(keccak256("LSP33MusicNFT"))
+                )
+            );
+    }
+
+    /// @dev Mis-derived marker key published by earlier LSP33 drafts
+    /// (last 20 bytes of `keccak256("LSP33MusicNFT")`).
+    function _legacyLSP33MarkerKey() internal pure returns (bytes32) {
+        return
+            bytes32(
+                abi.encodePacked(
+                    bytes10(keccak256("SupportedStandards")),
+                    bytes2(0),
+                    bytes20(uint160(uint256(keccak256("LSP33MusicNFT"))))
+                )
+            );
+    }
+
+    function test_LSP33SupportedStandardsKeyIsLSP2Derived() public {
+        assertEq(_LSP33_SUPPORTED_STANDARDS_KEY, _derivedLSP33MarkerKey());
+        assertEq(
+            _LSP33_SUPPORTED_STANDARDS_KEY,
+            bytes32(
+                0xeafec4d89fa9619884b600003cd4661761f237efa2fead11f43ae543d533ae73
+            )
+        );
+    }
+
+    function test_LSP33SupportedStandardsValueIsBytes4OfName() public {
+        assertEq(
+            _LSP33_SUPPORTED_STANDARDS_VALUE,
+            abi.encodePacked(bytes4(keccak256("LSP33MusicNFT")))
+        );
+    }
+
+    function test_LSP33MetadataKeyIsLSP2Derived() public {
+        assertEq(_LSP33_METADATA_KEY, keccak256("LSP33Metadata"));
+    }
+
+    function test_LSP33MarkerWrittenUnderDerivedKeyOnly() public {
+        assertEq(
+            lsp8.getData(_derivedLSP33MarkerKey()),
+            abi.encodePacked(bytes4(keccak256("LSP33MusicNFT")))
+        );
+        // New deployments must not write the legacy (mis-derived) draft key.
+        assertEq(lsp8.getData(_legacyLSP33MarkerKey()).length, 0);
+    }
+
     // --- Release-level metadata lives at the contract scope ---
 
     function test_OwnerCanSetReleaseLSP4Metadata() public {

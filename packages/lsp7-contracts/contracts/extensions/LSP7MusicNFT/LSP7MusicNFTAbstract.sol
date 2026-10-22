@@ -13,13 +13,6 @@ import {
     ILSP8IdentifiableDigitalAsset
 } from "@lukso/lsp8-contracts/contracts/ILSP8IdentifiableDigitalAsset.sol";
 
-/// @dev Minimal ERC173 interface used to resolve the minter when
-/// `LSP34OwnershipSource` points to a plain owned contract
-/// (i.e. `tokenId == bytes32(0)`).
-interface IERC173 {
-    function owner() external view returns (address);
-}
-
 // constants
 import {
     _LSP33_SUPPORTED_STANDARDS_KEY,
@@ -33,6 +26,13 @@ import {
 
 // errors
 import {LSP34NotAuthorizedToMint} from "./LSP7MusicNFTErrors.sol";
+
+/// @dev Minimal ERC173 interface used to resolve the minter when
+/// `LSP34OwnershipSource` points to a plain owned contract
+/// (i.e. `tokenId == bytes32(0)`).
+interface IERC173 {
+    function owner() external view returns (address);
+}
 
 /// @title LSP7MusicNFTAbstract
 /// @dev LSP33 Music NFT carrier for an LSP7 track token combined with LSP34

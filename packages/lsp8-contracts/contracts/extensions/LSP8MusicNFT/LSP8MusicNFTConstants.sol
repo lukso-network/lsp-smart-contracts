@@ -2,7 +2,9 @@
 pragma solidity ^0.8.27;
 
 // bytes10(keccak256('SupportedStandards')) + bytes2(0) + bytes20(keccak256('LSP33MusicNFT'))
-bytes32 constant _LSP33_SUPPORTED_STANDARDS_KEY = 0xeafec4d89fa9619884b60000f43ae543d533ae7389b5791d7870aadfdcff2ca4;
+// LSP2 Mapping: bytes20(...) keeps the first 20 bytes of keccak256('LSP33MusicNFT').
+// The legacy draft key ...0000f43ae543...ff2ca4 (last 20 bytes) is mis-derived and is not written.
+bytes32 constant _LSP33_SUPPORTED_STANDARDS_KEY = 0xeafec4d89fa9619884b600003cd4661761f237efa2fead11f43ae543d533ae73;
 
 // bytes4(keccak256('LSP33MusicNFT'))
 bytes constant _LSP33_SUPPORTED_STANDARDS_VALUE = hex"3cd46617";
