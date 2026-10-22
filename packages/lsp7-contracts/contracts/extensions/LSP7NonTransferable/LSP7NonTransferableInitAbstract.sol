@@ -111,6 +111,8 @@ abstract contract LSP7NonTransferableInitAbstract is
     }
 
     /// @inheritdoc ILSP7NonTransferable
+    // solhint-disable not-rely-on-time
+    // Transfer-lock windows are inherently time-based; `block.timestamp` is the intended source.
     function isTransferable() public view virtual override returns (bool) {
         if (!nonTransferabilityEnabled) return true;
 
@@ -137,6 +139,7 @@ abstract contract LSP7NonTransferableInitAbstract is
             transferLockStart > block.timestamp ||
             transferLockEnd < block.timestamp;
     }
+    // solhint-enable not-rely-on-time
 
     /// @inheritdoc ILSP7NonTransferable
     /// @custom:info The list of addresses holding the `NON_TRANSFERABLE_BYPASS_ROLE` remains populated after the non-transferable feature is switched off.
