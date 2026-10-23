@@ -11,12 +11,12 @@ import {
     _LSP33_SUPPORTED_STANDARDS_KEY,
     _LSP33_SUPPORTED_STANDARDS_VALUE,
     _LSP34_OWNERSHIP_SOURCE_KEY
-} from "./LSP7MusicNFTConstants.sol";
+} from "./LSP7MusicNDTConstants.sol";
 
 import {_LSP4_TOKEN_TYPE_NFT} from "@lukso/lsp4-contracts/contracts/LSP4Constants.sol";
 
 // errors
-import {LSP34NotAuthorizedToMint} from "./LSP7MusicNFTErrors.sol";
+import {LSP34NotAuthorizedToMint} from "./LSP7MusicNDTErrors.sol";
 
 /// @dev Minimal ERC173 interface used to resolve the minter when
 /// `LSP34OwnershipSource` points to a plain owned contract
@@ -33,9 +33,15 @@ interface ILSP8TokenOwnerOf {
     function tokenOwnerOf(bytes32 tokenId) external view returns (address);
 }
 
-/// @title LSP7MusicNFTAbstract
-/// @dev LSP33 Music NFT carrier for an LSP7 track token combined with LSP34
-/// minting-rights delegation.
+/// @title LSP7MusicNDTAbstract
+/// @dev LSP33 music carrier for an LSP7 Music NDT (Non-Divisible Token): a
+/// track token whose supply consists of multiple units, combined with LSP34
+/// minting-rights delegation. Unlike an LSP8 collection, where every item is
+/// a unique `tokenId`, the units of one LSP7 Music NDT are interchangeable.
+///
+/// The `isNonDivisible_` constructor argument is forwarded unchanged to
+/// `LSP7DigitalAsset`; deploy with `isNonDivisible_ = true` (`decimals()` = 0)
+/// so that each unit is a whole, non-divisible token.
 ///
 /// The contract sets the `SupportedStandards:LSP33MusicNFT` marker at
 /// construction and exposes a `mint` function that honours LSP34: in addition
@@ -43,7 +49,7 @@ interface ILSP8TokenOwnerOf {
 /// `LSP34OwnershipSource` when it has been set. Everything else — ownership
 /// transfer, renouncement, and ERC725Y access control for `setData` — follows
 /// the standard LSP7 / ERC725Y rules as required by LSP34.
-abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
+abstract contract LSP7MusicNDTAbstract is LSP7DigitalAsset {
     constructor(
         string memory name_,
         string memory symbol_,

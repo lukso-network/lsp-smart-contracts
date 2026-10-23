@@ -4,7 +4,7 @@ pragma solidity ^0.8.27;
 import "forge-std/Test.sol";
 
 // modules
-import {LSP7MusicNFTAbstract} from "../contracts/extensions/LSP7MusicNFT/LSP7MusicNFTAbstract.sol";
+import {LSP7MusicNDTAbstract} from "../contracts/extensions/LSP7MusicNDT/LSP7MusicNDTAbstract.sol";
 import {LSP8IdentifiableDigitalAsset} from "@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol";
 import {LSP8Burnable} from "@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8Burnable.sol";
 import {LSP8MusicNFTAbstract} from "@lukso/lsp8-contracts/contracts/extensions/LSP8MusicNFT/LSP8MusicNFTAbstract.sol";
@@ -18,7 +18,7 @@ import {
     _LSP33_SUPPORTED_STANDARDS_VALUE,
     _LSP33_METADATA_KEY,
     _LSP34_OWNERSHIP_SOURCE_KEY
-} from "../contracts/extensions/LSP7MusicNFT/LSP7MusicNFTConstants.sol";
+} from "../contracts/extensions/LSP7MusicNDT/LSP7MusicNDTConstants.sol";
 import {
     _LSP4_METADATA_KEY,
     _LSP4_TOKEN_NAME_KEY,
@@ -27,7 +27,7 @@ import {
 import {_LSP8_TOKENID_FORMAT_NUMBER} from "@lukso/lsp8-contracts/contracts/LSP8Constants.sol";
 
 // errors
-import {LSP34NotAuthorizedToMint} from "../contracts/extensions/LSP7MusicNFT/LSP7MusicNFTErrors.sol";
+import {LSP34NotAuthorizedToMint} from "../contracts/extensions/LSP7MusicNDT/LSP7MusicNDTErrors.sol";
 import {LSP4TokenNameNotEditable} from "@lukso/lsp4-contracts/contracts/LSP4Errors.sol";
 import {LSP8NonExistentTokenId} from "@lukso/lsp8-contracts/contracts/LSP8Errors.sol";
 
@@ -140,21 +140,21 @@ contract MisbehavingSource {
     }
 }
 
-/// @dev Concrete test implementation of `LSP7MusicNFTAbstract`.
-contract MockLSP7MusicNFT is LSP7MusicNFTAbstract {
+/// @dev Concrete test implementation of `LSP7MusicNDTAbstract`.
+contract MockLSP7MusicNDT is LSP7MusicNDTAbstract {
     constructor(
         string memory name_,
         string memory symbol_,
         address initialOwner_,
         bool isNonDivisible_
-    ) LSP7MusicNFTAbstract(name_, symbol_, initialOwner_, isNonDivisible_) {}
+    ) LSP7MusicNDTAbstract(name_, symbol_, initialOwner_, isNonDivisible_) {}
 }
 
 // --- Tests ---
 
-contract LSP7MusicNFTTest is Test {
+contract LSP7MusicNDTTest is Test {
     MockLSP8 lsp8;
-    MockLSP7MusicNFT lsp7;
+    MockLSP7MusicNDT lsp7;
     MockLSP8MusicRelease release;
 
     address artist = vm.addr(100);
@@ -169,7 +169,7 @@ contract LSP7MusicNFTTest is Test {
 
     function setUp() public {
         lsp8 = new MockLSP8();
-        lsp7 = new MockLSP7MusicNFT("Track Token", "TRACK", artist, true);
+        lsp7 = new MockLSP7MusicNDT("Track Token", "TRACK", artist, true);
         // Real LSP8 release owned by a label, used as an LSP34 source.
         release = new MockLSP8MusicRelease(label);
     }
@@ -183,7 +183,7 @@ contract LSP7MusicNFTTest is Test {
     }
 
     function _setSourceOf(
-        MockLSP7MusicNFT track,
+        MockLSP7MusicNDT track,
         address srcContract,
         bytes32 tokenId
     ) internal {
@@ -213,7 +213,7 @@ contract LSP7MusicNFTTest is Test {
     }
 
     /// @dev `caller` mints one unit of `track` to itself.
-    function _mintOne(MockLSP7MusicNFT track, address caller) internal {
+    function _mintOne(MockLSP7MusicNDT track, address caller) internal {
         uint256 balanceBefore = track.balanceOf(caller);
         vm.prank(caller);
         track.mint(caller, 1, true, "");
@@ -224,7 +224,7 @@ contract LSP7MusicNFTTest is Test {
     /// `expectedRevertData` and the supply is unchanged. The gas cap keeps
     /// sources that consume all gas cheap to test.
     function _assertCannotMint(
-        MockLSP7MusicNFT track,
+        MockLSP7MusicNDT track,
         address caller,
         bytes memory expectedRevertData
     ) internal {
@@ -246,7 +246,7 @@ contract LSP7MusicNFTTest is Test {
     /// codeless address (e.g. an LSP1 check on an EOA recipient). That form
     /// is accepted too; the contracts under test never produce it.
     function _assertCannotMintWithoutRevertData(
-        MockLSP7MusicNFT track,
+        MockLSP7MusicNDT track,
         address caller
     ) internal {
         uint256 supplyBefore = track.totalSupply();
@@ -366,6 +366,30 @@ contract LSP7MusicNFTTest is Test {
         );
         // New deployments must not write the legacy (mis-derived) draft key.
         assertEq(lsp7.getData(_legacyLSP33MarkerKey()).length, 0);
+    }
+
+    // --- LSP7 Music NDT: multiple non-divisible units ---
+
+    /// @dev The renamed `LSP7MusicNDTAbstract` is the product under test and
+    /// keeps its constructor behaviour: `isNonDivisible_` is forwarded
+    /// unchanged, so `true` gives whole units (`decimals()` = 0) and `false`
+    /// keeps the LSP7 default of 18 decimals.
+    function test_MusicNDTHoldsMultipleNonDivisibleUnits() public {
+        LSP7MusicNDTAbstract ndt = lsp7;
+        assertEq(uint256(ndt.decimals()), 0);
+
+        vm.prank(artist);
+        ndt.mint(user1, 3, true, "");
+        assertEq(ndt.balanceOf(user1), 3);
+        assertEq(ndt.totalSupply(), 3);
+
+        MockLSP7MusicNDT divisible = new MockLSP7MusicNDT(
+            "Track Token",
+            "TRACK",
+            artist,
+            false
+        );
+        assertEq(uint256(divisible.decimals()), 18);
     }
 
     // --- ERC173 ownership semantics (LSP34 leaves these untouched) ---
@@ -934,7 +958,7 @@ contract LSP7MusicNFTTest is Test {
     }
 
     function test_IndependentTracksDoNotInterfere() public {
-        MockLSP7MusicNFT track2 = new MockLSP7MusicNFT(
+        MockLSP7MusicNDT track2 = new MockLSP7MusicNDT(
             "Track Token 2",
             "TRACK2",
             artist,
@@ -974,7 +998,7 @@ contract LSP7MusicNFTTest is Test {
 
     function test_SameTokenIdOnDifferentReleasesDoNotInterfere() public {
         MockLSP8MusicRelease otherRelease = new MockLSP8MusicRelease(label);
-        MockLSP7MusicNFT track2 = new MockLSP7MusicNFT(
+        MockLSP7MusicNDT track2 = new MockLSP7MusicNDT(
             "Track Token 2",
             "TRACK2",
             artist,
@@ -1095,7 +1119,7 @@ contract LSP7MusicNFTTest is Test {
             _LSP33_SUPPORTED_STANDARDS_KEY,
             _LSP33_SUPPORTED_STANDARDS_VALUE
         );
-        MockLSP7MusicNFT deployed = new MockLSP7MusicNFT(
+        MockLSP7MusicNDT deployed = new MockLSP7MusicNDT(
             "Track Token",
             "TRACK",
             artist,
