@@ -2,32 +2,16 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    OwnableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {
-    LSP7DigitalAssetInitAbstract
-} from "../LSP7DigitalAssetInitAbstract.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
 
 // extensions
-import {
-    LSP7BurnableInitAbstract
-} from "../extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol";
-import {
-    LSP7MintableInitAbstract
-} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
-import {
-    LSP7CappedSupplyInitAbstract
-} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
-import {
-    LSP7CappedBalanceInitAbstract
-} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
-import {
-    LSP7NonTransferableInitAbstract
-} from "../extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
-import {
-    LSP7RevokableInitAbstract
-} from "../extensions/LSP7Revokable/LSP7RevokableInitAbstract.sol";
+import {LSP7BurnableInitAbstract} from "../extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol";
+import {LSP7MintableInitAbstract} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
+import {LSP7CappedSupplyInitAbstract} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyInitAbstract.sol";
+import {LSP7CappedBalanceInitAbstract} from "../extensions/LSP7CappedBalance/LSP7CappedBalanceInitAbstract.sol";
+import {LSP7NonTransferableInitAbstract} from "../extensions/LSP7NonTransferable/LSP7NonTransferableInitAbstract.sol";
+import {LSP7RevokableInitAbstract} from "../extensions/LSP7Revokable/LSP7RevokableInitAbstract.sol";
 
 // constants
 import {
@@ -38,12 +22,8 @@ import {
 } from "./LSP7CustomizableTokenConstants.sol";
 
 // errors
-import {
-    LSP7MintDisabled
-} from "../extensions/LSP7Mintable/LSP7MintableErrors.sol";
-import {
-    LSP7CappedSupplyCannotMintOverCap
-} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
+import {LSP7MintDisabled} from "../extensions/LSP7Mintable/LSP7MintableErrors.sol";
+import {LSP7CappedSupplyCannotMintOverCap} from "../extensions/LSP7CappedSupply/LSP7CappedSupplyErrors.sol";
 
 /// @title LSP7CustomizableTokenInit
 /// @dev A customizable LSP7 token that implements multiple features and uses role-based exemptions. This version of the contract is the implementation to use behind proxies.

@@ -4,9 +4,7 @@ pragma solidity ^0.8.27;
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
-import {
-    AccessControlExtendedAbstract
-} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {AccessControlExtendedAbstract} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {ILSP7NonTransferable} from "./ILSP7NonTransferable.sol";
@@ -74,6 +72,8 @@ abstract contract LSP7NonTransferableAbstract is
     }
 
     /// @inheritdoc ILSP7NonTransferable
+    // solhint-disable not-rely-on-time
+    // Transfer-lock windows are inherently time-based; `block.timestamp` is the intended source.
     function isTransferable() public view virtual override returns (bool) {
         if (!nonTransferabilityEnabled) return true;
 
@@ -100,6 +100,7 @@ abstract contract LSP7NonTransferableAbstract is
             transferLockStart > block.timestamp ||
             transferLockEnd < block.timestamp;
     }
+    // solhint-enable not-rely-on-time
 
     /// @inheritdoc ILSP7NonTransferable
     /// @custom:info The list of addresses holding the `NON_TRANSFERABLE_BYPASS_ROLE` remains populated after the non-transferable feature is switched off.
@@ -122,7 +123,10 @@ abstract contract LSP7NonTransferableAbstract is
         uint256 newTransferLockStart,
         uint256 newTransferLockEnd
     ) public virtual override onlyOwner {
-        require(nonTransferabilityEnabled, LSP7CannotUpdateTransferLockPeriod());
+        require(
+            nonTransferabilityEnabled,
+            LSP7CannotUpdateTransferLockPeriod()
+        );
 
         // When `transferLockEnd` is 0, it means no end time is set (transfers locked indefinitely since `transferLockStart`)
         // When `transferLockStart` is 0, it means no start time is set (transfers locked up until `transferLockEnd`)

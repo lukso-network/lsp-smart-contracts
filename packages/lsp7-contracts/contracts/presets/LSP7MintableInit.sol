@@ -2,18 +2,10 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    OwnableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {
-    LSP7BurnableInitAbstract
-} from "../extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol";
-import {
-    LSP7DigitalAssetInitAbstract
-} from "../LSP7DigitalAssetInitAbstract.sol";
-import {
-    LSP7MintableInitAbstract
-} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {LSP7BurnableInitAbstract} from "../extensions/LSP7Burnable/LSP7BurnableInitAbstract.sol";
+import {LSP7DigitalAssetInitAbstract} from "../LSP7DigitalAssetInitAbstract.sol";
+import {LSP7MintableInitAbstract} from "../extensions/LSP7Mintable/LSP7MintableInitAbstract.sol";
 
 /// @dev LSP7DigitalAsset deployable preset contract (proxy version) with:
 /// - a public {mint} function callable by addresses holding `MINTER_ROLE`.

@@ -2,12 +2,8 @@
 pragma solidity ^0.8.27;
 
 // modules
-import {
-    LSP8IdentifiableDigitalAsset
-} from "@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol";
-import {
-    LSP8Burnable
-} from "@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8Burnable.sol";
+import {LSP8IdentifiableDigitalAsset} from "@lukso/lsp8-contracts/contracts/LSP8IdentifiableDigitalAsset.sol";
+import {LSP8Burnable} from "@lukso/lsp8-contracts/contracts/extensions/LSP8Burnable/LSP8Burnable.sol";
 
 contract LSP8BurnableTester is LSP8Burnable {
     constructor(

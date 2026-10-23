@@ -3,12 +3,8 @@ pragma solidity ^0.8.27;
 
 // modules
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {
-    LSP8IdentifiableDigitalAsset
-} from "../../LSP8IdentifiableDigitalAsset.sol";
-import {
-    AccessControlExtendedAbstract
-} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
+import {LSP8IdentifiableDigitalAsset} from "../../LSP8IdentifiableDigitalAsset.sol";
+import {AccessControlExtendedAbstract} from "../AccessControlExtended/AccessControlExtendedAbstract.sol";
 
 // interfaces
 import {ILSP8NonTransferable} from "./ILSP8NonTransferable.sol";
@@ -127,7 +123,10 @@ abstract contract LSP8NonTransferableAbstract is
         uint256 newTransferLockStart,
         uint256 newTransferLockEnd
     ) public virtual override onlyOwner {
-        require(nonTransferabilityEnabled, LSP8CannotUpdateTransferLockPeriod());
+        require(
+            nonTransferabilityEnabled,
+            LSP8CannotUpdateTransferLockPeriod()
+        );
 
         // When transferLockEnd is 0, it means no end time is set (transfers locked indefinitely after transferLockStart)
         // When transferLockStart is 0, it means no start time is set (transfers locked up until transferLockEnd)

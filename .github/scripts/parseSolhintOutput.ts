@@ -10,7 +10,7 @@ interface Issue {
   message: string;
 }
 
-export function parseOutput() {
+export function parseOutput(exitCode = process.env.SOLHINT_EXIT_CODE) {
   // Read raw output from file
   const resultsPath = join(process.env.GITHUB_WORKSPACE || './', 'solhint-output.txt');
   if (!existsSync(resultsPath)) console.error('No lint file found.');
@@ -65,6 +65,12 @@ export function parseOutput() {
   let body = '# 📝 Solidity Lint Report\n';
   let hasIssues = false;
 
+  // The parsed issues do not tell if the linter passed, so report its exit code
+  const lintFailed = exitCode !== '0';
+  if (lintFailed) {
+    body += `\n❌ **Solidity Linter failed with exit code \`${exitCode || 'unknown'}\`.** See the job logs for details.\n`;
+  }
+
   for (const [pkg, issues] of issuesByPackage.entries()) {
     if (issues.length === 0) continue;
 
@@ -90,7 +96,7 @@ export function parseOutput() {
   }
 
   if (!hasIssues) {
-    body += '\n✅ No lint issues found! 🎉';
+    if (!lintFailed) body += '\n✅ No lint issues found! 🎉';
   } else {
     body += `\n---\n`;
     body += `\n> ❗ **Please fix the above linting errors before merging.**`;
@@ -99,8 +105,11 @@ export function parseOutput() {
   return body;
 }
 
-export async function githubScript({ github, context }: AsyncFunctionArguments) {
+export async function githubScript({ github, context, core }: AsyncFunctionArguments) {
   const body = parseOutput();
+
+  // Always add the report to the job summary, as a PR comment cannot be written for every PR
+  await core.summary.addRaw(body).write();
 
   // Get PR context
   const owner = context.repo.owner;
@@ -109,6 +118,15 @@ export async function githubScript({ github, context }: AsyncFunctionArguments) 
 
   if (!prNumber) {
     console.error('Missing PR number');
+    return;
+  }
+
+  // PRs opened from forks only get a read-only `GITHUB_TOKEN`, that cannot create or update comments
+  const headRepo = context.payload.pull_request?.head?.repo?.full_name;
+  if (headRepo !== `${owner}/${repo}`) {
+    console.log(
+      `Skipping PR comment for PR opened from fork \`${headRepo}\`. See the job summary.`,
+    );
     return;
   }
 
