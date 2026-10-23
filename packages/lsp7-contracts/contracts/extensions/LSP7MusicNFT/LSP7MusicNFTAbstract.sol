@@ -6,9 +6,6 @@ import {LSP7DigitalAsset} from "../../LSP7DigitalAsset.sol";
 
 import {ERC725Y} from "@erc725/smart-contracts-v8/contracts/ERC725Y.sol";
 
-// interfaces
-import {ILSP8IdentifiableDigitalAsset} from "@lukso/lsp8-contracts/contracts/ILSP8IdentifiableDigitalAsset.sol";
-
 // constants
 import {
     _LSP33_SUPPORTED_STANDARDS_KEY,
@@ -26,6 +23,14 @@ import {LSP34NotAuthorizedToMint} from "./LSP7MusicNFTErrors.sol";
 /// (i.e. `tokenId == bytes32(0)`).
 interface IERC173 {
     function owner() external view returns (address);
+}
+
+/// @dev Minimal LSP8 interface used to resolve the minter when
+/// `LSP34OwnershipSource` points to an LSP8 tokenId
+/// (i.e. `tokenId != bytes32(0)`). Declared locally, like `IERC173`, so
+/// that the LSP7 package does not need the LSP8 package as a dependency.
+interface ILSP8TokenOwnerOf {
+    function tokenOwnerOf(bytes32 tokenId) external view returns (address);
 }
 
 /// @title LSP7MusicNFTAbstract
@@ -76,7 +81,12 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
     }
 
     /// @dev Returns the address authorised to mint via `LSP34OwnershipSource`.
-    /// Returns `address(0)` when the source is unset or malformed.
+    /// Returns `address(0)` when the source is unset or its value is not
+    /// exactly 64 bytes long. Reverts, granting no minting rights, when a
+    /// 64-byte value is not a valid `abi.encode(address, bytes32)` (non-zero
+    /// upper 96 bits in the address word) or when the source query reverts
+    /// (e.g. burned or nonexistent `tokenId`, source without code). `mint`
+    /// only calls this for callers other than `owner()`.
     ///
     /// Resolution rules per LSP34:
     /// - If `tokenId != bytes32(0)`, query `tokenOwnerOf(tokenId)` on the source.
@@ -95,7 +105,6 @@ abstract contract LSP7MusicNFTAbstract is LSP7DigitalAsset {
         if (tokenId == bytes32(0)) {
             return IERC173(sourceContract).owner();
         }
-        return
-            ILSP8IdentifiableDigitalAsset(sourceContract).tokenOwnerOf(tokenId);
+        return ILSP8TokenOwnerOf(sourceContract).tokenOwnerOf(tokenId);
     }
 }
