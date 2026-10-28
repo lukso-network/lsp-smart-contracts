@@ -1,0 +1,15 @@
+{
+  "chainId": 2818,
+  "chainSlug": "morph",
+  "network": "mainnet",
+  "contract": "LSP23LinkedContractsFactory",
+  "version": null,
+  "address": "0x2300000A84D25dF63081feAa37ba6b62C4c89a30",
+  "deployer": "0x5b1b5535679ca6Aa24d21113F470872C7AB06128",
+  "status": "deployed",
+  "runtimeBytecodeMatch": true,
+  "timestamp": 1789810928,
+  "rpcUrlUsed": "https://rpc.morph.network",
+  "txHash": "0xd4cca1906f198f51db0fac0f82f83f288c1da6b18f1722e47e96f41f03d37179",
+  "blockNumber": 27026702
+}

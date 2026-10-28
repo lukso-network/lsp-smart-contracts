@@ -768,6 +768,19 @@
     "slug": "moonriver"
   },
   {
+    "chainId": 2818,
+    "name": "Morph",
+    "rpcUrl": "https://rpc.morph.network",
+    "currencySymbol": "ETH",
+    "explorers": [
+      {
+        "url": "https://explorer.morph.network",
+        "category": "other"
+      }
+    ],
+    "slug": "morph"
+  },
+  {
     "chainId": 204,
     "name": "opBNB",
     "rpcUrl": "https://opbnb-mainnet-rpc.bnbchain.org",
