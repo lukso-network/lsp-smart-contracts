@@ -167,6 +167,12 @@ contract LSP7MusicNDTTest is Test {
     bytes32 tokenId1 = bytes32(uint256(1));
     bytes32 tokenId2 = bytes32(uint256(2));
 
+    // Source of the erc725.js-encoded fixtures (see their tests below).
+    address internal constant _SAMPLE_SOURCE =
+        0x941ED3dF30B83BD5bdD1EF6D4928F38a30bd0F14;
+    bytes32 internal constant _SAMPLE_TOKEN_ID =
+        0xa6d9b18e81ae5c22d046b303ab0194e5ddbb03839ad2a4abe265260a64479241;
+
     function setUp() public {
         lsp8 = new MockLSP8();
         lsp7 = new MockLSP7MusicNDT("Track Token", "TRACK", artist, true);
@@ -174,11 +180,13 @@ contract LSP7MusicNDTTest is Test {
         release = new MockLSP8MusicRelease(label);
     }
 
+    /// @dev Stores a valid `LSP34OwnershipSource`: the LSP2 `(address,bytes32)`
+    /// tuple, i.e. `abi.encodePacked(srcContract, tokenId)` (52 bytes).
     function _setSource(address srcContract, bytes32 tokenId) internal {
         vm.prank(artist);
         lsp7.setData(
             _LSP34_OWNERSHIP_SOURCE_KEY,
-            abi.encode(srcContract, tokenId)
+            abi.encodePacked(srcContract, tokenId)
         );
     }
 
@@ -190,7 +198,7 @@ contract LSP7MusicNDTTest is Test {
         vm.prank(artist);
         track.setData(
             _LSP34_OWNERSHIP_SOURCE_KEY,
-            abi.encode(srcContract, tokenId)
+            abi.encodePacked(srcContract, tokenId)
         );
     }
 
@@ -551,10 +559,17 @@ contract LSP7MusicNDTTest is Test {
         assertEq(lsp7.balanceOf(user2), 3);
     }
 
-    // --- Malformed `LSP34OwnershipSource` values never grant minting rights ---
+    // --- `LSP34OwnershipSource` encoding: packed LSP2 `(address,bytes32)` ---
+    //
+    // The only valid value is `abi.encodePacked(sourceContract, tokenId)`:
+    // exactly 52 bytes. A value of any other length is treated as unset, so
+    // it never grants minting rights: non-owners get
+    // `LSP34NotAuthorizedToMint` (the source is not queried) and the owner
+    // keeps minting.
 
     function test_MalformedSourceTreatedAsUnset() public {
-        // 20 bytes is the wrong encoding (LSP34 requires abi.encode(address, bytes32) = 64 bytes).
+        // 20 bytes is the wrong encoding (LSP34 requires
+        // abi.encodePacked(address, bytes32) = 52 bytes).
         vm.prank(artist);
         lsp7.setData(_LSP34_OWNERSHIP_SOURCE_KEY, abi.encodePacked(user1));
 
@@ -571,73 +586,139 @@ contract LSP7MusicNDTTest is Test {
     }
 
     function test_WrongLengthSourceValuesTreatedAsUnset() public {
+        // user1 holds tokenId1 of `release`, whose owner() is `label`. None of
+        // these values is 52 bytes, so neither of them may mint.
         vm.prank(label);
         release.mint(user1, tokenId1);
+        bytes memory packed = abi.encodePacked(address(release), tokenId1);
 
-        bytes[] memory values = new bytes[](5);
+        bytes[] memory values = new bytes[](6);
         values[0] = "";
-        values[1] = abi.encode(address(release));
-        values[2] = abi.encodePacked(
-            bytes32(uint256(uint160(address(release)))),
-            bytes31(tokenId1)
-        );
-        values[3] = abi.encodePacked(
-            abi.encode(address(release), tokenId1),
-            bytes1(0)
-        );
-        values[4] = abi.encode(address(release), tokenId1, uint256(0));
+        // The source address alone, packed and ABI-encoded.
+        values[1] = abi.encodePacked(address(release));
+        values[2] = abi.encode(address(release));
+        // The packed value without its last byte, and with one extra byte.
+        values[3] = abi.encodePacked(address(release), bytes31(tokenId1));
+        values[4] = abi.encodePacked(packed, bytes1(0));
+        values[5] = abi.encode(address(release), tokenId1, uint256(0));
+        uint256[6] memory lengths = [uint256(0), 20, 32, 51, 53, 96];
 
         for (uint256 i; i < values.length; ++i) {
+            assertEq(values[i].length, lengths[i]);
             _setRawSource(values[i]);
             _assertCannotMint(lsp7, user1, _notAuthorized(user1));
+            _assertCannotMint(lsp7, label, _notAuthorized(label));
         }
         _mintOne(lsp7, artist);
-    }
 
-    function test_PackedTupleSourceValueTreatedAsUnset() public {
-        // LSP2 encodes the `(address,bytes32)` valueType as an unpadded 52-byte
-        // tuple, while LSP34 prescribes `abi.encode(address, bytes32)` (64
-        // bytes). Only the LSP34 encoding is honoured.
-        vm.prank(label);
-        release.mint(user1, tokenId1);
-
-        bytes memory packed = abi.encodePacked(address(release), tokenId1);
-        assertEq(packed.length, 52);
+        // The same source, packed into exactly 52 bytes, is honoured.
         _setRawSource(packed);
-        _assertCannotMint(lsp7, user1, _notAuthorized(user1));
-
-        _setSource(address(release), tokenId1);
         _mintOne(lsp7, user1);
     }
 
-    function test_DirtyAddressBitsInSourceValueGrantNoRights() public {
-        // 64 bytes, but the address word has a bit set above bit 159, so the
-        // value is not a valid `abi.encode(address, bytes32)`. `abi.decode`
-        // rejects it instead of truncating it to `release`: the holder of
-        // tokenId1 cannot mint and the call reverts without data (it is not
-        // treated as unset, which would revert with LSP34NotAuthorizedToMint).
+    function test_AbiEncodedSourceValueTreatedAsUnset() public {
+        // The 64-byte `abi.encode(address, bytes32)` form (address padded to
+        // a 32-byte word) is not the LSP2 `(address,bytes32)` encoding and is
+        // ignored in both resolution modes.
         vm.prank(label);
         release.mint(user1, tokenId1);
-        uint256 dirtyWord = (uint256(1) << 160) |
-            uint256(uint160(address(release)));
-        _setRawSource(abi.encode(dirtyWord, tokenId1));
 
-        _assertCannotMintWithoutRevertData(lsp7, user1);
-        _assertCannotMintWithoutRevertData(lsp7, unauthorized);
-        _assertOwnerUnaffected();
+        bytes memory abiEncoded = abi.encode(address(release), tokenId1);
+        assertEq(abiEncoded.length, 64);
+        _setRawSource(abiEncoded);
+        _assertCannotMint(lsp7, user1, _notAuthorized(user1));
+        _assertCannotMint(lsp7, label, _notAuthorized(label));
+        _mintOne(lsp7, artist);
+
+        _setRawSource(abi.encode(address(release), bytes32(0)));
+        _assertCannotMint(lsp7, label, _notAuthorized(label));
+        _assertCannotMint(lsp7, user1, _notAuthorized(user1));
+        _mintOne(lsp7, artist);
+
+        // The same sources, packed into 52 bytes, are honoured.
+        bytes memory packed = abi.encodePacked(address(release), tokenId1);
+        assertEq(packed.length, 52);
+        _setRawSource(packed);
+        _mintOne(lsp7, user1);
+        _assertCannotMint(lsp7, label, _notAuthorized(label));
+
+        _setRawSource(abi.encodePacked(address(release), bytes32(0)));
+        _mintOne(lsp7, label);
+        _assertCannotMint(lsp7, user1, _notAuthorized(user1));
     }
 
-    function testFuzz_DirtyAddressBitsInSourceValueGrantNoRights(
-        uint96 dirt
+    function testFuzz_SourceValueNot52BytesTreatedAsUnset(
+        bytes memory value
     ) public {
-        vm.assume(dirt != 0);
+        vm.assume(value.length != 52);
         vm.prank(label);
         release.mint(user1, tokenId1);
-        uint256 dirtyWord = (uint256(dirt) << 160) |
-            uint256(uint160(address(release)));
-        _setRawSource(abi.encode(dirtyWord, tokenId1));
+        _setRawSource(value);
 
-        _assertCannotMintWithoutRevertData(lsp7, user1);
+        _assertCannotMint(lsp7, user1, _notAuthorized(user1));
+        _assertCannotMint(lsp7, label, _notAuthorized(label));
+        _mintOne(lsp7, artist);
+    }
+
+    /// @dev Bytes 0..19 are decoded as the source contract and bytes 20..51
+    /// as the tokenId, for any address and any non-zero tokenId.
+    function testFuzz_PackedSourceResolvesTokenIdHolder(
+        address srcContract,
+        bytes32 tokenId
+    ) public {
+        vm.assume(tokenId != bytes32(0));
+        vm.assume(uint160(srcContract) > 0xffff);
+        vm.assume(srcContract.code.length == 0 && srcContract != address(vm));
+        vm.assume(srcContract != user1 && srcContract != unauthorized);
+        vm.etch(srcContract, address(lsp8).code);
+        MockLSP8(srcContract).mint(user1, tokenId);
+
+        _setSource(srcContract, tokenId);
+        assertEq(
+            lsp7.getData(_LSP34_OWNERSHIP_SOURCE_KEY),
+            abi.encodePacked(srcContract, tokenId)
+        );
+        _mintOne(lsp7, user1);
+        _assertCannotMint(lsp7, unauthorized, _notAuthorized(unauthorized));
+    }
+
+    // --- Values encoded by erc725.js for the LIPs `LSP34OwnershipSource` schema ---
+    //
+    // `ERC725.encodeData` (erc725.js 0.28.2) with the LSP-34 schema
+    // (`valueType` `(address,bytes32)`, `valueContent` `(Address,Bytes32)`)
+    // returns the hex values below for `[_SAMPLE_SOURCE, _SAMPLE_TOKEN_ID]`
+    // and `[_SAMPLE_SOURCE, bytes32(0)]`. The contract honours them as-is.
+
+    function test_ERC725jsEncodedSourceIsHonoured() public {
+        bytes
+            memory value = hex"941ed3df30b83bd5bdd1ef6d4928f38a30bd0f14a6d9b18e81ae5c22d046b303ab0194e5ddbb03839ad2a4abe265260a64479241";
+        assertEq(value.length, 52);
+        assertEq(value, abi.encodePacked(_SAMPLE_SOURCE, _SAMPLE_TOKEN_ID));
+
+        vm.etch(_SAMPLE_SOURCE, address(lsp8).code);
+        MockLSP8(_SAMPLE_SOURCE).mint(user1, _SAMPLE_TOKEN_ID);
+        _setRawSource(value);
+
+        _mintOne(lsp7, user1);
+        _assertCannotMint(lsp7, unauthorized, _notAuthorized(unauthorized));
+        _mintOne(lsp7, artist);
+    }
+
+    function test_ERC725jsEncodedZeroTokenIdSourceIsHonoured() public {
+        bytes
+            memory value = hex"941ed3df30b83bd5bdd1ef6d4928f38a30bd0f140000000000000000000000000000000000000000000000000000000000000000";
+        assertEq(value.length, 52);
+        assertEq(value, abi.encodePacked(_SAMPLE_SOURCE, bytes32(0)));
+
+        vm.etch(
+            _SAMPLE_SOURCE,
+            address(new MockOwnedContract(address(0))).code
+        );
+        MockOwnedContract(_SAMPLE_SOURCE).transferOwnership(label);
+        _setRawSource(value);
+
+        _mintOne(lsp7, label);
+        _assertCannotMint(lsp7, user1, _notAuthorized(user1));
         _mintOne(lsp7, artist);
     }
 
@@ -1030,7 +1111,7 @@ contract LSP7MusicNDTTest is Test {
         vm.expectRevert("Ownable: caller is not the owner");
         lsp7.setData(
             _LSP34_OWNERSHIP_SOURCE_KEY,
-            abi.encode(address(ownSource), bytes32(0))
+            abi.encodePacked(address(ownSource), bytes32(0))
         );
 
         bytes32[] memory keys = new bytes32[](1);
@@ -1059,7 +1140,7 @@ contract LSP7MusicNDTTest is Test {
         keys[0] = _LSP34_OWNERSHIP_SOURCE_KEY;
         keys[1] = _LSP4_TOKEN_NAME_KEY;
         bytes[] memory values = new bytes[](2);
-        values[0] = abi.encode(address(release), tokenId1);
+        values[0] = abi.encodePacked(address(release), tokenId1);
         values[1] = bytes("Renamed");
         vm.prank(artist);
         vm.expectRevert(LSP4TokenNameNotEditable.selector);
@@ -1095,7 +1176,7 @@ contract LSP7MusicNDTTest is Test {
     // --- ERC725Y DataChanged events ---
 
     function test_SourceChangesEmitDataChanged() public {
-        bytes memory value = abi.encode(address(release), tokenId1);
+        bytes memory value = abi.encodePacked(address(release), tokenId1);
 
         vm.prank(artist);
         vm.expectEmit(true, true, true, true, address(lsp7));

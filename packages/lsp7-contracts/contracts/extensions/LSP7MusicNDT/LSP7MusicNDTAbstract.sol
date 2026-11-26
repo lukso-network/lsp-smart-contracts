@@ -87,10 +87,12 @@ abstract contract LSP7MusicNDTAbstract is LSP7DigitalAsset {
     }
 
     /// @dev Returns the address authorised to mint via `LSP34OwnershipSource`.
-    /// Returns `address(0)` when the source is unset or its value is not
-    /// exactly 64 bytes long. Reverts, granting no minting rights, when a
-    /// 64-byte value is not a valid `abi.encode(address, bytes32)` (non-zero
-    /// upper 96 bits in the address word) or when the source query reverts
+    /// The value is the packed LSP2 `(address,bytes32)` tuple
+    /// `abi.encodePacked(address sourceContract, bytes32 tokenId)`: exactly
+    /// 52 bytes, `sourceContract` in bytes 0..19 and `tokenId` in bytes
+    /// 20..51. Returns `address(0)` when the source is unset or its value is
+    /// not exactly 52 bytes long (e.g. the 64-byte `abi.encode` form).
+    /// Reverts, granting no minting rights, when the source query reverts
     /// (e.g. burned or nonexistent `tokenId`, source without code). `mint`
     /// only calls this for callers other than `owner()`.
     ///
@@ -99,14 +101,22 @@ abstract contract LSP7MusicNDTAbstract is LSP7DigitalAsset {
     /// - If `tokenId == bytes32(0)`, query `owner()` on the source.
     function _resolveLSP34Minter() internal view returns (address) {
         bytes memory source = _getData(_LSP34_OWNERSHIP_SOURCE_KEY);
-        if (source.length != 64) {
+        if (source.length != 52) {
             return address(0);
         }
 
-        (address sourceContract, bytes32 tokenId) = abi.decode(
-            source,
-            (address, bytes32)
-        );
+        address sourceContract;
+        bytes32 tokenId;
+        // `add(source, 32)` -> offset in memory where `source` data starts.
+        // Both reads stay within the 52 bytes of `source`: the first word
+        // holds `sourceContract` in its upper 20 bytes, the word starting at
+        // byte 20 is `tokenId`.
+        /// @solidity memory-safe-assembly
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            sourceContract := shr(96, mload(add(source, 32)))
+            tokenId := mload(add(source, 52))
+        }
 
         if (tokenId == bytes32(0)) {
             return IERC173(sourceContract).owner();
