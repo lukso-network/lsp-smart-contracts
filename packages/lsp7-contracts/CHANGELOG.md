@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.19.0](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.18.1...lsp7-contracts-v0.19.0) (2026-11-26)
+
+
+### Features
+
+* add `Burnable` to LSP7/8 Mintable preset ([d7ffb24](https://github.com/lukso-network/lsp-smart-contracts/commit/d7ffb24d2659c561cad837a3af02fdcdff10cc2d))
+
+
+### Bug Fixes
+
+* **LSP33:** correct music marker key and add derivation regressions ([2153cdd](https://github.com/lukso-network/lsp-smart-contracts/commit/2153cdd322952d872421b671c752b21031d127da))
+* **lsp7:** document intentional timestamp use in transfer windows ([03189d1](https://github.com/lukso-network/lsp-smart-contracts/commit/03189d12782c19b8b8a108bf87b88ec61b71463c))
+* **lsp7:** store LSP34OwnershipSource as packed (address,bytes32) ([732a15a](https://github.com/lukso-network/lsp-smart-contracts/commit/732a15ab6090ba56369d1552494f84df116e4165))
+
 ## [0.18.1](https://github.com/lukso-network/lsp-smart-contracts/compare/lsp7-contracts-v0.18.0...lsp7-contracts-v0.18.1) (2026-06-02)
 
 
